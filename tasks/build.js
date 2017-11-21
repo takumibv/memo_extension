@@ -10,6 +10,8 @@ gulp.task('build', gulpSequence(
     'locales',
     'images',
     'fonts',
-    'chromereload'
+    'chromereload',
+    'react',
+    'react-watch'
   ]
 ))

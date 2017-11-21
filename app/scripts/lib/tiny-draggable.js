@@ -5,7 +5,7 @@
     More info: https://pixabay.com/blog/posts/p-52/
 	License: http://www.opensource.org/licenses/mit-license.php
 */
-const $ = require('jquery');
+
 (function($) {
   $.fn.tinyDraggable = function(options) {
     var settings = $.extend({
@@ -34,4 +34,4 @@ const $ = require('jquery');
       });
     });
   }
-}($));
+}(jQuery));

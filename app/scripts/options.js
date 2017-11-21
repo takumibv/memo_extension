@@ -1,13 +1,15 @@
 'use strict';
+global.jQuery = require('jquery');
 const $ = require('jquery');
 // import 'jquery/dist/jquery'
 // import 'jquery-ui/ui/core'
 // import 'jquery-ui/ui/widget'
 // import 'jquery-ui/ui/widgets/mouse'
 // import 'jquery-ui/ui/widgets/resizable'
-import 'material-design-lite/material'
-import './tiny-draggable.js'
-import './func_resize_box.js'
+require('./lib/jinplace.js');
+require('material-design-lite/material');
+require('./lib/tiny-draggable.js');
+require('./lib/resizable_box.js');
 
 var option;
 
@@ -42,11 +44,14 @@ $(function() {
             }
         }
         assignEventHandlers() {
-          $('.resizable-box').funcResizeBox({
+          console.log("options");
+          $('.resizable-box').resizableBox({
             minWidth: 240,
             minHeight: 160,
           });
+          $('.mdl-card__title').resizableBox({ isWidthResize: false });
           $('.draggable-card').tinyDraggable({ handle: '.handle' });
+          // $('.editable').jinplace();
 
           // // 動いてない
           // $('.draggable-card').resizable({
