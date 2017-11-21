@@ -2,7 +2,6 @@ import gulp from 'gulp'
 import gulpif from 'gulp-if'
 import args from './lib/args'
 var browserify = require('browserify');
-var watchify = require('watchify');
 var babelify = require('babelify');
 var source = require('vinyl-source-stream');
 var react = require('gulp-react');
@@ -22,15 +21,12 @@ gulp.task('react', function() {
   // 参考: https://github.com/babel/babelify
   // watchify, livereload: https://github.com/angkywilliam/ReactGulpBoilerPlate/blob/master/gulpfile.js
 
-  var stream = watchify(
-    browserify({
-      entries: config.entryFile,
-      debug: true
-    })
-    .transform(babelify,{presets: ["react"]})
-  ).bundle();
-
-  return stream
+  return browserify({
+    entries: config.entryFile,
+    debug: true
+  })
+  .transform(babelify,{presets: ["react"]})
+  .bundle()
   .on("error", function (err) {
     console.log("ERROR: " + err.message);
     console.log(err.stack);
