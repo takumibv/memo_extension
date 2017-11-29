@@ -19,6 +19,7 @@ $(function() {
   class Background {
     constructor() {
       this.assignEventHandlers();
+      // this.setCardArea();
       const d = new Date();
       console.log("[%04d/%02d/%02d %02d:%02d:%02d] Memo app is Running", d.getFullYear(), d.getMonth() + 1, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
     }
@@ -29,6 +30,9 @@ $(function() {
         // if (changeInfo.status == "complete" && tab.url.indexOf(ACCESS_URL) != -1) {
         //   window.bg.identifyPage(tab.url);
         // }
+        if (changeInfo.status == "loading") {
+          window.bg.setCardArea(tab.url);
+        }
       });
       chrome.runtime.onMessage.addListener(function(msg, sender, res) {
         // if (msg.id == "identify_page") {
@@ -56,6 +60,32 @@ $(function() {
         //   chrome.runtime.openOptionsPage();
         // }
       });
+    }
+    setCardArea(tab_url) {
+      chrome.tabs.executeScript(
+        null,
+        { code: `var tab_url = '${tab_url}';` },
+        function() {
+          chrome.tabs.insertCSS(
+            null, {
+              file: "styles/base.css"
+            }
+          );
+          chrome.tabs.insertCSS(
+            null, {
+              file: "styles/card.css"
+            }
+          );
+          chrome.tabs.executeScript(
+            null, {
+              file: "scripts/react_app.js"
+            }
+          );
+        }
+      );
+    }
+    getMemoListByTabUrl(tab_url){
+      
     }
     getUserConfig() {
       let value = localStorage['User'];

@@ -1,6 +1,7 @@
 import gulp from 'gulp'
 import gulpif from 'gulp-if'
 import args from './lib/args'
+import plumber from 'gulp-plumber'
 var browserify = require('browserify');
 var babelify = require('babelify');
 var source = require('vinyl-source-stream');
@@ -25,12 +26,17 @@ gulp.task('react', function() {
     entries: config.entryFile,
     debug: true
   })
-  .transform(babelify,{presets: ["react"]})
+  .transform(babelify,{presets: ["es2015", "react"]})
   .bundle()
   .on("error", function (err) {
     console.log("ERROR: " + err.message);
     console.log(err.stack);
   })
+  .pipe(plumber({
+    // Webpack will log the errors
+    errorHandler () {
+    }
+  }))
   .pipe(source(config.destFile))
   .pipe(gulp.dest(config.destDir));
 });

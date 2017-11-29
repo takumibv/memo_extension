@@ -1,0 +1,69 @@
+// @import "node_modules/material-design-lite/src/card/_card.scss";
+// @import "node_modules/material-design-lite/src/button/_button.scss";
+// @import "node_modules/material-design-lite/src/material-design-lite.scss";
+// @import url(https://fonts.googleapis.com/icon?family=Material+Icons);
+#react-container-for-memo-extension {
+  .float-right {
+    float: right;
+  }
+  .demo-card-wide {
+    &.mdl-card {
+      /*min-width: 400px;*/
+      min-height: 0;
+      background-color: #ffffdc;
+      z-index: 100000;
+    }
+    &.draggable-card {
+      position: absolute;
+    }
+    & > .mdl-card__title {
+      width: 99%;
+      margin: 0 auto;
+      color: #555;
+      min-height: 60px;
+      min-width: 260px;
+      align-self: flex-start;
+      overflow-y: scroll;
+      -webkit-align-items: normal;
+      -ms-flex-align: normal;
+      align-items: normal;
+      /*background: url('../images/welcome_card.jpg') center / cover;*/
+      .handle-card {
+        width: 100%;
+      }
+    }
+    .mdl-card__title-text {
+      padding-right: 28px;
+    }
+    .mdl-card__menu {
+      color: #555;
+    }
+    .handle-card {
+      cursor: move;
+    }
+    .mdl-card__supporting-text {
+      width: 99%;
+      margin: 0 auto;
+      overflow-y: scroll;
+      margin-bottom: 52px;
+      box-sizing: border-box;
+
+      .mdl-textfield {
+        width: 100%;
+        padding: 0;
+      }
+    }
+    .mdl-card__actions {
+      position: absolute;
+      bottom: 0;
+    }
+    .material-icons {
+      color: #555;
+    }
+    .close-card_btn {
+      position: absolute;
+      top: 20px;
+      right: 12px;
+    }
+  }
+}

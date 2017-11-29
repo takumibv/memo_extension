@@ -22,9 +22,11 @@
           var os = el.offset();
           dx = e.pageX - os.left, dy = e.pageY - os.top;
           $(document).on('mousemove.drag', function(e) {
+            var next_dx = e.pageX - dx > 0 ? e.pageX - dx : 0;
+            var next_dy = e.pageY - dy > 0 ? e.pageY - dy : 0;
             el.offset({
-              top: e.pageY - dy,
-              left: e.pageX - dx
+              top: next_dy,
+              left: next_dx
             });
           });
         },
