@@ -27,13 +27,14 @@ export default class MemoCardList extends Component {
     // // $('#react-container-for-memo-extension').prepend("<script defer src='https://code.getmdl.io/1.3.0/material.min.js'></script>");
   }
   render() {
-    const {url, memos} = this.props;
+    const {page_url, memos} = this.props;
     return (
       <div id="MemoCardList">
         {memos.map((memo, index) => {
-          return null;
+          // return null;
           return (
             <MemoCard
+              key={index}
               index={index}
               title={memo.title}
               description={memo.description} />);

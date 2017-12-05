@@ -1,10 +1,12 @@
 // Enable chromereload by uncommenting this line:
 import 'chromereload/devonly'
 const $ = require('jquery');
+const url = require('url');
+import PageInfo from './page_info.js';
 
 // install or Updateして初めて開いた時に呼ばれる。
 chrome.runtime.onInstalled.addListener((details) => {
-  console.log('previousVersion', details.previousVersion)
+  console.log('previousVersion', details.previousVersion);
 })
 
 chrome.browserAction.setBadgeText({
@@ -22,6 +24,9 @@ $(function() {
       // this.setCardArea();
       const d = new Date();
       console.log("[%04d/%02d/%02d %02d:%02d:%02d] Memo app is Running", d.getFullYear(), d.getMonth() + 1, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
+
+      // page_infoを保持しておく場所. key: page_url, value: PageInfo
+      this.page_infos = {};
     }
     // Chromeの各種操作イベントに対するイベントハンドラを登録する。
     assignEventHandlers() {
@@ -31,7 +36,9 @@ $(function() {
         //   window.bg.identifyPage(tab.url);
         // }
         if (changeInfo.status == "loading") {
-          window.bg.setCardArea(tab.url);
+          window.bg.onTabLoading(tabId, changeInfo, tab);
+        } else if (changeInfo.status == "complete") {
+          window.bg.onTabUpdated(tabId, changeInfo, tab);
         }
       });
       chrome.runtime.onMessage.addListener(function(msg, sender, res) {
@@ -61,10 +68,47 @@ $(function() {
         // }
       });
     }
-    setCardArea(tab_url) {
+    onTabLoading(tabId, changeInfo, tab) {
+      /***
+      * 1. URL形成
+      * 2. ローカルストレージ探索
+      * 3. カードセット
+      ***/
+      const tab_url   = this.encodeUrl(tab.url);
+      // const page_info = this.getPageInfoByUrl(tab_url);
+      const page_info = new PageInfo(tab_url);
+      this.page_infos[tab_url] = page_info;
+      this.setCardArea(tab_url, page_info);
+    }
+    onTabUpdated(tabId, changeInfo, tab) {
+      /***
+      * タイトルのセット(loading中はタイトルが入らない場合もあるため)
+      ***/
+      const tab_url = this.encodeUrl(tab.url);
+      this.page_infos[tab_url].setPageTitle(tab.title);
+    }
+    encodeUrl(plain_url) {
+      let parse_url = url.parse(plain_url);
+      let formed_url = `${parse_url.protocol}//${parse_url.hostname}${parse_url.pathname}${parse_url.search || ''}`;
+      return encodeURIComponent(formed_url);
+    }
+    decodeUrl(crypted_url) {
+      return decodeURIComponent(crypted_url);
+    }
+    /****
+    * Card Area
+    ****/
+    setCardArea(tab_url, page_info) {
+      // page_info.setPageTitle("Qiitaの記事2");
+      console.log(this.page_infos);
+      // this.createPageInfo(tab_url);
+      // this.setPageTitle(tab_url, tab_title);
       chrome.tabs.executeScript(
         null,
-        { code: `var tab_url = '${tab_url}';` },
+        { code:
+          `const tab_url    = '${tab_url}';` +
+          `const page_info  = JSON.parse('${JSON.stringify(page_info.serialize())}');`
+        },
         function() {
           chrome.tabs.insertCSS(
             null, {
@@ -84,8 +128,11 @@ $(function() {
         }
       );
     }
-    getMemoListByTabUrl(tab_url){
-      
+    /****
+    * Memo
+    ****/
+    createMemo(page_url, memo) {
+
     }
     getUserConfig() {
       let value = localStorage['User'];

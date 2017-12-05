@@ -45,15 +45,14 @@ export default class MemoCard extends Component {
             <h2 className="mdl-card__title-text"><span className="editable">{title}</span></h2>
           </div>
 
-          <button id="minimize_btn-1" className="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect close-card_btn">
+          <button id={`minimize_btn-${index}`} className="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect close-card_btn">
             <i className="material-icons">keyboard_arrow_left</i>
           </button>
-          <div className="mdl-tooltip" data-mdl-for="minimize_btn-1">minimize</div>
+          <div className="mdl-tooltip" data-mdl-for={`minimize_btn-${index}`}>minimize</div>
         </div>
         <div className="mdl-card__supporting-text">
           <div className="mdl-textfield mdl-js-textfield">
-            <textarea className="mdl-textfield__input" type="text" id="sample5"></textarea>
-            <label className="mdl-textfield__label" htmlFor="sample5">Text lines...</label>
+            <textarea className="mdl-textfield__input" type="text" placeholder="Text lines...">{description}</textarea>
           </div>
         </div>
         <div className="mdl-card__actions">
@@ -61,25 +60,25 @@ export default class MemoCard extends Component {
             Go detail
           </a>
 
-          <button id="mode_edit_btn-1" className="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+          <button id={`mode_edit_btn-${index}`} className="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
             <i className="material-icons">mode_edit</i>
           </button>
-          <div className="mdl-tooltip" data-mdl-for="mode_edit_btn-1">edit</div>
+          <div className="mdl-tooltip" data-mdl-for={`mode_edit_btn-${index}`}>edit</div>
 
-          <button id="save_btn-1" className="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+          <button id={`save_btn-${index}`} className="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
             <i className="material-icons">save</i>
           </button>
-          <div className="mdl-tooltip" data-mdl-for="save_btn-1">save</div>
+          <div className="mdl-tooltip" data-mdl-for={`save_btn-${index}`}>save</div>
 
-          <button id="content_copy_btn-1" className="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+          <button id={`content_copy_btn-${index}`} className="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
             <i className="material-icons">content_copy</i>
           </button>
-          <div className="mdl-tooltip" data-mdl-for="content_copy_btn-1">copy clip board</div>
+          <div className="mdl-tooltip" data-mdl-for={`content_copy_btn-${index}`}>copy clip board</div>
 
-          <button id="delete_btn-1" className="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect float-right">
+          <button id={`delete_btn-${index}`} className="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect float-right">
             <i className="material-icons">delete</i>
           </button>
-          <div className="mdl-tooltip" data-mdl-for="delete_btn-1">delete</div>
+          <div className="mdl-tooltip" data-mdl-for={`delete_btn-${index}`}>delete</div>
         </div>
       </div>
     );

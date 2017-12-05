@@ -6,8 +6,9 @@ require('material-design-lite/material');
 // require('react');
 // require('react-dom');
 // require('./components/card.js');
-console.log('aaaaaaaaaaa');
+console.log('=======Background Params======');
 console.log(tab_url);
+console.log(page_info);
 if(!$('#react-container-for-memo-extension').length){
   $('body').prepend(
   	"<div id='react-container-for-memo-extension'></div>"
@@ -16,10 +17,11 @@ if(!$('#react-container-for-memo-extension').length){
 
 export default class App extends Component {
   render() {
-    const {url, memos} = this.props;
+    const {page_url, memos} = this.props;
+    console.log(memos);
     return(
       <MemoCardList
-        url={url}
+        page_url={page_url}
         memos={memos} />
     );
   }
@@ -29,11 +31,12 @@ export default class App extends Component {
 //   memos: PropTypes.object.isRequired,
 // };
 App.defaultProps = {
-  url: tab_url,
+  page_url: page_info.page_url,
+  page_title: page_info.page_title,
   memos: [
-    {title: "memo1", description: "memoです."},
-    {title: "memo2", description: "memo desu.."}
-  ]
+    {title: "memo1", description: "memoです.", position_x: 0, position_y: 0},
+    {title: "memo2", description: "memoです.", position_x: 0, position_y: 80}
+  ].concat(page_info.memos)
 };
 
 try {
