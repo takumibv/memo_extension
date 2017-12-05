@@ -9,6 +9,7 @@ require('../lib/jinplace.js');
 // const componentHandler = MDLite.componentHandler;
 require('../lib/tiny-draggable.js');
 require('../lib/resizable_box.js');
+require('../lib/text-editable.js');
 // require('react');
 
 export default class MemoCard extends Component {
@@ -20,13 +21,40 @@ export default class MemoCard extends Component {
     var wH = $(window).height();
     var wW = $(window).width();
 
-    console.log();
     $('.resizable-box').resizableBox({
       minWidth: 240,
       minHeight: 160,
     });
     $('.mdl-card__title').resizableBox({ isWidthResize: false });
     $('.draggable-card').tinyDraggable({ handle: '.handle-card' });
+    $('.editable').editable({ target_selector: '.target-editor', bind_action: 'dblclick'});
+    $('.editable-textarea').editable({ target_selector: '.target-editor', bind_action: 'dblclick'});
+
+    $(document).on({
+      'click': function() {
+        var $target_text    = $('#' + $(this).attr('target'));
+        var $target_editor  = $target_text.next('.target-editor');
+        $target_text.css('display', 'none');
+        $target_editor.html($target_text.text())
+          .css('display', '')
+          .focus();
+      }
+    }, '.mode_edit_btn');
+
+    $(document).on({
+      'click': function(){
+        $('#' + $(this).attr('target')).animate({
+          left: '0'
+        }, 200, 'swing', function () {
+          $(this).addClass('minimize');
+        });
+      }
+    }, '.close-card_btn');
+    $(document).on({
+      'click': function(){
+        $('#' + $(this).attr('target')).removeClass('minimize');
+      }
+    }, '.open-card_btn');
     // $('#react-container-for-memo-extension').prepend("<script defer src='https://code.getmdl.io/1.3.0/material.min.js'></script>");
   }
   render() {
@@ -38,21 +66,31 @@ export default class MemoCard extends Component {
   //   //     <p>Hello World</p>
   //   //   </div>
   //   // );
+    let minimize = '';
+    if(index == 0){
+      minimize = 'minimize';
+    }
     return (
-      <div className="demo-card-wide mdl-card mdl-shadow--2dp resizable-box draggable-card">
+      <div id={`memo-card-${index}`} className={`demo-card-wide mdl-card mdl-shadow--2dp resizable-box draggable-card ${minimize}`}>
         <div className="mdl-card__title mdl-card--border">
           <div className="handle-card">
-            <h2 className="mdl-card__title-text"><span className="editable">{title}</span></h2>
+            <h2 className="mdl-card__title-text"><span className="editable">{title}</span><input className="target-editor" type="text" /></h2>
           </div>
 
-          <button id={`minimize_btn-${index}`} className="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect close-card_btn">
+          <button id={`minimize_btn-${index}`} className="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect close-card_btn" target={`memo-card-${index}`}>
             <i className="material-icons">keyboard_arrow_left</i>
           </button>
           <div className="mdl-tooltip" data-mdl-for={`minimize_btn-${index}`}>minimize</div>
+
+          <button id={`maximize_btn-${index}`} className="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect open-card_btn" target={`memo-card-${index}`}>
+            <i className="material-icons">keyboard_arrow_right</i>
+          </button>
+          <div className="mdl-tooltip" data-mdl-for={`maximize_btn-${index}`}>maximize</div>
         </div>
         <div className="mdl-card__supporting-text">
           <div className="mdl-textfield mdl-js-textfield">
-            <textarea className="mdl-textfield__input" type="text" placeholder="Text lines...">{description}</textarea>
+            <p id={`editable-textarea-${index}`} className="editable-textarea">{description}</p>
+            <textarea className="mdl-textfield__input target-editor" type="text" placeholder="Text lines..."></textarea>
           </div>
         </div>
         <div className="mdl-card__actions">
@@ -60,7 +98,7 @@ export default class MemoCard extends Component {
             Go detail
           </a>
 
-          <button id={`mode_edit_btn-${index}`} className="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+          <button id={`mode_edit_btn-${index}`} className="mode_edit_btn mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" target={`editable-textarea-${index}`}>
             <i className="material-icons">mode_edit</i>
           </button>
           <div className="mdl-tooltip" data-mdl-for={`mode_edit_btn-${index}`}>edit</div>

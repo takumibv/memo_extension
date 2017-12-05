@@ -34,8 +34,8 @@ App.defaultProps = {
   page_url: page_info.page_url,
   page_title: page_info.page_title,
   memos: [
-    {title: "memo1", description: "memoです.", position_x: 0, position_y: 0},
-    {title: "memo2", description: "memoです.", position_x: 0, position_y: 80}
+    {title: "memo1", description: "memoです11.", position_x: 0, position_y: 0},
+    {title: "memo2", description: "memoです22.", position_x: 0, position_y: 80}
   ].concat(page_info.memos)
 };
 

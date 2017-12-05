@@ -3,6 +3,7 @@
 // @import "node_modules/material-design-lite/src/material-design-lite.scss";
 // @import url(https://fonts.googleapis.com/icon?family=Material+Icons);
 #react-container-for-memo-extension {
+  font-family: Roboto, Helvetica, Arial, sans-serif;
   .float-right {
     float: right;
   }
@@ -15,6 +16,31 @@
     }
     &.draggable-card {
       position: absolute;
+    }
+    &.minimize {
+      width: 120px !important;
+      height: 60px !important;
+      left: 0 !important;
+      .mdl-card__supporting-text {
+        display: none;
+      }
+      .mdl-card__actions {
+        display: none;
+      }
+      & > .mdl-card__title {
+        min-width: 120px !important;
+        span {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+      .open-card_btn {
+        display: block;
+      }
+      .close-card_btn {
+        display: none;
+      }
     }
     & > .mdl-card__title {
       width: 99%;
@@ -34,6 +60,10 @@
     }
     .mdl-card__title-text {
       padding-right: 28px;
+      font-size: 24px;
+      font-weight: 300;
+      line-height: normal;
+      overflow: hidden;
     }
     .mdl-card__menu {
       color: #555;
@@ -61,6 +91,12 @@
       color: #555;
     }
     .close-card_btn {
+      position: absolute;
+      top: 20px;
+      right: 12px;
+    }
+    .open-card_btn {
+      display: none;
       position: absolute;
       top: 20px;
       right: 12px;
