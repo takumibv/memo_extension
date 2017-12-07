@@ -24,11 +24,10 @@ export default class MemoCard extends Component {
   componentDidMount() {
     var wH = $(window).height();
     var wW = $(window).width();
-
     $('.resizable-box').resizableBox({
       minWidth: 240,
       minHeight: 160,
-    });
+    }, (w, h) => {console.log(w,h);});
     $('.mdl-card__title').resizableBox({ isWidthResize: false });
     $('.draggable-card').tinyDraggable({ handle: '.handle-card' });
     $('.editable').editable({ target_selector: '.target-editor', bind_action: 'dblclick'});

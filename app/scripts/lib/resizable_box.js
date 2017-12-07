@@ -3,7 +3,7 @@
 **/
 
 (function($) {
-  $.fn.resizableBox = function(userOptions) {
+  $.fn.resizableBox = function(userOptions, callback=function(){}) {
     var elements = this;
     var defaults = {
       minWidth: 0,
@@ -30,7 +30,7 @@
       var $box = $(this);
       var resize_flg = false;
 
-
+      console.log("set", $box);
       $box.on({
         mousemove: function(e) {
 
@@ -110,6 +110,9 @@
             }
           }).mouseup(function() {
             $(document).off("mousemove");
+            if(resize_flg) {
+              callback($box.width(), $box.height());
+            }
             resize_bottom_flg = false;
             resize_right_flg = false;
             resize_flg = false;
