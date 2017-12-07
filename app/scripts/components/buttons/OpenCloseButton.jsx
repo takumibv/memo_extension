@@ -35,6 +35,7 @@ export default class OpenCloseButton extends Button {
       this.tooltip_title[is_open_index],
       this.additional_class[is_open_index],
       `memo-card-${index}`,
+      false,
       this.onClick.bind(this)
     );
   }

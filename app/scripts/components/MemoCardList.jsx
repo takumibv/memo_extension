@@ -35,7 +35,8 @@ export default class MemoCardList extends Component {
           console.log(index, memo);
           return (
             <MemoCard
-              key={index}
+              key={memo.id}
+              id={memo.id}
               index={index}
               memo={memo}
               actions={actions} />);

@@ -4,6 +4,7 @@
 // @import url(https://fonts.googleapis.com/icon?family=Material+Icons);
 #react-container-for-memo-extension {
   font-family: Roboto, Helvetica, Arial, sans-serif !important;
+  color: #555;
   .float-right {
     float: right;
   }
@@ -12,7 +13,7 @@
       /*min-width: 400px;*/
       min-height: 0;
       background-color: #ffffdc;
-      z-index: 100000;
+      z-index: 1000;
     }
     &.draggable-card {
       position: absolute;
@@ -81,11 +82,13 @@
       margin: 0 auto;
       overflow-y: scroll;
       margin-bottom: 52px;
+      padding-bottom: 0;
       box-sizing: border-box;
 
       .mdl-textfield {
         width: 100%;
         padding: 0;
+        border-bottom: solid 1px #ccc;
       }
     }
     .mdl-card__actions {
@@ -105,6 +108,9 @@
       position: absolute;
       top: 20px;
       right: 12px;
+    }
+    .copied-msg-toast {
+      display: none;
     }
   }
 }

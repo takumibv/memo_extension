@@ -20,6 +20,7 @@ export default class DeleteButton extends Button {
       'delete',
       'float-right',
       `delete_btn-${index}`,
+      true,
       this.onClick.bind(this)
     );
   }

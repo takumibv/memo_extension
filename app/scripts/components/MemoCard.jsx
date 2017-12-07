@@ -32,7 +32,7 @@ export default class MemoCard extends Component {
     $('.mdl-card__title').resizableBox({ isWidthResize: false });
     $('.draggable-card').tinyDraggable({ handle: '.handle-card' });
     $('.editable').editable({ target_selector: '.target-editor', bind_action: 'dblclick'});
-    $('.editable-textarea').editable({ target_selector: '.target-editor', bind_action: 'dblclick'});
+    $('.editable-textarea').editable({ target_selector: '.target-editor', bind_action: 'dblclick', is_enter_blur: false});
 
     // $('#react-container-for-memo-extension').prepend("<script defer src='https://code.getmdl.io/1.3.0/material.min.js'></script>");
   }
@@ -88,11 +88,13 @@ export default class MemoCard extends Component {
             key={`copy_btn-${index}`}
             index={index}
             actions={actions} />
+          <span className="copied-msg-toast">Copied.</span>
           <DeleteButton
             key={`delete_btn-${index}`}
             index={index}
             actions={actions} />
         </div>
+        <input className="form-for-copy" type="hidden" />
       </div>
     );
   }

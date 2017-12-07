@@ -22,6 +22,7 @@ export default class EditButton extends Button {
       'edit',
       'mode_edit_btn',
       `editable-textarea-${index}`,
+      true,
       this.onClick.bind(this)
     );
   }
