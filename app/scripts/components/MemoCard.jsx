@@ -22,16 +22,35 @@ export default class MemoCard extends Component {
     // componentHandler.upgradeDom();
   }
   componentDidMount() {
+    const {actions} = this.props;
     var wH = $(window).height();
     var wW = $(window).width();
     $('.resizable-box').resizableBox({
       minWidth: 240,
       minHeight: 160,
-    }, (w, h) => {console.log(w,h);});
+    }, (index, w, h) => {
+      console.log(index,w,h);
+      actions({type: 'RESIZE_MEMO', index: index, width: w, height: h});
+    });
     $('.mdl-card__title').resizableBox({ isWidthResize: false });
-    $('.draggable-card').tinyDraggable({ handle: '.handle-card' });
-    $('.editable').editable({ target_selector: '.target-editor', bind_action: 'dblclick'});
-    $('.editable-textarea').editable({ target_selector: '.target-editor', bind_action: 'dblclick', is_enter_blur: false});
+    $('.draggable-card').tinyDraggable({
+      handle: '.handle-card'
+    }, (index, top, left) => {
+      actions({type: 'MOVE_MEMO', index: index, position_x: left, position_y: top});
+      console.log(index, top, left);
+    });
+    $('.editable').editable({
+      target_selector: '.target-editor', bind_action: 'dblclick'
+    }, (index, text) => {
+      actions({type: 'UPDATE_TITLE', index: index, title: text});
+      console.log(index, text);
+    });
+    $('.editable-textarea').editable({
+      target_selector: '.target-editor', bind_action: 'dblclick', is_enter_blur: false
+    }, (index, text) => {
+      actions({type: 'UPDATE_DESCRIPTION', index: index, description: text});
+      console.log(index, text);
+    });
 
     // $('#react-container-for-memo-extension').prepend("<script defer src='https://code.getmdl.io/1.3.0/material.min.js'></script>");
   }
@@ -51,13 +70,23 @@ export default class MemoCard extends Component {
     if(!memo.is_open){
       minimize = 'minimize';
     }
+    const card_style = {
+      width: memo.width,
+      height: memo.height,
+      left: memo.position_x,
+      top: memo.position_y
+    }
     // actions({type: 'UPDATE_TITLE'});
     return (
-      <div id={`memo-card-${index}`} className={`demo-card-wide mdl-card mdl-shadow--2dp resizable-box draggable-card ${minimize}`}>
+      <div
+        id={`memo-card-${index}`}
+        className={`demo-card-wide mdl-card mdl-shadow--2dp resizable-box draggable-card ${minimize}`}
+        style={card_style}
+        index={index}>
         <div className="mdl-card__title mdl-card--border">
-          <div className="handle-card">
+          <div className="handle-card" index={index}>
             <h2 className="mdl-card__title-text">
-              <span className="editable">{memo.title}</span>
+              <span className="editable" index={index}>{memo.title}</span>
               <input className="target-editor" type="text" />
             </h2>
           </div>
@@ -70,7 +99,7 @@ export default class MemoCard extends Component {
         </div>
         <div className="mdl-card__supporting-text">
           <div className="mdl-textfield mdl-js-textfield">
-            <p id={`editable-textarea-${index}`} className="editable-textarea">{memo.description}</p>
+            <p id={`editable-textarea-${index}`} className="editable-textarea" index={index}>{memo.description}</p>
             <textarea className="mdl-textfield__input target-editor" type="text" placeholder="Text lines..."></textarea>
           </div>
         </div>
@@ -93,7 +122,7 @@ export default class MemoCard extends Component {
             index={index}
             actions={actions} />
         </div>
-        <input className="form-for-copy" type="hidden" />
+        <textarea style={{display: 'none'}} className="form-for-copy" ></textarea>
       </div>
     );
   }

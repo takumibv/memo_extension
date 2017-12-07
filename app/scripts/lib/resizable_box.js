@@ -108,10 +108,11 @@
               option.minHeight <= resize_height) {
               $box.height(resize_height);
             }
-          }).mouseup(function() {
+          }).mouseup(function(e) {
             $(document).off("mousemove");
             if(resize_flg) {
-              callback($box.width(), $box.height());
+              console.log($box);
+              callback($box.attr("index"), $box.width(), $box.height());
             }
             resize_bottom_flg = false;
             resize_right_flg = false;

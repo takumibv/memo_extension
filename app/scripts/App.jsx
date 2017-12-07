@@ -62,7 +62,7 @@ export class App extends Component {
       case 'RESIZE_MEMO':
         var updated_memos = this.state.memos;
         updated_memos[action.index].width = action.width;
-        updated_memos[action.index].width = action.width;
+        updated_memos[action.index].height = action.height;
         this.setState({memos: updated_memos});
         break;
       case '':

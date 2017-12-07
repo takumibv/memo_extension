@@ -3,7 +3,7 @@
 **/
 
 (function($) {
-  $.fn.editable = function(userOptions) {
+  $.fn.editable = function(userOptions, callback=function(){}) {
     var elements = this;
     return this.each(function() {
       var defaults = {
@@ -34,10 +34,11 @@
       });
       $target_editor.on({
         'blur': function(){
-          var text = $(this).val();
+          var res_text = escape_html($(this).val());
           $(this).css('display', 'none');
-          $target_text.html(escape_html(text))
+          $target_text.html(res_text)
             .css('display', '');
+          callback($target_text.attr("index"), res_text);
         },
         'keypress': function(e){
           if ( option.is_enter_blur && e.which === 13 ) {

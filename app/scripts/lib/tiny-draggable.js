@@ -7,7 +7,7 @@
 */
 
 (function($) {
-  $.fn.tinyDraggable = function(options) {
+  $.fn.tinyDraggable = function(options, callback=function(){}) {
     var settings = $.extend({
       handle: 0,
       exclude: 0
@@ -32,6 +32,7 @@
         },
         mouseup: function(e) {
           $(document).off('mousemove.drag');
+          callback($(this).attr("index"), el.offset().top, el.offset().left);
         }
       });
     });
