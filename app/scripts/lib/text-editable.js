@@ -7,9 +7,10 @@
     var elements = this;
     return this.each(function() {
       var defaults = {
-        target_text_selector: this,                   // 変更対象のテキスト
-        target_editor_selector: this,                 // 変更時のエディタ
-        bind_action: 'click',                         // 変更アクション
+        target_text_selector: this,   // 変更対象のテキスト
+        target_editor_selector: this, // 変更時のエディタ
+        bind_action: 'click',         // 変更アクション
+        is_enter_blur: true           // "Enter"キーでblur処理をするか(falseの場合"ctrl+Enter"でblur)
       };
       defaults.handle_button = defaults.target_text_selector; // 変更ボタン
       var option = $.extend(defaults, userOptions);
@@ -22,7 +23,7 @@
 
       $handle_button.on(option.bind_action, function(){
         $target_text.css('display', 'none');
-        $target_editor.val($target_text.text())
+        $target_editor.val($target_text.html().replace(/<br>/g, '\n'))
           .css('display', '')
           .focus();
         if($target_editor[0].nodeName === 'INPUT') {
@@ -39,7 +40,7 @@
             .css('display', '');
         },
         'keypress': function(e){
-          if ( !e.shiftKey && e.which === 13 ) {
+          if ( option.is_enter_blur && e.which === 13 ) {
             $(this).blur();
         		return false;
         	}
@@ -61,6 +62,6 @@
         '<': '&lt;',
         '>': '&gt;',
       }[match]
-    });
+    }).replace(/\r?\n/g, '<br>');
   }
 })(jQuery);
