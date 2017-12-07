@@ -3,7 +3,7 @@
 // @import "node_modules/material-design-lite/src/material-design-lite.scss";
 // @import url(https://fonts.googleapis.com/icon?family=Material+Icons);
 #react-container-for-memo-extension {
-  font-family: Roboto, Helvetica, Arial, sans-serif;
+  font-family: Roboto, Helvetica, Arial, sans-serif !important;
   .float-right {
     float: right;
   }
@@ -59,11 +59,16 @@
       }
     }
     .mdl-card__title-text {
+      height: 100%;
       padding-right: 28px;
       font-size: 24px;
       font-weight: 300;
       line-height: normal;
       overflow: hidden;
+    }
+    span.editable {
+      height: 100%;
+      min-width: 30px;
     }
     .mdl-card__menu {
       color: #555;

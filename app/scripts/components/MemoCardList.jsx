@@ -6,7 +6,7 @@ global.jQuery = require('jquery');
 const $ = require('jquery');
 
 export default class MemoCardList extends Component {
-  static makeMemo() {
+  static makeMemoCard() {
 
   }
   componentWillMount() {
@@ -27,17 +27,18 @@ export default class MemoCardList extends Component {
     // // $('#react-container-for-memo-extension').prepend("<script defer src='https://code.getmdl.io/1.3.0/material.min.js'></script>");
   }
   render() {
-    const {page_url, memos} = this.props;
+    const {page_url, memos, actions} = this.props;
     return (
       <div id="MemoCardList">
         {memos.map((memo, index) => {
           // return null;
+          console.log(index, memo);
           return (
             <MemoCard
               key={index}
               index={index}
-              title={memo.title}
-              description={memo.description} />);
+              memo={memo}
+              actions={actions} />);
         })}
       </div>
     );

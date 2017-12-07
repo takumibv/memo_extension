@@ -1,4 +1,8 @@
 import React, { Component, PropTypes } from 'react';
+import EditButton from './buttons/EditButton.jsx';
+import DeleteButton from './buttons/DeleteButton.jsx';
+import CopyButton from './buttons/CopyButton.jsx';
+import OpenCloseButton from './buttons/OpenCloseButton.jsx';
 // import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 // import FlatButton from 'material-ui/Button';
 global.jQuery = require('jquery');
@@ -30,35 +34,13 @@ export default class MemoCard extends Component {
     $('.editable').editable({ target_selector: '.target-editor', bind_action: 'dblclick'});
     $('.editable-textarea').editable({ target_selector: '.target-editor', bind_action: 'dblclick'});
 
-    $(document).on({
-      'click': function() {
-        var $target_text    = $('#' + $(this).attr('target'));
-        var $target_editor  = $target_text.next('.target-editor');
-        $target_text.css('display', 'none');
-        $target_editor.html($target_text.text())
-          .css('display', '')
-          .focus();
-      }
-    }, '.mode_edit_btn');
-
-    $(document).on({
-      'click': function(){
-        $('#' + $(this).attr('target')).animate({
-          left: '0'
-        }, 200, 'swing', function () {
-          $(this).addClass('minimize');
-        });
-      }
-    }, '.close-card_btn');
-    $(document).on({
-      'click': function(){
-        $('#' + $(this).attr('target')).removeClass('minimize');
-      }
-    }, '.open-card_btn');
     // $('#react-container-for-memo-extension').prepend("<script defer src='https://code.getmdl.io/1.3.0/material.min.js'></script>");
   }
+  changeMemoAttr() {
+
+  }
   render() {
-    const {index, title, description} = this.props;
+    const {index, memo, actions} = this.props;
   // //   console.log("card app");
   // //   console.log(MDLite);
   //   // return (
@@ -67,29 +49,29 @@ export default class MemoCard extends Component {
   //   //   </div>
   //   // );
     let minimize = '';
-    if(index == 0){
+    if(!memo.is_open){
       minimize = 'minimize';
     }
+    // actions({type: 'UPDATE_TITLE'});
     return (
       <div id={`memo-card-${index}`} className={`demo-card-wide mdl-card mdl-shadow--2dp resizable-box draggable-card ${minimize}`}>
         <div className="mdl-card__title mdl-card--border">
           <div className="handle-card">
-            <h2 className="mdl-card__title-text"><span className="editable">{title}</span><input className="target-editor" type="text" /></h2>
+            <h2 className="mdl-card__title-text">
+              <span className="editable">{memo.title}</span>
+              <input className="target-editor" type="text" />
+            </h2>
           </div>
 
-          <button id={`minimize_btn-${index}`} className="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect close-card_btn" target={`memo-card-${index}`}>
-            <i className="material-icons">keyboard_arrow_left</i>
-          </button>
-          <div className="mdl-tooltip" data-mdl-for={`minimize_btn-${index}`}>minimize</div>
-
-          <button id={`maximize_btn-${index}`} className="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect open-card_btn" target={`memo-card-${index}`}>
-            <i className="material-icons">keyboard_arrow_right</i>
-          </button>
-          <div className="mdl-tooltip" data-mdl-for={`maximize_btn-${index}`}>maximize</div>
+          <OpenCloseButton
+            key={`open-close_btn-${index}`}
+            index={index}
+            is_open={memo.is_open}
+            actions={actions} />
         </div>
         <div className="mdl-card__supporting-text">
           <div className="mdl-textfield mdl-js-textfield">
-            <p id={`editable-textarea-${index}`} className="editable-textarea">{description}</p>
+            <p id={`editable-textarea-${index}`} className="editable-textarea">{memo.description}</p>
             <textarea className="mdl-textfield__input target-editor" type="text" placeholder="Text lines..."></textarea>
           </div>
         </div>
@@ -98,25 +80,18 @@ export default class MemoCard extends Component {
             Go detail
           </a>
 
-          <button id={`mode_edit_btn-${index}`} className="mode_edit_btn mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" target={`editable-textarea-${index}`}>
-            <i className="material-icons">mode_edit</i>
-          </button>
-          <div className="mdl-tooltip" data-mdl-for={`mode_edit_btn-${index}`}>edit</div>
-
-          <button id={`save_btn-${index}`} className="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
-            <i className="material-icons">save</i>
-          </button>
-          <div className="mdl-tooltip" data-mdl-for={`save_btn-${index}`}>save</div>
-
-          <button id={`content_copy_btn-${index}`} className="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
-            <i className="material-icons">content_copy</i>
-          </button>
-          <div className="mdl-tooltip" data-mdl-for={`content_copy_btn-${index}`}>copy clip board</div>
-
-          <button id={`delete_btn-${index}`} className="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect float-right">
-            <i className="material-icons">delete</i>
-          </button>
-          <div className="mdl-tooltip" data-mdl-for={`delete_btn-${index}`}>delete</div>
+          <EditButton
+            key={`edit_btn-${index}`}
+            index={index}
+            actions={actions} />
+          <CopyButton
+            key={`copy_btn-${index}`}
+            index={index}
+            actions={actions} />
+          <DeleteButton
+            key={`delete_btn-${index}`}
+            index={index}
+            actions={actions} />
         </div>
       </div>
     );
