@@ -22,30 +22,30 @@ export default class MemoCard extends Component {
     // componentHandler.upgradeDom();
   }
   componentDidMount() {
-    const {actions} = this.props;
+    const {actions, index} = this.props;
     var wH = $(window).height();
     var wW = $(window).width();
-    $('.resizable-box').resizableBox({
+    $(`#memo-card-${index}.resizable-box`).resizableBox({
       minWidth: 240,
       minHeight: 160,
     }, (index, w, h) => {
       console.log(index,w,h);
       actions({type: 'RESIZE_MEMO', index: index, width: w, height: h});
     });
-    $('.mdl-card__title').resizableBox({ isWidthResize: false });
-    $('.draggable-card').tinyDraggable({
+    $(`#memo-card-${index} .mdl-card__title`).resizableBox({ isWidthResize: false });
+    $(`#memo-card-${index}.draggable-card`).tinyDraggable({
       handle: '.handle-card'
     }, (index, top, left) => {
       actions({type: 'MOVE_MEMO', index: index, position_x: left, position_y: top});
       console.log(index, top, left);
     });
-    $('.editable').editable({
+    $(`#memo-card-${index} .editable`).editable({
       target_selector: '.target-editor', bind_action: 'dblclick'
     }, (index, text) => {
       actions({type: 'UPDATE_TITLE', index: index, title: text});
       console.log(index, text);
     });
-    $('.editable-textarea').editable({
+    $(`#memo-card-${index} .editable-textarea`).editable({
       target_selector: '.target-editor', bind_action: 'dblclick', is_enter_blur: false
     }, (index, text) => {
       actions({type: 'UPDATE_DESCRIPTION', index: index, description: text});

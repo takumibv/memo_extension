@@ -40,8 +40,10 @@ export default class PageInfo {
     }
   }
   save() {
+    if (this.memos.length === 0) { return; }
     let storage = this.getStorage();
     storage[this.page_url] = this.serialize();
+    console.log("save!", storage[this.page_url]);
     localStorage[STORAGE_NAME] = JSON.stringify(storage);
   }
   /****
@@ -60,9 +62,13 @@ export default class PageInfo {
     return this.page_title;
   }
   setMemos(memos) {
+    // メモの上書き
     this.memos = memos;
   }
   getMemos(memos) {
     return this.memos;
+  }
+  addMemo(memo) {
+    this.memos.push(memo);
   }
 }

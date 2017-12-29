@@ -27,65 +27,77 @@ $(function() {
 
       // page_infoを保持しておく場所. key: page_url, value: PageInfo
       this.page_infos = {};
+      // 開いてるタブのidとurl {12: "http://...", 24: "http://..."}
+      this.tab_id_url = {};
     }
     // Chromeの各種操作イベントに対するイベントハンドラを登録する。
     assignEventHandlers() {
-      chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-        // タブがupdate
-        // if (changeInfo.status == "complete" && tab.url.indexOf(ACCESS_URL) != -1) {
-        //   window.bg.identifyPage(tab.url);
-        // }
-        if (changeInfo.status == "loading") {
-          window.bg.onTabLoading(tabId, changeInfo, tab);
-        } else if (changeInfo.status == "complete") {
-          window.bg.onTabUpdated(tabId, changeInfo, tab);
+      chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+        if (changeInfo.status === "loading") {
+          // ページの読み込みが始まった瞬間呼ばれる.
+          window.bg.setPageInfo(tabId, tab.url);
+        } else if (changeInfo.status === "complete") {
+          // ページの読み込みが完了したら呼ばれる.
+          window.bg.setPageTitle(tabId, tab.title);
         }
       });
-      chrome.runtime.onMessage.addListener(function(msg, sender, res) {
-        // if (msg.id == "identify_page") {
-        //   /* page_type
-        //    * 1: Account、Passwordの入力ページ
-        //    * 2: マトリックスコード３つの入力ページ
-        //    * 3: エラーページ
-        //    * 4: その他,
-        //    ****/
-        //   var page_type = msg.page_type;
-        //   switch (page_type) {
-        //     case 1:
-        //       window.bg.inputUserInfo();
-        //       break;
-        //     case 2:
-        //       window.bg.inputMatrixCode();
-        //       break;
-        //     case 3:
-        //       window.bg.errorPage();
-        //       break;
-        //     default:
-        //       break;
-        //   }
-        // } else if (msg.id == "open_options_page") {
-        //   chrome.runtime.openOptionsPage();
-        // }
+
+      chrome.tabs.onActivated.addListener((activeInfo) => {
+        // タブが切り替えられた時に呼ばれる.
+        const tabId = activeInfo.tabId;
+        chrome.tabs.get(tabId, (tab) => {
+          window.bg.setPageInfo(tabId, tab.url);
+          window.bg.setPageTitle(tabId, tab.title);
+        });
+      });
+
+      chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
+        window.bg.onTabRemoved(tabId);
+      });
+
+      chrome.runtime.onMessage.addListener((msg, sender, res) => {
+        console.log(msg, sender, res);
+        switch (msg.method) {
+          case 'CREATE_MEMO':
+            window.bg.createMemo(msg.page_url, msg.memo);
+          case 'SAVE_MEMO':
+            window.bg.updateMemos(msg.page_url, msg.memos);
+            break;
+          default:
+            break;
+        }
       });
     }
-    onTabLoading(tabId, changeInfo, tab) {
+    setPageInfo(tabId, page_url) {
       /***
-      * 1. URL形成
+      * 1. URL形成/urlセット
       * 2. ローカルストレージ探索
       * 3. カードセット
       ***/
-      const tab_url   = this.encodeUrl(tab.url);
-      // const page_info = this.getPageInfoByUrl(tab_url);
+      if (page_url.match(/^http(s?):\/\//) === null) { return; }
+      const tab_url   = this.encodeUrl(page_url);
+      this.tab_id_url[tabId] = tab_url;
+
       const page_info = new PageInfo(tab_url);
       this.page_infos[tab_url] = page_info;
+
+      chrome.tabs.executeScript(
+        null,
+        { code: `let tab_url; let page_info;`}
+      );
       this.setCardArea(tab_url, page_info);
     }
-    onTabUpdated(tabId, changeInfo, tab) {
-      /***
-      * タイトルのセット(loading中はタイトルが入らない場合もあるため)
-      ***/
-      const tab_url = this.encodeUrl(tab.url);
-      this.page_infos[tab_url].setPageTitle(tab.title);
+    setPageTitle(tabId, title) {
+      // タイトルのセット(loading中はタイトルが入らない場合もあるため, setPageInfoと分けている)
+      const tab_url = this.tab_id_url[tabId];
+      if (tab_url) {
+        this.page_infos[tab_url].setPageTitle(title);
+      }
+    }
+    onTabRemoved(tabId) {
+      this.page_infos[this.tab_id_url[tabId]].save();
+      delete this.page_infos[this.tab_id_url[tabId]];
+      delete this.tab_id_url[tabId];
     }
     encodeUrl(plain_url) {
       let parse_url = url.parse(plain_url);
@@ -100,30 +112,24 @@ $(function() {
     ****/
     setCardArea(tab_url, page_info) {
       // page_info.setPageTitle("Qiitaの記事2");
-      console.log(this.page_infos);
+      console.log("setCardArea", this.page_infos[tab_url]);
       // this.createPageInfo(tab_url);
       // this.setPageTitle(tab_url, tab_title);
       chrome.tabs.executeScript(
         null,
         { code:
-          `const tab_url    = '${tab_url}';` +
-          `const page_info  = JSON.parse('${JSON.stringify(page_info.serialize())}');`
+          `tab_url    = '${tab_url}';` +
+          `page_info  = JSON.parse('${JSON.stringify(page_info.serialize())}');`
         },
-        function() {
+        () => {
           chrome.tabs.insertCSS(
-            null, {
-              file: "styles/base.css"
-            }
+            null, { file: "styles/base.css" }
           );
           chrome.tabs.insertCSS(
-            null, {
-              file: "styles/card.css"
-            }
+            null, { file: "styles/card.css" }
           );
           chrome.tabs.executeScript(
-            null, {
-              file: "scripts/react_app.js"
-            }
+            null, { file: "scripts/react_app.js" }
           );
         }
       );
@@ -131,9 +137,27 @@ $(function() {
     /****
     * Memo
     ****/
-    createMemo(page_url, memo) {
-
+    makeMemo(tabId) {
+      console.log("makeMemo");
+      const url = this.tab_id_url[tabId];
+      const memo = {id: Math.floor(Math.random()*10000), title: "新しいメモ", description: "ダブルクリックで編集", position_x: 0, position_y: 0, width: 300, height: 150, is_open: true};
+      this.createMemo(url, memo);
+      // chrome.tabs.executeScript(
+      //   null, { code: "onChangeState(); " }
+      // );
+      this.setCardArea(url, this.page_infos[url]);
     }
+    createMemo(page_url, memo) {
+      console.log("createMemo", page_url, memo);
+      this.page_infos[page_url].addMemo(memo);
+      this.page_infos[page_url].save();
+    }
+    updateMemos(page_url, memos) {
+      this.page_infos[page_url].setMemos(memos);
+      this.page_infos[page_url].save();
+    }
+
+
     getUserConfig() {
       let value = localStorage['User'];
       if (value) {

@@ -9,6 +9,7 @@ $(function() {
     start() {
       this.assignMessages();
       this.assignEventHandlers();
+      this.setProps();
       this.setDefaultSize();
       this.restoreConfigurations();
     }
@@ -22,6 +23,10 @@ $(function() {
       }
     }
     assignEventHandlers() {
+      $('.makeMemo').on('click', (e) => {
+        this.makeMemo();
+        window.close();
+      });
       // イベントハンドラ設置
       // $('#usageModal').on('show.bs.modal', function(event) {
       //   var button = $(event.relatedTarget); // Button that triggered the modal
@@ -34,17 +39,30 @@ $(function() {
       //   });
       // });
     }
+    setProps() {
+      const query = { active: true, currentWindow: true };
+      chrome.tabs.query(query, (tab) => {
+        this.tabId  = tab[0].id;
+        this.url    = tab[0].url;
+      });
+    }
     setDefaultSize() {
       this.w = $(document).width();
       this.h = $(document).height();
     }
-    restoreConfigurations() {
-      // バックグラウンドから現状の設定値を持ってきて、UIにセットする。
+    makeMemo() {
       chrome.runtime.getBackgroundPage((backgroundPage) => {
         let bg = backgroundPage.bg;
-        var is_valid = bg.getIsValid();
-        $("#is_valid_checkbox [name='is_valid']").prop("checked", is_valid);
+        bg.makeMemo(this.tabId);
       });
+    }
+    restoreConfigurations() {
+      // バックグラウンドから現状の設定値を持ってきて、UIにセットする。
+      // chrome.runtime.getBackgroundPage((backgroundPage) => {
+      //   let bg = backgroundPage.bg;
+      //   var is_valid = bg.getIsValid();
+      //   $("#is_valid_checkbox [name='is_valid']").prop("checked", is_valid);
+      // });
     }
   }
 

@@ -30,7 +30,6 @@
       var $box = $(this);
       var resize_flg = false;
 
-      console.log("set", $box);
       $box.on({
         mousemove: function(e) {
 
