@@ -105,7 +105,7 @@ export default class MemoCard extends Component {
         </div>
         <div className="mdl-card__actions">
           <a className="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
-            Go detail
+            detail
           </a>
 
           <EditButton

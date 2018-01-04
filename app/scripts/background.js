@@ -2,7 +2,8 @@
 import 'chromereload/devonly'
 const $ = require('jquery');
 const url = require('url');
-import PageInfo from './page_info.js';
+import PageInfo from './model/page_infos.js';
+import Memo from './model/memos.js';
 
 // install or Updateして初めて開いた時に呼ばれる。
 chrome.runtime.onInstalled.addListener((details) => {
@@ -20,15 +21,17 @@ $(function() {
   ****/
   class Background {
     constructor() {
+      this.initProps();
       this.assignEventHandlers();
-      // this.setCardArea();
+    }
+    // 初期値設定
+    initProps() {
       const d = new Date();
       console.log("[%04d/%02d/%02d %02d:%02d:%02d] Memo app is Running", d.getFullYear(), d.getMonth() + 1, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
 
-      // page_infoを保持しておく場所. key: page_url, value: PageInfo
-      this.page_infos = {};
-      // 開いてるタブのidとurl {12: "http://...", 24: "http://..."}
-      this.tab_id_url = {};
+      this.page_infos = {}; // page_infoを保持しておく場所. key: page_url, value: PageInfo
+      this.tab_id_url = {}; // 開いてるタブのidとurl {12: "http://...", 24: "http://..."}
+      this.current_tab_id = null; // activeなtab_id
     }
     // Chromeの各種操作イベントに対するイベントハンドラを登録する。
     assignEventHandlers() {
@@ -45,6 +48,7 @@ $(function() {
       chrome.tabs.onActivated.addListener((activeInfo) => {
         // タブが切り替えられた時に呼ばれる.
         const tabId = activeInfo.tabId;
+        console.log(activeInfo.tabId, chrome.tabs);
         chrome.tabs.get(tabId, (tab) => {
           window.bg.setPageInfo(tabId, tab.url);
           window.bg.setPageTitle(tabId, tab.title);
@@ -60,21 +64,35 @@ $(function() {
         switch (msg.method) {
           case 'CREATE_MEMO':
             window.bg.createMemo(msg.page_url, msg.memo);
-          case 'SAVE_MEMO':
-            window.bg.updateMemos(msg.page_url, msg.memos);
+          case 'UPDATE_TITLE':
+          case 'UPDATE_DESCRIPTION':
+          case 'UPDATE_IS_OPEN':
+          case 'MOVE_MEMO':
+          case 'RESIZE_MEMO':
+            window.bg.updateMemos(msg.page_url, msg.memo);
+            break;
+          case 'DELETE_MEMO':
+            window.bg.deleteMemo(msg.page_url, msg.memo);
+            break;
+          case 'CANNOT_SHOW_MEMO':
+            window.bg.setBadgeError();
             break;
           default:
             break;
         }
       });
     }
+
     setPageInfo(tabId, page_url) {
       /***
       * 1. URL形成/urlセット
       * 2. ローカルストレージ探索
       * 3. カードセット
       ***/
-      if (page_url.match(/^http(s?):\/\//) === null) { return; }
+      if (page_url.match(/^http(s?):\/\//) === null) {
+        this.setBadgeNumber("");
+        return;
+      }
       const tab_url   = this.encodeUrl(page_url);
       this.tab_id_url[tabId] = tab_url;
 
@@ -87,6 +105,7 @@ $(function() {
       );
       this.setCardArea(tab_url, page_info);
     }
+
     setPageTitle(tabId, title) {
       // タイトルのセット(loading中はタイトルが入らない場合もあるため, setPageInfoと分けている)
       const tab_url = this.tab_id_url[tabId];
@@ -94,18 +113,39 @@ $(function() {
         this.page_infos[tab_url].setPageTitle(title);
       }
     }
+
     onTabRemoved(tabId) {
       this.page_infos[this.tab_id_url[tabId]].save();
       delete this.page_infos[this.tab_id_url[tabId]];
       delete this.tab_id_url[tabId];
     }
+
     encodeUrl(plain_url) {
       let parse_url = url.parse(plain_url);
       let formed_url = `${parse_url.protocol}//${parse_url.hostname}${parse_url.pathname}${parse_url.search || ''}`;
       return encodeURIComponent(formed_url);
     }
+
     decodeUrl(crypted_url) {
       return decodeURIComponent(crypted_url);
+    }
+
+    getCurrentTabId() {
+      return this.current_tab_id;
+    }
+
+    setCurrentTabId(tabId) {
+      this.current_tab_id = tabId;
+    }
+
+    setBadgeNumber(num) {
+      let text = num == 0 ? '' : `${num}`;
+      chrome.browserAction.setBadgeText({ text: text });
+      chrome.browserAction.setBadgeBackgroundColor({color: '#4183C4'});
+    }
+    setBadgeError() {
+      chrome.browserAction.setBadgeText({ text: 'x' });
+      chrome.browserAction.setBadgeBackgroundColor({color: '#DB1C21'});
     }
     /****
     * Card Area
@@ -115,11 +155,14 @@ $(function() {
       console.log("setCardArea", this.page_infos[tab_url]);
       // this.createPageInfo(tab_url);
       // this.setPageTitle(tab_url, tab_title);
+      this.setBadgeNumber(this.page_infos[tab_url].getMemos().length);
+
       chrome.tabs.executeScript(
         null,
         { code:
           `tab_url    = '${tab_url}';` +
-          `page_info  = JSON.parse('${JSON.stringify(page_info.serialize())}');`
+          `page_info  = JSON.parse('${JSON.stringify(page_info.serialize())}');` +
+          `memos      = JSON.parse('${JSON.stringify(page_info.getMemos())}');`
         },
         () => {
           chrome.tabs.insertCSS(
@@ -140,21 +183,41 @@ $(function() {
     makeMemo(tabId) {
       console.log("makeMemo");
       const url = this.tab_id_url[tabId];
-      const memo = {id: Math.floor(Math.random()*10000), title: "新しいメモ", description: "ダブルクリックで編集", position_x: 0, position_y: 0, width: 300, height: 150, is_open: true};
-      this.createMemo(url, memo);
+      const memo = {id: null, title: "新しいメモ", description: "ダブルクリックで編集", position_x: 0, position_y: 0, width: 300, height: 150, is_open: true};
+      // this.createMemo(url, memo);
+      this.updateMemos(url, memo);
       // chrome.tabs.executeScript(
       //   null, { code: "onChangeState(); " }
       // );
       this.setCardArea(url, this.page_infos[url]);
     }
-    createMemo(page_url, memo) {
-      console.log("createMemo", page_url, memo);
-      this.page_infos[page_url].addMemo(memo);
+
+    // createMemo(page_url, memo) {
+    //   console.log("createMemo", page_url, memo);
+    //   this.page_infos[page_url].addMemo(memo);
+    //   this.page_infos[page_url].save();
+    // }
+
+    updateMemos(page_url, memo) {
+      let target_memo = Object.assign({}, memo);
+      console.log("target_memo", target_memo);
       this.page_infos[page_url].save();
+      target_memo.page_info_id = this.page_infos[page_url].id;
+      new Memo(target_memo).save();
+      this.page_infos[page_url].checkMemoExistance();
+      // this.page_infos[page_url].setMemos(memos);
     }
-    updateMemos(page_url, memos) {
-      this.page_infos[page_url].setMemos(memos);
-      this.page_infos[page_url].save();
+
+    deleteMemo(page_url, memo) {
+      this.page_infos[page_url].deleteMemo(memo);
+      console.log("deleteMemo", this.page_infos[page_url].memos);
+      this.page_infos[page_url].checkMemoExistance();
+
+      this.setCardArea(page_url, this.page_infos[page_url]);
+    }
+
+    getAllPageInfo() {
+      return new PageInfo().getStorage();
     }
 
 

@@ -9,6 +9,8 @@ require('material-design-lite/material');
 console.log('======= Background Params ======');
 console.log(tab_url);
 console.log(page_info);
+console.log(memos);
+console.log('================================');
 if(!$('#react-container-for-memo-extension').length){
   $('body').prepend(
   	"<div id='react-container-for-memo-extension'></div>"
@@ -18,7 +20,6 @@ if(!$('#react-container-for-memo-extension').length){
 export class App extends Component {
   constructor() {
     super();
-    this.count = 0;
     // this.state = this.getInitialState();
     console.log("Memo Extension is running.");
   }
@@ -26,7 +27,7 @@ export class App extends Component {
     return {
       page_url: page_info.page_url,
       page_title: page_info.page_title,
-      memos: page_info.memos
+      memos: memos
       // memos: [
       //   {id: 10, title: "memo1", description: "memoです11.", position_x: 0, position_y: 0, width: 300, height: 150, is_open: true},
       //   {id: 20, title: "memo2", description: "memoです22.", position_x: 0, position_y: 80, width: 300, height: 120, is_open: false}
@@ -34,8 +35,10 @@ export class App extends Component {
     };
   }
   componentWillMount() {
-    const { page_info } = this.props;
+    const { page_info, memos } = this.props;
+    // console.log(memos);
     this.state = page_info;
+    this.state.memos = memos;
   }
   actions(action) {
     console.log(action);
@@ -44,27 +47,31 @@ export class App extends Component {
         break;
       case 'UPDATE_TITLE':
         var updated_memos = this.state.memos;
-        updated_memos[action.index].title = action.title;
+        updated_memos[action.index].title       = action.title;
+        updated_memos[action.index].updated_at  = new Date();
         this.setState({memos: updated_memos});
-        this.save('UPDATE_TITLE');
+        this.save('UPDATE_TITLE', updated_memos[action.index]);
         break;
       case 'UPDATE_DESCRIPTION':
         var updated_memos = this.state.memos;
         updated_memos[action.index].description = action.description;
+        updated_memos[action.index].updated_at  = new Date();
         this.setState({memos: updated_memos});
-        this.save('UPDATE_DESCRIPTION');
+        this.save('UPDATE_DESCRIPTION', updated_memos[action.index]);
         break;
       case 'UPDATE_IS_OPEN':
         var updated_memos = this.state.memos;
-        updated_memos[action.index].is_open = action.is_open;
+        updated_memos[action.index].is_open     = action.is_open;
+        updated_memos[action.index].updated_at  = new Date();
         this.setState({memos: updated_memos});
-        this.save('UPDATE_IS_OPEN');
+        this.save('UPDATE_IS_OPEN', updated_memos[action.index]);
         break;
       case 'DELETE_MEMO':
         var updated_memos = this.state.memos;
+        var delete_memo   = this.state.memos[action.index];
         updated_memos.splice(action.index, 1);
         this.setState({memos: updated_memos});
-        this.save('DELETE_MEMO');
+        this.delete(delete_memo);
         break;
       case 'MOVE_MEMO':
         var updated_memos = this.state.memos;
@@ -74,15 +81,17 @@ export class App extends Component {
         }
         updated_memos[action.index].position_x = action.position_x;
         updated_memos[action.index].position_y = action.position_y;
+        updated_memos[action.index].updated_at = new Date();
         this.setState({memos: updated_memos});
-        this.save('MOVE_MEMO');
+        this.save('MOVE_MEMO', updated_memos[action.index]);
         break;
       case 'RESIZE_MEMO':
         var updated_memos = this.state.memos;
-        updated_memos[action.index].width = action.width;
-        updated_memos[action.index].height = action.height;
+        updated_memos[action.index].width       = action.width;
+        updated_memos[action.index].height      = action.height;
+        updated_memos[action.index].updated_at  = new Date();
         this.setState({memos: updated_memos});
-        this.save('RESIZE_MEMO');
+        this.save('RESIZE_MEMO', updated_memos[action.index]);
         break;
       case '':
         break;
@@ -90,14 +99,14 @@ export class App extends Component {
         break;
     }
   }
-  save(action_type) {
-    console.log("count: ", this.count);
-    this.count += 1;
-    chrome.runtime.sendMessage({method: 'SAVE_MEMO', action_type: action_type, page_url: this.state.page_url, memos: this.state.memos});
+  save(action_type, updated_memos) {
+    chrome.runtime.sendMessage({ method: action_type, action_type: action_type, page_url: this.state.page_url, memo: updated_memos });
+  }
+  delete(memo) {
+    chrome.runtime.sendMessage({ method: 'DELETE_MEMO', memo: memo, page_url: this.state.page_url });
   }
   render() {
     const {page_url, memos} = this.state;
-    console.log(memos);
     return(
       <MemoCardList
         page_url={page_url}
@@ -137,15 +146,12 @@ export class App extends Component {
 
 try {
   ReactDOM.render(
-    <App page_info={page_info} />,
+    <App page_info={page_info} memos={memos} />,
     document.getElementById('react-container-for-memo-extension')
   );
 } catch (e) {
-  alert("Memo App Error: このページではメモを表示できません。" + e);
+  alert("Memo App Error: このページではメモを表示できません。" + e + tab_url);
+  chrome.runtime.sendMessage({ method: 'CANNOT_SHOW_MEMO', msg: e, page_url: tab_url });
 } finally {
 
-}
-
-const onChangeState = () => {
-  console.log("onChangeState");
 }

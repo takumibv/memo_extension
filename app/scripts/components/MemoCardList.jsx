@@ -28,6 +28,7 @@ export default class MemoCardList extends Component {
   }
   render() {
     const {page_url, memos, actions} = this.props;
+    console.log("memos", memos);
     return (
       <div id="MemoCardList">
         {memos.map((memo, index) => {

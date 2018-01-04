@@ -23,9 +23,13 @@ $(function() {
       }
     }
     assignEventHandlers() {
-      $('.makeMemo').on('click', (e) => {
+      $(document).on('click', '.makeMemo', e => {
         this.makeMemo();
         window.close();
+      });
+
+      $(document).on('click', '.memo', e => {
+        this.moveCurrentPosition(e.currentTarget);
       });
       // イベントハンドラ設置
       // $('#usageModal').on('show.bs.modal', function(event) {
@@ -56,13 +60,24 @@ $(function() {
         bg.makeMemo(this.tabId);
       });
     }
+    moveCurrentPosition(e) {
+      console.log(e);
+    }
     restoreConfigurations() {
       // バックグラウンドから現状の設定値を持ってきて、UIにセットする。
-      // chrome.runtime.getBackgroundPage((backgroundPage) => {
-      //   let bg = backgroundPage.bg;
-      //   var is_valid = bg.getIsValid();
-      //   $("#is_valid_checkbox [name='is_valid']").prop("checked", is_valid);
-      // });
+      chrome.runtime.getBackgroundPage((backgroundPage) => {
+        const bg = backgroundPage.bg;
+        const page_url = bg.tab_id_url[this.tabId];
+        const memos = bg.page_infos[page_url].getMemos();
+        console.log(memos);
+
+        for(let i in memos) {
+          $('#page_infos').append(`<div class='memo'>${memos[i].title}</div>`);
+        }
+
+        // var is_valid = bg.getIsValid();
+        // $("#is_valid_checkbox [name='is_valid']").prop("checked", is_valid);
+      });
     }
   }
 

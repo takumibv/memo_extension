@@ -62,15 +62,18 @@ $(function() {
         restoreConfigurations() {
             chrome.runtime.getBackgroundPage((backgroundPage) => {
                 let bg          = backgroundPage.bg;
-                var matrix_data = bg.getMatrixCode();
-                var usr         = bg.getUserConfig();
-                var is_valid    = bg.getIsValid();
-                if(matrix_data) option.setMatrix(matrix_data);
-                if(usr){
-                    $("#account_pswd_form [name='account']").val(usr.account);
-                    $("#account_pswd_form [name='pswd']").val(usr.pswd);
-                }
-                $("#is_valid_checkbox [name='is_valid']").prop("checked", is_valid);
+
+                const page_infos = bg.getAllPageInfo();
+                console.log(page_infos);
+                // var matrix_data = bg.getMatrixCode();
+                // var usr         = bg.getUserConfig();
+                // var is_valid    = bg.getIsValid();
+                // if(matrix_data) option.setMatrix(matrix_data);
+                // if(usr){
+                //     $("#account_pswd_form [name='account']").val(usr.account);
+                //     $("#account_pswd_form [name='pswd']").val(usr.pswd);
+                // }
+                // $("#is_valid_checkbox [name='is_valid']").prop("checked", is_valid);
             });
         }
     }
