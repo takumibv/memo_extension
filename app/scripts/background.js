@@ -99,10 +99,23 @@ $(function() {
       const page_info = new PageInfo(tab_url);
       this.page_infos[tab_url] = page_info;
 
+      console.log("最初の1回だけ");
+      // 最初の1回のみ
       chrome.tabs.executeScript(
         null,
-        { code: `let tab_url; let page_info;`}
+        { code: `let tab_url; let page_info; let memos;`}
       );
+      chrome.tabs.insertCSS(
+        null, { file: "styles/base.css" }
+      );
+      chrome.tabs.insertCSS(
+        null, { file: "styles/reset.css" }
+      );
+      chrome.tabs.insertCSS(
+        null, { file: "styles/card.css" }
+      );
+
+      // 何回も呼ばれる想定
       this.setCardArea(tab_url, page_info);
     }
 
@@ -116,8 +129,8 @@ $(function() {
 
     onTabRemoved(tabId) {
       this.page_infos[this.tab_id_url[tabId]].save();
-      delete this.page_infos[this.tab_id_url[tabId]];
-      delete this.tab_id_url[tabId];
+      delete(this.page_infos[this.tab_id_url[tabId]]);
+      delete(this.tab_id_url[tabId]);
     }
 
     encodeUrl(plain_url) {
@@ -147,12 +160,25 @@ $(function() {
       chrome.browserAction.setBadgeText({ text: 'x' });
       chrome.browserAction.setBadgeBackgroundColor({color: '#DB1C21'});
     }
+    scrollTo(memo) {
+      let m = Memo.getMemoById(parseInt(memo.id));
+      if (m && !m.is_fixed) {
+        chrome.tabs.executeScript(
+          null,
+          // { code: `$('html,body').animate({scrollTop: ${m.position_y}}, 500, 'swing');` }
+          { code: `window.scrollTo(0, ${m.position_y});` }
+        );
+      }
+    }
     /****
     * Card Area
     ****/
     setCardArea(tab_url, page_info) {
+      // カードの内容を更新するたびに呼ばれる
+
       // page_info.setPageTitle("Qiitaの記事2");
       console.log("setCardArea", this.page_infos[tab_url]);
+      console.log(page_info.getMemos());
       // this.createPageInfo(tab_url);
       // this.setPageTitle(tab_url, tab_title);
       this.setBadgeNumber(this.page_infos[tab_url].getMemos().length);
@@ -165,12 +191,6 @@ $(function() {
           `memos      = JSON.parse('${JSON.stringify(page_info.getMemos())}');`
         },
         () => {
-          chrome.tabs.insertCSS(
-            null, { file: "styles/base.css" }
-          );
-          chrome.tabs.insertCSS(
-            null, { file: "styles/card.css" }
-          );
           chrome.tabs.executeScript(
             null, { file: "scripts/react_app.js" }
           );
@@ -183,7 +203,7 @@ $(function() {
     makeMemo(tabId) {
       console.log("makeMemo");
       const url = this.tab_id_url[tabId];
-      const memo = {id: null, title: "新しいメモ", description: "ダブルクリックで編集", position_x: 0, position_y: 0, width: 300, height: 150, is_open: true};
+      const memo = {id: null, title: "新しいメモ", description: "ダブルクリックで編集", position_x: 0, position_y: null, width: 300, height: 150, is_open: true, is_fixed: false};
       // this.createMemo(url, memo);
       this.updateMemos(url, memo);
       // chrome.tabs.executeScript(
@@ -201,6 +221,8 @@ $(function() {
     updateMemos(page_url, memo) {
       let target_memo = Object.assign({}, memo);
       console.log("target_memo", target_memo);
+      console.log("page_infos", page_url, this.page_infos[page_url]);
+
       this.page_infos[page_url].save();
       target_memo.page_info_id = this.page_infos[page_url].id;
       new Memo(target_memo).save();

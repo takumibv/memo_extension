@@ -23,25 +23,28 @@ export class App extends Component {
     // this.state = this.getInitialState();
     console.log("Memo Extension is running.");
   }
-  getInitialState() {
-    return {
-      page_url: page_info.page_url,
-      page_title: page_info.page_title,
-      memos: memos
-      // memos: [
-      //   {id: 10, title: "memo1", description: "memoです11.", position_x: 0, position_y: 0, width: 300, height: 150, is_open: true},
-      //   {id: 20, title: "memo2", description: "memoです22.", position_x: 0, position_y: 80, width: 300, height: 120, is_open: false}
-      // ].concat(page_info.memos)
-    };
-  }
+  // getInitialState() {
+  //   return {
+  //     page_url: page_info.page_url,
+  //     page_title: page_info.page_title,
+  //     memos: memos
+  //     // memos: [
+  //     //   {id: 10, title: "memo1", description: "memoです11.", position_x: 0, position_y: 0, width: 300, height: 150, is_open: true},
+  //     //   {id: 20, title: "memo2", description: "memoです22.", position_x: 0, position_y: 80, width: 300, height: 120, is_open: false}
+  //     // ].concat(page_info.memos)
+  //   };
+  // }
   componentWillMount() {
     const { page_info, memos } = this.props;
     // console.log(memos);
-    this.state = page_info;
-    this.state.memos = memos;
+    // this.state = page_info;
+    this.setState({
+      page_url: page_info.page_url,
+      page_title: page_info.title,
+      memos: memos
+    });
   }
   actions(action) {
-    console.log(action);
     switch (action.type) {
       case 'MAKE_MEMO':
         break;
@@ -81,6 +84,9 @@ export class App extends Component {
         }
         updated_memos[action.index].position_x = action.position_x;
         updated_memos[action.index].position_y = action.position_y;
+        if (updated_memos[action.index].is_fixed) {
+          updated_memos[action.index].position_y -= $(window).scrollTop();
+        }
         updated_memos[action.index].updated_at = new Date();
         this.setState({memos: updated_memos});
         this.save('MOVE_MEMO', updated_memos[action.index]);

@@ -22,6 +22,7 @@
       $target_editor.css('display', 'none');
 
       $handle_button.on(option.bind_action, function(){
+        console.log("onclick", $target_text.html());
         $target_text.css('display', 'none');
         $target_editor.val($target_text.html().replace(/<br>/g, '\n'))
           .css('display', '')
@@ -35,13 +36,14 @@
       $target_editor.on({
         'blur': function(){
           var res_text = escape_html($(this).val());
+          // console.log("res_text", res_text);
           $(this).css('display', 'none');
-          $target_text.html(res_text)
+          $target_text//.html(res_text)
             .css('display', '');
           callback($target_text.attr("index"), res_text);
         },
         'keypress': function(e){
-          if ( option.is_enter_blur && e.which === 13 ) {
+          if (option.is_enter_blur && e.which === 13) {
             $(this).blur();
         		return false;
         	}

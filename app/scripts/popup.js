@@ -61,7 +61,10 @@ $(function() {
       });
     }
     moveCurrentPosition(e) {
-      console.log(e);
+      chrome.runtime.getBackgroundPage((backgroundPage) => {
+        let bg = backgroundPage.bg;
+        bg.scrollTo(e);
+      });
     }
     restoreConfigurations() {
       // バックグラウンドから現状の設定値を持ってきて、UIにセットする。
@@ -72,7 +75,7 @@ $(function() {
         console.log(memos);
 
         for(let i in memos) {
-          $('#page_infos').append(`<div class='memo'>${memos[i].title}</div>`);
+          $('#page_infos').append(`<div id='${memos[i].id}' class='memo'>${memos[i].title}</div>`);
         }
 
         // var is_valid = bg.getIsValid();

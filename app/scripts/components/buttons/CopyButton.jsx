@@ -10,7 +10,7 @@ export default class CopyButton extends Button {
     const $target_text = $('#' + $(e.currentTarget).attr('target'));
     var copy_text = "";
     copy_text += $target_text.find(".mdl-card__title-text span").html().replace(/<br>/g, '\n');
-    copy_text += " ";
+    copy_text += "\n";
     copy_text += $target_text.find(".mdl-textfield p").html().replace(/<br>/g, '\n');
 
     const tmp_form = $target_text.find('textarea.form-for-copy');

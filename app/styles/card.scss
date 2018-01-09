@@ -18,6 +18,9 @@
     &.draggable-card {
       position: absolute;
     }
+    &.fixed {
+      position: fixed !important;
+    }
     &.minimize {
       width: 120px !important;
       height: 60px !important;
@@ -31,7 +34,7 @@
       & > .mdl-card__title {
         min-width: 120px !important;
         .mdl-card__title-text {
-          font-size: 14px;
+          font-size: 14px !important;
           span {
             overflow: hidden;
             text-overflow: ellipsis;
@@ -65,10 +68,21 @@
     .mdl-card__title-text {
       height: 100%;
       padding-right: 28px;
-      font-size: 24px;
+      font-size: 24px !important;
       font-weight: 300;
       line-height: normal;
       overflow: hidden;
+      border: none !important;
+      background: none !important;
+
+      .target-editor {
+        height: 100%;
+        width: 100%;
+        padding-right: 28px;
+        font-size: 24px;
+        font-weight: 300;
+        line-height: normal;
+      }
     }
     span.editable {
       height: 100%;
@@ -93,7 +107,7 @@
         width: 100%;
         height: 100%;
         padding: 0;
-        border-bottom: solid 1px #ccc;
+        text-align: left;
 
         p, textarea {
           resize: none;
@@ -104,9 +118,12 @@
     .mdl-card__actions {
       position: absolute;
       bottom: 0;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
     }
     .material-icons {
       color: #555;
+      width: 24px;
+      height: 24px;
     }
     .close-card_btn {
       position: absolute;

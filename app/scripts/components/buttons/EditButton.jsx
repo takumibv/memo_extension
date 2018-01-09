@@ -10,7 +10,7 @@ export default class EditButton extends Button {
     var $target_text    = $('#' + $(e.currentTarget).attr('target'));
     var $target_editor  = $target_text.next('.target-editor');
     $target_text.css('display', 'none');
-    $target_editor.val($target_text.text())
+    $target_editor.val($target_text.html().replace(/<br>/g, '\n'))
       .css('display', '')
       .focus();
   }

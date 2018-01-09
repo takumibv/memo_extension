@@ -49,6 +49,7 @@ export default class Base {
       // create
       storage.push(this.serialize_for_save());
       localStorage[this.storage_name] = JSON.stringify(storage);
+      console.log(index);
       console.log("create!", this.serialize_for_save());
     }
   }
