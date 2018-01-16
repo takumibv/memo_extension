@@ -108,7 +108,7 @@ export default class MemoCard extends Component {
         </div>
         <div className="mdl-card__supporting-text">
           <div className="mdl-textfield mdl-js-textfield">
-            <p id={`editable-textarea-${index}`} className="editable-textarea" index={index}>{this.nl2br(memo.description)}</p>
+            <p id={`editable-textarea-${index}`} className="editable-textarea" index={index} dangerouslySetInnerHTML={{__html: memo.description}} />
             <textarea className="mdl-textfield__input target-editor" type="text" placeholder="Text lines..."></textarea>
           </div>
         </div>

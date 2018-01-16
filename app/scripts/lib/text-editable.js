@@ -22,16 +22,10 @@
       $target_editor.css('display', 'none');
 
       $handle_button.on(option.bind_action, function(){
-        console.log("onclick", $target_text.html());
         $target_text.css('display', 'none');
-        $target_editor.val($target_text.html().replace(/<br>/g, '\n'))
+        $target_editor.val(unescape_html($target_text.html()))
           .css('display', '')
           .focus();
-        if($target_editor[0].nodeName === 'INPUT') {
-          $target_editor.val($target_text.text());
-        } else if($target_editor[0].nodeName === 'TEXTAREA') {
-          $target_editor.html($target_text.text());
-        }
         if($target_text.text()==='新しいメモ' || $target_text.text()==='ダブルクリックで編集') {
           $target_editor.select();
         }
@@ -42,7 +36,7 @@
           // var res_text = $(this).val();
           // console.log("res_text", res_text);
           $(this).css('display', 'none');
-          $target_text//.html(res_text)
+          $target_text //.html(res_text)
             .css('display', '');
           callback($target_text.attr("index"), res_text);
         },
@@ -70,5 +64,20 @@
         '>': '&gt;',
       }[match]
     }).replace(/\r?\n/g, '<br>');
+  }
+  function unescape_html (string) {
+    if(typeof string !== 'string') {
+      return string;
+    }
+    return string.replace(/&\w+;/g, function(match) {
+      return {
+        '&amp;' : '&',
+        '&#x27;' : "'",
+        '&#x60;' : '`',
+        '&quot;' : '"',
+        '&lt;' : '<',
+        '&gt;' : '>',
+      }[match]
+    }).replace(/<br>/g, '\n');
   }
 })(jQuery);
