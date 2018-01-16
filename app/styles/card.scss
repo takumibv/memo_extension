@@ -108,7 +108,7 @@
       margin: 0 auto;
       overflow-y: scroll;
       margin-bottom: 52px;
-      padding-bottom: 0;
+      padding: 0 16px !important;
       box-sizing: border-box;
 
       .mdl-textfield {
@@ -117,11 +117,15 @@
         padding: 0;
         text-align: left;
 
-        p, textarea {
-          resize: none;
-          height: 100%;
+        p {
+          min-height: 100%;
+          padding: 16px 0;
+          border-bottom: solid 3px rgba(158, 158, 158, 0.3);
+          box-sizing: border-box;
         }
         textarea {
+          height: 100%;
+          resize: none;
           border: solid 1px #eee;
           box-sizing: border-box;
           box-shadow: none;

@@ -22,6 +22,8 @@
       $target_editor.css('display', 'none');
 
       $handle_button.on(option.bind_action, function(){
+        var selectd_text   = window.getSelection().toString(); // 選択している部分にフォーカスさせるため
+
         $target_text.css('display', 'none');
         $target_editor.val(unescape_html($target_text.html()))
           .css('display', '')
