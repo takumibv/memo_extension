@@ -34,11 +34,10 @@ $(function() {
     // Chromeの各種操作イベントに対するイベントハンドラを登録する。
     assignEventHandlers() {
       chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-        console.log("onUpdated");
-        if (changeInfo.status === "loading") {
+        if (tab.active && changeInfo.status === "loading") {
           // ページの読み込みが始まった瞬間呼ばれる.
           window.bg.setPageInfo(tabId, tab.url);
-        } else if (changeInfo.status === "complete") {
+        } else if (tab.active && changeInfo.status === "complete") {
           // ページの読み込みが完了したら呼ばれる.
           window.bg.setPageTitle(tabId, tab.title);
         }
@@ -98,7 +97,6 @@ $(function() {
       const tab_url  = this.encodeUrl(page_url);
       this.page_info = new PageInfo(tab_url);;
 
-      console.log("最初の1回だけ");
       // 最初の1回のみ
       chrome.tabs.executeScript(
         null,
@@ -118,7 +116,7 @@ $(function() {
       this.setCardArea();
     }
 
-    setPageTitle(title) {
+    setPageTitle(tabId, title) {
       // タイトルのセット(loading中はタイトルが入らない場合もあるため, setPageInfoと分けている)
       if (this.page_info) {
         this.page_info.setPageTitle(title);
