@@ -3,6 +3,8 @@ import EditButton from './buttons/EditButton.jsx';
 import DeleteButton from './buttons/DeleteButton.jsx';
 import CopyButton from './buttons/CopyButton.jsx';
 import OpenCloseButton from './buttons/OpenCloseButton.jsx';
+import DetailButton from './buttons/DetailButton.jsx';
+import FixedButton from './buttons/FixedButton.jsx';
 // import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 // import FlatButton from 'material-ui/Button';
 global.jQuery = require('jquery');
@@ -60,7 +62,7 @@ export default class MemoCard extends Component {
     })
   }
   render() {
-    const {index, memo, actions} = this.props;
+    const {index, memo, actions, options} = this.props;
   // //   console.log("card app");
   // //   console.log(MDLite);
   //   // return (
@@ -101,6 +103,7 @@ export default class MemoCard extends Component {
             key={`open-close_btn-${index}`}
             index={index}
             is_open={memo.is_open}
+            options={options}
             actions={actions} />
         </div>
         <div className="mdl-card__supporting-text">
@@ -110,22 +113,32 @@ export default class MemoCard extends Component {
           </div>
         </div>
         <div className="mdl-card__actions">
-          <a className="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
-            detail
-          </a>
-
+          <FixedButton
+            key={`fixed_btn-${index}`}
+            index={index}
+            options={options}
+            actions={actions}
+            is_fixed={memo.is_fixed} />
+          <DetailButton
+            key={`detail_btn-${index}`}
+            index={index}
+            options={options}
+            actions={actions} />
           <EditButton
             key={`edit_btn-${index}`}
             index={index}
+            options={options}
             actions={actions} />
           <CopyButton
             key={`copy_btn-${index}`}
             index={index}
+            options={options}
             actions={actions} />
           <span className="copied-msg-toast">Copied.</span>
           <DeleteButton
             key={`delete_btn-${index}`}
             index={index}
+            options={options}
             actions={actions} />
         </div>
         <textarea style={{display: 'none'}} className="form-for-copy" ></textarea>

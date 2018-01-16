@@ -28,7 +28,7 @@ export default class CopyButton extends Button {
     const {index} = this.props;
     return this.renderButton(
       `content_copy_btn-${index}`,
-      'content_copy',
+      'copy_icon',
       'copy clip board',
       '',
       `memo-card-${index}`,

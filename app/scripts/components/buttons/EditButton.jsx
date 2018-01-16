@@ -18,7 +18,7 @@ export default class EditButton extends Button {
     const {index} = this.props;
     return this.renderButton(
       `mode_edit_btn-${index}`,
-      'mode_edit',
+      'edit_icon',
       'edit',
       'mode_edit_btn',
       `editable-textarea-${index}`,

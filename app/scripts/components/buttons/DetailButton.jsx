@@ -2,24 +2,22 @@ import React, { Component, PropTypes } from 'react';
 import Button from './Button.jsx';
 const $ = require('jquery');
 
-export default class DeleteButton extends Button {
+export default class DetailButton extends Button {
   componentDidMount() {
 
   }
   onClick(e) {
     const {actions, index} = this.props;
-    if(confirm("本当に削除しますか?")) {
-      actions({type: 'DELETE_MEMO', index: index});
-    }
+    actions({type: 'OPEN_OPTION_PAGE', index: index});
   }
   render() {
     const {index} = this.props;
     return this.renderButton(
-      `delete_btn-${index}`,
-      'trash_icon',
-      'delete',
-      'float-right',
-      `delete_btn-${index}`,
+      `detail_btn-${index}`,
+      'move_page_icon',
+      'details',
+      '',
+      ``,
       true,
       this.onClick.bind(this)
     );

@@ -32,10 +32,14 @@
         } else if($target_editor[0].nodeName === 'TEXTAREA') {
           $target_editor.html($target_text.text());
         }
+        if($target_text.text()==='新しいメモ' || $target_text.text()==='ダブルクリックで編集') {
+          $target_editor.select();
+        }
       });
       $target_editor.on({
         'blur': function(){
           var res_text = escape_html($(this).val());
+          // var res_text = $(this).val();
           // console.log("res_text", res_text);
           $(this).css('display', 'none');
           $target_text//.html(res_text)

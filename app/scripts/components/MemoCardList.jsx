@@ -27,7 +27,7 @@ export default class MemoCardList extends Component {
     // // $('#react-container-for-memo-extension').prepend("<script defer src='https://code.getmdl.io/1.3.0/material.min.js'></script>");
   }
   render() {
-    const {page_url, memos, actions} = this.props;
+    const {page_url, memos, actions, options} = this.props;
     console.log("memos", memos);
     return (
       <div id="MemoCardList">
@@ -40,6 +40,7 @@ export default class MemoCardList extends Component {
               id={memo.id}
               index={index}
               memo={memo}
+              options={options}
               actions={actions} />);
         })}
       </div>

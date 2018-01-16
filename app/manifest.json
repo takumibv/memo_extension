@@ -31,5 +31,8 @@
     },
     "default_title": "__MSG_browserActionTitle__",
     "default_popup": "pages/popup.html"
-  }
+  },
+  "web_accessible_resources": [
+    "images/*"
+  ]
 }
