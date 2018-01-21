@@ -15,13 +15,16 @@
     return this.each(function() {
       var dx, dy, el = $(this),
         handle = settings.handle ? $(settings.handle, el) : el;
+      var moved_flg;
       handle.on({
         mousedown: function(e) {
+          moved_flg = false;
           if (settings.exclude && ~$.inArray(e.target, $(settings.exclude, el))) return;
           e.preventDefault();
           var os = el.offset();
           dx = e.pageX - os.left, dy = e.pageY - os.top;
           $(document).on('mousemove.drag', function(e) {
+            moved_flg = true;
             var next_dx = e.pageX - dx > 0 ? e.pageX - dx : 0;
             var next_dy = e.pageY - dy > 0 ? e.pageY - dy : 0;
             el.offset({
@@ -32,7 +35,9 @@
         },
         mouseup: function(e) {
           $(document).off('mousemove.drag');
-          callback($(this).attr("index"), el.offset().top, el.offset().left);
+          if(moved_flg) {
+            callback($(this).attr("index"), el.offset().top, el.offset().left);
+          }
         }
       });
     });
