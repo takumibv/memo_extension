@@ -77,7 +77,7 @@ $(function() {
             window.bg.setBadgeError();
             break;
           case 'OPEN_OPTION_PAGE':
-            window.bg.openMemoPage(msg.memo.id);
+            window.bg.openMemoPage(msg.memo.id, msg.memo.page_info_id);
           default:
             break;
         }
@@ -222,9 +222,10 @@ $(function() {
       chrome.tabs.create({ 'url': `${chrome.extension.getURL('pages/options.html')}#settings` });
       // chrome.runtime.openOptionsPage();
     }
-    openMemoPage(memo_id=null) {
-      const param = memo_id === null ? '' : memo_id;
-      chrome.tabs.create({ 'url': `${chrome.extension.getURL('pages/options.html')}#memos?memo=${param}` });
+    openMemoPage(memo_id=null, page_info_id=null) {
+      let param = memo_id ? `memo=${memo_id}` : '';
+      param += page_info_id ? `&page_info=${page_info_id}` : '';
+      chrome.tabs.create({ 'url': `${chrome.extension.getURL('pages/options.html')}#memos?${param}` });
     }
 
 

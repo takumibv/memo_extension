@@ -38,11 +38,12 @@ export class OptionPage extends Component {
   }
   componentDidMount() {
     const {query} = this.state;
-    if(query["memo"]) {
-      console.log("moveto", query["memo"], `#memo-${query["memo"]}`);
-      console.log($(`#memo-${query["memo"]}`));
-      console.log($(`#memo-${query["memo"]}`).offset().top);
-      $("#MemoCardList").animate({scrollTop: $(`#memo-${query["memo"]}`).offset().top});
+    // $(".mdl-card:last-child").css('margin-bottom', window.innerHeight - 100);
+    if(query.memo && $(`#memo-${query.memo}`).length > 0) {
+      $("#MemoCardList").animate({scrollTop: $(`#memo-${query.memo}`).offset().top - 40});
+    }
+    if(query.page_info && $(`#page_info-${query.page_info}`).length > 0) {
+      $("#sidebar").animate({scrollTop: $(`#page_info-${query.page_info}`).offset().top - 40});
     }
   }
   actions(action) {
@@ -137,9 +138,10 @@ export class OptionPage extends Component {
       return 0;
     });
   }
-  onClickPageInfo(e) {
+  onClickPageInfo(target='') {
+    console.log("event---");
     const {query} = this.state;
-    query.page_info = $(e.target).attr("target");
+    query.page_info = target;
     this.setState({query: query})
   }
   renderHeader() {
@@ -165,21 +167,22 @@ export class OptionPage extends Component {
     );
   }
   renderSidebar() {
-    const {page_infos} = this.props;
+    const {page_infos, options} = this.props;
     const {query} = this.state;
     const selected_all = query.page_info ? '' : 'selected';
     return (
       <div id='sidebar'>
-        <div className={`page_info-item ${selected_all}`} onClick={this.onClickPageInfo.bind(this)}>
+        <div className={`page_info-item ${selected_all}`} onClick={() => {this.onClickPageInfo();}}>
           <p>{'全て表示'}</p>
         </div>
         {page_infos.map((page_info, index) => {
           const url = this.decodeUrl(page_info.page_url);
           const selected = parseInt(query.page_info) === page_info.id ? 'selected' : '';
           return (
-            <div className={`page_info-item ${selected}`} onClick={this.onClickPageInfo.bind(this)} target={`${page_info.id}`}>
+            <div key={page_info.id} id={`page_info-${page_info.id}`} className={`page_info-item ${selected}`} onClick={() => {this.onClickPageInfo(page_info.id);}}>
               <p>{page_info.page_title}</p>
-              <a href={`${url}`} target="_blank" rel="noreferrer noopener">{url}</a>
+              <a href={`${url}`} target="_blank" rel="noreferrer noopener"><img className='button_icon' src={`${options.image_url}/move_page_icon.png`} /></a>
+              <span className='url_text'>{url}</span>
             </div>);
         })}
       </div>

@@ -138,7 +138,6 @@ export class App extends Component {
     const {options} = this.props;
     return(
       <MemoCardList
-        page_url={page_url}
         memos={memos}
         options={options}
         actions={this.actions.bind(this)} />

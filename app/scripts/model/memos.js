@@ -1,6 +1,8 @@
 const $ = require('jquery');
 import Base from './base.js';
+import PageInfo from './page_infos.js';
 
+const PAGE_INFO_STORAGE_NAME = "PageInfos";
 const MEMO_STORAGE_NAME = "Memos";
 
 export default class Memo extends Base {
@@ -60,11 +62,18 @@ export default class Memo extends Base {
   }
   static getMemosByPageInfoId(page_info_id) {
     const storage = Base.getStorage(MEMO_STORAGE_NAME);
-    return storage.filter(m => m.page_info_id === page_info_id);
+    const page_info = PageInfo.getPageInfoById(page_info_id);
+    return storage.filter(
+      m => m.page_info_id === page_info_id
+    ).map(
+      m => Object.assign({page_url: page_info.page_url}, m)
+    );
   }
   static getAllMemos() {
     const storage = Base.getStorage(MEMO_STORAGE_NAME);
-    return storage;
+    return storage.map(memo =>
+      Object.assign({page_url: PageInfo.getPageInfoById(memo.page_info_id).page_url}, memo)
+    );
   }
   static saveMemos(memos, page_info_id) {
     // const storage = Base.getStorage(MEMO_STORAGE_NAME);

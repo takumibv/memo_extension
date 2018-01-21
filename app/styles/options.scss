@@ -12,6 +12,10 @@ body {
   color: #555;
 }
 
+a {
+  color: #00b3d4;
+}
+
 .clearfix::after{
   content: "";
   display: block;
@@ -87,17 +91,33 @@ body {
         padding: 12px;
         width: 100%;
         box-sizing: border-box;
+        cursor: pointer;
 
         p {
           font-size: 14px;
         }
         a {
+          float: right;
+          margin-right: 4px;
+          height: 18px;
+          img {
+            height: 18px;
+            &:hover {
+              opacity: 0.8;
+            }
+          }
+        }
+        .url_text {
           color: #00b3d4;
           font-size: 12px;
           text-overflow: ellipsis;
           white-space: nowrap;
           overflow: hidden;
           display: block;
+
+          // &:hover {
+          //   color: #016173;
+          // }
         }
 
         &:hover {
@@ -105,6 +125,7 @@ body {
         }
         &.selected {
           background: #eee;
+          box-shadow: 2px 2px 5px #ddd inset;
         }
       }
     }
@@ -142,6 +163,22 @@ body {
               font-size: 18px;
               width: 100%;
             }
+          }
+          .memos_infos {
+            padding-top: 8px;
+          }
+          a {
+            font-size: 14px;
+            line-height: 14px;
+            display: block;
+            &:hover {
+              color: #016173;
+            }
+          }
+          .date {
+            font-size: 12px;
+            display: inline-block;
+            margin-right: 12px;
           }
           .close-card_btn, .open-card_btn {
             display: none;

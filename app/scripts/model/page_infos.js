@@ -96,6 +96,10 @@ export default class PageInfo extends Base {
     //   .filter(v => v)[0];
     // this.memos.splice(index, 1);
   }
+  static getPageInfoById(id) {
+    const storage = Base.getStorage(PAGE_INFO_STORAGE_NAME);
+    return storage.filter(a => a.id === id)[0];
+  }
   static getAllPageInfo() {
     const storage = Base.getStorage(PAGE_INFO_STORAGE_NAME);
     return storage;

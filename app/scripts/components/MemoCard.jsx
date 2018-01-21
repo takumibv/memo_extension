@@ -61,6 +61,10 @@ export default class MemoCard extends Component {
       return line.match(regex) ? <br/> : line;
     })
   }
+  onClick(target='') {
+    $(`.mdl-card`).css('z-index', '10000');
+    $(`#${target}`).css({'cssText': `${$(`#${target}`).attr('style')} z-index: 10001 !important;`});
+  }
   render() {
     const {index, memo, actions, options} = this.props;
   // //   console.log("card app");
@@ -85,9 +89,10 @@ export default class MemoCard extends Component {
       top: (memo.position_y === null ? $(window).scrollTop() : memo.position_y )
     };
     const created_at = new Date(memo.created_at);
-    const created_at_str = `${created_at.getFullYear()}/${created_at.getMonth()+1}/${created_at.getDate()}`;
+    const created_at_str = `${created_at.getFullYear()}/${created_at.getMonth()+1}/${created_at.getDate()} ${('0'+created_at.getHours()).slice(-2)}:${('0'+created_at.getMinutes()).slice(-2)}`;
     const updated_at = new Date(memo.updated_at);
-    const updated_at_str = `${updated_at.getFullYear()}/${updated_at.getMonth()+1}/${updated_at.getDate()}`;
+    const updated_at_str = `${updated_at.getFullYear()}/${updated_at.getMonth()+1}/${updated_at.getDate()} ${('0'+updated_at.getHours()).slice(-2)}:${('0'+updated_at.getMinutes()).slice(-2)}`;
+    const page_url = decodeURIComponent(memo.page_url);
 
     // actions({type: 'UPDATE_TITLE'});
     return (
@@ -95,7 +100,8 @@ export default class MemoCard extends Component {
         id={`memo-card-${index}`}
         className={`demo-card-wide mdl-card mdl-shadow--2dp resizable-box draggable-card ${minimize} ${fixed}`}
         style={card_style}
-        index={index}>
+        index={index}
+        onClick={() => {this.onClick(`memo-card-${index}`);}}>
         <div id={`memo-${memo.id}`} className="mdl-card__title mdl-card--border">
           <div className="handle-card" index={index}>
             <h2 className="mdl-card__title-text">
@@ -103,8 +109,11 @@ export default class MemoCard extends Component {
               <input className="target-editor" type="text" />
             </h2>
           </div>
-          <span>{created_at_str}</span>:
-          <span>{updated_at_str}</span>
+          <div className="options_page_only memo_infos">
+            <a className="page_url" href={`${page_url}`} target="_blank" rel="noreferrer noopener">{page_url}</a>
+            <p className="date created_at">作成: <span>{created_at_str}</span></p>
+            <p className="date updated_at">更新: <span>{updated_at_str}</span></p>
+          </div>
           <OpenCloseButton
             key={`open-close_btn-${index}`}
             index={index}
