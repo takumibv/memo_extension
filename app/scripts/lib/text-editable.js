@@ -10,7 +10,8 @@
         target_text_selector: this,   // 変更対象のテキスト
         target_editor_selector: this, // 変更時のエディタ
         bind_action: 'click',         // 変更アクション
-        is_enter_blur: true           // "Enter"キーでblur処理をするか(falseの場合"ctrl+Enter"でblur)
+        is_enter_blur: true,          // "Enter"キーでblur処理をするか(falseの場合"ctrl+Enter"でblur)
+        is_auto_resize: false,        // 文字量に応じてテキストエリアの高さを変える
       };
       defaults.handle_button = defaults.target_text_selector; // 変更ボタン
       var option = $.extend(defaults, userOptions);
@@ -23,11 +24,15 @@
 
       $handle_button.on(option.bind_action, function(){
         var selectd_text   = window.getSelection().toString(); // 選択している部分にフォーカスさせるため
+        var target_text_height = $target_text[0].scrollHeight + 'px';
 
         $target_text.css('display', 'none');
         $target_editor.val(unescape_html($target_text.html()))
           .css('display', '')
           .focus();
+        if(option.is_auto_resize) {
+          $target_editor.css('height', target_text_height);
+        };
         if($target_text.text()==='新しいメモ' || $target_text.text()==='ダブルクリックで編集') {
           $target_editor.select();
         }
