@@ -51,22 +51,24 @@ export class App extends Component {
         break;
       case 'UPDATE_TITLE':
         var updated_memos = this.state.memos;
+        if (updated_memos[action.index].title === action.title) { break; }
         updated_memos[action.index].title       = action.title;
-        updated_memos[action.index].updated_at  = new Date();
+        updated_memos[action.index].updated_at  = new Date().toISOString();
         this.setState({memos: updated_memos});
         this.save('UPDATE_TITLE', updated_memos[action.index]);
         break;
       case 'UPDATE_DESCRIPTION':
         var updated_memos = this.state.memos;
+        if (updated_memos[action.index].description === action.description) { break; }
         updated_memos[action.index].description = action.description;
-        updated_memos[action.index].updated_at  = new Date();
+        updated_memos[action.index].updated_at  = new Date().toISOString();
         this.setState({memos: updated_memos});
         this.save('UPDATE_DESCRIPTION', updated_memos[action.index]);
         break;
       case 'UPDATE_IS_OPEN':
         var updated_memos = this.state.memos;
         updated_memos[action.index].is_open     = action.is_open;
-        updated_memos[action.index].updated_at  = new Date();
+        updated_memos[action.index].updated_at  = new Date().toISOString();
         this.setState({memos: updated_memos});
         this.save('UPDATE_IS_OPEN', updated_memos[action.index]);
         break;
@@ -78,7 +80,7 @@ export class App extends Component {
         updated_memos[action.index].position_y += $(window).scrollTop() * fix_position;
         if(updated_memos[action.index].position_x < 0){ updated_memos[action.index].position_x = 0; }
         if(updated_memos[action.index].position_y < 0){ updated_memos[action.index].position_y = 0; }
-        updated_memos[action.index].updated_at  = new Date();
+        updated_memos[action.index].updated_at  = new Date().toISOString();
         this.setState({memos: updated_memos});
         this.save('UPDATE_IS_FIXED', updated_memos[action.index]);
         break;
@@ -103,7 +105,7 @@ export class App extends Component {
         }
         if(updated_memos[action.index].position_x < 0){ updated_memos[action.index].position_x = 0; }
         if(updated_memos[action.index].position_y < 0){ updated_memos[action.index].position_y = 0; }
-        updated_memos[action.index].updated_at = new Date();
+        updated_memos[action.index].updated_at = new Date().toISOString();
         this.setState({memos: updated_memos});
         this.save('MOVE_MEMO', updated_memos[action.index]);
         break;
@@ -111,7 +113,7 @@ export class App extends Component {
         var updated_memos = this.state.memos;
         updated_memos[action.index].width       = action.width;
         updated_memos[action.index].height      = action.height;
-        updated_memos[action.index].updated_at  = new Date();
+        updated_memos[action.index].updated_at  = new Date().toISOString();
         this.setState({memos: updated_memos});
         this.save('RESIZE_MEMO', updated_memos[action.index]);
         break;

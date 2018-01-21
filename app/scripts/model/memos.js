@@ -50,8 +50,8 @@ export default class Memo extends Base {
     }
   }
   save() {
-    if (!this.created_at) { this.created_at = new Date(); }
-    this.updated_at = new Date();
+    if (!this.created_at) { this.created_at = new Date().toISOString(); }
+    this.updated_at = new Date().toISOString();
     super.save();
   }
   static getMemoById(memo_id) {

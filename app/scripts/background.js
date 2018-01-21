@@ -58,6 +58,7 @@ $(function() {
       });
 
       chrome.runtime.onMessage.addListener((msg, sender, res) => {
+        console.log(msg, sender, res);
         switch (msg.method) {
           case 'CREATE_MEMO':
             window.bg.createMemo(msg.page_url, msg.memo);

@@ -57,7 +57,7 @@ export default class PageInfo extends Base {
     }
   }
   save() {
-    if (!this.created_at) { this.created_at = new Date(); }
+    if (!this.created_at) { this.created_at = new Date().toISOString(); }
     super.save();
   }
   serialize_for_save() {

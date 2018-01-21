@@ -118,6 +118,7 @@
         text-align: left;
 
         p {
+          line-height: 16px;
           font-size: 14px;
           min-height: 100%;
           padding: 8px 0;
@@ -125,6 +126,7 @@
           box-sizing: border-box;
         }
         textarea {
+          line-height: 16px;
           font-size: 14px;
           height: 100%;
           resize: none;

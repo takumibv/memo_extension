@@ -31,7 +31,7 @@ export default class MemoCardList extends Component {
     return (
       <div id="MemoCardList">
         {memos.map((memo, index) => {
-          console.log(index, memo);
+          // console.log(index, memo);
           return (
             <MemoCard
               key={memo.id}

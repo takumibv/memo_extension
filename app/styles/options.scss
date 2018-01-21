@@ -124,11 +124,13 @@ body {
         padding: 0 20px;
         margin: 12px;
         box-sizing: border-box;
+        cursor: auto !important;
 
         .mdl-card__title {
           border-bottom: solid 1px #ddd;
           width: 100%;
           padding: 12px 0;
+          cursor: auto !important;
           h2 {
             font-weight: bold;
             line-height: 28px;

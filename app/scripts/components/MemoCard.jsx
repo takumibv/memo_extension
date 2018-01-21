@@ -45,7 +45,7 @@ export default class MemoCard extends Component {
       actions({type: 'UPDATE_TITLE', index: index, title: text});
     });
     $(`#memo-card-${index} .editable-textarea`).editable({
-      target_selector: '.target-editor', bind_action: 'dblclick', is_enter_blur: false
+      target_selector: '.target-editor', bind_action: 'dblclick', is_enter_blur: false, is_auto_resize: true
     }, (index, text) => {
       actions({type: 'UPDATE_DESCRIPTION', index: index, description: text});
     });
