@@ -1,1 +1,187 @@
-@import "../../node_modules/material-design-lite/material";
+// @import "../../node_modules/material-design-lite/material";
+@import "./reset.scss";
+
+html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  height: 100%;
+  color: #555;
+}
+
+.clearfix::after{
+  content: "";
+  display: block;
+  clear: both;
+}
+.wrapper {
+  height: 100%;
+  position: relative;
+}
+
+#react-container-for-memo-extension {
+  height: 100%;
+  #header {
+    position: absolute;
+    background: #333;
+    color: #fff;
+    height: 48px;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    box-shadow: 0px 4px 16px -2px rgba(0,0,0,0.4);
+    -webkit-box-shadow: 0px 4px 16px -2px rgba(0,0,0,0.4);
+    -moz-box-shadow: 0px 4px 16px -2px rgba(0,0,0,0.4);
+
+    h1 {
+      display: inline-block;
+      line-height: 48px;
+      padding: 0 12px;
+      margin-right: 24px;
+    }
+
+    .nav {
+      display: inline-flex;
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      -webkit-align-items: center;
+      -ms-flex-align: center;
+      align-items: center;
+
+      .nav-item {
+        height: 100%;
+        padding: 0 12px;
+        color: #fff;
+        display: inline-flex;
+        -webkit-align-items: center;
+        -ms-flex-align: center;
+        align-items: center;
+        text-decoration: none;
+
+        &.selected {
+          background: #555;
+        }
+      }
+    }
+  }
+  #container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 980px;
+    margin: 0 auto;
+
+    #sidebar {
+      width: 25%;
+      position: absolute;
+      bottom: 0;
+      top: 48px;
+      overflow-y: scroll;
+
+      .page_info-item {
+        border-bottom: solid 1px #ccc;
+        padding: 12px;
+        width: 100%;
+        box-sizing: border-box;
+
+        p {
+          font-size: 14px;
+        }
+        a {
+          color: #00b3d4;
+          font-size: 12px;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+          display: block;
+        }
+
+        &:hover {
+          background: #f5f5f5;
+        }
+        &.selected {
+          background: #eee;
+        }
+      }
+    }
+    #MemoCardList {
+      width: 75%;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      top: 48px;
+      overflow: scroll;
+
+      .mdl-card {
+        width: auto !important;
+        height: auto !important;
+        background-color: rgb(255, 255, 220);
+        position: initial !important;
+        padding: 0 20px;
+        margin: 12px;
+        box-sizing: border-box;
+
+        .mdl-card__title {
+          border-bottom: solid 1px #ddd;
+          width: 100%;
+          padding: 12px 0;
+          h2 {
+            font-weight: bold;
+            line-height: 28px;
+            font-size: 18px;
+
+            input {
+              font-weight: bold;
+              line-height: 28px;
+              font-size: 18px;
+              width: 100%;
+            }
+          }
+          .close-card_btn, .open-card_btn {
+            display: none;
+          }
+        }
+        .mdl-card__supporting-text {
+          padding: 12px 0;
+          font-size: 16px;
+
+          .target-editor {
+            width: 100%;
+            font-size: 16px;
+          }
+        }
+        .mdl-card__actions {
+          .pin_btn, .detail_btn {
+            display: none;
+          }
+          .copied-msg-toast {
+            display: none;
+          }
+        }
+        .mdl-button {
+          width: 42px;
+          position: relative;
+          cursor: pointer;
+          background: transparent;
+          border-style: none;
+          border-radius: 2px;
+
+          &:hover {
+            background: #ccc;
+          }
+          img {
+            width: 100%;
+          }
+          .mdl-tooltip {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+
+}

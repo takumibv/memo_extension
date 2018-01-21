@@ -118,12 +118,14 @@
         text-align: left;
 
         p {
+          font-size: 14px;
           min-height: 100%;
-          padding: 16px 0;
+          padding: 8px 0;
           border-bottom: solid 3px rgba(158, 158, 158, 0.3);
           box-sizing: border-box;
         }
         textarea {
+          font-size: 14px;
           height: 100%;
           resize: none;
           border: solid 1px #eee;

@@ -1,17 +1,22 @@
 'use strict';
 global.jQuery = require('jquery');
 const $ = require('jquery');
-// import 'jquery/dist/jquery'
-// import 'jquery-ui/ui/core'
-// import 'jquery-ui/ui/widget'
-// import 'jquery-ui/ui/widgets/mouse'
-// import 'jquery-ui/ui/widgets/resizable'
 require('./lib/jinplace.js');
 require('material-design-lite/material');
 require('./lib/tiny-draggable.js');
 require('./lib/resizable_box.js');
+// require('./scripts/react_option.js');
+
+import React, { Component, PropTypes } from 'react';
+import ReactDOM from 'react-dom';
+// import MemoCardList from './components/MemoCardList.jsx';
 
 var option;
+
+export let tab_url = "fasdfasdf";
+let page_info = {};
+let memos = [];
+let options = {};
 
 $(function() {
     class Options {
@@ -65,6 +70,11 @@ $(function() {
 
                 const page_infos = bg.getAllPageInfo();
                 console.log(page_infos);
+
+                // chrome.tabs.executeScript(
+                //   null, { file: "scripts/react_option.js" }
+                // );
+
                 // var matrix_data = bg.getMatrixCode();
                 // var usr         = bg.getUserConfig();
                 // var is_valid    = bg.getIsValid();

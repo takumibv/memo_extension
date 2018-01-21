@@ -1,0 +1,21 @@
+{
+  "appName": {
+    "message": "memo_extension",
+    "description": "The name of the application"
+  },
+  "appShortName": {
+    "message": "memo_ex",
+    "description": "The short_name (maximum of 12 characters recommended) is a short version of the app's name."
+  },
+  "appDescription": {
+    "message": "機能的・直感的なメモのアプリです。",
+    "description": "The description of the application"
+  },
+  "browserActionTitle": {
+    "message": "memo_extension",
+    "description": "The title of the browser action button"
+  },
+
+  /* popup page */
+  "make_memo_button" : { "message": "メモを作成する" }
+}

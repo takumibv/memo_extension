@@ -6,7 +6,7 @@ export default class FixedButton extends Button {
   componentWillMount() {
     this.icon_name        = ['pin_rm_icon', 'pin_icon'];
     this.tooltip_title    = ['Remove Pin', 'Pin memo'];
-    this.additional_class = ['pinned', ''];
+    this.additional_class = ['pinned pin_btn', 'pin_btn'];
   }
   componentDidMount() {
   }

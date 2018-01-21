@@ -1,0 +1,33 @@
+@import "./base.scss";
+
+body {
+  width: 240px;
+  color: #555;
+  margin-bottom: 0;
+
+  #react-container-for-memo-extension {
+    .float-right {
+      float: right;
+    }
+
+    #page_infos {
+      max-height: 240px;
+      overflow-y: scroll;
+
+      .mdl-list {
+        padding-bottom: 0;
+      }
+
+      .mdl-list__item {
+        padding: 0;
+        border-top: solid 1px #ccc;
+
+        .mdl-list__item-primary-content {
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+        }
+      }
+    }
+  }
+}

@@ -3,6 +3,7 @@ import Memo from './memos.js';
 import Base from './base.js';
 
 const PAGE_INFO_STORAGE_NAME = "PageInfos";
+const MEMO_STORAGE_NAME = "Memos";
 
 export default class PageInfo extends Base {
   /*** props
@@ -10,14 +11,20 @@ export default class PageInfo extends Base {
   * page_url
   * page_title
   ****/
-  constructor(page_url = null) {
+  constructor(page_url = null, page_info = null) {
     super(PAGE_INFO_STORAGE_NAME);
-    const origin_page_info = this.fetchPageInfo(page_url);
 
-    this.id         = origin_page_info.id;
-    this.page_url   = origin_page_info.page_url;
-    this.page_title = origin_page_info.page_title;
-    // this.memos      = origin_page_info.memos;
+    if (page_info) {
+      this.id         = page_info.id;
+      this.page_url   = page_info.page_url;
+      this.page_title = page_info.page_title;
+    } else {
+      const origin_page_info = this.fetchPageInfo(page_url);
+
+      this.id         = origin_page_info.id;
+      this.page_url   = origin_page_info.page_url;
+      this.page_title = origin_page_info.page_title;
+    }
   }
   // localStorageのpage_infoがあれば、attrにセットする。
   fetchPageInfo(page_url) {
@@ -45,14 +52,20 @@ export default class PageInfo extends Base {
       id: this.id,
       page_url: this.page_url,
       page_title: this.page_title,
+      created_at: this.created_at,
       // memos: this.memos
     }
+  }
+  save() {
+    if (!this.created_at) { this.created_at = new Date(); }
+    super.save();
   }
   serialize_for_save() {
     return {
       id: this.id,
       page_url: this.page_url,
-      page_title: this.page_title
+      page_title: this.page_title,
+      created_at: this.created_at,
     }
   }
   checkMemoExistance() {
@@ -82,5 +95,19 @@ export default class PageInfo extends Base {
     //   .map((a, i) => a.id == this.id ? i : false)
     //   .filter(v => v)[0];
     // this.memos.splice(index, 1);
+  }
+  static getAllPageInfo() {
+    const storage = Base.getStorage(PAGE_INFO_STORAGE_NAME);
+    return storage;
+  }
+  static getAllPageInfoHavingMemo() {
+    const all_page_infos = Base.getStorage(PAGE_INFO_STORAGE_NAME);
+    const all_memos = Base.getStorage(MEMO_STORAGE_NAME);
+    all_page_infos.filter(
+      page_info => !all_memos.some(memo => memo.page_info_id===page_info.id)
+    ).forEach(page_info => {
+      new PageInfo(null, page_info).delete();
+    });
+    return all_page_infos.filter(page_info => all_memos.some(memo => memo.page_info_id===page_info.id));
   }
 }

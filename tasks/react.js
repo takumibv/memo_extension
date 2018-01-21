@@ -12,9 +12,9 @@ const ENV = args.production ? 'production' : 'development'
 
 var config = {
   watchFiles: ['app/scripts/*.jsx', './app/scripts/**/*.jsx'],
-  entryFile: ['app/scripts/App.jsx'],
+  entryFile: ['app/scripts/App.jsx', 'app/scripts/Option.jsx'],
   destDir: `dist/${args.vendor}/scripts`,
-  destFile: 'react_app.js',
+  destFile: ['react_app.js', 'react_option.js'],
 };
 
 // jsx形式 => jsファイル
@@ -22,23 +22,25 @@ gulp.task('react', function() {
   // 参考: https://github.com/babel/babelify
   // watchify, livereload: https://github.com/angkywilliam/ReactGulpBoilerPlate/blob/master/gulpfile.js
 
-  return browserify({
-    entries: config.entryFile,
-    debug: true
-  })
-  .transform(babelify,{presets: ["es2015", "react"]})
-  .bundle()
-  .on("error", function (err) {
-    console.log("ERROR: " + err.message);
-    console.log(err.stack);
-  })
-  .pipe(plumber({
-    // Webpack will log the errors
-    errorHandler () {
-    }
-  }))
-  .pipe(source(config.destFile))
-  .pipe(gulp.dest(config.destDir));
+  return config.entryFile.map((_, i) => {
+    browserify({
+      entries: config.entryFile[i],
+      debug: true
+    })
+    .transform(babelify,{presets: ["es2015", "react"]})
+    .bundle()
+    .on("error", function (err) {
+      console.log("ERROR: " + err.message);
+      console.log(err.stack);
+    })
+    .pipe(plumber({
+      // Webpack will log the errors
+      errorHandler () {
+      }
+    }))
+    .pipe(source(config.destFile[i]))
+    .pipe(gulp.dest(config.destDir));
+  });
 });
 
 gulp.task('react-watch', function() {

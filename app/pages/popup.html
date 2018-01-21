@@ -7,9 +7,21 @@
 </head>
 <body>
 
-  <button class="makeMemo">make memo</button>
+  <div id="react-container-for-memo-extension">
+    <!-- <button id="make_memo_button" class="makeMemo">make memo</button> -->
+    <button id="make_memo_button" class="makeMemo mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-button--colored">
+      <i class="material-icons">add</i>
+    </button>
+    <div class="mdl-tooltip" data-mdl-for="make_memo_button">
+      make Memo
+    </div>
 
-  <div id="page_infos"></div>
+    <button id="setting_button" class="mdl-list__item-secondary-action mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect float-right">
+      <i class="material-icons">settings</i>
+    </button>
+
+    <div id="page_infos" class="mdl-list"></div>
+  </div>
 
   <script src="../scripts/popup.js"></script>
 </body>

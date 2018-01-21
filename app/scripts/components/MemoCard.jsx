@@ -84,6 +84,11 @@ export default class MemoCard extends Component {
       left: memo.position_x,
       top: (memo.position_y === null ? $(window).scrollTop() : memo.position_y )
     };
+    const created_at = new Date(memo.created_at);
+    const created_at_str = `${created_at.getFullYear()}/${created_at.getMonth()+1}/${created_at.getDate()}`;
+    const updated_at = new Date(memo.updated_at);
+    const updated_at_str = `${updated_at.getFullYear()}/${updated_at.getMonth()+1}/${updated_at.getDate()}`;
+
     // actions({type: 'UPDATE_TITLE'});
     return (
       <div
@@ -91,14 +96,15 @@ export default class MemoCard extends Component {
         className={`demo-card-wide mdl-card mdl-shadow--2dp resizable-box draggable-card ${minimize} ${fixed}`}
         style={card_style}
         index={index}>
-        <div className="mdl-card__title mdl-card--border">
+        <div id={`memo-${memo.id}`} className="mdl-card__title mdl-card--border">
           <div className="handle-card" index={index}>
             <h2 className="mdl-card__title-text">
               <span className="editable" index={index}>{memo.title}</span>
               <input className="target-editor" type="text" />
             </h2>
           </div>
-
+          <span>{created_at_str}</span>:
+          <span>{updated_at_str}</span>
           <OpenCloseButton
             key={`open-close_btn-${index}`}
             index={index}

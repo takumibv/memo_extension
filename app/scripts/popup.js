@@ -1,4 +1,5 @@
 const $ = require('jquery');
+require('material-design-lite/material');
 
 var popup;
 $(function() {
@@ -10,13 +11,14 @@ $(function() {
       this.assignMessages();
       this.assignEventHandlers();
       this.setProps();
-      this.setDefaultSize();
       this.restoreConfigurations();
+      this.setDefaultSize();
     }
     assignMessages() {
       // 文言の割り当て
       let hash = {
         "usage_msg_1": "pop_usage_msg_1",
+        // "make_memo_button" : "make_memo_button"
       };
       for (var key in hash) {
         $("#" + key).html(chrome.i18n.getMessage(hash[key]));
@@ -28,8 +30,17 @@ $(function() {
         window.close();
       });
 
-      $(document).on('click', '.memo', e => {
-        this.moveCurrentPosition(e.currentTarget);
+      $(document).on('click', '#setting_button', e => {
+        this.openOptionPage();
+        window.close();
+      });
+
+      $(document).on('click', '.memo .move_position-button', e => {
+        this.moveCurrentPosition($(e.currentTarget).attr('target'));
+      });
+
+      $(document).on('click', '.memo .open_option-button', e => {
+        this.openMemoPage($(e.currentTarget).attr('target'));
       });
       // イベントハンドラ設置
       // $('#usageModal').on('show.bs.modal', function(event) {
@@ -60,22 +71,58 @@ $(function() {
         bg.makeMemo(this.tabId);
       });
     }
-    moveCurrentPosition(e) {
+    openOptionPage() {
       chrome.runtime.getBackgroundPage((backgroundPage) => {
-        let bg = backgroundPage.bg;
-        bg.scrollTo(e);
+        backgroundPage.bg.openOptionPage();
       });
     }
-    restoreConfigurations() {
+    openMemoPage(memo_id) {
+      chrome.runtime.getBackgroundPage((backgroundPage) => {
+        backgroundPage.bg.openMemoPage(memo_id);
+      });
+    }
+    moveCurrentPosition(memo_id) {
+      chrome.runtime.getBackgroundPage((backgroundPage) => {
+        let bg = backgroundPage.bg;
+        bg.scrollTo(memo_id);
+      });
+    }
+    renderMemo(memo) {
+      const disabled = memo.is_fixed ? 'disabled' : '';
+      return (`<div id='memo-${memo.id}' class="memo mdl-list__item">
+                <span class="mdl-list__item-primary-content">
+                  <span>${memo.title}</span>
+                </span>
+                <button class="move_position-button mdl-list__item-secondary-action mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" ${disabled} target='${memo.id}'>
+                  <i class="material-icons">keyboard_arrow_right</i>
+                </button>
+                <button class="open_option-button mdl-list__item-secondary-action mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" target='${memo.id}'>
+                  <i class="material-icons">info</i>
+                </button>
+              </div>`);
+    }
+    renderNoMemoMsg() {
+      const msg = 'メモがありません.';
+      return (`<div class="memo mdl-list__item">
+                <span class="mdl-list__item-primary-content">
+                  <span>${msg}</span>
+                </span>
+              </div>`);
+    }
+    restoreConfigurations(memo) {
       // バックグラウンドから現状の設定値を持ってきて、UIにセットする。
       chrome.runtime.getBackgroundPage((backgroundPage) => {
         const bg = backgroundPage.bg;
-        const page_url = bg.tab_id_url[this.tabId];
-        const memos = bg.page_infos[page_url].getMemos();
+        const page_url = bg.page_info.page_url;
+        const memos = bg.page_info.getMemos();
         console.log(memos);
 
+        if (memos.length === 0) {
+          $('#page_infos').append(this.renderNoMemoMsg());
+        }
         for(let i in memos) {
-          $('#page_infos').append(`<div id='${memos[i].id}' class='memo'>${memos[i].title}</div>`);
+          // $('#page_infos').append(`<div id='${memos[i].id}' class='memo'>${memos[i].title}</div>`);
+          $('#page_infos').append(this.renderMemo(memos[i]));
         }
 
         // var is_valid = bg.getIsValid();

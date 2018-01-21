@@ -16,7 +16,7 @@ export default class DetailButton extends Button {
       `detail_btn-${index}`,
       'move_page_icon',
       'details',
-      '',
+      'detail_btn',
       ``,
       true,
       this.onClick.bind(this)

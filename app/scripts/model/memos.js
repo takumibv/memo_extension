@@ -62,6 +62,10 @@ export default class Memo extends Base {
     const storage = Base.getStorage(MEMO_STORAGE_NAME);
     return storage.filter(m => m.page_info_id === page_info_id);
   }
+  static getAllMemos() {
+    const storage = Base.getStorage(MEMO_STORAGE_NAME);
+    return storage;
+  }
   static saveMemos(memos, page_info_id) {
     // const storage = Base.getStorage(MEMO_STORAGE_NAME);
     //
