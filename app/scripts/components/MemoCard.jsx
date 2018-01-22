@@ -24,30 +24,30 @@ export default class MemoCard extends Component {
     // componentHandler.upgradeDom();
   }
   componentDidMount() {
-    const {actions, index} = this.props;
+    const {actions, index, memo} = this.props;
     var wH = $(window).height();
     var wW = $(window).width();
     $(`#memo-card-${index}.resizable-box`).resizableBox({
       minWidth: 240,
       minHeight: 160,
     }, (index, w, h) => {
-      actions({type: 'RESIZE_MEMO', index: index, width: w, height: h});
+      actions({type: 'RESIZE_MEMO', index: index, memo_id: memo.id, width: w, height: h});
     });
     $(`#memo-card-${index} .mdl-card__title`).resizableBox({ isWidthResize: false });
     $(`#memo-card-${index}.draggable-card`).tinyDraggable({
       handle: '.handle-card'
     }, (index, top, left) => {
-      actions({type: 'MOVE_MEMO', index: index, position_x: left, position_y: top});
+      actions({type: 'MOVE_MEMO', index: index, memo_id: memo.id, position_x: left, position_y: top});
     });
     $(`#memo-card-${index} .editable`).editable({
       target_selector: '.target-editor', bind_action: 'dblclick'
     }, (index, text) => {
-      actions({type: 'UPDATE_TITLE', index: index, title: text});
+      actions({type: 'UPDATE_TITLE', index: index, memo_id: memo.id, title: text});
     });
     $(`#memo-card-${index} .editable-textarea`).editable({
       target_selector: '.target-editor', bind_action: 'dblclick', is_enter_blur: false, is_auto_resize: true
     }, (index, text) => {
-      actions({type: 'UPDATE_DESCRIPTION', index: index, description: text});
+      actions({type: 'UPDATE_DESCRIPTION', index: index, memo_id: memo.id, description: text});
     });
 
     // $('#react-container-for-memo-extension').prepend("<script defer src='https://code.getmdl.io/1.3.0/material.min.js'></script>");
@@ -117,6 +117,7 @@ export default class MemoCard extends Component {
           <OpenCloseButton
             key={`open-close_btn-${index}`}
             index={index}
+            memo_id={memo.id}
             is_open={memo.is_open}
             options={options}
             actions={actions} />
@@ -131,28 +132,33 @@ export default class MemoCard extends Component {
           <FixedButton
             key={`fixed_btn-${index}`}
             index={index}
+            memo_id={memo.id}
             options={options}
             actions={actions}
             is_fixed={memo.is_fixed} />
           <DetailButton
             key={`detail_btn-${index}`}
             index={index}
+            memo_id={memo.id}
             options={options}
             actions={actions} />
           <EditButton
             key={`edit_btn-${index}`}
             index={index}
+            memo_id={memo.id}
             options={options}
             actions={actions} />
           <CopyButton
             key={`copy_btn-${index}`}
             index={index}
+            memo_id={memo.id}
             options={options}
             actions={actions} />
           <span className="copied-msg-toast">Copied.</span>
           <DeleteButton
             key={`delete_btn-${index}`}
             index={index}
+            memo_id={memo.id}
             options={options}
             actions={actions} />
         </div>

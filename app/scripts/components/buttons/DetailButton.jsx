@@ -7,8 +7,8 @@ export default class DetailButton extends Button {
 
   }
   onClick(e) {
-    const {actions, index} = this.props;
-    actions({type: 'OPEN_OPTION_PAGE', index: index});
+    const {actions, index, memo_id} = this.props;
+    actions({type: 'OPEN_OPTION_PAGE', index: index, memo_id: memo_id});
   }
   render() {
     const {index} = this.props;

@@ -68,7 +68,7 @@ $(function() {
           case 'UPDATE_IS_FIXED':
           case 'MOVE_MEMO':
           case 'RESIZE_MEMO':
-            window.bg.updateMemos(msg.page_url, msg.memo);
+            window.bg.updateMemo(msg.page_url, msg.memo);
             break;
           case 'DELETE_MEMO':
             window.bg.deleteMemo(msg.memo);
@@ -189,11 +189,11 @@ $(function() {
     makeMemo(tabId) {
       const url = this.page_info.page_url;
       const memo = {id: null, title: "新しいメモ", description: "ダブルクリックで編集", position_x: 0, position_y: null, width: 300, height: 150, is_open: true, is_fixed: false};
-      this.updateMemos(url, memo);
+      this.updateMemo(url, memo);
       this.setCardArea();
     }
 
-    updateMemos(page_url, memo) {
+    updateMemo(page_url, memo) {
       let target_memo = Object.assign({}, memo);
 
       this.page_info.save();

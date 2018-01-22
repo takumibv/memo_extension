@@ -39,56 +39,59 @@ export class OptionPage extends Component {
   componentDidMount() {
     const {query} = this.state;
     // $(".mdl-card:last-child").css('margin-bottom', window.innerHeight - 100);
-    if(query.memo && $(`#memo-${query.memo}`).length > 0) {
-      $("#MemoCardList").animate({scrollTop: $(`#memo-${query.memo}`).offset().top - 40});
-    }
-    if(query.page_info && $(`#page_info-${query.page_info}`).length > 0) {
-      $("#sidebar").animate({scrollTop: $(`#page_info-${query.page_info}`).offset().top - 40});
-    }
+    this.scrollMemoCardListTo(query.memo);
+    this.scrollSideBarTo(query.page_info);
   }
   actions(action) {
+    const updated_memos = this.state.memos;
+    let index = updated_memos.findIndex(({id}) => id === action.memo_id);
     switch (action.type) {
       case 'MAKE_MEMO':
         break;
       case 'UPDATE_TITLE':
-        var updated_memos = this.state.memos;
-        if (updated_memos[action.index].title === action.title) { break; }
-        updated_memos[action.index].title       = action.title;
-        updated_memos[action.index].updated_at  = new Date().toISOString();
+        index = updated_memos.findIndex(({id}) => id === action.memo_id);
+        if (index === -1) { break; }
+        if (updated_memos[index].title === action.title) { break; }
+        updated_memos[index].title       = action.title;
+        updated_memos[index].updated_at  = new Date().toISOString();
         this.setState({memos: updated_memos});
-        this.save('UPDATE_TITLE', updated_memos[action.index]);
+        this.save('UPDATE_TITLE', updated_memos[index]);
         break;
       case 'UPDATE_DESCRIPTION':
-        var updated_memos = this.state.memos;
-        if (updated_memos[action.index].description === action.description) { break; }
-        updated_memos[action.index].description = action.description;
-        updated_memos[action.index].updated_at  = new Date().toISOString();
+        index = updated_memos.findIndex(({id}) => id === action.memo_id);
+        if (index === -1) { break; }
+        if (updated_memos[index].description === action.description) { break; }
+        updated_memos[index].description = action.description;
+        updated_memos[index].updated_at  = new Date().toISOString();
         this.setState({memos: updated_memos});
-        this.save('UPDATE_DESCRIPTION', updated_memos[action.index]);
+        this.save('UPDATE_DESCRIPTION', updated_memos[index]);
         break;
       case 'UPDATE_IS_OPEN':
-        var updated_memos = this.state.memos;
-        updated_memos[action.index].is_open     = action.is_open;
-        updated_memos[action.index].updated_at  = new Date().toISOString();
+        index = updated_memos.findIndex(({id}) => id === action.memo_id);
+        if (index === -1) { break; }
+        updated_memos[index].is_open     = action.is_open;
+        updated_memos[index].updated_at  = new Date().toISOString();
         this.setState({memos: updated_memos});
-        this.save('UPDATE_IS_OPEN', updated_memos[action.index]);
+        this.save('UPDATE_IS_OPEN', updated_memos[index]);
         break;
       case 'UPDATE_IS_FIXED':
-        var updated_memos = this.state.memos;
-        updated_memos[action.index].is_fixed     = action.is_fixed;
-        const fix_position = updated_memos[action.index].is_fixed ? -1 : 1;
-        updated_memos[action.index].position_x += $(window).scrollLeft() * fix_position;
-        updated_memos[action.index].position_y += $(window).scrollTop() * fix_position;
-        if(updated_memos[action.index].position_x < 0){ updated_memos[action.index].position_x = 0; }
-        if(updated_memos[action.index].position_y < 0){ updated_memos[action.index].position_y = 0; }
-        updated_memos[action.index].updated_at  = new Date().toISOString();
+        index = updated_memos.findIndex(({id}) => id === action.memo_id);
+        if (index === -1) { break; }
+        updated_memos[index].is_fixed     = action.is_fixed;
+        const fix_position = updated_memos[index].is_fixed ? -1 : 1;
+        updated_memos[index].position_x += $(window).scrollLeft() * fix_position;
+        updated_memos[index].position_y += $(window).scrollTop() * fix_position;
+        if(updated_memos[index].position_x < 0){ updated_memos[index].position_x = 0; }
+        if(updated_memos[index].position_y < 0){ updated_memos[index].position_y = 0; }
+        updated_memos[index].updated_at  = new Date().toISOString();
         this.setState({memos: updated_memos});
-        this.save('UPDATE_IS_FIXED', updated_memos[action.index]);
+        this.save('UPDATE_IS_FIXED', updated_memos[index]);
         break;
       case 'DELETE_MEMO':
-        var updated_memos = this.state.memos;
-        var delete_memo   = this.state.memos[action.index];
-        updated_memos.splice(action.index, 1);
+        index = updated_memos.findIndex(({id}) => id === action.memo_id);
+        if (index === -1) { break; }
+        var delete_memo   = this.state.memos[index];
+        updated_memos.splice(index, 1);
         this.setState({memos: updated_memos});
         this.delete(delete_memo);
         break;
@@ -100,11 +103,11 @@ export class OptionPage extends Component {
         break;
     }
   }
-  save(action_type, updated_memos) {
-    chrome.runtime.sendMessage({ method: action_type, action_type: action_type, page_url: this.state.page_url, memo: updated_memos });
+  save(action_type, updated_memo) {
+    chrome.runtime.sendMessage({ method: action_type, action_type: action_type, page_url: updated_memo.page_url, memo: updated_memo });
   }
   delete(memo) {
-    chrome.runtime.sendMessage({ method: 'DELETE_MEMO', memo: memo, page_url: this.state.page_url });
+    chrome.runtime.sendMessage({ method: 'DELETE_MEMO', memo: memo, page_url: memo.page_url });
   }
   open_option_page(memo) {
     chrome.runtime.sendMessage({ method: 'OPEN_OPTION_PAGE', memo: memo });
@@ -139,10 +142,21 @@ export class OptionPage extends Component {
     });
   }
   onClickPageInfo(target='') {
-    console.log("event---");
     const {query} = this.state;
     query.page_info = target;
-    this.setState({query: query})
+    this.setState({query: query});
+    // $("#sidebar").animate({scrollTop: $(`#page_info-${query.page_info}`).offset().top - 40});
+    this.scrollSideBarTo(query.page_info);
+  }
+  scrollSideBarTo(page_info_id) {
+    if(page_info_id && $(`#page_info-${page_info_id}`).length > 0) {
+      $("#sidebar").animate({scrollTop: $(`#page_info-${page_info_id}`).offset().top - 40});
+    }
+  }
+  scrollMemoCardListTo(memo_id) {
+    if(memo_id && $(`#memo-${memo_id}`).length > 0) {
+      $("#MemoCardList").animate({scrollTop: $(`#memo-${memo_id}`).offset().top - 40});
+    }
   }
   renderHeader() {
     const {query} = this.state;

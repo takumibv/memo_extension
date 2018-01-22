@@ -11,18 +11,18 @@ export default class OpenCloseButton extends Button {
   componentDidMount() {
   }
   onClick(e) {
-    const {actions, is_open, index} = this.props;
+    const {actions, is_open, index, memo_id} = this.props;
     const $memo_card = $('#' + $(e.currentTarget).attr('target'));
     if(is_open) {
       $memo_card.animate({
         left: '0'
       }, 200, 'swing', function () {
         $memo_card.addClass('minimize');
-        actions({type: 'UPDATE_IS_OPEN', index: index, is_open: !is_open});
+        actions({type: 'UPDATE_IS_OPEN', index: index, memo_id: memo_id, is_open: !is_open});
       });
     } else {
       $memo_card.removeClass('minimize');
-      actions({type: 'UPDATE_IS_OPEN', index: index, is_open: !is_open});
+      actions({type: 'UPDATE_IS_OPEN', index: index, memo_id: memo_id, is_open: !is_open});
     }
   }
   render() {

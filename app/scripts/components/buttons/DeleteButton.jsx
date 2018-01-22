@@ -7,9 +7,9 @@ export default class DeleteButton extends Button {
 
   }
   onClick(e) {
-    const {actions, index} = this.props;
+    const {actions, index, memo_id} = this.props;
     if(confirm("本当に削除しますか?")) {
-      actions({type: 'DELETE_MEMO', index: index});
+      actions({type: 'DELETE_MEMO', index: index, memo_id: memo_id});
     }
   }
   render() {

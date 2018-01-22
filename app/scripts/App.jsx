@@ -124,11 +124,11 @@ export class App extends Component {
         break;
     }
   }
-  save(action_type, updated_memos) {
-    chrome.runtime.sendMessage({ method: action_type, action_type: action_type, page_url: this.state.page_url, memo: updated_memos });
+  save(action_type, updated_memo) {
+    chrome.runtime.sendMessage({ method: action_type, action_type: action_type, page_url: updated_memo.page_url, memo: updated_memo });
   }
   delete(memo) {
-    chrome.runtime.sendMessage({ method: 'DELETE_MEMO', memo: memo, page_url: this.state.page_url });
+    chrome.runtime.sendMessage({ method: 'DELETE_MEMO', memo: memo, page_url: memo.page_url });
   }
   open_option_page(memo) {
     chrome.runtime.sendMessage({ method: 'OPEN_OPTION_PAGE', memo: memo });

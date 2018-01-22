@@ -15,10 +15,10 @@ export default class FixedButton extends Button {
     const $memo_card = $('#' + $(e.currentTarget).attr('target'));
     if(is_fixed) {
       $memo_card.removeClass('fixed');
-      actions({type: 'UPDATE_IS_FIXED', index: index, is_fixed: !is_fixed});
+      actions({type: 'UPDATE_IS_FIXED', index: index, memo_id: memo_id, is_fixed: !is_fixed});
     } else {
       $memo_card.addClass('fixed');
-      actions({type: 'UPDATE_IS_FIXED', index: index, is_fixed: !is_fixed});
+      actions({type: 'UPDATE_IS_FIXED', index: index, memo_id: memo_id, is_fixed: !is_fixed});
     }
   }
   render() {
