@@ -170,6 +170,7 @@ export class OptionPage extends Component {
     const {page_infos, options} = this.props;
     const {query} = this.state;
     const selected_all = query.page_info ? '' : 'selected';
+    const sorted_page_infos = this.sortBy(page_infos, "created_at");
     return (
       <div id='sidebar'>
         <div className={`page_info-item ${selected_all}`} onClick={() => {this.onClickPageInfo();}}>
