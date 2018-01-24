@@ -59,6 +59,7 @@ $(function() {
 
       chrome.runtime.onMessage.addListener((msg, sender, res) => {
         console.log(msg, sender, res);
+        console.log(this.page_info);
         switch (msg.method) {
           case 'CREATE_MEMO':
             window.bg.createMemo(msg.page_url, msg.memo);
@@ -68,10 +69,10 @@ $(function() {
           case 'UPDATE_IS_FIXED':
           case 'MOVE_MEMO':
           case 'RESIZE_MEMO':
-            window.bg.updateMemo(msg.page_url, msg.memo);
+            window.bg.updateMemo(msg.page_url, msg.memo, msg.action_type);
             break;
           case 'DELETE_MEMO':
-            window.bg.deleteMemo(msg.memo);
+            window.bg.deleteMemo(msg.memo, msg.action_type);
             break;
           case 'CANNOT_SHOW_MEMO':
             window.bg.setBadgeError();
@@ -193,20 +194,33 @@ $(function() {
       this.setCardArea();
     }
 
-    updateMemo(page_url, memo) {
+    updateMemo(page_url, memo, action_type=null) {
       let target_memo = Object.assign({}, memo);
 
-      this.page_info.save();
-      target_memo.page_info_id = this.page_info.id;
-      new Memo(target_memo).save();
-      this.page_info.checkMemoExistance();
+      if (action_type === 'OPTIONS') {
+        // options page
+        new Memo(target_memo).save();
+        new PageInfo(null, {id: memo.page_info_id}).checkMemoExistance();
+      } else {
+        // executeScript
+        this.page_info.save();
+        target_memo.page_info_id = this.page_info.id;
+        new Memo(target_memo).save();
+        this.page_info.checkMemoExistance();
+      }
     }
 
-    deleteMemo(memo) {
-      this.page_info.deleteMemo(memo);
-      this.page_info.checkMemoExistance();
-
-      this.setCardArea();
+    deleteMemo(memo, action_type=null) {
+      if (action_type === 'OPTIONS') {
+        // options page
+        new Memo(memo).delete();
+        new PageInfo(null, {id: memo.page_info_id}).checkMemoExistance();
+      } else {
+        // executeScript
+        this.page_info.deleteMemo(memo);
+        this.page_info.checkMemoExistance();
+      }
+      // this.setCardArea();
     }
 
     getAllPageInfo() {

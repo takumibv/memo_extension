@@ -25,6 +25,9 @@ a {
   height: 100%;
   position: relative;
 }
+.wrap-content {
+  position: relative;
+}
 
 #react-container-for-memo-extension {
   height: 100%;
@@ -145,18 +148,20 @@ a {
         padding: 0 20px;
         margin: 12px;
         box-sizing: border-box;
+        box-shadow: rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
         cursor: auto !important;
 
         .mdl-card__title {
           border-bottom: solid 1px #ddd;
           width: 100%;
           padding: 12px 0;
+          position: relative;
           cursor: auto !important;
           h2 {
             font-weight: bold;
             line-height: 28px;
             font-size: 18px;
-
+            padding-right: 84px;
             input {
               font-weight: bold;
               line-height: 28px;
@@ -164,15 +169,23 @@ a {
               width: 100%;
             }
           }
-          .memos_infos {
-            padding-top: 8px;
+          .memo_infos {
           }
           a {
             font-size: 14px;
             line-height: 14px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
             display: block;
+            text-decoration: underline;
             &:hover {
               color: #016173;
+              cursor: pointer;
+            }
+            &.page_info_link {
+              display: inline-block;
+              line-height: 16px;
             }
           }
           .date {
@@ -194,6 +207,9 @@ a {
           }
         }
         .mdl-card__actions {
+          position: absolute;
+          top: 12px;
+          right: 0;
           .pin_btn, .detail_btn {
             display: none;
           }
@@ -202,18 +218,28 @@ a {
           }
         }
         .mdl-button {
-          width: 42px;
+          width: 28px;
+          height: 28px;
+          padding: 0;
           position: relative;
           cursor: pointer;
           background: transparent;
           border-style: none;
-          border-radius: 2px;
+          border-radius: 50%;
 
           &:hover {
-            background: #ccc;
+            background: rgba(204, 204, 204, 0.5);
+          }
+          &:active {
+            background: rgba(170, 170, 170, 0.5);
+          }
+          &:focus {
+            outline: none;
           }
           img {
-            width: 100%;
+            width: 22px;
+            height: 22px;
+            opacity: 0.7;
           }
           .mdl-tooltip {
             display: none;

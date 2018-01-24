@@ -44,7 +44,7 @@ export class OptionPage extends Component {
   }
   actions(action) {
     const updated_memos = this.state.memos;
-    let index = updated_memos.findIndex(({id}) => id === action.memo_id);
+    let index = -1;
     switch (action.type) {
       case 'MAKE_MEMO':
         break;
@@ -99,18 +99,20 @@ export class OptionPage extends Component {
       case 'RESIZE_MEMO':
       case 'OPEN_OPTION_PAGE':
         break;
+      case 'OPEN_PAGE_INFO':
+        this.onClickPageInfo(action.page_info_id);
       default:
         break;
     }
   }
   save(action_type, updated_memo) {
-    chrome.runtime.sendMessage({ method: action_type, action_type: action_type, page_url: updated_memo.page_url, memo: updated_memo });
+    chrome.runtime.sendMessage({ method: action_type, action_type: 'OPTIONS', page_url: updated_memo.page_url, memo: updated_memo });
   }
   delete(memo) {
-    chrome.runtime.sendMessage({ method: 'DELETE_MEMO', memo: memo, page_url: memo.page_url });
+    chrome.runtime.sendMessage({ method: 'DELETE_MEMO', action_type: 'OPTIONS', memo: memo, page_url: memo.page_url });
   }
   open_option_page(memo) {
-    chrome.runtime.sendMessage({ method: 'OPEN_OPTION_PAGE', memo: memo });
+    chrome.runtime.sendMessage({ method: 'OPEN_OPTION_PAGE', action_type: 'OPTIONS', memo: memo });
   }
   encodeUrl(plain_url) {
     let parse_url = url.parse(plain_url);
@@ -150,12 +152,12 @@ export class OptionPage extends Component {
   }
   scrollSideBarTo(page_info_id) {
     if(page_info_id && $(`#page_info-${page_info_id}`).length > 0) {
-      $("#sidebar").animate({scrollTop: $(`#page_info-${page_info_id}`).offset().top - 40});
+      $("#sidebar").animate({scrollTop: $(`#page_info-${page_info_id}`).offset().top + $("#sidebar").scrollTop() - 48});
     }
   }
   scrollMemoCardListTo(memo_id) {
     if(memo_id && $(`#memo-${memo_id}`).length > 0) {
-      $("#MemoCardList").animate({scrollTop: $(`#memo-${memo_id}`).offset().top - 40});
+      $("#MemoCardList").animate({scrollTop: $(`#memo-${memo_id}`).offset().top - 48});
     }
   }
   renderHeader() {
@@ -190,7 +192,7 @@ export class OptionPage extends Component {
         <div className={`page_info-item ${selected_all}`} onClick={() => {this.onClickPageInfo();}}>
           <p>{'全て表示'}</p>
         </div>
-        {page_infos.map((page_info, index) => {
+        {sorted_page_infos.map((page_info, index) => {
           const url = this.decodeUrl(page_info.page_url);
           const selected = parseInt(query.page_info) === page_info.id ? 'selected' : '';
           return (
@@ -257,7 +259,8 @@ chrome.runtime.getBackgroundPage((backgroundPage) => {
     const memos       = bg.getAllMemos();
     const options = {
       image_url: chrome.extension.getURL('images'),
-      option_page_url: chrome.extension.getURL('pages/options.html')
+      option_page_url: chrome.extension.getURL('pages/options.html'),
+      is_options_page: true,
     };
 
     console.log('======= Background Params ======');

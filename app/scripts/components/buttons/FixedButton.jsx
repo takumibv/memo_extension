@@ -11,7 +11,7 @@ export default class FixedButton extends Button {
   componentDidMount() {
   }
   onClick(e) {
-    const {actions, is_fixed, index} = this.props;
+    const {actions, is_fixed, index, memo_id} = this.props;
     const $memo_card = $('#' + $(e.currentTarget).attr('target'));
     if(is_fixed) {
       $memo_card.removeClass('fixed');

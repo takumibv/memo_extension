@@ -65,6 +65,11 @@ export default class MemoCard extends Component {
     $(`.mdl-card`).css('z-index', '10000');
     $(`#${target}`).css({'cssText': `${$(`#${target}`).attr('style')} z-index: 10001 !important;`});
   }
+  openPageInfo(page_info_id) {
+    const {actions} = this.props;
+    // only options page
+    actions({type: 'OPEN_PAGE_INFO', page_info_id: page_info_id});
+  }
   render() {
     const {index, memo, actions, options} = this.props;
   // //   console.log("card app");
@@ -103,24 +108,54 @@ export default class MemoCard extends Component {
         index={index}
         onClick={() => {this.onClick(`memo-card-${index}`);}}>
         <div id={`memo-${memo.id}`} className="mdl-card__title mdl-card--border">
+          {options.is_options_page &&
+            <div className="memo_infos">
+              <div className="clearfix">
+                <p className="date updated_at">更新: <span>{updated_at_str}</span></p>
+                <p className="date created_at">作成: <span>{created_at_str}</span></p>
+              </div>
+            </div>}
           <div className="handle-card" index={index}>
             <h2 className="mdl-card__title-text">
               <span className="editable" index={index}>{memo.title}</span>
               <input className="target-editor" type="text" />
             </h2>
           </div>
-          <div className="options_page_only memo_infos">
-            <a className="page_url" href={`${page_url}`} target="_blank" rel="noreferrer noopener">{page_url}</a>
-            <p className="date created_at">作成: <span>{created_at_str}</span></p>
-            <p className="date updated_at">更新: <span>{updated_at_str}</span></p>
-          </div>
-          <OpenCloseButton
-            key={`open-close_btn-${index}`}
-            index={index}
-            memo_id={memo.id}
-            is_open={memo.is_open}
-            options={options}
-            actions={actions} />
+          {options.is_options_page &&
+            <div className="memo_infos">
+              <a className="page_url" href={`${page_url}`} target="_blank" rel="noreferrer noopener">{page_url}</a>
+              <a className="page_info_link" onClick={() => {this.openPageInfo(memo.page_info_id);}} rel="noreferrer noopener">このページのメモ</a>
+            </div>}
+          {options.is_options_page ?
+            (<div className="mdl-card__actions">
+              <EditButton
+                key={`edit_btn-${index}`}
+                index={index}
+                memo_id={memo.id}
+                options={options}
+                actions={actions} />
+              <CopyButton
+                key={`copy_btn-${index}`}
+                index={index}
+                memo_id={memo.id}
+                options={options}
+                actions={actions} />
+              <span className="copied-msg-toast">Copied.</span>
+              <DeleteButton
+                key={`delete_btn-${index}`}
+                index={index}
+                memo_id={memo.id}
+                options={options}
+                actions={actions} />
+            </div>) :
+            (<OpenCloseButton
+              key={`open-close_btn-${index}`}
+              index={index}
+              memo_id={memo.id}
+              is_open={memo.is_open}
+              options={options}
+              actions={actions} />)
+          }
         </div>
         <div className="mdl-card__supporting-text">
           <div className="mdl-textfield mdl-js-textfield">
@@ -128,40 +163,41 @@ export default class MemoCard extends Component {
             <textarea className="mdl-textfield__input target-editor" type="text" placeholder="Text lines..."></textarea>
           </div>
         </div>
-        <div className="mdl-card__actions">
-          <FixedButton
-            key={`fixed_btn-${index}`}
-            index={index}
-            memo_id={memo.id}
-            options={options}
-            actions={actions}
-            is_fixed={memo.is_fixed} />
-          <DetailButton
-            key={`detail_btn-${index}`}
-            index={index}
-            memo_id={memo.id}
-            options={options}
-            actions={actions} />
-          <EditButton
-            key={`edit_btn-${index}`}
-            index={index}
-            memo_id={memo.id}
-            options={options}
-            actions={actions} />
-          <CopyButton
-            key={`copy_btn-${index}`}
-            index={index}
-            memo_id={memo.id}
-            options={options}
-            actions={actions} />
-          <span className="copied-msg-toast">Copied.</span>
-          <DeleteButton
-            key={`delete_btn-${index}`}
-            index={index}
-            memo_id={memo.id}
-            options={options}
-            actions={actions} />
-        </div>
+        {!options.is_options_page &&
+          <div className="mdl-card__actions">
+            <FixedButton
+              key={`fixed_btn-${index}`}
+              index={index}
+              memo_id={memo.id}
+              options={options}
+              actions={actions}
+              is_fixed={memo.is_fixed} />
+            <DetailButton
+              key={`detail_btn-${index}`}
+              index={index}
+              memo_id={memo.id}
+              options={options}
+              actions={actions} />
+            <EditButton
+              key={`edit_btn-${index}`}
+              index={index}
+              memo_id={memo.id}
+              options={options}
+              actions={actions} />
+            <CopyButton
+              key={`copy_btn-${index}`}
+              index={index}
+              memo_id={memo.id}
+              options={options}
+              actions={actions} />
+            <span className="copied-msg-toast">Copied.</span>
+            <DeleteButton
+              key={`delete_btn-${index}`}
+              index={index}
+              memo_id={memo.id}
+              options={options}
+              actions={actions} />
+          </div>}
         <textarea style={{display: 'none'}} className="form-for-copy" ></textarea>
       </div>
     );
