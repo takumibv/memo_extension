@@ -33,7 +33,7 @@ export default class MemoCard extends Component {
     }, (index, w, h) => {
       actions({type: 'RESIZE_MEMO', index: index, memo_id: memo.id, width: w, height: h});
     });
-    $(`#memo-card-${index} .mdl-card__title`).resizableBox({ isWidthResize: false });
+    // $(`#memo-card-${index} .mdl-card__title`).resizableBox({ isWidthResize: false });
     $(`#memo-card-${index}.draggable-card`).tinyDraggable({
       handle: '.handle-card'
     }, (index, top, left) => {
@@ -115,9 +115,9 @@ export default class MemoCard extends Component {
                 <p className="date created_at">作成: <span>{created_at_str}</span></p>
               </div>
             </div>}
-          <div className="handle-card" index={index}>
+          <div className="handle-card-wrapper">
             <h2 className="mdl-card__title-text">
-              <span className="editable" index={index}>{memo.title}</span>
+              <span className="editable handle-card" index={index}>{memo.title}</span>
               <input className="target-editor" type="text" />
             </h2>
           </div>
