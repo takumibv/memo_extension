@@ -36,6 +36,7 @@ $(function() {
       chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         if (tab.active && changeInfo.status === "loading") {
           // ページの読み込みが始まった瞬間呼ばれる.
+          window.bg.insertCSS();
           window.bg.setPageInfo(tabId, tab.url);
         } else if (tab.active && changeInfo.status === "complete") {
           // ページの読み込みが完了したら呼ばれる.
@@ -99,21 +100,6 @@ $(function() {
       const tab_url  = this.encodeUrl(page_url);
       this.page_info = new PageInfo(tab_url);;
 
-      // 最初の1回のみ
-      chrome.tabs.executeScript(
-        null,
-        { code: `let tab_url; let page_info; let memos; let options;`}
-      );
-      chrome.tabs.insertCSS(
-        null, { file: "styles/base.css" }
-      );
-      chrome.tabs.insertCSS(
-        null, { file: "styles/reset.css" }
-      );
-      chrome.tabs.insertCSS(
-        null, { file: "styles/card.css" }
-      );
-
       // 何回も呼ばれる想定
       this.setCardArea();
     }
@@ -160,6 +146,22 @@ $(function() {
     /****
     * Card Area
     ****/
+    insertCSS() {
+      // 最初の1回のみ
+      chrome.tabs.executeScript(
+        null,
+        { code: `let tab_url; let page_info; let memos; let options;`}
+      );
+      chrome.tabs.insertCSS(
+        null, { file: "styles/base.css" }
+      );
+      chrome.tabs.insertCSS(
+        null, { file: "styles/reset.css" }
+      );
+      chrome.tabs.insertCSS(
+        null, { file: "styles/card.css" }
+      );
+    }
     setCardArea() {
       // カードの内容を更新するたびに呼ばれる
 

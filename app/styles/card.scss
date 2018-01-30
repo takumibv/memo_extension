@@ -53,6 +53,7 @@
     & > .mdl-card__title {
       width: 99%;
       margin: 0 auto !important;
+      padding: 16px 16px 4px 16px;
       color: #555 !important;
       min-height: 60px !important;
       min-width: 260px !important;
@@ -61,13 +62,15 @@
       -webkit-align-items: normal;
       -ms-flex-align: normal;
       align-items: normal;
+      word-wrap: break-word;
       /*background: url('../images/welcome_card.jpg') center / cover;*/
-      .handle-card {
+      .handle-card-wrapper {
         width: 100%;
       }
     }
     .mdl-card__title-text {
       height: 100%;
+      width: 100%;
       padding-right: 28px;
       font-size: 24px !important;
       font-weight: 300;
@@ -95,11 +98,12 @@
     span.editable {
       height: 100%;
       min-width: 30px;
+      text-indent: 0;
     }
     .mdl-card__menu {
       color: #555;
     }
-    .handle-card {
+    .handle-card-wrapper {
       cursor: move;
     }
     .mdl-card__supporting-text {
@@ -121,9 +125,16 @@
           line-height: 16px;
           font-size: 14px;
           min-height: 100%;
+          margin: 0;
           padding: 8px 0;
           border-bottom: solid 3px rgba(158, 158, 158, 0.3);
           box-sizing: border-box;
+          word-wrap: break-word;
+
+          a {
+            color: rgb(255, 64, 129);
+            font-weight: 500;
+          }
         }
         textarea {
           line-height: 16px;

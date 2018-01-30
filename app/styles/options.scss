@@ -200,6 +200,12 @@ a {
         .mdl-card__supporting-text {
           padding: 12px 0;
           font-size: 16px;
+          word-wrap: break-word;
+
+          a {
+            color: rgb(255, 64, 129);
+            font-weight: 500;
+          }
 
           .target-editor {
             width: 100%;
