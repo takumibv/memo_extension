@@ -27,7 +27,7 @@
         var target_text_height = $target_text[0].scrollHeight + 'px';
 
         $target_text.css('display', 'none');
-        $target_editor.val(unescape_html($target_text.html()))
+        $target_editor.val(unescape_html(escape_link($target_text.html())))
           .css('display', '')
           .focus();
         if(option.is_auto_resize) {
@@ -39,7 +39,7 @@
       });
       $target_editor.on({
         'blur': function(){
-          var res_text = escape_html($(this).val());
+          var res_text = auto_link(escape_html($(this).val()));
           // var res_text = $(this).val();
           // console.log("res_text", res_text);
           $(this).css('display', 'none');
@@ -61,7 +61,7 @@
     if(typeof string !== 'string') {
       return string;
     }
-    return string.replace(/[&'`"<>]/g, function(match) {
+    return string.replace(/[&'`"<>\\]/g, function(match) {
       return {
         '&': '&amp;',
         "'": '&#x27;',
@@ -69,6 +69,7 @@
         '"': '&quot;',
         '<': '&lt;',
         '>': '&gt;',
+        '\\': '&#x5c;',
       }[match]
     }).replace(/\r?\n/g, '<br>');
   }
@@ -84,7 +85,21 @@
         '&quot;' : '"',
         '&lt;' : '<',
         '&gt;' : '>',
+        '&#x5c;' : '\\',
       }[match]
     }).replace(/<br>/g, '\n');
+  }
+  function auto_link(str) {
+    var regexp_url = /((h?)(ttps?:\/\/[a-zA-Z0-9.\-_@:/~?%&;=+#',()*!]+))/g; // ']))/;
+    var regexp_makeLink = function(all, url, h, href) {
+        return '<a href=h' + href + '>' + url + '</a>';
+    }
+    return str.replace(regexp_url, regexp_makeLink);
+  }
+  function escape_link(str) {
+    var a = str.replace(/<a href=\"((h?)(ttps?:\/\/[a-zA-Z0-9.\-_@:/~?%&;=+#',()*!]+))\">/g, '').replace(/<\/a>/g, '');
+    console.log("escape_link:: ");
+    console.log(str, " -> ", a);
+    return a;
   }
 })(jQuery);
