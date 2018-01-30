@@ -179,7 +179,7 @@ try {
     document.getElementById('react-container-for-memo-extension')
   );
 } catch (e) {
-  alert("Memo App Error: このページではメモを表示できません。" + e + tab_url);
+  // alert("Memo App Error: このページではメモを表示できません。" + e + tab_url);
   chrome.runtime.sendMessage({ method: 'CANNOT_SHOW_MEMO', msg: e, page_url: tab_url });
 } finally {
 

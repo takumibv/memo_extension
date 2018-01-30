@@ -75,6 +75,7 @@ $(function() {
             window.bg.deleteMemo(msg.memo, msg.action_type);
             break;
           case 'CANNOT_SHOW_MEMO':
+            alert("Memo App Error: このページではメモを表示できません。");
             window.bg.setBadgeError();
             break;
           case 'OPEN_OPTION_PAGE':
@@ -221,6 +222,7 @@ $(function() {
         this.page_info.checkMemoExistance();
       }
       // this.setCardArea();
+      this.setBadgeNumber(this.page_info.getMemos().length);
     }
 
     getAllPageInfo() {
