@@ -33,7 +33,7 @@ a {
   height: 100%;
   #header {
     position: absolute;
-    background: #333;
+    background: #96967c;
     color: #fff;
     height: 48px;
     left: 0;
@@ -70,7 +70,7 @@ a {
         text-decoration: none;
 
         &.selected {
-          background: #555;
+          background: #6b6b5a;
         }
       }
     }
@@ -216,9 +216,9 @@ a {
           position: absolute;
           top: 12px;
           right: 0;
-          .pin_btn, .detail_btn {
-            display: none;
-          }
+          // .pin_btn, .detail_btn {
+          //   display: none;
+          // }
           .copied-msg-toast {
             display: none;
           }
