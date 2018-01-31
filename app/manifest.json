@@ -7,7 +7,7 @@
   "default_locale": "en",
   "icons": {
     "16": "images/icon_16.png",
-    "128": "images/icon-128.png"
+    "128": "images/icon_128.png"
   },
   "background": {
     "scripts": [
@@ -17,7 +17,7 @@
   "options_page":"pages/options.html#settings",
   "icons": {
     "16": "images/icon_16.png",
-    "128": "images/icon-128.png"
+    "128": "images/icon_128.png"
   },
   "permissions": [
     "tabs",
