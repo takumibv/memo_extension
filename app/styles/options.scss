@@ -33,8 +33,10 @@ a {
   height: 100%;
   #header {
     position: absolute;
+    display: flex;
     background: #96967c;
     color: #fff;
+    padding: 0 20px;
     height: 48px;
     left: 0;
     right: 0;
@@ -43,10 +45,14 @@ a {
     -webkit-box-shadow: 0px 4px 16px -2px rgba(0,0,0,0.4);
     -moz-box-shadow: 0px 4px 16px -2px rgba(0,0,0,0.4);
 
+    .main-icon {
+      height: 34px;
+      margin-top: 4px;
+    }
+
     h1 {
       display: inline-block;
       line-height: 48px;
-      padding: 0 12px;
       margin-right: 24px;
     }
 
@@ -70,7 +76,10 @@ a {
         text-decoration: none;
 
         &.selected {
-          background: #6b6b5a;
+          background: #6b6b5a !important;
+        }
+        &:hover {
+          background: #84846d;
         }
       }
     }
@@ -161,7 +170,7 @@ a {
             font-weight: bold;
             line-height: 28px;
             font-size: 18px;
-            padding-right: 84px;
+            padding: 4px 0;
             input {
               font-weight: bold;
               line-height: 28px;
@@ -199,7 +208,7 @@ a {
         }
         .mdl-card__supporting-text {
           padding: 12px 0;
-          font-size: 16px;
+          font-size: 14px;
           word-wrap: break-word;
 
           a {
@@ -209,7 +218,7 @@ a {
 
           .target-editor {
             width: 100%;
-            font-size: 16px;
+            font-size: 14px;
           }
         }
         .mdl-card__actions {
@@ -252,6 +261,13 @@ a {
           }
         }
       }
+    }
+    #settings {
+      width: 100%;
+      position: absolute;
+      bottom: 0;
+      top: 48px;
+      overflow-y: scroll;
     }
   }
 

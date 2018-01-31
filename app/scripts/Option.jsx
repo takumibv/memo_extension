@@ -161,12 +161,13 @@ export class OptionPage extends Component {
     }
   }
   renderHeader() {
-    const {query} = this.state;
+    const {query, options} = this.state;
     const memos_selected = (!query.hash || query.hash === '#memos') ? 'selected' : '';
     const settings_selected = query.hash === '#settings' ? 'selected' : '';
     return (
       <div id='header'>
-        <h1>Option Page</h1>
+        <img className='main-icon' src={`${options.image_url}/icon_128.png`} />
+        <h1>どこでもメモ</h1>
         <div className="nav">
           <a href="#memos" className={`nav-item ${memos_selected}`} onClick={e => {window.location.reload(true)}}>Memos</a>
           <a href="#settings" className={`nav-item ${settings_selected}`} onClick={e => {window.location.reload(true)}}>Settings</a>
@@ -228,7 +229,16 @@ export class OptionPage extends Component {
   renderSettingsPage() {
     return (
       <div id="container" className='clearfix'>
-        settings
+        <div id="settings">
+          <h2>設定</h2>
+          <h2>ヘルプ</h2>
+          <ul>
+            <li>1. うまく描写されない<br />リロードしてみてください. </li>
+            <li></li>
+            <li></li>
+            <li></li>
+          </ul>
+        </div>
       </div>
     );
   }
