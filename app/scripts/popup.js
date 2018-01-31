@@ -35,6 +35,11 @@ $(function() {
         window.close();
       });
 
+      $(document).on('click', '#menu_button', e => {
+        this.openMemoPage(null);
+        window.close();
+      });
+
       $(document).on('click', '.memo .move_position-button', e => {
         this.moveCurrentPosition($(e.currentTarget).attr('target'));
       });
