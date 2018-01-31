@@ -10,9 +10,14 @@ chrome.runtime.onInstalled.addListener((details) => {
   console.log('previousVersion', details.previousVersion);
 })
 
-chrome.browserAction.setBadgeText({
-  text: `Hello`
-})
+chrome.contextMenus.create({
+  title: "メモを追加",
+  contexts: ["page"],
+  type: "normal",
+  onclick: function (info) {
+    window.bg.makeMemo(null);
+  }
+});
 
 $(function() {
   /****
@@ -30,15 +35,22 @@ $(function() {
       console.log("[%04d/%02d/%02d %02d:%02d:%02d] Memo app is Running", d.getFullYear(), d.getMonth() + 1, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
 
       this.page_info = null; // 開いてるページのpage_infoを保持しておく場所
+
+      chrome.browserAction.setBadgeText({
+        text: `Hello`
+      })
     }
     // Chromeの各種操作イベントに対するイベントハンドラを登録する。
     assignEventHandlers() {
       chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-        if (tab.active && changeInfo.status === "loading") {
-          // ページの読み込みが始まった瞬間呼ばれる.
-          window.bg.insertCSS();
-          window.bg.setPageInfo(tabId, tab.url);
-        } else if (tab.active && changeInfo.status === "complete") {
+        if (changeInfo.status === "loading" && tab.url.match(/^http(s?):\/\//)) {
+          // ページの読み込みが始まった瞬間呼ばれる .
+          window.bg.insertCSS(tabId);
+          if (tab.active) {
+            // 別タブでローディングしている場合は呼ばれない。
+            window.bg.setPageInfo(tabId, tab.url);
+          }
+        } else if (tab.active && changeInfo.status === "complete" && tab.url.match(/^http(s?):\/\//)) {
           // ページの読み込みが完了したら呼ばれる.
           window.bg.setPageTitle(tabId, tab.title);
         }
@@ -48,7 +60,6 @@ $(function() {
         // タブが切り替えられた時/ページが更新された時に呼ばれる.
         const tabId = activeInfo.tabId;
         chrome.tabs.get(tabId, (tab) => {
-          console.log(tab);
           window.bg.setPageInfo(tabId, tab.url);
           window.bg.setPageTitle(tabId, tab.title);
         });
@@ -146,20 +157,20 @@ $(function() {
     /****
     * Card Area
     ****/
-    insertCSS() {
+    insertCSS(tab_id=null) {
       // 最初の1回のみ
       chrome.tabs.executeScript(
-        null,
+        tab_id,
         { code: `let tab_url; let page_info; let memos; let options;`}
       );
       chrome.tabs.insertCSS(
-        null, { file: "styles/base.css" }
+        tab_id, { file: "styles/base.css" }
       );
       chrome.tabs.insertCSS(
-        null, { file: "styles/reset.css" }
+        tab_id, { file: "styles/reset.css" }
       );
       chrome.tabs.insertCSS(
-        null, { file: "styles/card.css" }
+        tab_id, { file: "styles/card.css" }
       );
     }
     setCardArea() {
