@@ -120,7 +120,6 @@ $(function() {
         const bg = backgroundPage.bg;
         const page_url = bg.page_info.page_url;
         const memos = bg.page_info.getMemos();
-        console.log(memos);
 
         if (memos.length === 0) {
           $('#page_infos').append(this.renderNoMemoMsg());

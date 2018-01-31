@@ -26,7 +26,6 @@ export default class Base {
   generateId() {
     const storage = this.getStorage();
     let new_id = Math.floor(Math.random()*1000000);
-    console.log(storage.some(a => a.id === new_id));
     while(storage.some(a => a.id === new_id)) {
       new_id = Math.floor(Math.random()*1000000);
     }
@@ -49,7 +48,6 @@ export default class Base {
       // create
       storage.push(this.serialize_for_save());
       localStorage[this.storage_name] = JSON.stringify(storage);
-      console.log(index);
       console.log("create!", this.serialize_for_save());
     }
   }

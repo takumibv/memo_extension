@@ -110,7 +110,6 @@
           }).mouseup(function(e) {
             $(document).off("mousemove");
             if(resize_flg) {
-              console.log($box);
               callback($box.attr("index"), $box.width(), $box.height());
             }
             resize_bottom_flg = false;

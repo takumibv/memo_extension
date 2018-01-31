@@ -27,7 +27,6 @@ export class OptionPage extends Component {
     // console.log(memos);
     // this.state = page_info;
     const query = this.parseQuery();
-    console.log("query::", query);
     this.setState({
       // page_url: page_info.page_url,
       // page_title: page_info.title,
@@ -123,7 +122,6 @@ export class OptionPage extends Component {
     return decodeURIComponent(crypted_url);
   }
   parseQuery() {
-    console.log("parseQuery", location.search);
     let query = {};
     if (location.hash.split('?')[1]) {
       query = location.hash.split('?')[1].split('&').reduce(function(obj, v) {
@@ -263,7 +261,6 @@ if(!$('#react-container-for-memo-extension').length){
 }
 
 chrome.runtime.getBackgroundPage((backgroundPage) => {
-    console.log("getBackgroundPage");
     let bg            = backgroundPage.bg;
     const page_infos  = bg.getAllPageInfo();
     const memos       = bg.getAllMemos();
@@ -272,12 +269,6 @@ chrome.runtime.getBackgroundPage((backgroundPage) => {
       option_page_url: chrome.extension.getURL('pages/options.html'),
       is_options_page: true,
     };
-
-    console.log('======= Background Params ======');
-    console.log(page_infos);
-    console.log(memos);
-    console.log(options);
-    console.log('================================');
 
     try {
       ReactDOM.render(

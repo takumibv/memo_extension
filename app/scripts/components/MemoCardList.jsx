@@ -10,7 +10,6 @@ export default class MemoCardList extends Component {
 
   }
   componentWillMount() {
-    console.log("MemoCardList");
     // componentHandler.upgradeDom();
   }
   componentDidMount() {

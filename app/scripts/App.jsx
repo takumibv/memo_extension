@@ -6,12 +6,7 @@ require('material-design-lite/material');
 // require('react');
 // require('react-dom');
 // require('./components/card.js');
-console.log('======= Background Params ======');
-console.log(tab_url);
-console.log(page_info);
-console.log(memos);
-console.log(options);
-console.log('================================');
+
 if(!$('#react-container-for-memo-extension').length){
   $('body').prepend(
   	"<div id='react-container-for-memo-extension'></div>"

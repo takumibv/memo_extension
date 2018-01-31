@@ -20,7 +20,6 @@ require('../lib/text-editable.js');
 
 export default class MemoCard extends Component {
   componentWillMount() {
-    console.log("MDLite");
     // componentHandler.upgradeDom();
   }
   componentDidMount() {
