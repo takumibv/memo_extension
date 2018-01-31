@@ -9,10 +9,10 @@ export default class CopyButton extends Button {
   onClick(e) {
     const $target_text = $('#' + $(e.currentTarget).attr('target'));
     var copy_text = "";
-    copy_text += $target_text.find(".mdl-card__title-text span").html().replace(/<br>/g, '\n');
+    copy_text += $target_text.find(".mdl-card__title-text span").html().replace(/<br>/g, '\n').replace(/<a href=\"((h?)(ttps?:\/\/[a-zA-Z0-9.\-_@:/~?%&;=+#',()*!]+))\">/g, '').replace(/<\/a>/g, '');
     copy_text += "\n";
-    copy_text += $target_text.find(".mdl-textfield p").html().replace(/<br>/g, '\n');
-
+    copy_text += $target_text.find(".mdl-textfield p").html().replace(/<br>/g, '\n').replace(/<a href=\"((h?)(ttps?:\/\/[a-zA-Z0-9.\-_@:/~?%&;=+#',()*!]+))\">/g, '').replace(/<\/a>/g, '');
+console.log("copy_text::", copy_text);
     const tmp_form = $target_text.find('textarea.form-for-copy');
     tmp_form.val(copy_text);
     tmp_form.css("display", "block").select();

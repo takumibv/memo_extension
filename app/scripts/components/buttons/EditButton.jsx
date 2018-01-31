@@ -7,14 +7,8 @@ export default class EditButton extends Button {
 
   }
   onClick(e) {
-    var $target_text    = $('#' + $(e.currentTarget).attr('target'));
-    var $target_editor  = $target_text.next('.target-editor');
-    var target_text_height = $target_text[0].scrollHeight + 'px';
-    $target_text.css('display', 'none');
-    $target_editor.val($target_text.html().replace(/<br>/g, '\n'))
-      .css('display', '')
-      .focus();
-    $target_editor.css('height', target_text_height);
+    var $target_text = $('#' + $(e.currentTarget).attr('target'));
+    $target_text.dblclick();
   }
   render() {
     const {index} = this.props;

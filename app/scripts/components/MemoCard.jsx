@@ -128,6 +128,13 @@ export default class MemoCard extends Component {
             </div>}
           {options.is_options_page ?
             (<div className="mdl-card__actions">
+              <FixedButton
+                key={`fixed_btn-${index}`}
+                index={index}
+                memo_id={memo.id}
+                options={options}
+                actions={actions}
+                is_fixed={memo.is_fixed} />
               <EditButton
                 key={`edit_btn-${index}`}
                 index={index}

@@ -97,9 +97,6 @@
     return str.replace(regexp_url, regexp_makeLink);
   }
   function escape_link(str) {
-    var a = str.replace(/<a href=\"((h?)(ttps?:\/\/[a-zA-Z0-9.\-_@:/~?%&;=+#',()*!]+))\">/g, '').replace(/<\/a>/g, '');
-    console.log("escape_link:: ");
-    console.log(str, " -> ", a);
-    return a;
+    return str.replace(/<a href=\"((h?)(ttps?:\/\/[a-zA-Z0-9.\-_@:/~?%&;=+#',()*!]+))\">/g, '').replace(/<\/a>/g, '');
   }
 })(jQuery);
