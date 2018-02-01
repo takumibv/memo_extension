@@ -167,8 +167,7 @@ export class OptionPage extends Component {
         <img className='main-icon' src={`${options.image_url}/icon_128.png`} />
         <h1>どこでもメモ</h1>
         <div className="nav">
-          <a href="#memos" className={`nav-item ${memos_selected}`} onClick={e => {window.location.reload(true)}}>Memos</a>
-          <a href="#settings" className={`nav-item ${settings_selected}`} onClick={e => {window.location.reload(true)}}>Settings</a>
+          <a href="#memos" className={`nav-item ${memos_selected} selected`} onClick={e => {window.location.reload(true)}}>Memos</a>
         </div>
       </div>
     );
@@ -245,8 +244,7 @@ export class OptionPage extends Component {
     return(
       <div className='wrapper'>
         {this.renderHeader()}
-        {query.hash === '#settings' ?
-          this.renderSettingsPage() :
+        {
           this.renderMemosPage()
         }
       </div>
