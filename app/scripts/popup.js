@@ -26,26 +26,26 @@ $(function() {
     }
     assignEventHandlers() {
       $(document).on('click', '.makeMemo', e => {
-        this.makeMemo();
+        this.onClickMakeMemoButton();
         window.close();
       });
 
       $(document).on('click', '#setting_button', e => {
-        this.openOptionPage();
+        this.onClickOpenSettingPageButton();
         window.close();
       });
 
       $(document).on('click', '#menu_button', e => {
-        this.openMemoPage(null);
+        this.onClickOpenMemoPageButton(null);
         window.close();
       });
 
       $(document).on('click', '.memo .move_position-button', e => {
-        this.moveCurrentPosition($(e.currentTarget).attr('target'));
+        this.onClickMovePositionButton($(e.currentTarget).attr('target'));
       });
 
       $(document).on('click', '.memo .open_option-button', e => {
-        this.openMemoPage($(e.currentTarget).attr('target'));
+        this.onClickOpenMemoPageButton($(e.currentTarget).attr('target'));
       });
       // イベントハンドラ設置
       // $('#usageModal').on('show.bs.modal', function(event) {
@@ -70,26 +70,24 @@ $(function() {
       this.w = $(document).width();
       this.h = $(document).height();
     }
-    makeMemo() {
+    onClickMakeMemoButton() {
       chrome.runtime.getBackgroundPage((backgroundPage) => {
-        let bg = backgroundPage.bg;
-        bg.makeMemo(this.tabId);
+        backgroundPage.bg.makeMemo(this.tabId);
       });
     }
-    openOptionPage() {
+    onClickOpenSettingPageButton() {
       chrome.runtime.getBackgroundPage((backgroundPage) => {
         backgroundPage.bg.openOptionPage();
       });
     }
-    openMemoPage(memo_id) {
+    onClickOpenMemoPageButton(memo_id) {
       chrome.runtime.getBackgroundPage((backgroundPage) => {
         backgroundPage.bg.openMemoPage(memo_id);
       });
     }
-    moveCurrentPosition(memo_id) {
+    onClickMovePositionButton(memo_id) {
       chrome.runtime.getBackgroundPage((backgroundPage) => {
-        let bg = backgroundPage.bg;
-        bg.scrollTo(memo_id);
+        backgroundPage.bg.scrollTo(memo_id);
       });
     }
     renderMemo(memo) {
@@ -106,12 +104,9 @@ $(function() {
                 </button>
               </div>`);
     }
-    renderNoMemoMsg() {
-      const msg = 'メモがありません.';
+    renderNoMemoMsg(msg) {
       return (`<div class="memo mdl-list__item">
-                <span class="mdl-list__item-primary-content">
-                  <span>${msg}</span>
-                </span>
+                <span>${msg}</span>
               </div>`);
     }
     restoreConfigurations(memo) {
@@ -121,12 +116,15 @@ $(function() {
         const page_url = bg.page_info.page_url;
         const memos = bg.page_info.getMemos();
 
-        if (memos.length === 0) {
-          $('#page_infos').append(this.renderNoMemoMsg());
-        }
-        for(let i in memos) {
-          // $('#page_infos').append(`<div id='${memos[i].id}' class='memo'>${memos[i].title}</div>`);
-          $('#page_infos').append(this.renderMemo(memos[i]));
+        if (!bg.canShowMemo()) {
+          $('#page_infos').append(this.renderNoMemoMsg('このページではメモを表示できません。'));
+          $('#make_memo_button').prop("disabled", true);
+        } else if (memos.length === 0) {
+          $('#page_infos').append(this.renderNoMemoMsg('メモがありません。'));
+        } else {
+          for(let i in memos) {
+            $('#page_infos').append(this.renderMemo(memos[i]));
+          }
         }
 
         // var is_valid = bg.getIsValid();

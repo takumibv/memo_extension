@@ -35,6 +35,12 @@ $(function() {
       console.log("[%04d/%02d/%02d %02d:%02d:%02d] Memo app is Running", d.getFullYear(), d.getMonth() + 1, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
 
       this.page_info = null; // 開いてるページのpage_infoを保持しておく場所
+      this.can_show_memo = true; // 開いてるページがメモを表示できるかどうか
+
+      this.options = {
+        image_url: chrome.extension.getURL('images'),
+        option_page_url: chrome.extension.getURL('pages/options.html')
+      }; // resourseファイルのurl
 
       chrome.browserAction.setBadgeText({
         text: `Hello`
@@ -87,8 +93,7 @@ $(function() {
             window.bg.deleteMemo(msg.memo, msg.action_type);
             break;
           case 'CANNOT_SHOW_MEMO':
-            alert("Memo App Error: このページではメモを表示できません。");
-            window.bg.setBadgeError();
+            window.bg.setCanShowMemo(false);
             break;
           case 'OPEN_OPTION_PAGE':
             window.bg.openMemoPage(msg.memo.id, msg.memo.page_info_id);
@@ -105,7 +110,7 @@ $(function() {
       * 3. カードセット
       ***/
       if (page_url.match(/^http(s?):\/\//) === null) {
-        this.setBadgeNumber("");
+        this.setCanShowMemo(false);
         return;
       }
       const tab_url  = this.encodeUrl(page_url);
@@ -178,20 +183,21 @@ $(function() {
 
       this.setBadgeNumber(this.page_info.getMemos().length);
 
-      const options = {
-        image_url: chrome.extension.getURL('images'),
-        option_page_url: chrome.extension.getURL('pages/options.html')
-      };
-
       chrome.tabs.executeScript(
         null,
         { code:
           `tab_url    = '${this.page_info.page_url}';` +
           `page_info  = JSON.parse('${JSON.stringify(this.page_info.serialize())}');` +
           `memos      = JSON.parse('${JSON.stringify(this.page_info.getMemos())}');` +
-          `options    = JSON.parse('${JSON.stringify(options)}');`
+          `options    = JSON.parse('${JSON.stringify(this.options)}');`
         },
         () => {
+          if (chrome.extension.lastError) {
+            console.log("executeScript::", chrome.extension.lastError);
+            this.setCanShowMemo(false);
+            return;
+          }
+          this.setCanShowMemo(true);
           chrome.tabs.executeScript(
             null, { file: "scripts/react_app.js" }
           );
@@ -233,9 +239,9 @@ $(function() {
         // executeScript
         this.page_info.deleteMemo(memo);
         this.page_info.checkMemoExistance();
+        this.setBadgeNumber(this.page_info.getMemos().length);
       }
       // this.setCardArea();
-      this.setBadgeNumber(this.page_info.getMemos().length);
     }
 
     getAllPageInfo() {
@@ -244,6 +250,14 @@ $(function() {
 
     getAllMemos() {
       return Memo.getAllMemos();
+    }
+
+    canShowMemo() {
+      return this.can_show_memo;
+    }
+    setCanShowMemo(can_show) {
+      this.can_show_memo = can_show;
+      if (!can_show) { this.setBadgeError(); }
     }
 
     openOptionPage(memo=null) {

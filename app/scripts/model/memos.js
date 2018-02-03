@@ -66,13 +66,13 @@ export default class Memo extends Base {
     return storage.filter(
       m => m.page_info_id === page_info_id
     ).map(
-      m => Object.assign({page_url: page_info.page_url}, m)
+      m => Object.assign({page_info: page_info}, m)
     );
   }
   static getAllMemos() {
     const storage = Base.getStorage(MEMO_STORAGE_NAME);
     return storage.map(memo =>
-      Object.assign({page_url: PageInfo.getPageInfoById(memo.page_info_id).page_url}, memo)
+      Object.assign({page_info: PageInfo.getPageInfoById(memo.page_info_id)}, memo)
     );
   }
   static saveMemos(memos, page_info_id) {

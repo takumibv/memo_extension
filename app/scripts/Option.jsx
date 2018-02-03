@@ -105,10 +105,10 @@ export class OptionPage extends Component {
     }
   }
   save(action_type, updated_memo) {
-    chrome.runtime.sendMessage({ method: action_type, action_type: 'OPTIONS', page_url: updated_memo.page_url, memo: updated_memo });
+    chrome.runtime.sendMessage({ method: action_type, action_type: 'OPTIONS', page_url: updated_memo.page_info.page_url, memo: updated_memo });
   }
   delete(memo) {
-    chrome.runtime.sendMessage({ method: 'DELETE_MEMO', action_type: 'OPTIONS', memo: memo, page_url: memo.page_url });
+    chrome.runtime.sendMessage({ method: 'DELETE_MEMO', action_type: 'OPTIONS', memo: memo, page_url: memo.page_info.page_url });
   }
   open_option_page(memo) {
     chrome.runtime.sendMessage({ method: 'OPEN_OPTION_PAGE', action_type: 'OPTIONS', memo: memo });
@@ -147,6 +147,12 @@ export class OptionPage extends Component {
     this.setState({query: query});
     // $("#sidebar").animate({scrollTop: $(`#page_info-${query.page_info}`).offset().top - 40});
     this.scrollSideBarTo(query.page_info);
+  }
+  onChangeSearchQuery(target) {
+    const {query} = this.state;
+    query.search = target;
+    this.setState({query: query});
+    console.log("onChangeSearchQuery:: ", target);
   }
   scrollSideBarTo(page_info_id) {
     if(page_info_id && $(`#page_info-${page_info_id}`).length > 0) {
@@ -206,13 +212,39 @@ export class OptionPage extends Component {
   renderMemos() {
     const {memos, query} = this.state;
     const {options} = this.props;
-    const render_memos = query.page_info ? memos.filter(memo => memo.page_info_id === parseInt(query.page_info)) : memos;
+    let render_memos = memos;
     const sort_by = 'updated_at';
+
+    if (query.page_info) {
+      render_memos = render_memos.filter(memo => memo.page_info_id === parseInt(query.page_info));
+    }
+    if (query.search) {
+      render_memos = render_memos.filter(memo => {
+        return memo.title.indexOf(query.search) != -1
+          || memo.description.indexOf(query.search) != -1
+          || this.decodeUrl(memo.page_info.page_url).indexOf(query.search) != -1
+          || memo.page_info.page_title.indexOf(query.search) != -1;
+      });
+    }
     return (
-      <MemoCardList
-        memos={this.sortBy(render_memos, sort_by)}
-        options={options}
-        actions={this.actions.bind(this)} />
+      <div id="memo_list">
+        {this.renderSearchBar()}
+        <MemoCardList
+          memos={this.sortBy(render_memos, sort_by)}
+          options={options}
+          actions={this.actions.bind(this)} />
+      </div>
+    );
+  }
+  renderSearchBar() {
+    return (
+      <div id="search_bar">
+        <input
+          type="text"
+          name="search_query"
+          placeholder="search"
+          onChange={e => this.onChangeSearchQuery(e.target.value) } />
+      </div>
     );
   }
   renderMemosPage() {

@@ -141,13 +141,33 @@ a {
         }
       }
     }
-    #MemoCardList {
+    #memo_list {
       width: 75%;
       position: absolute;
       bottom: 0;
       right: 0;
       top: 48px;
       overflow: scroll;
+
+      #search_bar {
+        padding: 12px;
+        padding-bottom: 0;
+        width: 100%;
+        box-sizing: border-box;
+
+        input {
+          font-size: 14px;
+          line-height: 20px;
+          border-radius: 14px;
+          padding: 2px 8px;
+          border: solid 1px #ccc;
+          width: 100%;
+          box-sizing: border-box;
+        }
+      }
+    }
+    #MemoCardList {
+      width: 100%;
 
       .mdl-card {
         width: auto !important;
@@ -195,6 +215,7 @@ a {
             &.page_info_link {
               display: inline-block;
               line-height: 16px;
+              font-weight: bold;
             }
           }
           .date {
