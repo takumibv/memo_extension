@@ -47,17 +47,6 @@ $(function() {
       $(document).on('click', '.memo .open_option-button', e => {
         this.onClickOpenMemoPageButton($(e.currentTarget).attr('target'));
       });
-      // イベントハンドラ設置
-      // $('#usageModal').on('show.bs.modal', function(event) {
-      //   var button = $(event.relatedTarget); // Button that triggered the modal
-      //   var recipient = button.data('whatever'); // Extract info from data-* attributes
-      //   var modal = $(this);
-      //   modal.data('bs.modal').handleUpdate();
-      //   $("body").css({
-      //     height: "400px",
-      //     width: "700px"
-      //   });
-      // });
     }
     setProps() {
       const query = { active: true, currentWindow: true };
@@ -126,9 +115,6 @@ $(function() {
             $('#page_infos').append(this.renderMemo(memos[i]));
           }
         }
-
-        // var is_valid = bg.getIsValid();
-        // $("#is_valid_checkbox [name='is_valid']").prop("checked", is_valid);
       });
     }
   }
