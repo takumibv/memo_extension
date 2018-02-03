@@ -97,7 +97,7 @@ export default class MemoCard extends Component {
     const created_at_str = `${created_at.getFullYear()}/${created_at.getMonth()+1}/${created_at.getDate()} ${('0'+created_at.getHours()).slice(-2)}:${('0'+created_at.getMinutes()).slice(-2)}`;
     const updated_at = new Date(memo.updated_at);
     const updated_at_str = `${updated_at.getFullYear()}/${updated_at.getMonth()+1}/${updated_at.getDate()} ${('0'+updated_at.getHours()).slice(-2)}:${('0'+updated_at.getMinutes()).slice(-2)}`;
-    const page_url = decodeURIComponent(memo.page_url);
+    const page_url = decodeURIComponent(memo.page_info.page_url);
 
     // actions({type: 'UPDATE_TITLE'});
     return (
@@ -123,8 +123,8 @@ export default class MemoCard extends Component {
           </div>
           {options.is_options_page &&
             <div className="memo_infos">
-              <a className="page_url" href={`${page_url}`} target="_blank" rel="noreferrer noopener">{page_url}</a>
-              <a className="page_info_link" onClick={() => {this.openPageInfo(memo.page_info_id);}} rel="noreferrer noopener">このページのメモ</a>
+              <a className="page_url" href={`${page_url}`} target="_blank" rel="noreferrer noopener">{`${memo.page_info.page_title}`}<br />{page_url}</a>
+              <a className="page_info_link" onClick={() => {this.openPageInfo(memo.page_info_id);}} rel="noreferrer noopener">このページのメモ一覧</a>
             </div>}
           {options.is_options_page ?
             (<div className="mdl-card__actions">
