@@ -107,7 +107,6 @@ export class OptionPage extends Component {
     return decodeURIComponent(crypted_url);
   }
   parseQuery() {
-    console.log("parseQuery", location.search);
     let query = {};
     if (location.hash.split('?')[1]) {
       query = location.hash.split('?')[1].split('&').reduce(function(obj, v) {
@@ -157,29 +156,21 @@ export class OptionPage extends Component {
     return (
       <div id='header'>
         <img className='main-icon' src={`${options.image_url}/icon_128.png`} />
-        <h1>どこでもメモ</h1>
+        <h1>{options.assignMessage('app_name')}</h1>
         <div className="nav">
           <a
             href="#memos"
             className={`nav-item ${memos_selected}`}
             onClick={e => {window.location.reload(true)}} >
-            Memos
+            {options.assignMessage('memo_header_msg')}
           </a>
           <a
             href="#settings"
             className={`nav-item ${settings_selected}`}
             onClick={e => {window.location.reload(true)}} >
-            Settings
+            {options.assignMessage('settings_header_msg')}
           </a>
         </div>
-      </div>
-    );
-  }
-  renderTabbar() {
-    return (
-      <div id="tabbar">
-        <a href="#scroll-tab-2" className="mdl-layout__tab">Tab 1</a>
-        <a href="#scroll-tab-3" className="mdl-layout__tab">Tab 2</a>
       </div>
     );
   }
@@ -191,7 +182,7 @@ export class OptionPage extends Component {
     return (
       <div id='sidebar'>
         <div className={`page_info-item ${selected_all}`} onClick={() => {this.onClickPageInfo();}}>
-          <p>{'全て表示'}</p>
+          <p>{options.assignMessage('show_all_memo_msg')}</p>
         </div>
         {sorted_page_infos.map((page_info, index) => {
           const url = this.decodeUrl(page_info.page_url);
@@ -240,12 +231,13 @@ export class OptionPage extends Component {
     );
   }
   renderSearchBar() {
+    const {options} = this.props;
     return (
       <div id="search_bar">
         <input
           type="text"
           name="search_query"
-          placeholder="search"
+          placeholder={options.assignMessage('search_query_msg')}
           onChange={e => this.onChangeSearchQuery(e.target.value) } />
       </div>
     );
@@ -303,6 +295,7 @@ chrome.runtime.getBackgroundPage((backgroundPage) => {
       image_url: chrome.extension.getURL('images'),
       option_page_url: chrome.extension.getURL('pages/options.html'),
       is_options_page: true,
+      assignMessage: chrome.i18n.getMessage,
     };
 
     console.log('======= Background Params ======');

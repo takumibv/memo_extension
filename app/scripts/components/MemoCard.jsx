@@ -87,8 +87,8 @@ export default class MemoCard extends Component {
           {options.is_options_page &&
             <div className="memo_infos">
               <div className="clearfix">
-                <p className="date updated_at">更新: <span>{updated_at_str}</span></p>
-                <p className="date created_at">作成: <span>{created_at_str}</span></p>
+                <p className="date updated_at">{options.assignMessage('updated_at_msg')}: <span>{updated_at_str}</span></p>
+                <p className="date created_at">{options.assignMessage('created_at_msg')}: <span>{created_at_str}</span></p>
               </div>
             </div>}
           <div className="handle-card-wrapper">
@@ -100,7 +100,7 @@ export default class MemoCard extends Component {
           {options.is_options_page &&
             <div className="memo_infos">
               <a className="page_url" href={`${page_url}`} target="_blank" rel="noreferrer noopener">{`${memo.page_info.page_title}`}<br />{page_url}</a>
-              <a className="page_info_link" onClick={() => {this.openPageInfo(memo.page_info_id);}} rel="noreferrer noopener">このページのメモ一覧</a>
+              <a className="page_info_link" onClick={() => {this.openPageInfo(memo.page_info_id);}} rel="noreferrer noopener">{options.assignMessage('this_page_memo_list_msg')}</a>
             </div>}
           {options.is_options_page ?
             (<div className="mdl-card__actions">
@@ -123,7 +123,7 @@ export default class MemoCard extends Component {
                 memo_id={memo.id}
                 options={options}
                 actions={actions} />
-              <span className="copied-msg-toast">Copied.</span>
+              <span className="copied-msg-toast">{options.assignMessage('copied_msg')}</span>
               <DeleteButton
                 key={`delete_btn-${index}`}
                 index={index}
@@ -173,7 +173,7 @@ export default class MemoCard extends Component {
               memo_id={memo.id}
               options={options}
               actions={actions} />
-            <span className="copied-msg-toast">Copied.</span>
+            <span className="copied-msg-toast">{options.assignMessage('copied_msg')}</span>
             <DeleteButton
               key={`delete_btn-${index}`}
               index={index}

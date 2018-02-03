@@ -133,6 +133,7 @@ export class App extends Component {
 }
 
 try {
+  options.assignMessage = val => { return messages[val]; };
   ReactDOM.render(
     <App page_info={page_info} memos={memos} options={options} />,
     document.getElementById('react-container-for-memo-extension')

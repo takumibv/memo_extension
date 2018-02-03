@@ -11,11 +11,11 @@ export default class DetailButton extends Button {
     actions({type: 'OPEN_OPTION_PAGE', index: index, memo_id: memo_id});
   }
   render() {
-    const {index} = this.props;
+    const {index, options} = this.props;
     return this.renderButton(
       `detail_btn-${index}`,
       'move_page_icon',
-      'details',
+      options.assignMessage('detail_msg'),
       'detail_btn',
       ``,
       true,

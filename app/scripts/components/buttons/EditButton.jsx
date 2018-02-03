@@ -11,11 +11,11 @@ export default class EditButton extends Button {
     $target_text.dblclick();
   }
   render() {
-    const {index} = this.props;
+    const {index, options} = this.props;
     return this.renderButton(
       `mode_edit_btn-${index}`,
       'edit_icon',
-      'edit',
+      options.assignMessage('edit_msg'),
       'mode_edit_btn',
       `editable-textarea-${index}`,
       true,

@@ -33,7 +33,8 @@
         if(option.is_auto_resize) {
           $target_editor.css('height', target_text_height);
         };
-        if($target_text.text()==='新しいメモ' || $target_text.text()==='ダブルクリックで編集') {
+        if($target_text.text()==='新しいメモ' || $target_text.text()==='ダブルクリックで編集'
+          || $target_text.text()==='New Memo' || $target_text.text()==='double click to edit') {
           $target_editor.select();
         }
       });

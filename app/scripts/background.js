@@ -11,7 +11,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 })
 
 chrome.contextMenus.create({
-  title: "メモを追加",
+  title: chrome.i18n.getMessage('add_memo_msg'),
   contexts: ["page"],
   type: "normal",
   onclick: function (info) {
@@ -38,7 +38,7 @@ $(function() {
       this.can_show_memo = true; // 開いてるページがメモを表示できるかどうか
       this.options = {
         image_url: chrome.extension.getURL('images'),
-        option_page_url: chrome.extension.getURL('pages/options.html')
+        option_page_url: chrome.extension.getURL('pages/options.html'),
       }; // resourseファイルのurl
 
       // 開いている全てのページにinsertCSSする.
@@ -52,6 +52,24 @@ $(function() {
       chrome.browserAction.setBadgeText({
         text: `Hello`
       })
+    }
+    assignMessages() {
+      return {
+        'updated_at_msg' : chrome.i18n.getMessage('updated_at_msg'),
+        'created_at_msg' : chrome.i18n.getMessage('created_at_msg'),
+        'copied_msg' : chrome.i18n.getMessage('copied_msg'),
+        'confirm_remove_memo_msg' : chrome.i18n.getMessage('confirm_remove_memo_msg'),
+        'minimize_msg' : chrome.i18n.getMessage('minimize_msg'),
+        'maximize_msg' : chrome.i18n.getMessage('maximize_msg'),
+        'pinned_msg' : chrome.i18n.getMessage('pinned_msg'),
+        'remove_pinned_msg' : chrome.i18n.getMessage('remove_pinned_msg'),
+        'detail_msg' : chrome.i18n.getMessage('detail_msg'),
+        'edit_msg' : chrome.i18n.getMessage('edit_msg'),
+        'copy_msg' : chrome.i18n.getMessage('copy_msg'),
+        'delete_msg' : chrome.i18n.getMessage('delete_msg'),
+        'new_memo_title_msg' : chrome.i18n.getMessage('new_memo_title_msg'),
+        'new_memo_description_msg' : chrome.i18n.getMessage('new_memo_description_msg'),
+      };
     }
     // Chromeの各種操作イベントに対するイベントハンドラを登録する。
     assignEventHandlers() {
@@ -173,7 +191,7 @@ $(function() {
       // 最初の1回のみ
       chrome.tabs.executeScript(
         tab_id,
-        { code: `let tab_url; let page_info; let memos; let options;`}
+        { code: `let tab_url; let page_info; let memos; let options; let messages;`}
       );
       chrome.tabs.insertCSS(
         tab_id, { file: "styles/base.css" }
@@ -196,7 +214,8 @@ $(function() {
           `tab_url    = '${this.page_info.page_url}';` +
           `page_info  = JSON.parse('${JSON.stringify(this.page_info.serialize())}');` +
           `memos      = JSON.parse('${JSON.stringify(this.page_info.getMemos())}');` +
-          `options    = JSON.parse('${JSON.stringify(this.options)}');`
+          `options    = JSON.parse('${JSON.stringify(this.options)}');` +
+          `messages   = JSON.parse('${JSON.stringify(this.assignMessages())}');`
         },
         () => {
           if (chrome.extension.lastError) {
@@ -216,7 +235,7 @@ $(function() {
     ****/
     makeMemo(tabId) {
       const url = this.page_info.page_url;
-      const memo = {id: null, title: "新しいメモ", description: "ダブルクリックで編集", position_x: 0, position_y: null, width: 300, height: 150, is_open: true, is_fixed: false};
+      const memo = {id: null, title: this.assignMessages()["new_memo_title_msg"], description: this.assignMessages()["new_memo_description_msg"], position_x: 0, position_y: null, width: 300, height: 150, is_open: true, is_fixed: false};
       this.updateMemo(url, memo);
       this.setCardArea();
     }

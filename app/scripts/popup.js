@@ -17,8 +17,9 @@ $(function() {
     assignMessages() {
       // 文言の割り当て
       let hash = {
-        "usage_msg_1": "pop_usage_msg_1",
-        // "make_memo_button" : "make_memo_button"
+        "make_memo_button_msg": "make_memo_button_msg",
+        "setting_button_msg": "setting_button_msg",
+        "menu_button_msg": "menu_button_msg",
       };
       for (var key in hash) {
         $("#" + key).html(chrome.i18n.getMessage(hash[key]));
@@ -106,10 +107,10 @@ $(function() {
         const memos = bg.page_info.getMemos();
 
         if (!bg.canShowMemo()) {
-          $('#page_infos').append(this.renderNoMemoMsg('このページではメモを表示できません。'));
+          $('#page_infos').append(this.renderNoMemoMsg(chrome.i18n.getMessage('cannot_show_memo_msg')));
           $('#make_memo_button').prop("disabled", true);
         } else if (memos.length === 0) {
-          $('#page_infos').append(this.renderNoMemoMsg('メモがありません。'));
+          $('#page_infos').append(this.renderNoMemoMsg(chrome.i18n.getMessage('no_memo_msg')));
         } else {
           for(let i in memos) {
             $('#page_infos').append(this.renderMemo(memos[i]));

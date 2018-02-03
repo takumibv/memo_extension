@@ -14,5 +14,8 @@
   "browserActionTitle": {
     "message": "Memo Anywhere",
     "description": "The title of the browser action button"
-  }
+  },
+
+  /* popup page */
+  "make_memo_button" : { "message": "メモを作成する." }
 }

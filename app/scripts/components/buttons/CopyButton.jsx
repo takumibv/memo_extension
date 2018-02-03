@@ -25,11 +25,11 @@ console.log("copy_text::", copy_text);
     setTimeout(function(){ $toast.fadeOut() }, 500);
   }
   render() {
-    const {index} = this.props;
+    const {index, options} = this.props;
     return this.renderButton(
       `content_copy_btn-${index}`,
       'copy_icon',
-      'copy clip board',
+      options.assignMessage('copy_msg'),
       '',
       `memo-card-${index}`,
       true,

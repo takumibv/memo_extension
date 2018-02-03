@@ -21,7 +21,7 @@ export default class MemoCardList extends Component {
         {options.is_options_page && memos.length === 0 &&
           <div
             className={`demo-card-wide no-memo-msg`} >
-            <p>メモがありません</p>
+            <p>options.assignMessage('no_memo_msg')</p>
           </div>
         }
       </div>
