@@ -239,9 +239,9 @@ $(function() {
         // executeScript
         this.page_info.deleteMemo(memo);
         this.page_info.checkMemoExistance();
+        this.setBadgeNumber(this.page_info.getMemos().length);
       }
       // this.setCardArea();
-      this.setBadgeNumber(this.page_info.getMemos().length);
     }
 
     getAllPageInfo() {
