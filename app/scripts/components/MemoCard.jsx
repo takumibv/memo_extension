@@ -5,18 +5,12 @@ import CopyButton from './buttons/CopyButton.jsx';
 import OpenCloseButton from './buttons/OpenCloseButton.jsx';
 import DetailButton from './buttons/DetailButton.jsx';
 import FixedButton from './buttons/FixedButton.jsx';
-// import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
-// import FlatButton from 'material-ui/Button';
 global.jQuery = require('jquery');
 const $ = require('jquery');
 require('../lib/jinplace.js');
-// const material = require('material-design-lite/material');
-// const MDLite = require('material-design-lite/material');
-// const componentHandler = MDLite.componentHandler;
 require('../lib/tiny-draggable.js');
 require('../lib/resizable_box.js');
 require('../lib/text-editable.js');
-// require('react');
 
 export default class MemoCard extends Component {
   componentWillMount() {
@@ -49,11 +43,6 @@ export default class MemoCard extends Component {
     }, (index, text) => {
       actions({type: 'UPDATE_DESCRIPTION', index: index, memo_id: memo.id, description: text});
     });
-
-    // $('#react-container-for-memo-extension').prepend("<script defer src='https://code.getmdl.io/1.3.0/material.min.js'></script>");
-  }
-  changeMemoAttr() {
-
   }
   nl2br(str) {
     const regex = /(<br>)/g;
@@ -72,21 +61,9 @@ export default class MemoCard extends Component {
   }
   render() {
     const {index, memo, actions, options} = this.props;
-  // //   console.log("card app");
-  // //   console.log(MDLite);
-  //   // return (
-  //   //   <div className="App">
-  //   //     <p>Hello World</p>
-  //   //   </div>
-  //   // );
-    let minimize = '';
-    if (!memo.is_open) {
-      minimize = 'minimize';
-    }
-    let fixed = '';
-    if (memo.is_fixed) {
-      fixed = 'fixed';
-    }
+
+    const minimize = memo.is_open ? '' : 'minimize';
+    const fixed = memo.is_fixed ? 'fixed' : '';
     const card_style = {
       width: memo.width,
       height: memo.height,
@@ -99,7 +76,6 @@ export default class MemoCard extends Component {
     const updated_at_str = `${updated_at.getFullYear()}/${updated_at.getMonth()+1}/${updated_at.getDate()} ${('0'+updated_at.getHours()).slice(-2)}:${('0'+updated_at.getMinutes()).slice(-2)}`;
     const page_url = decodeURIComponent(memo.page_info.page_url);
 
-    // actions({type: 'UPDATE_TITLE'});
     return (
       <div
         id={`memo-card-${index}`}
@@ -209,32 +185,4 @@ export default class MemoCard extends Component {
       </div>
     );
   }
-  //
-  // render() {
-  //   return (
-  //     <Card>
-  //       <CardHeader
-  //         title="URL Avatar"
-  //         subtitle="Subtitle"
-  //         avatar="images/jsa-128.jpg"
-  //       />
-  //       <CardMedia
-  //         overlay={<CardTitle title="Overlay title" subtitle="Overlay subtitle" />}
-  //       >
-  //         <img src="images/nature-600-337.jpg" alt="" />
-  //       </CardMedia>
-  //       <CardTitle title="Card title" subtitle="Card subtitle" />
-  //       <CardText>
-  //         Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-  //         Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
-  //         Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
-  //         Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
-  //       </CardText>
-  //       <CardActions>
-  //         <FlatButton label="Action1" />
-  //         <FlatButton label="Action2" />
-  //       </CardActions>
-  //     </Card>
-  //   )
-  // }
 }

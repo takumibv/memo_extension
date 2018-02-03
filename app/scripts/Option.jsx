@@ -4,33 +4,17 @@ import ReactDOM from 'react-dom';
 import MemoCardList from './components/MemoCardList.jsx';
 
 const url = require('url');
-// require('material-design-lite/material');
 
 export class OptionPage extends Component {
   constructor() {
     super();
     console.log("Memo Extension is running.");
   }
-  // getInitialState() {
-  //   return {
-  //     page_url: page_info.page_url,
-  //     page_title: page_info.page_title,
-  //     memos: memos
-  //     // memos: [
-  //     //   {id: 10, title: "memo1", description: "memoです11.", position_x: 0, position_y: 0, width: 300, height: 150, is_open: true},
-  //     //   {id: 20, title: "memo2", description: "memoです22.", position_x: 0, position_y: 80, width: 300, height: 120, is_open: false}
-  //     // ].concat(page_info.memos)
-  //   };
-  // }
   componentWillMount() {
     const { page_infos, memos, options } = this.props;
-    // console.log(memos);
-    // this.state = page_info;
     const query = this.parseQuery();
     console.log("query::", query);
     this.setState({
-      // page_url: page_info.page_url,
-      // page_title: page_info.title,
       query: query,
       options: options,
       memos: memos
@@ -38,7 +22,7 @@ export class OptionPage extends Component {
   }
   componentDidMount() {
     const {query} = this.state;
-    // $(".mdl-card:last-child").css('margin-bottom', window.innerHeight - 100);
+
     this.scrollMemoCardListTo(query.memo);
     this.scrollSideBarTo(query.page_info);
   }
