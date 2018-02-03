@@ -159,8 +159,18 @@ export class OptionPage extends Component {
         <img className='main-icon' src={`${options.image_url}/icon_128.png`} />
         <h1>どこでもメモ</h1>
         <div className="nav">
-          <a href="#memos" className={`nav-item ${memos_selected}`} onClick={e => {window.location.reload(true)}}>Memos</a>
-          <a href="#settings" className={`nav-item ${settings_selected}`} onClick={e => {window.location.reload(true)}}>Settings</a>
+          <a
+            href="#memos"
+            className={`nav-item ${memos_selected}`}
+            onClick={e => {window.location.reload(true)}} >
+            Memos
+          </a>
+          <a
+            href="#settings"
+            className={`nav-item ${settings_selected}`}
+            onClick={e => {window.location.reload(true)}} >
+            Settings
+          </a>
         </div>
       </div>
     );
@@ -187,9 +197,15 @@ export class OptionPage extends Component {
           const url = this.decodeUrl(page_info.page_url);
           const selected = parseInt(query.page_info) === page_info.id ? 'selected' : '';
           return (
-            <div key={page_info.id} id={`page_info-${page_info.id}`} className={`page_info-item ${selected}`} onClick={() => {this.onClickPageInfo(page_info.id);}}>
+            <div
+              key={page_info.id}
+              id={`page_info-${page_info.id}`}
+              className={`page_info-item ${selected}`}
+              onClick={() => {this.onClickPageInfo(page_info.id);}} >
               <p>{page_info.page_title}</p>
-              <a href={`${url}`} target="_blank" rel="noreferrer noopener"><img className='button_icon' src={`${options.image_url}/move_page_icon.png`} /></a>
+              <a href={`${url}`} target="_blank" rel="noreferrer noopener">
+                <img className='button_icon' src={`${options.image_url}/move_page_icon.png`} />
+              </a>
               <span className='url_text'>{url}</span>
             </div>);
         })}
@@ -206,12 +222,12 @@ export class OptionPage extends Component {
       render_memos = render_memos.filter(memo => memo.page_info_id === parseInt(query.page_info));
     }
     if (query.search) {
-      render_memos = render_memos.filter(memo => {
-        return memo.title.indexOf(query.search) != -1
-          || memo.description.indexOf(query.search) != -1
-          || this.decodeUrl(memo.page_info.page_url).indexOf(query.search) != -1
-          || memo.page_info.page_title.indexOf(query.search) != -1;
-      });
+      render_memos = render_memos.filter(memo =>
+        (memo.title && memo.title.indexOf(query.search) != -1) ||
+        (memo.description && memo.description.indexOf(query.search) != -1) ||
+        (memo.page_info.page_url && this.decodeUrl(memo.page_info.page_url).indexOf(query.search) != -1) ||
+        (memo.page_info.page_title && memo.page_info.page_title.indexOf(query.search) != -1)
+      );
     }
     return (
       <div id="memo_list">
