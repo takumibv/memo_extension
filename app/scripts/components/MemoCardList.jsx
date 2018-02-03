@@ -18,6 +18,12 @@ export default class MemoCardList extends Component {
               options={options}
               actions={actions} />);
         })}
+        {options.is_options_page && memos.length === 0 &&
+          <div
+            className={`demo-card-wide no-memo-msg`} >
+            <p>メモがありません</p>
+          </div>
+        }
       </div>
     );
   }
