@@ -36,12 +36,19 @@ $(function() {
 
       this.page_info = null; // 開いてるページのpage_infoを保持しておく場所
       this.can_show_memo = true; // 開いてるページがメモを表示できるかどうか
-
       this.options = {
         image_url: chrome.extension.getURL('images'),
         option_page_url: chrome.extension.getURL('pages/options.html')
       }; // resourseファイルのurl
 
+      // 開いている全てのページにinsertCSSする.
+      chrome.tabs.query({}, tabs => {
+        tabs.forEach(tab => {
+          if (tab.url.match(/^http(s?):\/\//)) {
+            this.insertCSS(tab.id);
+          }
+        });
+      });
       chrome.browserAction.setBadgeText({
         text: `Hello`
       })
