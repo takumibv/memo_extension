@@ -42,7 +42,12 @@ export default class Base {
       .filter(v => v || v===0)[0];
     if (index || index===0) {
       // update
-      storage[index] = this.serialize_for_save();
+      const updated_data = this.serialize_for_save();
+      if (storage[index].page_title
+        && (!updated_data.page_title || updated_data.page_title==='Option')) {
+        updated_data.page_title = storage[index].page_title;
+      }
+      storage[index] = updated_data;
       localStorage[this.storage_name] = JSON.stringify(storage);
       console.log("save!", this.serialize_for_save());
     } else {
