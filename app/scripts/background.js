@@ -11,7 +11,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 })
 
 chrome.contextMenus.create({
-  title: "メモを追加",
+  title: chrome.i18n.getMessage('add_memo_msg'),
   contexts: ["page"],
   type: "normal",
   onclick: function (info) {
@@ -38,7 +38,7 @@ $(function() {
       this.can_show_memo = true; // 開いてるページがメモを表示できるかどうか
       this.options = {
         image_url: chrome.extension.getURL('images'),
-        option_page_url: chrome.extension.getURL('pages/options.html')
+        option_page_url: chrome.extension.getURL('pages/options.html'),
       }; // resourseファイルのurl
 
       // 開いている全てのページにinsertCSSする.
@@ -53,6 +53,24 @@ $(function() {
         text: `Hello`
       })
     }
+    assignMessages() {
+      return {
+        'updated_at_msg' : chrome.i18n.getMessage('updated_at_msg'),
+        'created_at_msg' : chrome.i18n.getMessage('created_at_msg'),
+        'copied_msg' : chrome.i18n.getMessage('copied_msg'),
+        'confirm_remove_memo_msg' : chrome.i18n.getMessage('confirm_remove_memo_msg'),
+        'minimize_msg' : chrome.i18n.getMessage('minimize_msg'),
+        'maximize_msg' : chrome.i18n.getMessage('maximize_msg'),
+        'pinned_msg' : chrome.i18n.getMessage('pinned_msg'),
+        'remove_pinned_msg' : chrome.i18n.getMessage('remove_pinned_msg'),
+        'detail_msg' : chrome.i18n.getMessage('detail_msg'),
+        'edit_msg' : chrome.i18n.getMessage('edit_msg'),
+        'copy_msg' : chrome.i18n.getMessage('copy_msg'),
+        'delete_msg' : chrome.i18n.getMessage('delete_msg'),
+        'new_memo_title_msg' : chrome.i18n.getMessage('new_memo_title_msg'),
+        'new_memo_description_msg' : chrome.i18n.getMessage('new_memo_description_msg'),
+      };
+    }
     // Chromeの各種操作イベントに対するイベントハンドラを登録する。
     assignEventHandlers() {
       chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
@@ -64,24 +82,31 @@ $(function() {
             window.bg.setPageInfo(tabId, tab.url);
           }
         } else if (tab.active && changeInfo.status === "complete" && tab.url.match(/^http(s?):\/\//)) {
-          // ページの読み込みが完了したら呼ばれる.
+          // ページの読み込みが完了したら呼ばれる.(loading中はtab.titleがnullの場合がある)
           window.bg.setPageTitle(tabId, tab.title);
         }
       });
-
-      chrome.tabs.onActivated.addListener((activeInfo) => {
-        // タブが切り替えられた時/ページが更新された時に呼ばれる.
-        const tabId = activeInfo.tabId;
-        chrome.tabs.get(tabId, (tab) => {
-          window.bg.setPageInfo(tabId, tab.url);
-          window.bg.setPageTitle(tabId, tab.title);
+      chrome.tabs.onActivated.addListener(activeInfo => {
+        // タブが切り替えられた時に呼ばれる.
+        chrome.tabs.get(activeInfo.tabId, tab => {
+          window.bg.setPageInfo(tab.id, tab.url);
+          window.bg.setPageTitle(tab.id, tab.title);
         });
       });
-
+      chrome.windows.onFocusChanged.addListener(windowId => {
+        // ウィンドウが切り替えられた時に呼ばれる.
+        if (windowId != -1) {
+          chrome.tabs.query({active: true, windowId: windowId}, tabs => {
+            if (tabs[0]) {
+              window.bg.setPageInfo(tabs[0].id, tabs[0].url);
+              window.bg.setPageTitle(tabs[0].id, tabs[0].title);
+            }
+          });
+        }
+      });
       chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
         window.bg.onTabRemoved(tabId);
       });
-
       chrome.runtime.onMessage.addListener((msg, sender, res) => {
         console.log(msg, sender, res);
         console.log(this.page_info);
@@ -109,9 +134,9 @@ $(function() {
         }
       });
     }
-
     setPageInfo(tabId, page_url) {
       /***
+      * 現在開いてるページのurl情報をセットする.
       * 1. URL形成/urlセット
       * 2. ローカルストレージ探索
       * 3. カードセット
@@ -123,17 +148,14 @@ $(function() {
       const tab_url  = this.encodeUrl(page_url);
       this.page_info = new PageInfo(tab_url);;
 
-      // 何回も呼ばれる想定
       this.setCardArea();
     }
-
     setPageTitle(tabId, title) {
       // タイトルのセット(loading中はタイトルが入らない場合もあるため, setPageInfoと分けている)
       if (this.page_info) {
         this.page_info.setPageTitle(title);
       }
     }
-
     onTabRemoved(tabId) {
       this.page_info.save();
     }
@@ -143,7 +165,6 @@ $(function() {
       let formed_url = `${parse_url.protocol}//${parse_url.hostname}${parse_url.pathname}${parse_url.search || ''}`;
       return encodeURIComponent(formed_url);
     }
-
     decodeUrl(crypted_url) {
       return decodeURIComponent(crypted_url);
     }
@@ -173,7 +194,7 @@ $(function() {
       // 最初の1回のみ
       chrome.tabs.executeScript(
         tab_id,
-        { code: `let tab_url; let page_info; let memos; let options;`}
+        { code: `let tab_url; let page_info; let memos; let options; let messages;`}
       );
       chrome.tabs.insertCSS(
         tab_id, { file: "styles/base.css" }
@@ -187,16 +208,15 @@ $(function() {
     }
     setCardArea() {
       // カードの内容を更新するたびに呼ばれる
-
       this.setBadgeNumber(this.page_info.getMemos().length);
-
       chrome.tabs.executeScript(
         null,
         { code:
           `tab_url    = '${this.page_info.page_url}';` +
           `page_info  = JSON.parse('${JSON.stringify(this.page_info.serialize())}');` +
           `memos      = JSON.parse('${JSON.stringify(this.page_info.getMemos())}');` +
-          `options    = JSON.parse('${JSON.stringify(this.options)}');`
+          `options    = JSON.parse('${JSON.stringify(this.options)}');` +
+          `messages   = JSON.parse('${JSON.stringify(this.assignMessages())}');`
         },
         () => {
           if (chrome.extension.lastError) {
@@ -216,11 +236,20 @@ $(function() {
     ****/
     makeMemo(tabId) {
       const url = this.page_info.page_url;
-      const memo = {id: null, title: "新しいメモ", description: "ダブルクリックで編集", position_x: 0, position_y: null, width: 300, height: 150, is_open: true, is_fixed: false};
+      const memo = {
+        id: null,
+        title: this.assignMessages()["new_memo_title_msg"],
+        description: this.assignMessages()["new_memo_description_msg"],
+        position_x: 0,
+        position_y: null,
+        width: 300,
+        height: 150,
+        is_open: true,
+        is_fixed: false,
+      };
       this.updateMemo(url, memo);
       this.setCardArea();
     }
-
     updateMemo(page_url, memo, action_type=null) {
       let target_memo = Object.assign({}, memo);
 
@@ -236,7 +265,6 @@ $(function() {
         this.page_info.checkMemoExistance();
       }
     }
-
     deleteMemo(memo, action_type=null) {
       if (action_type === 'OPTIONS') {
         // options page
@@ -248,13 +276,11 @@ $(function() {
         this.page_info.checkMemoExistance();
         this.setBadgeNumber(this.page_info.getMemos().length);
       }
-      // this.setCardArea();
     }
 
     getAllPageInfo() {
       return PageInfo.getAllPageInfoHavingMemo();
     }
-
     getAllMemos() {
       return Memo.getAllMemos();
     }
@@ -277,118 +303,6 @@ $(function() {
       param += page_info_id ? `&page_info=${page_info_id}` : '';
       chrome.tabs.create({ 'url': `${chrome.extension.getURL('pages/options.html')}#memos?${param}` });
     }
-
-
-    getUserConfig() {
-      let value = localStorage['User'];
-      if (value) {
-        value = JSON.parse(value);
-        value.account = window.atob(value.account);
-        value.pswd = window.atob(value.pswd);
-        return value;
-      } else {
-        return null;
-      }
-    }
-    setUserConfig(value) {
-      value.account = window.btoa(value.account);
-      value.pswd = window.btoa(value.pswd);
-      localStorage['User'] = JSON.stringify(value);
-    }
-    deleteUserConfig() {
-      localStorage.removeItem('User');
-    }
-    getMatrixCode() {
-      let value = localStorage['MatrixCode'];
-      if (value) {
-        var val_str = window.atob(window.atob(value));
-        return JSON.parse(JSON.parse(val_str));
-      } else {
-        return null;
-      }
-    }
-    setMatrixCode(value) {
-      var val_str = JSON.stringify(JSON.stringify(value));
-      var val_enc = window.btoa(window.btoa(val_str));
-      localStorage['MatrixCode'] = val_enc;
-    }
-    deleteMatrixCode() {
-      localStorage.removeItem('MatrixCode');
-    }
-    getIsValid() {
-      let is_valid = localStorage['is_valid'];
-      if (is_valid) {
-        return JSON.parse(is_valid);
-      } else {
-        return true;
-      }
-    }
-    setIsValid(value) {
-      localStorage['is_valid'] = value;
-    }
-    getOptionPageUrl() {
-      return chrome.runtime.getURL("options.html");
-    }
-    migrateNewVersion() {
-      let old_matrix_str = localStorage['password'];
-      if (old_matrix_str) {
-        var old_matrix = JSON.parse(JSON.parse(old_matrix_str));
-        this.setMatrixCode(old_matrix);
-        localStorage.removeItem('password');
-      }
-      let pass = localStorage['pass'];
-      if (pass) {
-        localStorage.removeItem('pass');
-      }
-    }
-    identifyPage(url) {
-      chrome.tabs.executeScript(
-        null, {
-          file: "scripts/identify_page.js"
-        }
-      );
-    }
-    inputUserInfo() {
-      chrome.tabs.executeScript(
-        null, {
-          code: "var usr_pswd = " + JSON.stringify(this.getUserConfig()) + ";" +
-            "var is_valid = " + JSON.stringify(this.getIsValid()) + ";"
-        },
-        function() {
-          chrome.tabs.insertCSS(
-            null, {
-              file: "style/contents.css"
-            }
-          );
-          chrome.tabs.executeScript(
-            null, {
-              file: "scripts/input_user_info.js"
-            }
-          );
-        }
-      );
-    }
-    inputMatrixCode() {
-      chrome.tabs.executeScript(
-        null, {
-          code: "var matrix_code = " + JSON.stringify(this.getMatrixCode()) + ";" +
-            "var is_valid = " + JSON.stringify(this.getIsValid()) + ";"
-        },
-        function() {
-          chrome.tabs.insertCSS(
-            null, {
-              file: "style/contents.css"
-            }
-          );
-          chrome.tabs.executeScript(
-            null, {
-              file: "scripts/input_matrix_code.js"
-            }
-          );
-        }
-      );
-    }
-    errorPage() {}
   }
 
   window.bg = new Background();

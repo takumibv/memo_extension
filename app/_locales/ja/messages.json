@@ -4,7 +4,7 @@
     "description": "The name of the application"
   },
   "appShortName": {
-    "message": "memo_ex",
+    "message": "どこでもメモ",
     "description": "The short_name (maximum of 12 characters recommended) is a short version of the app's name."
   },
   "appDescription": {
@@ -12,10 +12,41 @@
     "description": "The description of the application"
   },
   "browserActionTitle": {
-    "message": "memo_extension",
+    "message": "どこでもメモ",
     "description": "The title of the browser action button"
   },
 
+  /* common term */
+  "app_name" : { "message": "どこでもメモ" },
+  "no_memo_msg" : { "message": "メモがありません。" },
+  "add_memo_msg" : { "message": "メモを追加する" },
+  "confirm_remove_memo_msg" : { "message": "本当に削除しますか?" },
+
   /* popup page */
-  "make_memo_button" : { "message": "メモを作成する" }
+  "make_memo_button_msg" : { "message": "メモを作成する" },
+  "setting_button_msg" : { "message": "設定" },
+  "menu_button_msg" : { "message": "メモ一覧ページ" },
+  "cannot_show_memo_msg" : { "message": "このページではメモを表示できません。" },
+
+  /* option page */
+  "memo_header_msg" : { "message": "メモ一覧" },
+  "settings_header_msg" : { "message": "設定" },
+  "show_all_memo_msg" : { "message": "全て表示" },
+  "search_query_msg" : { "message": "検索" },
+  "this_page_memo_list_msg" : { "message": "このページのメモ一覧" },
+
+  /* memo card */
+  "updated_at_msg" : { "message": "更新" },
+  "created_at_msg" : { "message": "作成" },
+  "copied_msg" : { "message": "コピーしました" },
+  "minimize_msg" : { "message": "最小化" },
+  "maximize_msg" : { "message": "最大化" },
+  "pinned_msg" : { "message": "固定する" },
+  "remove_pinned_msg" : { "message": "固定を外す" },
+  "detail_msg" : { "message": "詳細" },
+  "edit_msg" : { "message": "編集" },
+  "copy_msg" : { "message": "クリップボードにコピーする" },
+  "delete_msg" : { "message": "削除する" },
+  "new_memo_title_msg" : { "message": "新しいメモ" },
+  "new_memo_description_msg" : { "message": "ダブルクリックで編集" }
 }

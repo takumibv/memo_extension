@@ -4,40 +4,25 @@ import ReactDOM from 'react-dom';
 import MemoCardList from './components/MemoCardList.jsx';
 
 const url = require('url');
-// require('material-design-lite/material');
 
 export class OptionPage extends Component {
   constructor() {
     super();
     console.log("Memo Extension is running.");
   }
-  // getInitialState() {
-  //   return {
-  //     page_url: page_info.page_url,
-  //     page_title: page_info.page_title,
-  //     memos: memos
-  //     // memos: [
-  //     //   {id: 10, title: "memo1", description: "memoです11.", position_x: 0, position_y: 0, width: 300, height: 150, is_open: true},
-  //     //   {id: 20, title: "memo2", description: "memoです22.", position_x: 0, position_y: 80, width: 300, height: 120, is_open: false}
-  //     // ].concat(page_info.memos)
-  //   };
-  // }
   componentWillMount() {
     const { page_infos, memos, options } = this.props;
-    // console.log(memos);
-    // this.state = page_info;
     const query = this.parseQuery();
     this.setState({
-      // page_url: page_info.page_url,
-      // page_title: page_info.title,
       query: query,
       options: options,
-      memos: memos
+      page_infos: page_infos,
+      memos: memos,
     });
   }
   componentDidMount() {
     const {query} = this.state;
-    // $(".mdl-card:last-child").css('margin-bottom', window.innerHeight - 100);
+
     this.scrollMemoCardListTo(query.memo);
     this.scrollSideBarTo(query.page_info);
   }
@@ -53,7 +38,6 @@ export class OptionPage extends Component {
         if (updated_memos[index].title === action.title) { break; }
         updated_memos[index].title       = action.title;
         updated_memos[index].updated_at  = new Date().toISOString();
-        this.setState({memos: updated_memos});
         this.save('UPDATE_TITLE', updated_memos[index]);
         break;
       case 'UPDATE_DESCRIPTION':
@@ -62,7 +46,6 @@ export class OptionPage extends Component {
         if (updated_memos[index].description === action.description) { break; }
         updated_memos[index].description = action.description;
         updated_memos[index].updated_at  = new Date().toISOString();
-        this.setState({memos: updated_memos});
         this.save('UPDATE_DESCRIPTION', updated_memos[index]);
         break;
       case 'UPDATE_IS_OPEN':
@@ -70,7 +53,6 @@ export class OptionPage extends Component {
         if (index === -1) { break; }
         updated_memos[index].is_open     = action.is_open;
         updated_memos[index].updated_at  = new Date().toISOString();
-        this.setState({memos: updated_memos});
         this.save('UPDATE_IS_OPEN', updated_memos[index]);
         break;
       case 'UPDATE_IS_FIXED':
@@ -83,7 +65,6 @@ export class OptionPage extends Component {
         if(updated_memos[index].position_x < 0){ updated_memos[index].position_x = 0; }
         if(updated_memos[index].position_y < 0){ updated_memos[index].position_y = 0; }
         updated_memos[index].updated_at  = new Date().toISOString();
-        this.setState({memos: updated_memos});
         this.save('UPDATE_IS_FIXED', updated_memos[index]);
         break;
       case 'DELETE_MEMO':
@@ -91,7 +72,6 @@ export class OptionPage extends Component {
         if (index === -1) { break; }
         var delete_memo   = this.state.memos[index];
         updated_memos.splice(index, 1);
-        this.setState({memos: updated_memos});
         this.delete(delete_memo);
         break;
       case 'MOVE_MEMO':
@@ -106,9 +86,19 @@ export class OptionPage extends Component {
   }
   save(action_type, updated_memo) {
     chrome.runtime.sendMessage({ method: action_type, action_type: 'OPTIONS', page_url: updated_memo.page_info.page_url, memo: updated_memo });
+    this.reRender();
   }
   delete(memo) {
     chrome.runtime.sendMessage({ method: 'DELETE_MEMO', action_type: 'OPTIONS', memo: memo, page_url: memo.page_info.page_url });
+    this.reRender();
+  }
+  reRender() {
+    chrome.runtime.getBackgroundPage((backgroundPage) => {
+      const bg = backgroundPage.bg;
+      const page_infos  = bg.getAllPageInfo();
+      const memos       = bg.getAllMemos();
+      this.setState({page_infos: page_infos, memos: memos});
+    });
   }
   open_option_page(memo) {
     chrome.runtime.sendMessage({ method: 'OPEN_OPTION_PAGE', action_type: 'OPTIONS', memo: memo });
@@ -144,6 +134,7 @@ export class OptionPage extends Component {
   onClickPageInfo(target='') {
     const {query} = this.state;
     query.page_info = target;
+    this.reRender();
     this.setState({query: query});
     // $("#sidebar").animate({scrollTop: $(`#page_info-${query.page_info}`).offset().top - 40});
     this.scrollSideBarTo(query.page_info);
@@ -151,6 +142,7 @@ export class OptionPage extends Component {
   onChangeSearchQuery(target) {
     const {query} = this.state;
     query.search = target;
+    this.reRender();
     this.setState({query: query});
     console.log("onChangeSearchQuery:: ", target);
   }
@@ -171,38 +163,41 @@ export class OptionPage extends Component {
     return (
       <div id='header'>
         <img className='main-icon' src={`${options.image_url}/icon_128.png`} />
-        <h1>どこでもメモ</h1>
+        <h1>{options.assignMessage('app_name')}</h1>
         <div className="nav">
-          <a href="#memos" className={`nav-item ${memos_selected} selected`} onClick={e => {window.location.reload(true)}}>Memos</a>
+          <a
+            href="#memos"
+            className={`nav-item ${memos_selected}`}
+            onClick={e => {window.location.reload(true)}} >
+            {options.assignMessage('memo_header_msg')}
+          </a>
         </div>
       </div>
     );
   }
-  renderTabbar() {
-    return (
-      <div id="tabbar">
-        <a href="#scroll-tab-2" className="mdl-layout__tab">Tab 1</a>
-        <a href="#scroll-tab-3" className="mdl-layout__tab">Tab 2</a>
-      </div>
-    );
-  }
   renderSidebar() {
-    const {page_infos, options} = this.props;
-    const {query} = this.state;
+    const {options} = this.props;
+    const {page_infos, query} = this.state;
     const selected_all = query.page_info ? '' : 'selected';
     const sorted_page_infos = this.sortBy(page_infos, "created_at");
     return (
       <div id='sidebar'>
         <div className={`page_info-item ${selected_all}`} onClick={() => {this.onClickPageInfo();}}>
-          <p>{'全て表示'}</p>
+          <p>{options.assignMessage('show_all_memo_msg')}</p>
         </div>
         {sorted_page_infos.map((page_info, index) => {
           const url = this.decodeUrl(page_info.page_url);
           const selected = parseInt(query.page_info) === page_info.id ? 'selected' : '';
           return (
-            <div key={page_info.id} id={`page_info-${page_info.id}`} className={`page_info-item ${selected}`} onClick={() => {this.onClickPageInfo(page_info.id);}}>
+            <div
+              key={page_info.id}
+              id={`page_info-${page_info.id}`}
+              className={`page_info-item ${selected}`}
+              onClick={() => {this.onClickPageInfo(page_info.id);}} >
               <p>{page_info.page_title}</p>
-              <a href={`${url}`} target="_blank" rel="noreferrer noopener"><img className='button_icon' src={`${options.image_url}/move_page_icon.png`} /></a>
+              <a href={`${url}`} target="_blank" rel="noreferrer noopener">
+                <img className='button_icon' src={`${options.image_url}/move_page_icon.png`} />
+              </a>
               <span className='url_text'>{url}</span>
             </div>);
         })}
@@ -219,12 +214,12 @@ export class OptionPage extends Component {
       render_memos = render_memos.filter(memo => memo.page_info_id === parseInt(query.page_info));
     }
     if (query.search) {
-      render_memos = render_memos.filter(memo => {
-        return memo.title.indexOf(query.search) != -1
-          || memo.description.indexOf(query.search) != -1
-          || this.decodeUrl(memo.page_info.page_url).indexOf(query.search) != -1
-          || memo.page_info.page_title.indexOf(query.search) != -1;
-      });
+      render_memos = render_memos.filter(memo =>
+        (memo.title && memo.title.indexOf(query.search) != -1) ||
+        (memo.description && memo.description.indexOf(query.search) != -1) ||
+        (memo.page_info.page_url && this.decodeUrl(memo.page_info.page_url).indexOf(query.search) != -1) ||
+        (memo.page_info.page_title && memo.page_info.page_title.indexOf(query.search) != -1)
+      );
     }
     return (
       <div id="memo_list">
@@ -237,12 +232,13 @@ export class OptionPage extends Component {
     );
   }
   renderSearchBar() {
+    const {options} = this.props;
     return (
       <div id="search_bar">
         <input
           type="text"
           name="search_query"
-          placeholder="search"
+          placeholder={options.assignMessage('search_query_msg')}
           onChange={e => this.onChangeSearchQuery(e.target.value) } />
       </div>
     );
@@ -298,6 +294,7 @@ chrome.runtime.getBackgroundPage((backgroundPage) => {
       image_url: chrome.extension.getURL('images'),
       option_page_url: chrome.extension.getURL('pages/options.html'),
       is_options_page: true,
+      assignMessage: chrome.i18n.getMessage,
     };
 
     try {

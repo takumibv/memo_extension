@@ -5,18 +5,12 @@ import CopyButton from './buttons/CopyButton.jsx';
 import OpenCloseButton from './buttons/OpenCloseButton.jsx';
 import DetailButton from './buttons/DetailButton.jsx';
 import FixedButton from './buttons/FixedButton.jsx';
-// import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
-// import FlatButton from 'material-ui/Button';
 global.jQuery = require('jquery');
 const $ = require('jquery');
 require('../lib/jinplace.js');
-// const material = require('material-design-lite/material');
-// const MDLite = require('material-design-lite/material');
-// const componentHandler = MDLite.componentHandler;
 require('../lib/tiny-draggable.js');
 require('../lib/resizable_box.js');
 require('../lib/text-editable.js');
-// require('react');
 
 export default class MemoCard extends Component {
   componentWillMount() {
@@ -48,11 +42,6 @@ export default class MemoCard extends Component {
     }, (index, text) => {
       actions({type: 'UPDATE_DESCRIPTION', index: index, memo_id: memo.id, description: text});
     });
-
-    // $('#react-container-for-memo-extension').prepend("<script defer src='https://code.getmdl.io/1.3.0/material.min.js'></script>");
-  }
-  changeMemoAttr() {
-
   }
   nl2br(str) {
     const regex = /(<br>)/g;
@@ -71,21 +60,9 @@ export default class MemoCard extends Component {
   }
   render() {
     const {index, memo, actions, options} = this.props;
-  // //   console.log("card app");
-  // //   console.log(MDLite);
-  //   // return (
-  //   //   <div className="App">
-  //   //     <p>Hello World</p>
-  //   //   </div>
-  //   // );
-    let minimize = '';
-    if (!memo.is_open) {
-      minimize = 'minimize';
-    }
-    let fixed = '';
-    if (memo.is_fixed) {
-      fixed = 'fixed';
-    }
+
+    const minimize = memo.is_open ? '' : 'minimize';
+    const fixed = memo.is_fixed ? 'fixed' : '';
     const card_style = {
       width: memo.width,
       height: memo.height,
@@ -98,7 +75,6 @@ export default class MemoCard extends Component {
     const updated_at_str = `${updated_at.getFullYear()}/${updated_at.getMonth()+1}/${updated_at.getDate()} ${('0'+updated_at.getHours()).slice(-2)}:${('0'+updated_at.getMinutes()).slice(-2)}`;
     const page_url = decodeURIComponent(memo.page_info.page_url);
 
-    // actions({type: 'UPDATE_TITLE'});
     return (
       <div
         id={`memo-card-${index}`}
@@ -110,8 +86,8 @@ export default class MemoCard extends Component {
           {options.is_options_page &&
             <div className="memo_infos">
               <div className="clearfix">
-                <p className="date updated_at">更新: <span>{updated_at_str}</span></p>
-                <p className="date created_at">作成: <span>{created_at_str}</span></p>
+                <p className="date updated_at">{options.assignMessage('updated_at_msg')}: <span>{updated_at_str}</span></p>
+                <p className="date created_at">{options.assignMessage('created_at_msg')}: <span>{created_at_str}</span></p>
               </div>
             </div>}
           <div className="handle-card-wrapper">
@@ -123,7 +99,7 @@ export default class MemoCard extends Component {
           {options.is_options_page &&
             <div className="memo_infos">
               <a className="page_url" href={`${page_url}`} target="_blank" rel="noreferrer noopener">{`${memo.page_info.page_title}`}<br />{page_url}</a>
-              <a className="page_info_link" onClick={() => {this.openPageInfo(memo.page_info_id);}} rel="noreferrer noopener">このページのメモ一覧</a>
+              <a className="page_info_link" onClick={() => {this.openPageInfo(memo.page_info_id);}} rel="noreferrer noopener">{options.assignMessage('this_page_memo_list_msg')}</a>
             </div>}
           {options.is_options_page ?
             (<div className="mdl-card__actions">
@@ -146,7 +122,7 @@ export default class MemoCard extends Component {
                 memo_id={memo.id}
                 options={options}
                 actions={actions} />
-              <span className="copied-msg-toast">Copied.</span>
+              <span className="copied-msg-toast">{options.assignMessage('copied_msg')}</span>
               <DeleteButton
                 key={`delete_btn-${index}`}
                 index={index}
@@ -196,7 +172,7 @@ export default class MemoCard extends Component {
               memo_id={memo.id}
               options={options}
               actions={actions} />
-            <span className="copied-msg-toast">Copied.</span>
+            <span className="copied-msg-toast">{options.assignMessage('copied_msg')}</span>
             <DeleteButton
               key={`delete_btn-${index}`}
               index={index}
@@ -208,32 +184,4 @@ export default class MemoCard extends Component {
       </div>
     );
   }
-  //
-  // render() {
-  //   return (
-  //     <Card>
-  //       <CardHeader
-  //         title="URL Avatar"
-  //         subtitle="Subtitle"
-  //         avatar="images/jsa-128.jpg"
-  //       />
-  //       <CardMedia
-  //         overlay={<CardTitle title="Overlay title" subtitle="Overlay subtitle" />}
-  //       >
-  //         <img src="images/nature-600-337.jpg" alt="" />
-  //       </CardMedia>
-  //       <CardTitle title="Card title" subtitle="Card subtitle" />
-  //       <CardText>
-  //         Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-  //         Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
-  //         Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
-  //         Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
-  //       </CardText>
-  //       <CardActions>
-  //         <FlatButton label="Action1" />
-  //         <FlatButton label="Action2" />
-  //       </CardActions>
-  //     </Card>
-  //   )
-  // }
 }

@@ -4,8 +4,9 @@ const $ = require('jquery');
 
 export default class OpenCloseButton extends Button {
   componentWillMount() {
+    const {options} = this.props;
     this.icon_name        = ['close_icon', 'open_icon'];
-    this.tooltip_title    = ['minimize', 'maximize'];
+    this.tooltip_title    = [options.assignMessage('minimize_msg'), options.assignMessage('maximize_msg')];
     this.additional_class = ['close-card_btn', 'open-card_btn'];
   }
   componentDidMount() {

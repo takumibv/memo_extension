@@ -16,24 +16,11 @@ if(!$('#react-container-for-memo-extension').length){
 export class App extends Component {
   constructor() {
     super();
-    // this.state = this.getInitialState();
     console.log("Memo Extension is running.");
   }
-  // getInitialState() {
-  //   return {
-  //     page_url: page_info.page_url,
-  //     page_title: page_info.page_title,
-  //     memos: memos
-  //     // memos: [
-  //     //   {id: 10, title: "memo1", description: "memoです11.", position_x: 0, position_y: 0, width: 300, height: 150, is_open: true},
-  //     //   {id: 20, title: "memo2", description: "memoです22.", position_x: 0, position_y: 80, width: 300, height: 120, is_open: false}
-  //     // ].concat(page_info.memos)
-  //   };
-  // }
   componentWillMount() {
     const { page_info, memos } = this.props;
-    // console.log(memos);
-    // this.state = page_info;
+
     this.setState({
       page_url: page_info.page_url,
       page_title: page_info.title,
@@ -140,41 +127,13 @@ export class App extends Component {
   }
 }
 
-// function mapStateToProps(state) {
-//   return state;
-// }
-//
-// function mapDispatchToProps(dispatch) {
-//   return {
-//     actions: Actions
-//   };
-// }
-
-// App.propTypes = {
-//   memos: PropTypes.object.isRequired,
-// };
-
-// App.defaultProps = {
-//   page_url: page_info.page_url,
-//   page_title: page_info.page_title,
-//   memos: [
-//     {title: "memo1", description: "memoです11.", position_x: 0, position_y: 0, is_open: true},
-//     {title: "memo2", description: "memoです22.", position_x: 0, position_y: 80, is_open: false}
-//   ].concat(page_info.memos)
-// };
-
-// export default connect(
-//   mapStateToProps,
-//   mapDispatchToProps
-// )(App);
-
 try {
+  options.assignMessage = val => { return messages[val]; };
   ReactDOM.render(
     <App page_info={page_info} memos={memos} options={options} />,
     document.getElementById('react-container-for-memo-extension')
   );
 } catch (e) {
-  // alert("Memo App Error: このページではメモを表示できません。" + e + tab_url);
   chrome.runtime.sendMessage({ method: 'CANNOT_SHOW_MEMO', msg: e, page_url: tab_url });
 } finally {
 
