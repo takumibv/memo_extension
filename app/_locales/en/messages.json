@@ -16,6 +16,37 @@
     "description": "The title of the browser action button"
   },
 
+  /* common term */
+  "app_name" : { "message": "Memo Anywhere" },
+  "no_memo_msg" : { "message": "There is no memo." },
+  "add_memo_msg" : { "message": "add memo" },
+  "confirm_remove_memo_msg" : { "message": "Do you really want to delete this?" },
+
   /* popup page */
-  "make_memo_button" : { "message": "メモを作成する." }
+  "make_memo_button_msg" : { "message": "make memo" },
+  "setting_button_msg" : { "message": "settings" },
+  "menu_button_msg" : { "message": "memo list page" },
+  "cannot_show_memo_msg" : { "message": "Memos can not be shown on this page." },
+
+  /* option page */
+  "memo_header_msg" : { "message": "Memos" },
+  "settings_header_msg" : { "message": "Setting" },
+  "show_all_memo_msg" : { "message": "show all" },
+  "search_query_msg" : { "message": "search" },
+  "this_page_memo_list_msg" : { "message": "Memo list of this page" },
+
+  /* memo card */
+  "updated_at_msg" : { "message": "Update" },
+  "created_at_msg" : { "message": "Created" },
+  "copied_msg" : { "message": "Copied" },
+  "minimize_msg" : { "message": "minimize" },
+  "maximize_msg" : { "message": "maximize" },
+  "pinned_msg" : { "message": "pin" },
+  "remove_pinned_msg" : { "message": "remove pin" },
+  "detail_msg" : { "message": "details" },
+  "edit_msg" : { "message": "edit" },
+  "copy_msg" : { "message": "Copy to Clipboard" },
+  "delete_msg" : { "message": "delete" },
+  "new_memo_title_msg" : { "message": "New Note" },
+  "new_memo_description_msg" : { "message": "Double-click to edit" }
 }
