@@ -17,7 +17,8 @@ export class OptionPage extends Component {
     this.setState({
       query: query,
       options: options,
-      memos: memos
+      page_infos: page_infos,
+      memos: memos,
     });
   }
   componentDidMount() {
@@ -38,7 +39,6 @@ export class OptionPage extends Component {
         if (updated_memos[index].title === action.title) { break; }
         updated_memos[index].title       = action.title;
         updated_memos[index].updated_at  = new Date().toISOString();
-        this.setState({memos: updated_memos});
         this.save('UPDATE_TITLE', updated_memos[index]);
         break;
       case 'UPDATE_DESCRIPTION':
@@ -47,7 +47,6 @@ export class OptionPage extends Component {
         if (updated_memos[index].description === action.description) { break; }
         updated_memos[index].description = action.description;
         updated_memos[index].updated_at  = new Date().toISOString();
-        this.setState({memos: updated_memos});
         this.save('UPDATE_DESCRIPTION', updated_memos[index]);
         break;
       case 'UPDATE_IS_OPEN':
@@ -55,7 +54,6 @@ export class OptionPage extends Component {
         if (index === -1) { break; }
         updated_memos[index].is_open     = action.is_open;
         updated_memos[index].updated_at  = new Date().toISOString();
-        this.setState({memos: updated_memos});
         this.save('UPDATE_IS_OPEN', updated_memos[index]);
         break;
       case 'UPDATE_IS_FIXED':
@@ -68,7 +66,6 @@ export class OptionPage extends Component {
         if(updated_memos[index].position_x < 0){ updated_memos[index].position_x = 0; }
         if(updated_memos[index].position_y < 0){ updated_memos[index].position_y = 0; }
         updated_memos[index].updated_at  = new Date().toISOString();
-        this.setState({memos: updated_memos});
         this.save('UPDATE_IS_FIXED', updated_memos[index]);
         break;
       case 'DELETE_MEMO':
@@ -76,7 +73,6 @@ export class OptionPage extends Component {
         if (index === -1) { break; }
         var delete_memo   = this.state.memos[index];
         updated_memos.splice(index, 1);
-        this.setState({memos: updated_memos});
         this.delete(delete_memo);
         break;
       case 'MOVE_MEMO':
@@ -91,9 +87,19 @@ export class OptionPage extends Component {
   }
   save(action_type, updated_memo) {
     chrome.runtime.sendMessage({ method: action_type, action_type: 'OPTIONS', page_url: updated_memo.page_info.page_url, memo: updated_memo });
+    this.reRender();
   }
   delete(memo) {
     chrome.runtime.sendMessage({ method: 'DELETE_MEMO', action_type: 'OPTIONS', memo: memo, page_url: memo.page_info.page_url });
+    this.reRender();
+  }
+  reRender() {
+    chrome.runtime.getBackgroundPage((backgroundPage) => {
+      const bg = backgroundPage.bg;
+      const page_infos  = bg.getAllPageInfo();
+      const memos       = bg.getAllMemos();
+      this.setState({page_infos: page_infos, memos: memos});
+    });
   }
   open_option_page(memo) {
     chrome.runtime.sendMessage({ method: 'OPEN_OPTION_PAGE', action_type: 'OPTIONS', memo: memo });
@@ -129,6 +135,7 @@ export class OptionPage extends Component {
   onClickPageInfo(target='') {
     const {query} = this.state;
     query.page_info = target;
+    this.reRender();
     this.setState({query: query});
     // $("#sidebar").animate({scrollTop: $(`#page_info-${query.page_info}`).offset().top - 40});
     this.scrollSideBarTo(query.page_info);
@@ -136,6 +143,7 @@ export class OptionPage extends Component {
   onChangeSearchQuery(target) {
     const {query} = this.state;
     query.search = target;
+    this.reRender();
     this.setState({query: query});
     console.log("onChangeSearchQuery:: ", target);
   }
@@ -175,8 +183,8 @@ export class OptionPage extends Component {
     );
   }
   renderSidebar() {
-    const {page_infos, options} = this.props;
-    const {query} = this.state;
+    const {options} = this.props;
+    const {page_infos, query} = this.state;
     const selected_all = query.page_info ? '' : 'selected';
     const sorted_page_infos = this.sortBy(page_infos, "created_at");
     return (
