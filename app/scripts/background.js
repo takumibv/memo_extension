@@ -82,24 +82,31 @@ $(function() {
             window.bg.setPageInfo(tabId, tab.url);
           }
         } else if (tab.active && changeInfo.status === "complete" && tab.url.match(/^http(s?):\/\//)) {
-          // ページの読み込みが完了したら呼ばれる.
+          // ページの読み込みが完了したら呼ばれる.(loading中はtab.titleがnullの場合がある)
           window.bg.setPageTitle(tabId, tab.title);
         }
       });
-
-      chrome.tabs.onActivated.addListener((activeInfo) => {
-        // タブが切り替えられた時/ページが更新された時に呼ばれる.
-        const tabId = activeInfo.tabId;
-        chrome.tabs.get(tabId, (tab) => {
-          window.bg.setPageInfo(tabId, tab.url);
-          window.bg.setPageTitle(tabId, tab.title);
+      chrome.tabs.onActivated.addListener(activeInfo => {
+        // タブが切り替えられた時に呼ばれる.
+        chrome.tabs.get(activeInfo.tabId, tab => {
+          window.bg.setPageInfo(tab.id, tab.url);
+          window.bg.setPageTitle(tab.id, tab.title);
         });
       });
-
+      chrome.windows.onFocusChanged.addListener(windowId => {
+        // ウィンドウが切り替えられた時に呼ばれる.
+        if (windowId != -1) {
+          chrome.tabs.query({active: true, windowId: windowId}, tabs => {
+            if (tabs[0]) {
+              window.bg.setPageInfo(tabs[0].id, tabs[0].url);
+              window.bg.setPageTitle(tabs[0].id, tabs[0].title);
+            }
+          });
+        }
+      });
       chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
         window.bg.onTabRemoved(tabId);
       });
-
       chrome.runtime.onMessage.addListener((msg, sender, res) => {
         console.log(msg, sender, res);
         console.log(this.page_info);
@@ -127,9 +134,9 @@ $(function() {
         }
       });
     }
-
     setPageInfo(tabId, page_url) {
       /***
+      * 現在開いてるページのurl情報をセットする.
       * 1. URL形成/urlセット
       * 2. ローカルストレージ探索
       * 3. カードセット
@@ -141,17 +148,14 @@ $(function() {
       const tab_url  = this.encodeUrl(page_url);
       this.page_info = new PageInfo(tab_url);;
 
-      // 何回も呼ばれる想定
       this.setCardArea();
     }
-
     setPageTitle(tabId, title) {
       // タイトルのセット(loading中はタイトルが入らない場合もあるため, setPageInfoと分けている)
       if (this.page_info) {
         this.page_info.setPageTitle(title);
       }
     }
-
     onTabRemoved(tabId) {
       this.page_info.save();
     }
@@ -161,7 +165,6 @@ $(function() {
       let formed_url = `${parse_url.protocol}//${parse_url.hostname}${parse_url.pathname}${parse_url.search || ''}`;
       return encodeURIComponent(formed_url);
     }
-
     decodeUrl(crypted_url) {
       return decodeURIComponent(crypted_url);
     }
@@ -205,9 +208,7 @@ $(function() {
     }
     setCardArea() {
       // カードの内容を更新するたびに呼ばれる
-
       this.setBadgeNumber(this.page_info.getMemos().length);
-
       chrome.tabs.executeScript(
         null,
         { code:
@@ -235,11 +236,20 @@ $(function() {
     ****/
     makeMemo(tabId) {
       const url = this.page_info.page_url;
-      const memo = {id: null, title: this.assignMessages()["new_memo_title_msg"], description: this.assignMessages()["new_memo_description_msg"], position_x: 0, position_y: null, width: 300, height: 150, is_open: true, is_fixed: false};
+      const memo = {
+        id: null,
+        title: this.assignMessages()["new_memo_title_msg"],
+        description: this.assignMessages()["new_memo_description_msg"],
+        position_x: 0,
+        position_y: null,
+        width: 300,
+        height: 150,
+        is_open: true,
+        is_fixed: false,
+      };
       this.updateMemo(url, memo);
       this.setCardArea();
     }
-
     updateMemo(page_url, memo, action_type=null) {
       let target_memo = Object.assign({}, memo);
 
@@ -255,7 +265,6 @@ $(function() {
         this.page_info.checkMemoExistance();
       }
     }
-
     deleteMemo(memo, action_type=null) {
       if (action_type === 'OPTIONS') {
         // options page
@@ -267,13 +276,11 @@ $(function() {
         this.page_info.checkMemoExistance();
         this.setBadgeNumber(this.page_info.getMemos().length);
       }
-      // this.setCardArea();
     }
 
     getAllPageInfo() {
       return PageInfo.getAllPageInfoHavingMemo();
     }
-
     getAllMemos() {
       return Memo.getAllMemos();
     }
@@ -296,8 +303,6 @@ $(function() {
       param += page_info_id ? `&page_info=${page_info_id}` : '';
       chrome.tabs.create({ 'url': `${chrome.extension.getURL('pages/options.html')}#memos?${param}` });
     }
-
-    errorPage() {}
   }
 
   window.bg = new Background();
