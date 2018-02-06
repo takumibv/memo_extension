@@ -108,8 +108,6 @@ $(function() {
         window.bg.onTabRemoved(tabId);
       });
       chrome.runtime.onMessage.addListener((msg, sender, res) => {
-        console.log(msg, sender, res);
-        console.log(this.page_info);
         switch (msg.method) {
           case 'CREATE_MEMO':
             ga('send', 'event', 'Memo', msg.action_type, msg.method, 1);
@@ -224,7 +222,6 @@ $(function() {
         },
         () => {
           if (chrome.extension.lastError) {
-            console.log("executeScript::", chrome.extension.lastError);
             this.setCanShowMemo(false, this.decodeUrl(this.page_info.page_url));
             return;
           }

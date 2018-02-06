@@ -126,7 +126,6 @@ export class OptionPage extends Component {
   }
   sortBy(array, key) {
     return array.sort((a, b) => {
-      // console.log(a.id, b.id, a[key], b[key], a[key] > b[key], new Date(a[key]) > new Date(b[key]));
       if (a[key] > b[key]){ return -1; }
       if (a[key] < b[key]){ return 1; }
       return 0;
@@ -145,7 +144,6 @@ export class OptionPage extends Component {
     query.search = target;
     this.reRender();
     this.setState({query: query});
-    console.log("onChangeSearchQuery:: ", target);
   }
   scrollSideBarTo(page_info_id) {
     if(page_info_id && $(`#page_info-${page_info_id}`).length > 0) {

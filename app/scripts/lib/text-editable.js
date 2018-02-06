@@ -41,8 +41,6 @@
       $target_editor.on({
         'blur': function(){
           var res_text = auto_link(escape_html($(this).val()));
-          // var res_text = $(this).val();
-          // console.log("res_text", res_text);
           $(this).css('display', 'none');
           $target_text //.html(res_text)
             .css('display', '');

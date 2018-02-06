@@ -49,7 +49,6 @@ $(function() {
             }
         }
         assignEventHandlers() {
-          console.log("options");
           $('.resizable-box').resizableBox({
             minWidth: 240,
             minHeight: 160,
@@ -69,7 +68,6 @@ $(function() {
                 let bg          = backgroundPage.bg;
 
                 const page_infos = bg.getAllPageInfo();
-                console.log(page_infos);
 
                 // chrome.tabs.executeScript(
                 //   null, { file: "scripts/react_option.js" }
