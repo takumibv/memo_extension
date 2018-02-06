@@ -200,9 +200,6 @@ $(function() {
         tab_id, { file: "styles/base.css" }
       );
       chrome.tabs.insertCSS(
-        tab_id, { file: "styles/reset.css" }
-      );
-      chrome.tabs.insertCSS(
         tab_id, { file: "styles/card.css" }
       );
     }
