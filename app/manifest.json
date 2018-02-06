@@ -11,9 +11,11 @@
   },
   "background": {
     "scripts": [
-      "scripts/background.js"
+      "scripts/background.js",
+      "scripts/analytics.js"
     ]
   },
+  "content_security_policy": "script-src 'self' https://www.google-analytics.com/analytics.js; object-src 'self'",
   "options_page":"pages/options.html#settings",
   "icons": {
     "16": "images/icon_16.png",
