@@ -20,6 +20,7 @@ export class OptionPage extends Component {
       page_infos: page_infos,
       memos: memos,
     });
+    chrome.runtime.sendMessage({ method: 'SEND_PAGE_TRACKING', action_type: 'OPTIONS', page_url: location.pathname });
   }
   componentDidMount() {
     const {query} = this.state;
@@ -85,8 +86,8 @@ export class OptionPage extends Component {
         break;
     }
   }
-  save(action_type, updated_memo) {
-    chrome.runtime.sendMessage({ method: action_type, action_type: 'OPTIONS', page_url: updated_memo.page_info.page_url, memo: updated_memo });
+  save(method, updated_memo) {
+    chrome.runtime.sendMessage({ method: method, action_type: 'OPTIONS', page_url: updated_memo.page_info.page_url, memo: updated_memo });
     this.reRender();
   }
   delete(memo) {

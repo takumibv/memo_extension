@@ -11,8 +11,8 @@
   },
   "background": {
     "scripts": [
-      "scripts/background.js",
-      "scripts/analytics.js"
+      "scripts/analytics.js",
+      "scripts/background.js"
     ]
   },
   "content_security_policy": "script-src 'self' https://www.google-analytics.com/analytics.js; object-src 'self'",

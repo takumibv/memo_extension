@@ -6,6 +6,7 @@ $(function() {
   class Popup {
     constructor() {
       this.start();
+      chrome.runtime.sendMessage({ method: 'SEND_PAGE_TRACKING', action_type: 'POPUP', page_url: location.pathname });
     }
     start() {
       this.assignMessages();
