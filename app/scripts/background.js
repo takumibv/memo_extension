@@ -112,6 +112,7 @@ $(function() {
         console.log(this.page_info);
         switch (msg.method) {
           case 'CREATE_MEMO':
+            ga('send', 'event', 'Memo', msg.action_type, msg.method, 1);
             window.bg.createMemo(msg.page_url, msg.memo);
           case 'UPDATE_TITLE':
           case 'UPDATE_DESCRIPTION':
@@ -119,16 +120,22 @@ $(function() {
           case 'UPDATE_IS_FIXED':
           case 'MOVE_MEMO':
           case 'RESIZE_MEMO':
+            ga('send', 'event', 'Memo', msg.action_type, msg.method, 1);
             window.bg.updateMemo(msg.page_url, msg.memo, msg.action_type);
             break;
           case 'DELETE_MEMO':
+            ga('send', 'event', 'Memo', msg.action_type, msg.method, 1);
             window.bg.deleteMemo(msg.memo, msg.action_type);
             break;
           case 'CANNOT_SHOW_MEMO':
-            window.bg.setCanShowMemo(false);
+            window.bg.setCanShowMemo(false, window.bg.decodeUrl(window.bg.page_info.page_url));
             break;
           case 'OPEN_OPTION_PAGE':
             window.bg.openMemoPage(msg.memo.id, msg.memo.page_info_id);
+            break;
+          case 'SEND_PAGE_TRACKING':
+            ga('send', 'pageview', msg.page_url);
+            break;
           default:
             break;
         }
@@ -200,9 +207,6 @@ $(function() {
         tab_id, { file: "styles/base.css" }
       );
       chrome.tabs.insertCSS(
-        tab_id, { file: "styles/reset.css" }
-      );
-      chrome.tabs.insertCSS(
         tab_id, { file: "styles/card.css" }
       );
     }
@@ -221,7 +225,7 @@ $(function() {
         () => {
           if (chrome.extension.lastError) {
             console.log("executeScript::", chrome.extension.lastError);
-            this.setCanShowMemo(false);
+            this.setCanShowMemo(false, this.decodeUrl(this.page_info.page_url));
             return;
           }
           this.setCanShowMemo(true);
@@ -249,6 +253,7 @@ $(function() {
       };
       this.updateMemo(url, memo);
       this.setCardArea();
+      ga('send', 'event', 'Memo', 'App', 'MAKE_MEMO', 1);
     }
     updateMemo(page_url, memo, action_type=null) {
       let target_memo = Object.assign({}, memo);
@@ -288,9 +293,14 @@ $(function() {
     canShowMemo() {
       return this.can_show_memo;
     }
-    setCanShowMemo(can_show) {
+    setCanShowMemo(can_show, page_url = null) {
       this.can_show_memo = can_show;
-      if (!can_show) { this.setBadgeError(); }
+      if (!can_show) {
+        this.setBadgeError();
+        if (page_url) {
+          ga('send', 'event', 'CanShowMemo', false, page_url, 1);
+        }
+      }
     }
 
     openOptionPage(memo=null) {
