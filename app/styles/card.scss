@@ -23,7 +23,7 @@
     }
     &.minimize {
       width: 120px !important;
-      height: 60px !important;
+      height: 50px !important;
       left: 0 !important;
       .mdl-card__supporting-text {
         display: none;
@@ -53,10 +53,10 @@
     & > .mdl-card__title {
       width: 99%;
       margin: 0 auto !important;
-      padding: 16px 16px 4px 16px;
+      padding: 12px 16px 0px;
       color: #555 !important;
-      height: 60px !important;
-      min-height: 60px !important;
+      height: 50px !important;
+      min-height: 50px !important;
       min-width: 260px !important;
       align-self: flex-start;
       overflow-y: hidden;
@@ -112,7 +112,7 @@
       height: 100%;
       margin: 0 auto;
       overflow-y: scroll;
-      margin-bottom: 52px;
+      margin-bottom: 49px;
       padding: 0 16px !important;
       box-sizing: border-box;
 
@@ -128,7 +128,7 @@
           min-height: 100%;
           margin: 0;
           padding: 8px 0;
-          border-bottom: solid 3px rgba(158, 158, 158, 0.3);
+          border-bottom: solid 4px rgba(158, 158, 158, 0.3);
           box-sizing: border-box;
           word-wrap: break-word;
 
@@ -183,16 +183,13 @@
       margin: 4px;
       margin-top: -2px;
     }
-    .close-card_btn {
+    .close-card_btn, .open-card_btn {
       position: absolute;
-      top: 20px;
+      top: 12px;
       right: 12px;
     }
     .open-card_btn {
       display: none;
-      position: absolute;
-      top: 20px;
-      right: 12px;
     }
     .copied-msg-toast {
       display: none;
