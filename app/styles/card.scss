@@ -59,12 +59,11 @@
       min-height: 60px !important;
       min-width: 260px !important;
       align-self: flex-start;
-      overflow-y: scroll;
+      overflow-y: hidden;
       -webkit-align-items: normal;
       -ms-flex-align: normal;
       align-items: normal;
       word-wrap: break-word;
-      /*background: url('../images/welcome_card.jpg') center / cover;*/
       .handle-card-wrapper {
         width: 100%;
       }
