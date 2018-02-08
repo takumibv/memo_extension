@@ -34,6 +34,8 @@
   "show_all_memo_msg" : { "message": "show all" },
   "search_query_msg" : { "message": "search" },
   "this_page_memo_list_msg" : { "message": "Memo list of this page" },
+  "setting_about_this_app" : { "message": "About Memo Anywhere" },
+  "setting_about_this_app_created_by" : { "message": "Created by" },
 
   /* memo card */
   "updated_at_msg" : { "message": "Update" },

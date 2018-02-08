@@ -34,6 +34,8 @@
   "show_all_memo_msg" : { "message": "全て表示" },
   "search_query_msg" : { "message": "検索" },
   "this_page_memo_list_msg" : { "message": "このページのメモ一覧" },
+  "setting_about_this_app" : { "message": "どこでもメモについて" },
+  "setting_about_this_app_created_by" : { "message": "制作者" },
 
   /* memo card */
   "updated_at_msg" : { "message": "更新" },

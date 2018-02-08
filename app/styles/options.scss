@@ -16,6 +16,11 @@ a {
   color: #00b3d4;
 }
 
+h2 {
+  font-size: 18px;
+  padding: 12px 0;
+}
+
 .clearfix::after{
   content: "";
   display: block;
@@ -191,7 +196,6 @@ a {
           h2 {
             font-weight: bold;
             line-height: 28px;
-            font-size: 18px;
             padding: 4px 0;
             input {
               font-weight: bold;
