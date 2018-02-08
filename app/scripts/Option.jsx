@@ -260,16 +260,13 @@ export class OptionPage extends Component {
     );
   }
   renderSettingsPage() {
+    const {options} = this.props;
     return (
       <div id="container" className='clearfix'>
         <div id="settings">
-          <h2>設定</h2>
-          <h2>ヘルプ</h2>
+          <h2>{options.assignMessage('setting_about_this_app')}</h2>
           <ul>
-            <li>1. うまく描写されない<br />リロードしてみてください. </li>
-            <li></li>
-            <li></li>
-            <li></li>
+            <li>{options.assignMessage('setting_about_this_app_created_by')}: <a href="https://twitter.com/takumi_bv" target="_blank">@takumi_bv</a></li>
           </ul>
         </div>
       </div>
