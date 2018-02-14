@@ -170,6 +170,12 @@ export class OptionPage extends Component {
             onClick={e => {window.location.reload(true)}} >
             {options.assignMessage('memo_header_msg')}
           </a>
+          <a
+            href="#settings"
+            className={`nav-item ${settings_selected}`}
+            onClick={e => {window.location.reload(true)}} >
+            {options.assignMessage('settings_header_msg')}
+          </a>
         </div>
       </div>
     );
@@ -268,7 +274,8 @@ export class OptionPage extends Component {
     return(
       <div className='wrapper'>
         {this.renderHeader()}
-        {
+        {query.hash === '#settings' ?
+          this.renderSettingsPage() :
           this.renderMemosPage()
         }
       </div>
