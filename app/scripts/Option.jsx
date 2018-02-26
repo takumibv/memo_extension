@@ -288,31 +288,31 @@ export class OptionPage extends Component {
           <table>
             <tbody>
               <tr>
-                <th>xマークが出ていないページで使うことができます。</th>
+                <th>{options.assignMessage('usage01')}</th>
                 <td><img src={`${options.image_url}/usage01.png`} /></td>
               </tr>
               <tr>
-                <th>右上のポップアップをクリックし、+ボタンをクリックしてメモを作成できます。<br />(画面上で右クリックを押しても、作成できます。)</th>
+                <th>{options.assignMessage('usage02')}<br />{options.assignMessage('usage02_2')}</th>
                 <td><img src={`${options.image_url}/usage02.png`} /></td>
               </tr>
               <tr>
-                <th>ダブルクリックでタイトルや詳細を編集できます。</th>
+                <th>{options.assignMessage('usage03')}</th>
                 <td><img src={`${options.image_url}/usage03.png`} /></td>
               </tr>
               <tr>
-                <th>マウスドラッグで移動可能です。リサイズをすることもできます。</th>
+                <th>{options.assignMessage('usage04')}</th>
                 <td><img src={`${options.image_url}/usage04.png`} /></td>
               </tr>
               <tr>
-                <th>ポップアップから、今開いているページで作成したメモを閲覧することができます。<br />＞ボタンでメモの場所に移動できます。</th>
+                <th>{options.assignMessage('usage05')}<br />{options.assignMessage('usage05_2')}</th>
                 <td><img src={`${options.image_url}/usage05.png`} /></td>
               </tr>
               <tr>
-                <th><a href="#memos" onClick={e => {window.location.reload(true)}}>メモ一覧ページ</a>で今まで作ったメモを一覧できます。</th>
+                <th><a href="#memos" onClick={e => {window.location.reload(true)}}>{options.assignMessage('usage06')}</a>{options.assignMessage('usage06_2')}</th>
                 <td><img src={`${options.image_url}/usage06.png`} /></td>
               </tr>
               <tr>
-                <th>メモには、様々な機能があります。</th>
+                <th>{options.assignMessage('usage07')}</th>
                 <td><img src={`${options.image_url}/usage_function_${options.language}.png`} /></td>
               </tr>
             </tbody>
