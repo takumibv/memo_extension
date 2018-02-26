@@ -27,10 +27,12 @@
   "setting_button_msg" : { "message": "設定" },
   "menu_button_msg" : { "message": "メモ一覧ページ" },
   "cannot_show_memo_msg" : { "message": "このページではメモを表示できません。" },
+  "how_to_use_page_link_msg" : { "message": "使い方" },
 
   /* option page */
   "memo_header_msg" : { "message": "メモ一覧" },
   "settings_header_msg" : { "message": "設定" },
+  "how_to_use_header_msg" : { "message": "使い方" },
   "show_all_memo_msg" : { "message": "全て表示" },
   "search_query_msg" : { "message": "検索" },
   "this_page_memo_list_msg" : { "message": "このページのメモ一覧" },

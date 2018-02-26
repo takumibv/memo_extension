@@ -160,8 +160,9 @@ export class OptionPage extends Component {
   }
   renderHeader() {
     const {query, options} = this.state;
-    const memos_selected = (!query.hash || query.hash === '#memos') ? 'selected' : '';
+    const memos_selected = (query.hash === '#memos' || query.hash === '') ? 'selected' : '';
     const settings_selected = query.hash === '#settings' ? 'selected' : '';
+    const how_to_use_selected = query.hash === '#how_to_use' ? 'selected' : '';
     return (
       <div id='header'>
         <img className='main-icon' src={`${options.image_url}/icon_128.png`} />
@@ -178,6 +179,12 @@ export class OptionPage extends Component {
             className={`nav-item ${settings_selected}`}
             onClick={e => {window.location.reload(true)}} >
             {options.assignMessage('settings_header_msg')}
+          </a>
+          <a
+            href="#how_to_use"
+            className={`nav-item ${how_to_use_selected}`}
+            onClick={e => {window.location.reload(true)}} >
+            {options.assignMessage('how_to_use_header_msg')}
           </a>
         </div>
       </div>
@@ -272,15 +279,59 @@ export class OptionPage extends Component {
       </div>
     );
   }
+  renderHowToUsePage() {
+    const {options} = this.props;
+    return (
+      <div id="container" className='clearfix'>
+        <div id="how_to_use">
+          <h2>{options.assignMessage('how_to_use_header_msg')}</h2>
+          <table>
+            <tbody>
+              <tr>
+                <th>xマークが出ていないページで使うことができます。</th>
+                <td><img src={`${options.image_url}/usage01.png`} /></td>
+              </tr>
+              <tr>
+                <th>右上のポップアップをクリックし、+ボタンをクリックしてメモを作成できます。<br />(画面上で右クリックを押しても、作成できます。)</th>
+                <td><img src={`${options.image_url}/usage02.png`} /></td>
+              </tr>
+              <tr>
+                <th>ダブルクリックでタイトルや詳細を編集できます。</th>
+                <td><img src={`${options.image_url}/usage03.png`} /></td>
+              </tr>
+              <tr>
+                <th>マウスドラッグで移動可能です。リサイズをすることもできます。</th>
+                <td><img src={`${options.image_url}/usage04.png`} /></td>
+              </tr>
+              <tr>
+                <th>ポップアップから、今開いているページで作成したメモを閲覧することができます。<br />＞ボタンでメモの場所に移動できます。</th>
+                <td><img src={`${options.image_url}/usage05.png`} /></td>
+              </tr>
+              <tr>
+                <th><a href="#memos" onClick={e => {window.location.reload(true)}}>メモ一覧ページ</a>で今まで作ったメモを一覧できます。</th>
+                <td><img src={`${options.image_url}/usage06.png`} /></td>
+              </tr>
+              <tr>
+                <th>メモには、様々な機能があります。</th>
+                <td><img src={`${options.image_url}/usage_function_${options.language}.png`} /></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
   render() {
     const {query} = this.state;
     return(
       <div className='wrapper'>
         {this.renderHeader()}
-        {query.hash === '#settings' ?
-          this.renderSettingsPage() :
-          this.renderMemosPage()
-        }
+        {query.hash === '#settings' &&
+          this.renderSettingsPage()}
+        {query.hash === '#how_to_use' &&
+          this.renderHowToUsePage()}
+        {(query.hash === '#memos' || query.hash === '') &&
+          this.renderMemosPage()}
       </div>
     );
   }
@@ -302,6 +353,7 @@ chrome.runtime.getBackgroundPage((backgroundPage) => {
       option_page_url: chrome.extension.getURL('pages/options.html'),
       is_options_page: true,
       assignMessage: chrome.i18n.getMessage,
+      language: chrome.i18n.getUILanguage(),
     };
 
     console.log('======= Background Params ======');

@@ -27,10 +27,12 @@
   "setting_button_msg" : { "message": "settings" },
   "menu_button_msg" : { "message": "memo list page" },
   "cannot_show_memo_msg" : { "message": "Memos can not be shown on this page." },
+  "how_to_use_page_link_msg" : { "message": "How to Use" },
 
   /* option page */
   "memo_header_msg" : { "message": "Memos" },
   "settings_header_msg" : { "message": "Setting" },
+  "how_to_use_header_msg" : { "message": "Usage" },
   "show_all_memo_msg" : { "message": "show all" },
   "search_query_msg" : { "message": "search" },
   "this_page_memo_list_msg" : { "message": "Memo list of this page" },

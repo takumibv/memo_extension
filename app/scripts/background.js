@@ -69,6 +69,8 @@ $(function() {
         'delete_msg' : chrome.i18n.getMessage('delete_msg'),
         'new_memo_title_msg' : chrome.i18n.getMessage('new_memo_title_msg'),
         'new_memo_description_msg' : chrome.i18n.getMessage('new_memo_description_msg'),
+        'how_to_use_page_link_msg' : chrome.i18n.getMessage('how_to_use_page_link_msg'),
+        'how_to_use_header_msg' : chrome.i18n.getMessage('how_to_use_header_msg'),
       };
     }
     // Chromeの各種操作イベントに対するイベントハンドラを登録する。
@@ -312,6 +314,9 @@ $(function() {
       let param = memo_id ? `memo=${memo_id}` : '';
       param += page_info_id ? `&page_info=${page_info_id}` : '';
       chrome.tabs.create({ 'url': `${chrome.extension.getURL('pages/options.html')}#memos?${param}` });
+    }
+    openHowToUsePage() {
+      chrome.tabs.create({ 'url': `${chrome.extension.getURL('pages/options.html')}#how_to_use` });
     }
   }
 
