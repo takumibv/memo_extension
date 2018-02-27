@@ -91,9 +91,9 @@ export default class MemoCard extends Component {
                 <p className="date created_at">{options.assignMessage('created_at_msg')}: <span>{created_at_str}</span></p>
               </div>
             </div>}
-          <div className="handle-card-wrapper">
+          <div className="handle-card-wrapper handle-card" index={index}>
             <h2 className="mdl-card__title-text">
-              <span className="editable handle-card" index={index}>{memo.title}</span>
+              <span className="editable" index={index}>{memo.title}</span>
               <input className="target-editor" type="text" />
             </h2>
           </div>

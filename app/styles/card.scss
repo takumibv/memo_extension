@@ -98,14 +98,18 @@
     }
     span.editable {
       height: 100%;
+      width: 100%;
       min-width: 30px;
       text-indent: 0;
     }
     .mdl-card__menu {
       color: #555;
     }
-    .handle-card-wrapper {
-      cursor: move;
+    .handle-card {
+      cursor: -webkit-grab;
+      &:active {
+        cursor: -webkit-grabbing;
+      }
     }
     .mdl-card__supporting-text {
       width: 99%;
