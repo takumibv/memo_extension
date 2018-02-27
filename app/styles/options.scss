@@ -286,6 +286,12 @@ h2 {
           .mdl-tooltip {
             display: none;
           }
+          &.pin_btn {
+            display: none;
+            &.pinned {
+              display: inline-block;
+            }
+          }
         }
       }
     }
