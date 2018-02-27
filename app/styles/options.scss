@@ -212,8 +212,9 @@ h2 {
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
-            display: block;
             text-decoration: underline;
+            display: inline-block;
+            max-width: 100%;
             &:hover {
               color: #016173;
               cursor: pointer;

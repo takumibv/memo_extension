@@ -63,6 +63,7 @@ export default class MemoCard extends Component {
     const {index, memo, actions, options} = this.props;
 
     const minimize = memo.is_open ? '' : 'minimize';
+    const resizable = memo.is_open ? 'resizable' : '';
     const fixed = memo.is_fixed ? 'fixed' : '';
     const card_style = {
       width: memo.width,
@@ -79,7 +80,7 @@ export default class MemoCard extends Component {
     return (
       <div
         id={`memo-card-${index}`}
-        className={`demo-card-wide mdl-card mdl-shadow--2dp resizable-box draggable-card ${minimize} ${fixed}`}
+        className={`demo-card-wide mdl-card mdl-shadow--2dp draggable-card ${minimize} ${resizable} ${fixed}`}
         style={card_style}
         index={index}
         onClick={() => {this.onClick(`memo-card-${index}`);}}>
@@ -99,7 +100,9 @@ export default class MemoCard extends Component {
           </div>
           {options.is_options_page &&
             <div className="memo_infos">
-              <a className="page_url" href={`${page_url}`} target="_blank" rel="noreferrer noopener">{`${memo.page_info.page_title}`}<br />{page_url}</a>
+              <div className="clearfix">
+                <a className="page_url" href={`${page_url}`} target="_blank" rel="noreferrer noopener">{`${memo.page_info.page_title}`}<br />{page_url}</a>
+              </div>
               <a className="page_info_link" onClick={() => {this.openPageInfo(memo.page_info_id);}} rel="noreferrer noopener">{options.assignMessage('this_page_memo_list_msg')}</a>
             </div>}
           {options.is_options_page ?
