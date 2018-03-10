@@ -166,8 +166,15 @@ h2 {
           border-radius: 14px;
           padding: 4px 20px;
           border: solid 1px #ccc;
-          width: 100%;
+          width: 80%;
           box-sizing: border-box;
+        }
+        select {
+          height: 30px;
+          width: 18%;
+          margin-left: 2%;
+          font-size: 14px;
+          border: solid 1px #ccc;
         }
       }
     }

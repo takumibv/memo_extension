@@ -148,6 +148,13 @@ export class OptionPage extends Component {
     this.setState({query: query});
     console.log("onChangeSearchQuery:: ", target);
   }
+  onChangeMemoOrder(target) {
+    const {query} = this.state;
+    query.memo_order = target;
+    this.reRender();
+    this.setState({query: query});
+    console.log("onChangeMemoOrder:: ", target);
+  }
   scrollSideBarTo(page_info_id) {
     if(page_info_id && $(`#page_info-${page_info_id}`).length > 0) {
       $("#sidebar").animate({scrollTop: $(`#page_info-${page_info_id}`).offset().top + $("#sidebar").scrollTop() - 48});
@@ -223,7 +230,7 @@ export class OptionPage extends Component {
     const {memos, query} = this.state;
     const {options} = this.props;
     let render_memos = memos;
-    const sort_by = 'updated_at';
+    const memo_order = query.memo_order || 'updated_at';
 
     if (query.page_info) {
       render_memos = render_memos.filter(memo => memo.page_info_id === parseInt(query.page_info));
@@ -240,7 +247,7 @@ export class OptionPage extends Component {
       <div id="memo_list">
         {this.renderSearchBar()}
         <MemoCardList
-          memos={this.sortBy(render_memos, sort_by)}
+          memos={this.sortBy(render_memos, memo_order)}
           options={options}
           actions={this.actions.bind(this)} />
       </div>
@@ -255,6 +262,13 @@ export class OptionPage extends Component {
           name="search_query"
           placeholder={options.assignMessage('search_query_msg')}
           onChange={e => this.onChangeSearchQuery(e.target.value) } />
+        <select
+          name="memo_order"
+          onChange={e => this.onChangeMemoOrder(e.target.value)} >
+          <option value="updated_at">更新日</option>
+          <option value="created_at">作成日</option>
+          <option value="title">タイトル</option>
+        </select>
       </div>
     );
   }
