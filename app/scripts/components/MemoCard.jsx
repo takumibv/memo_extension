@@ -63,7 +63,7 @@ export default class MemoCard extends Component {
     const {index, memo, actions, options} = this.props;
 
     const minimize = memo.is_open ? '' : 'minimize';
-    const resizable = memo.is_open ? 'resizable' : '';
+    const resizable = memo.is_open ? 'resizable-box' : '';
     const fixed = memo.is_fixed ? 'fixed' : '';
     const card_style = {
       width: memo.width,

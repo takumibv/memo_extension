@@ -98,6 +98,9 @@ export class App extends Component {
         break;
       case 'RESIZE_MEMO':
         var updated_memos = this.state.memos;
+        if (!updated_memos[action.index].is_open) {
+          break;
+        }
         updated_memos[action.index].width       = action.width;
         updated_memos[action.index].height      = action.height;
         updated_memos[action.index].updated_at  = new Date().toISOString();
