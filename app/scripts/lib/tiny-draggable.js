@@ -20,6 +20,7 @@
         mousedown: function(e) {
           moved_flg = false;
           if (settings.exclude && ~$.inArray(e.target, $(settings.exclude, el))) return;
+          el.addClass('moving');
           e.preventDefault();
           var os = el.offset();
           dx = e.pageX - os.left, dy = e.pageY - os.top;
@@ -35,6 +36,7 @@
         },
         mouseup: function(e) {
           $(document).off('mousemove.drag');
+          el.removeClass('moving');
           if(moved_flg) {
             callback($(this).attr("index"), el.offset().top, el.offset().left);
           }
