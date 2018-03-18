@@ -9,6 +9,7 @@
     float: right !important;
   }
   .demo-card-wide {
+    overflow: visible !important;
     &.mdl-card {
       /*min-width: 400px;*/
       min-height: 0;
@@ -67,6 +68,12 @@
       .handle-card-wrapper {
         width: 100%;
       }
+    }
+    .mdl-card__pin_icon {
+      position: absolute;
+      width: 24px;
+      top: -12px;
+      left: 6px;
     }
     .mdl-card__title-text {
       height: 100%;

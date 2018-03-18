@@ -84,6 +84,8 @@ export default class MemoCard extends Component {
         style={card_style}
         index={index}
         onClick={() => {this.onClick(`memo-card-${index}`);}}>
+        {!options.is_options_page && !memo.is_fixed &&
+          <img className='mdl-card__pin_icon' src={`${options.image_url}/pin_icon.png`} />}
         <div id={`memo-${memo.id}`} className="mdl-card__title mdl-card--border">
           {options.is_options_page &&
             <div className="memo_infos">

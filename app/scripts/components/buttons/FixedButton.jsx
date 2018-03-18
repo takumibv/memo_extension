@@ -5,7 +5,7 @@ const $ = require('jquery');
 export default class FixedButton extends Button {
   componentWillMount() {
     const {options} = this.props;
-    this.icon_name        = ['pin_rm_icon', 'pin_icon'];
+    this.icon_name        = ['pin_icon', 'pin_rm_icon'];
     this.tooltip_title    = [options.assignMessage('remove_pinned_msg'), options.assignMessage('pinned_msg')];
     this.additional_class = ['pinned pin_btn', 'pin_btn'];
   }
