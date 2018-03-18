@@ -36,6 +36,9 @@
         min-width: 120px !important;
         .mdl-card__title-text {
           font-size: 14px !important;
+          .target-editor {
+            font-size: 14px;
+          }
           span {
             overflow: hidden;
             text-overflow: ellipsis !important;
@@ -158,6 +161,7 @@
           box-shadow: none;
           text-shadow: none;
           padding: 0;
+          background: #fff;
         }
       }
     }
