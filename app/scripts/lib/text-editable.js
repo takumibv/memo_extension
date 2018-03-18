@@ -48,8 +48,11 @@
             .css('display', '');
           callback($target_text.attr("index"), res_text);
         },
-        'keypress': function(e){
-          if (option.is_enter_blur && e.which === 13) {
+        'keydown': function(e) {
+          if ( option.is_enter_blur && e.keyCode === 13  // Enterキー
+            || ((e.ctrlKey && !e.metaKey) || (!e.ctrlKey && e.metaKey)) && e.keyCode === 13   // Ctrl + Enterキー
+            || e.keyCode === 27                          // escキー
+          ) {
             $(this).blur();
         		return false;
         	}
