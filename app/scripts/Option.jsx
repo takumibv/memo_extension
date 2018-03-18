@@ -125,11 +125,12 @@ export class OptionPage extends Component {
     query.hash = location.hash.split('?')[0];
     return query;
   }
-  sortBy(array, key) {
+  sortBy(array, key, reverse = false) {
+    const reverse_num = reverse ? -1 : 1;
     return array.sort((a, b) => {
       // console.log(a.id, b.id, a[key], b[key], a[key] > b[key], new Date(a[key]) > new Date(b[key]));
-      if (a[key] > b[key]){ return -1; }
-      if (a[key] < b[key]){ return 1; }
+      if (a[key] > b[key]){ return -1 * reverse_num; }
+      if (a[key] < b[key]){ return 1 * reverse_num; }
       return 0;
     });
   }
@@ -247,7 +248,7 @@ export class OptionPage extends Component {
       <div id="memo_list">
         {this.renderSearchBar()}
         <MemoCardList
-          memos={this.sortBy(render_memos, memo_order)}
+          memos={this.sortBy(render_memos, memo_order, (memo_order === 'title'))}
           options={options}
           actions={this.actions.bind(this)} />
       </div>
