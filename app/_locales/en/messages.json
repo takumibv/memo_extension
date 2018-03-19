@@ -17,7 +17,7 @@
   },
 
   /* common term */
-  "app_name" : { "message": "Memo Anywhere v0.2.1" },
+  "app_name" : { "message": "Memo Anywhere v0.2.4" },
   "no_memo_msg" : { "message": "There is no memo." },
   "add_memo_msg" : { "message": "add memo" },
   "confirm_remove_memo_msg" : { "message": "Do you really want to delete this?" },
