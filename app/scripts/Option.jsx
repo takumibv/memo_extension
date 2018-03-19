@@ -217,7 +217,11 @@ export class OptionPage extends Component {
               id={`page_info-${page_info.id}`}
               className={`page_info-item ${selected}`}
               onClick={() => {this.onClickPageInfo(page_info.id);}} >
-              <p>{page_info.page_title}</p>
+              <p>
+                {page_info.fav_icon_url &&
+                <img src={page_info.fav_icon_url} />}
+                {page_info.page_title}
+              </p>
               <a href={`${url}`} target="_blank" rel="noreferrer noopener">
                 <img className='button_icon' src={`${options.image_url}/move_page_icon.png`} />
               </a>
