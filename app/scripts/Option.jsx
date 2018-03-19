@@ -8,7 +8,6 @@ const url = require('url');
 export class OptionPage extends Component {
   constructor() {
     super();
-    console.log("Memo Extension is running.");
   }
   componentWillMount() {
     const { page_infos, memos, options } = this.props;
@@ -151,7 +150,6 @@ export class OptionPage extends Component {
     query.memo_order = target;
     this.reRender();
     this.setState({query: query});
-    console.log("onChangeMemoOrder:: ", target);
   }
   scrollSideBarTo(page_info_id) {
     if(page_info_id && $(`#page_info-${page_info_id}`).length > 0) {

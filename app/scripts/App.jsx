@@ -16,7 +16,6 @@ if(!$('#react-container-for-memo-extension').length){
 export class App extends Component {
   constructor() {
     super();
-    console.log("Memo Extension is running.");
   }
   componentWillMount() {
     const { page_info, memos } = this.props;
