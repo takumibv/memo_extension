@@ -21,6 +21,7 @@ $(function() {
         "make_memo_button_msg": "make_memo_button_msg",
         "setting_button_msg": "setting_button_msg",
         "menu_button_msg": "menu_button_msg",
+        "how_to_use_page_link": "how_to_use_page_link_msg",
       };
       for (var key in hash) {
         $("#" + key).html(chrome.i18n.getMessage(hash[key]));
@@ -39,6 +40,11 @@ $(function() {
 
       $(document).on('click', '#menu_button', e => {
         this.onClickOpenMemoPageButton(null);
+        window.close();
+      });
+
+      $(document).on('click', '#how_to_use_page_link', e => {
+        this.onClickOpenHowToUsePageButton();
         window.close();
       });
 
@@ -79,6 +85,11 @@ $(function() {
     onClickMovePositionButton(memo_id) {
       chrome.runtime.getBackgroundPage((backgroundPage) => {
         backgroundPage.bg.scrollTo(memo_id);
+      });
+    }
+    onClickOpenHowToUsePageButton() {
+      chrome.runtime.getBackgroundPage((backgroundPage) => {
+        backgroundPage.bg.openHowToUsePage();
       });
     }
     renderMemo(memo) {

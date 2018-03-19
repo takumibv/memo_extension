@@ -27,15 +27,27 @@
   "setting_button_msg" : { "message": "settings" },
   "menu_button_msg" : { "message": "memo list page" },
   "cannot_show_memo_msg" : { "message": "Memos can not be shown on this page." },
+  "how_to_use_page_link_msg" : { "message": "How to Use" },
 
   /* option page */
   "memo_header_msg" : { "message": "Memos" },
   "settings_header_msg" : { "message": "Setting" },
+  "how_to_use_header_msg" : { "message": "Usage" },
   "show_all_memo_msg" : { "message": "show all" },
   "search_query_msg" : { "message": "search" },
   "this_page_memo_list_msg" : { "message": "Memo list of this page" },
   "setting_about_this_app" : { "message": "About Memo Anywhere" },
   "setting_about_this_app_created_by" : { "message": "Created by" },
+  "usage01" : { "message": "You can use on the page where the \"x\" mark is not appeared." },
+  "usage02" : { "message": "Click on the popup in the upper right and click the \"+\" button, and you can create a memo." },
+  "usage02_2" : { "message": "(You can also create by right click on the screen.)" },
+  "usage03" : { "message": "Double click to edit title and details." },
+  "usage04" : { "message": "Move by mouse drag. You can also resize." },
+  "usage05" : { "message": "From the popup, you can view the memos created on the open page." },
+  "usage05_2" : { "message": "You can move to the location of the memo with \">\" button." },
+  "usage06" : { "message": "Memos page" },
+  "usage06_2" : { "message": " shows memos you made up to now." },
+  "usage07" : { "message": "The memo has various functions." },
 
   /* memo card */
   "updated_at_msg" : { "message": "Update" },

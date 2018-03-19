@@ -124,10 +124,11 @@ export class OptionPage extends Component {
     query.hash = location.hash.split('?')[0];
     return query;
   }
-  sortBy(array, key) {
+  sortBy(array, key, reverse = false) {
+    const reverse_num = reverse ? -1 : 1;
     return array.sort((a, b) => {
-      if (a[key] > b[key]){ return -1; }
-      if (a[key] < b[key]){ return 1; }
+      if (a[key] > b[key]){ return -1 * reverse_num; }
+      if (a[key] < b[key]){ return 1 * reverse_num; }
       return 0;
     });
   }
@@ -145,6 +146,13 @@ export class OptionPage extends Component {
     this.reRender();
     this.setState({query: query});
   }
+  onChangeMemoOrder(target) {
+    const {query} = this.state;
+    query.memo_order = target;
+    this.reRender();
+    this.setState({query: query});
+    console.log("onChangeMemoOrder:: ", target);
+  }
   scrollSideBarTo(page_info_id) {
     if(page_info_id && $(`#page_info-${page_info_id}`).length > 0) {
       $("#sidebar").animate({scrollTop: $(`#page_info-${page_info_id}`).offset().top + $("#sidebar").scrollTop() - 48});
@@ -157,8 +165,9 @@ export class OptionPage extends Component {
   }
   renderHeader() {
     const {query, options} = this.state;
-    const memos_selected = (!query.hash || query.hash === '#memos') ? 'selected' : '';
+    const memos_selected = (query.hash === '#memos' || query.hash === '') ? 'selected' : '';
     const settings_selected = query.hash === '#settings' ? 'selected' : '';
+    const how_to_use_selected = query.hash === '#how_to_use' ? 'selected' : '';
     return (
       <div id='header'>
         <img className='main-icon' src={`${options.image_url}/icon_128.png`} />
@@ -175,6 +184,12 @@ export class OptionPage extends Component {
             className={`nav-item ${settings_selected}`}
             onClick={e => {window.location.reload(true)}} >
             {options.assignMessage('settings_header_msg')}
+          </a>
+          <a
+            href="#how_to_use"
+            className={`nav-item ${how_to_use_selected}`}
+            onClick={e => {window.location.reload(true)}} >
+            {options.assignMessage('how_to_use_header_msg')}
           </a>
         </div>
       </div>
@@ -213,7 +228,7 @@ export class OptionPage extends Component {
     const {memos, query} = this.state;
     const {options} = this.props;
     let render_memos = memos;
-    const sort_by = 'updated_at';
+    const memo_order = query.memo_order || 'updated_at';
 
     if (query.page_info) {
       render_memos = render_memos.filter(memo => memo.page_info_id === parseInt(query.page_info));
@@ -230,7 +245,7 @@ export class OptionPage extends Component {
       <div id="memo_list">
         {this.renderSearchBar()}
         <MemoCardList
-          memos={this.sortBy(render_memos, sort_by)}
+          memos={this.sortBy(render_memos, memo_order, (memo_order === 'title'))}
           options={options}
           actions={this.actions.bind(this)} />
       </div>
@@ -245,6 +260,13 @@ export class OptionPage extends Component {
           name="search_query"
           placeholder={options.assignMessage('search_query_msg')}
           onChange={e => this.onChangeSearchQuery(e.target.value) } />
+        <select
+          name="memo_order"
+          onChange={e => this.onChangeMemoOrder(e.target.value)} >
+          <option value="updated_at">更新日</option>
+          <option value="created_at">作成日</option>
+          <option value="title">タイトル</option>
+        </select>
       </div>
     );
   }
@@ -269,15 +291,59 @@ export class OptionPage extends Component {
       </div>
     );
   }
+  renderHowToUsePage() {
+    const {options} = this.props;
+    return (
+      <div id="container" className='clearfix'>
+        <div id="how_to_use">
+          <h2>{options.assignMessage('how_to_use_header_msg')}</h2>
+          <table>
+            <tbody>
+              <tr>
+                <th>{options.assignMessage('usage01')}</th>
+                <td><img src={`${options.image_url}/usage01.png`} /></td>
+              </tr>
+              <tr>
+                <th>{options.assignMessage('usage02')}<br />{options.assignMessage('usage02_2')}</th>
+                <td><img src={`${options.image_url}/usage02.png`} /></td>
+              </tr>
+              <tr>
+                <th>{options.assignMessage('usage03')}</th>
+                <td><img src={`${options.image_url}/usage03.png`} /></td>
+              </tr>
+              <tr>
+                <th>{options.assignMessage('usage04')}</th>
+                <td><img src={`${options.image_url}/usage04.png`} /></td>
+              </tr>
+              <tr>
+                <th>{options.assignMessage('usage05')}<br />{options.assignMessage('usage05_2')}</th>
+                <td><img src={`${options.image_url}/usage05.png`} /></td>
+              </tr>
+              <tr>
+                <th><a href="#memos" onClick={e => {window.location.reload(true)}}>{options.assignMessage('usage06')}</a>{options.assignMessage('usage06_2')}</th>
+                <td><img src={`${options.image_url}/usage06.png`} /></td>
+              </tr>
+              <tr>
+                <th>{options.assignMessage('usage07')}</th>
+                <td><img src={`${options.image_url}/usage_function_${options.language}.png`} /></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
   render() {
     const {query} = this.state;
     return(
       <div className='wrapper'>
         {this.renderHeader()}
-        {query.hash === '#settings' ?
-          this.renderSettingsPage() :
-          this.renderMemosPage()
-        }
+        {query.hash === '#settings' &&
+          this.renderSettingsPage()}
+        {query.hash === '#how_to_use' &&
+          this.renderHowToUsePage()}
+        {(query.hash === '#memos' || query.hash === '') &&
+          this.renderMemosPage()}
       </div>
     );
   }
@@ -298,6 +364,7 @@ chrome.runtime.getBackgroundPage((backgroundPage) => {
       option_page_url: chrome.extension.getURL('pages/options.html'),
       is_options_page: true,
       assignMessage: chrome.i18n.getMessage,
+      language: chrome.i18n.getUILanguage(),
     };
 
     try {

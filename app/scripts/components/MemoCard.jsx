@@ -62,12 +62,13 @@ export default class MemoCard extends Component {
     const {index, memo, actions, options} = this.props;
 
     const minimize = memo.is_open ? '' : 'minimize';
+    const resizable = memo.is_open ? 'resizable-box' : '';
     const fixed = memo.is_fixed ? 'fixed' : '';
     const card_style = {
       width: memo.width,
       height: memo.height,
-      left: memo.position_x,
-      top: (memo.position_y === null ? $(window).scrollTop() : memo.position_y )
+      left: (memo.position_x === null ? window.innerWidth/2 - memo.width/2 : memo.position_x),
+      top: (memo.position_y === null ? $(window).scrollTop() + window.innerHeight/2 - memo.height/2 : memo.position_y )
     };
     const created_at = new Date(memo.created_at);
     const created_at_str = `${created_at.getFullYear()}/${created_at.getMonth()+1}/${created_at.getDate()} ${('0'+created_at.getHours()).slice(-2)}:${('0'+created_at.getMinutes()).slice(-2)}`;
@@ -75,13 +76,19 @@ export default class MemoCard extends Component {
     const updated_at_str = `${updated_at.getFullYear()}/${updated_at.getMonth()+1}/${updated_at.getDate()} ${('0'+updated_at.getHours()).slice(-2)}:${('0'+updated_at.getMinutes()).slice(-2)}`;
     const page_url = decodeURIComponent(memo.page_info.page_url);
 
+    if (memo.position_x === null) {
+      actions({type: 'MOVE_MEMO', index: index, memo_id: memo.id, position_x: card_style.left, position_y: card_style.top});
+    }
+
     return (
       <div
         id={`memo-card-${index}`}
-        className={`demo-card-wide mdl-card mdl-shadow--2dp resizable-box draggable-card ${minimize} ${fixed}`}
+        className={`demo-card-wide mdl-card mdl-shadow--2dp draggable-card ${minimize} ${resizable} ${fixed}`}
         style={card_style}
         index={index}
         onClick={() => {this.onClick(`memo-card-${index}`);}}>
+        {!options.is_options_page && !memo.is_fixed &&
+          <img className='mdl-card__pin_icon' src={`${options.image_url}/pin_icon.png`} />}
         <div id={`memo-${memo.id}`} className="mdl-card__title mdl-card--border">
           {options.is_options_page &&
             <div className="memo_infos">
@@ -90,15 +97,17 @@ export default class MemoCard extends Component {
                 <p className="date created_at">{options.assignMessage('created_at_msg')}: <span>{created_at_str}</span></p>
               </div>
             </div>}
-          <div className="handle-card-wrapper">
+          <div className="handle-card-wrapper handle-card" index={index}>
             <h2 className="mdl-card__title-text">
-              <span className="editable handle-card" index={index}>{memo.title}</span>
+              <span className="editable" index={index}>{memo.title}</span>
               <input className="target-editor" type="text" />
             </h2>
           </div>
           {options.is_options_page &&
             <div className="memo_infos">
-              <a className="page_url" href={`${page_url}`} target="_blank" rel="noreferrer noopener">{`${memo.page_info.page_title}`}<br />{page_url}</a>
+              <div className="clearfix">
+                <a className="page_url" href={`${page_url}`} target="_blank" rel="noreferrer noopener">{`${memo.page_info.page_title}`}<br />{page_url}</a>
+              </div>
               <a className="page_info_link" onClick={() => {this.openPageInfo(memo.page_info_id);}} rel="noreferrer noopener">{options.assignMessage('this_page_memo_list_msg')}</a>
             </div>}
           {options.is_options_page ?
