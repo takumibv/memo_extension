@@ -106,6 +106,7 @@ export default class MemoCard extends Component {
           {options.is_options_page &&
             <div className="memo_infos">
               <div className="clearfix">
+                {memo.page_info.fav_icon_url && <img src={memo.page_info.fav_icon_url} />}
                 <a className="page_url" href={`${page_url}`} target="_blank" rel="noreferrer noopener">{`${memo.page_info.page_title}`}<br />{page_url}</a>
               </div>
               <a className="page_info_link" onClick={() => {this.openPageInfo(memo.page_info_id);}} rel="noreferrer noopener">{options.assignMessage('this_page_memo_list_msg')}</a>

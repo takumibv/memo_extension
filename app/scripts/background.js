@@ -53,6 +53,7 @@ $(function() {
         text: `Hello`
       })
     }
+    // contents_script用
     assignMessages() {
       return {
         'updated_at_msg' : chrome.i18n.getMessage('updated_at_msg'),
@@ -86,13 +87,16 @@ $(function() {
         } else if (tab.active && changeInfo.status === "complete" && tab.url.match(/^http(s?):\/\//)) {
           // ページの読み込みが完了したら呼ばれる.(loading中はtab.titleがnullの場合がある)
           window.bg.setPageTitle(tabId, tab.title);
+          window.bg.setFavIcon(tabId, tab.favIconUrl);
         }
       });
       chrome.tabs.onActivated.addListener(activeInfo => {
         // タブが切り替えられた時に呼ばれる.
         chrome.tabs.get(activeInfo.tabId, tab => {
+          console.log("onActivated", tab);
           window.bg.setPageInfo(tab.id, tab.url);
           window.bg.setPageTitle(tab.id, tab.title);
+          window.bg.setFavIcon(tab.id, tab.favIconUrl);
         });
       });
       chrome.windows.onFocusChanged.addListener(windowId => {
@@ -102,6 +106,7 @@ $(function() {
             if (tabs[0]) {
               window.bg.setPageInfo(tabs[0].id, tabs[0].url);
               window.bg.setPageTitle(tabs[0].id, tabs[0].title);
+              window.bg.setFavIcon(tabs[0].id, tabs[0].favIconUrl);
             }
           });
         }
@@ -149,11 +154,12 @@ $(function() {
       * 3. カードセット
       ***/
       if (page_url.match(/^http(s?):\/\//) === null) {
+        this.page_info = null;
         this.setCanShowMemo(false);
         return;
       }
       const tab_url  = this.encodeUrl(page_url);
-      this.page_info = new PageInfo(tab_url);;
+      this.page_info = new PageInfo(tab_url);
 
       this.setCardArea();
     }
@@ -161,6 +167,11 @@ $(function() {
       // タイトルのセット(loading中はタイトルが入らない場合もあるため, setPageInfoと分けている)
       if (this.page_info) {
         this.page_info.setPageTitle(title);
+      }
+    }
+    setFavIcon(tabId, icon_url) {
+      if (this.page_info) {
+        this.page_info.setPageFavIcon(icon_url);
       }
     }
     onTabRemoved(tabId) {

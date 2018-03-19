@@ -212,7 +212,11 @@ export class OptionPage extends Component {
               id={`page_info-${page_info.id}`}
               className={`page_info-item ${selected}`}
               onClick={() => {this.onClickPageInfo(page_info.id);}} >
-              <p>{page_info.page_title}</p>
+              <p>
+                {page_info.fav_icon_url &&
+                <img src={page_info.fav_icon_url} />}
+                {page_info.page_title}
+              </p>
               <a href={`${url}`} target="_blank" rel="noreferrer noopener">
                 <img className='button_icon' src={`${options.image_url}/move_page_icon.png`} />
               </a>
@@ -261,9 +265,9 @@ export class OptionPage extends Component {
         <select
           name="memo_order"
           onChange={e => this.onChangeMemoOrder(e.target.value)} >
-          <option value="updated_at">更新日</option>
-          <option value="created_at">作成日</option>
-          <option value="title">タイトル</option>
+          <option value="updated_at">{options.assignMessage('updated_at_sort_option')}</option>
+          <option value="created_at">{options.assignMessage('created_at_sort_option')}</option>
+          <option value="title">{options.assignMessage('title_sort_option')}</option>
         </select>
       </div>
     );

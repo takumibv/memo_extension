@@ -52,6 +52,9 @@
   /* memo card */
   "updated_at_msg" : { "message": "更新" },
   "created_at_msg" : { "message": "作成" },
+  "updated_at_sort_option" : { "message": "更新日" },
+  "created_at_sort_option" : { "message": "作成日" },
+  "title_sort_option" : { "message": "タイトル" },
   "copied_msg" : { "message": "コピーしました" },
   "minimize_msg" : { "message": "最小化" },
   "maximize_msg" : { "message": "最大化" },

@@ -18,12 +18,14 @@ export default class PageInfo extends Base {
       this.id         = page_info.id;
       this.page_url   = page_info.page_url;
       this.page_title = page_info.page_title;
+      this.fav_icon_url = page_info.fav_icon_url;
     } else {
       const origin_page_info = this.fetchPageInfo(page_url);
 
       this.id         = origin_page_info.id;
       this.page_url   = origin_page_info.page_url;
       this.page_title = origin_page_info.page_title;
+      this.fav_icon_url = origin_page_info.fav_icon_url;
     }
   }
   // localStorageのpage_infoがあれば、attrにセットする。
@@ -31,11 +33,13 @@ export default class PageInfo extends Base {
     const origin_page_info = this.getStorage().filter(a => a.page_url === page_url)[0];
     let id = null,
         page_title = null,
+        fav_icon_url = null,
         memos = [];
 
     if (origin_page_info) {
       id          = origin_page_info.id;
-      page_title  = origin_page_info.title;
+      page_title  = origin_page_info.page_title;
+      fav_icon_url= origin_page_info.fav_icon_url;
       // memos       = Memo.getMemosByPageInfoId(id);
     }
 
@@ -43,6 +47,7 @@ export default class PageInfo extends Base {
       id: id,
       page_url: page_url,
       page_title: page_title,
+      fav_icon_url: fav_icon_url,
       // memos: memos
     };
   }
@@ -52,6 +57,7 @@ export default class PageInfo extends Base {
       id: this.id,
       page_url: this.page_url,
       page_title: this.page_title,
+      fav_icon_url: this.fav_icon_url,
       created_at: this.created_at,
       // memos: this.memos
     }
@@ -65,6 +71,7 @@ export default class PageInfo extends Base {
       id: this.id,
       page_url: this.page_url,
       page_title: this.page_title,
+      fav_icon_url: this.fav_icon_url,
       created_at: this.created_at,
     }
   }
@@ -77,14 +84,20 @@ export default class PageInfo extends Base {
   setPageUrl(page_url) {
     this.page_url = page_url;
   }
-  getPageUrl(page_url) {
+  getPageUrl() {
     return this.page_url;
   }
   setPageTitle(page_title) {
     this.page_title = page_title;
   }
-  getPageTitle(page_title) {
+  getPageTitle() {
     return this.page_title;
+  }
+  setPageFavIcon(fav_icon_url) {
+    this.fav_icon_url = fav_icon_url;
+  }
+  getPageFavIcon() {
+    return this.fav_icon_url;
   }
   getMemos() {
     return Memo.getMemosByPageInfoId(this.id);
