@@ -93,7 +93,6 @@ $(function() {
       chrome.tabs.onActivated.addListener(activeInfo => {
         // タブが切り替えられた時に呼ばれる.
         chrome.tabs.get(activeInfo.tabId, tab => {
-          console.log("onActivated", tab);
           window.bg.setPageInfo(tab.id, tab.url);
           window.bg.setPageTitle(tab.id, tab.title);
           window.bg.setFavIcon(tab.id, tab.favIconUrl);
