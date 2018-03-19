@@ -229,7 +229,7 @@ h2 {
             overflow: hidden;
             text-decoration: underline;
             display: inline-block;
-            max-width: 100%;
+            max-width: calc(100% - 24px);
             &:hover {
               color: #016173;
               cursor: pointer;
