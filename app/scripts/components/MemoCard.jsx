@@ -68,14 +68,18 @@ export default class MemoCard extends Component {
     const card_style = {
       width: memo.width,
       height: memo.height,
-      left: memo.position_x,
-      top: (memo.position_y === null ? $(window).scrollTop() : memo.position_y )
+      left: (memo.position_x === null ? window.innerWidth/2 - memo.width/2 : memo.position_x),
+      top: (memo.position_y === null ? $(window).scrollTop() + window.innerHeight/2 - memo.height/2 : memo.position_y )
     };
     const created_at = new Date(memo.created_at);
     const created_at_str = `${created_at.getFullYear()}/${created_at.getMonth()+1}/${created_at.getDate()} ${('0'+created_at.getHours()).slice(-2)}:${('0'+created_at.getMinutes()).slice(-2)}`;
     const updated_at = new Date(memo.updated_at);
     const updated_at_str = `${updated_at.getFullYear()}/${updated_at.getMonth()+1}/${updated_at.getDate()} ${('0'+updated_at.getHours()).slice(-2)}:${('0'+updated_at.getMinutes()).slice(-2)}`;
     const page_url = decodeURIComponent(memo.page_info.page_url);
+
+    if (memo.position_x === null) {
+      actions({type: 'MOVE_MEMO', index: index, memo_id: memo.id, position_x: card_style.left, position_y: card_style.top});
+    }
 
     return (
       <div

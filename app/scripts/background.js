@@ -246,7 +246,7 @@ $(function() {
         id: null,
         title: this.assignMessages()["new_memo_title_msg"],
         description: this.assignMessages()["new_memo_description_msg"],
-        position_x: 0,
+        position_x: null,
         position_y: null,
         width: 300,
         height: 150,
