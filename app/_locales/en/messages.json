@@ -52,6 +52,9 @@
   /* memo card */
   "updated_at_msg" : { "message": "Update" },
   "created_at_msg" : { "message": "Created" },
+  "updated_at_sort_option" : { "message": "Update" },
+  "created_at_sort_option" : { "message": "Created" },
+  "title_sort_option" : { "message": "Title" },
   "copied_msg" : { "message": "Copied" },
   "minimize_msg" : { "message": "minimize" },
   "maximize_msg" : { "message": "maximize" },

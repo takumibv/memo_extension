@@ -266,9 +266,9 @@ export class OptionPage extends Component {
         <select
           name="memo_order"
           onChange={e => this.onChangeMemoOrder(e.target.value)} >
-          <option value="updated_at">更新日</option>
-          <option value="created_at">作成日</option>
-          <option value="title">タイトル</option>
+          <option value="updated_at">{options.assignMessage('updated_at_sort_option')}</option>
+          <option value="created_at">{options.assignMessage('created_at_sort_option')}</option>
+          <option value="title">{options.assignMessage('title_sort_option')}</option>
         </select>
       </div>
     );
