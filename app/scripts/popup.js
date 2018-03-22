@@ -115,8 +115,8 @@ $(function() {
       // バックグラウンドから現状の設定値を持ってきて、UIにセットする。
       chrome.runtime.getBackgroundPage((backgroundPage) => {
         const bg = backgroundPage.bg;
-        const page_url = bg.page_info.page_url;
-        const memos = bg.page_info.getMemos();
+        const page_url = bg.page_info ? bg.page_info.page_url : null;
+        const memos = bg.page_info ? bg.page_info.getMemos() : [];
 
         if (!bg.canShowMemo()) {
           $('#page_infos').append(this.renderNoMemoMsg(chrome.i18n.getMessage('cannot_show_memo_msg')));
