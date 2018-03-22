@@ -25,7 +25,7 @@ gulp.task('react', function() {
   return config.entryFile.map((_, i) => {
     browserify({
       entries: config.entryFile[i],
-      debug: true
+      debug: args.sourcemaps,
     })
     .transform(babelify,{presets: ["es2015", "react"]})
     .bundle()
