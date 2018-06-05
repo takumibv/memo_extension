@@ -16,15 +16,9 @@ export default class MemoCard extends Component {
   componentWillMount() {
     const {index, memo, actions} = this.props;
 
-    this.card_style = {
-      width: memo.width,
-      height: memo.height,
-      left: (memo.position_x === null ? window.innerWidth/2 - memo.width/2 : memo.position_x),
-      top: (memo.position_y === null ? $(window).scrollTop() + window.innerHeight/2 - memo.height/2 : memo.position_y )
-    };
-
     if (memo.position_x === null) {
-      actions({type: 'MOVE_MEMO', index: index, memo_id: memo.id, position_x: this.card_style.left, position_y: this.card_style.top});
+      const card_style = this.cardStyle();
+      actions({type: 'MOVE_MEMO', index: index, memo_id: memo.id, position_x: card_style.left, position_y: card_style.top});
     }
   }
   componentDidMount() {
@@ -54,6 +48,16 @@ export default class MemoCard extends Component {
       actions({type: 'UPDATE_DESCRIPTION', index: index, memo_id: memo.id, description: text});
     });
   }
+  cardStyle() {
+    const {memo} = this.props;
+
+    return {
+      width: memo.width,
+      height: memo.height,
+      left: (memo.position_x === null ? window.innerWidth/2 - memo.width/2 : memo.position_x),
+      top: (memo.position_y === null ? $(window).scrollTop() + window.innerHeight/2 - memo.height/2 : memo.position_y )
+    };
+  }
   nl2br(str) {
     const regex = /(<br>)/g;
     return str.split(regex).map(line => {
@@ -75,7 +79,7 @@ export default class MemoCard extends Component {
     const minimize = memo.is_open ? '' : 'minimize';
     const resizable = memo.is_open ? 'resizable-box' : '';
     const fixed = memo.is_fixed ? 'fixed' : '';
-    const card_style = this.card_style;
+    const card_style = this.cardStyle();
     const created_at = new Date(memo.created_at);
     const created_at_str = `${created_at.getFullYear()}/${created_at.getMonth()+1}/${created_at.getDate()} ${('0'+created_at.getHours()).slice(-2)}:${('0'+created_at.getMinutes()).slice(-2)}`;
     const updated_at = new Date(memo.updated_at);
