@@ -260,7 +260,7 @@ $(function() {
         position_x: null,
         position_y: null,
         width: 300,
-        height: 150,
+        height: 170,
         is_open: true,
         is_fixed: false,
       };
