@@ -27,6 +27,8 @@
   "setting_button_msg" : { "message": "設定" },
   "menu_button_msg" : { "message": "メモ一覧ページ" },
   "cannot_show_memo_msg" : { "message": "このページではメモを表示できません。" },
+  "no_memo_created_msg" : { "message": "<i class='material-icons' style='transform: rotate(90deg);'>subdirectory_arrow_left</i> メモを作成する。" },
+  "no_memo_created_option_msg" : { "message": "右クリックの「メモを追加する」からでも作成できます。" },
   "how_to_use_page_link_msg" : { "message": "使い方" },
 
   /* option page */

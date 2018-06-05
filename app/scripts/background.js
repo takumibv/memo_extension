@@ -35,7 +35,12 @@ $(function() {
       console.log("[%04d/%02d/%02d %02d:%02d:%02d] Memo app is Running", d.getFullYear(), d.getMonth() + 1, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
 
       this.page_info = null; // 開いてるページのpage_infoを保持しておく場所
-      this.can_show_memo = true; // 開いてるページがメモを表示できるかどうか
+
+      /* can_show_memo: 開いてるページがメモを表示できるかどうか
+      * 起動時のカレントページはウェブストアの可能性が高いので初期はとりあえずfalseにする.
+      * TODO: 適切な初期値を設定する.
+      **/
+      this.can_show_memo = false;
       this.options = {
         image_url: chrome.extension.getURL('images'),
         option_page_url: chrome.extension.getURL('pages/options.html'),
@@ -49,9 +54,6 @@ $(function() {
           }
         });
       });
-      chrome.browserAction.setBadgeText({
-        text: `Hello`
-      })
     }
     // contents_script用
     assignMessages() {
