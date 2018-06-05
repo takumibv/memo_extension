@@ -13,10 +13,8 @@ require('../lib/resizable_box.js');
 require('../lib/text-editable.js');
 
 export default class MemoCard extends Component {
-  constructor(props) {
-    super(props);
-
-    const {memo} = this.props;
+  componentWillMount() {
+    const {index, memo, actions} = this.props;
 
     this.card_style = {
       width: memo.width,
@@ -24,10 +22,6 @@ export default class MemoCard extends Component {
       left: (memo.position_x === null ? window.innerWidth/2 - memo.width/2 : memo.position_x),
       top: (memo.position_y === null ? $(window).scrollTop() + window.innerHeight/2 - memo.height/2 : memo.position_y )
     };
-  }
-  componentWillMount() {
-    console.log("MDLite");
-    const {index, memo, actions} = this.props;
 
     if (memo.position_x === null) {
       actions({type: 'MOVE_MEMO', index: index, memo_id: memo.id, position_x: this.card_style.left, position_y: this.card_style.top});

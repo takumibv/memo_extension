@@ -313,7 +313,7 @@ $(function() {
       if (!can_show) {
         this.setBadgeError();
         if (page_url) {
-          ga('send', 'event', 'CanShowMemo', false, page_url, 1);
+          ga('send', 'event', 'CanShowMemo', 'false', page_url, 1);
         }
       }
     }

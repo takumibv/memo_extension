@@ -15,7 +15,7 @@
       "scripts/background.js"
     ]
   },
-  "content_security_policy": "script-src 'self' https://www.google-analytics.com/analytics.js; object-src 'self'",
+  "content_security_policy": "script-src 'self' https://www.google-analytics.com https://ssl.google-analytics.com; object-src 'self'",
   "options_page":"pages/options.html#settings",
   "icons": {
     "16": "images/icon_16.png",
