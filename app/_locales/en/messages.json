@@ -27,6 +27,8 @@
   "setting_button_msg" : { "message": "settings" },
   "menu_button_msg" : { "message": "memo list page" },
   "cannot_show_memo_msg" : { "message": "Memos can not be shown on this page." },
+  "no_memo_created_msg" : { "message": "<i class='material-icons' style='transform: rotate(90deg);'>subdirectory_arrow_left</i> add memo" },
+  "no_memo_created_option_msg" : { "message": "or right click and \"add memo\"" },
   "how_to_use_page_link_msg" : { "message": "How to Use" },
 
   /* option page */

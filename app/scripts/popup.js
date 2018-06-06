@@ -106,9 +106,14 @@ $(function() {
                 </button>
               </div>`);
     }
-    renderNoMemoMsg(msg) {
-      return (`<div class="memo mdl-list__item">
-                <span>${msg}</span>
+    renderNoMemoMsg(msg, option_msg = "") {
+      return (`<div class="memo mdl-list__item" style="padding: 10px;line-height: 1.2;">
+                <span class="clearfix">
+                  ${msg}
+                  <br /><br />
+                  ${option_msg === "" ? "" :
+                    `<span style="font-size: 12px;color: #aaa;">${option_msg}</span>`}
+                </span>
               </div>`);
     }
     restoreConfigurations(memo) {
@@ -122,7 +127,7 @@ $(function() {
           $('#page_infos').append(this.renderNoMemoMsg(chrome.i18n.getMessage('cannot_show_memo_msg')));
           $('#make_memo_button').prop("disabled", true);
         } else if (memos.length === 0) {
-          $('#page_infos').append(this.renderNoMemoMsg(chrome.i18n.getMessage('no_memo_msg')));
+          $('#page_infos').append(this.renderNoMemoMsg(chrome.i18n.getMessage('no_memo_created_msg'), chrome.i18n.getMessage('no_memo_created_option_msg')));
         } else {
           for(let i in memos) {
             $('#page_infos').append(this.renderMemo(memos[i]));
