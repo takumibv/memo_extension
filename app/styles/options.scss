@@ -101,7 +101,11 @@ h2 {
       position: absolute;
       bottom: 0;
       top: 48px;
-      overflow-y: scroll;
+
+      .scroll_y {
+        height: calc(100% - 46px);
+        overflow-y: scroll;
+      }
 
       .page_info-item {
         border-bottom: solid 1px #ccc;
@@ -181,6 +185,13 @@ h2 {
           border: solid 1px #ccc;
         }
       }
+    }
+    .list_bottom {
+      background: #ddd;
+      width: 5px;
+      height: 5px;
+      border-radius: 5px;
+      margin: 10px auto;
     }
     #MemoCardList {
       width: 100%;

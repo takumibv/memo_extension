@@ -158,7 +158,7 @@ export class OptionPage extends Component {
   }
   scrollSideBarTo(page_info_id) {
     if(page_info_id && $(`#page_info-${page_info_id}`).length > 0) {
-      $("#sidebar").animate({scrollTop: $(`#page_info-${page_info_id}`).offset().top + $("#sidebar").scrollTop() - 48});
+      $("#sidebar .scroll_y").animate({scrollTop: $(`#page_info-${page_info_id}`).offset().top + $("#sidebar .scroll_y").scrollTop() - 94});
     }
   }
   scrollMemoCardListTo(memo_id) {
@@ -205,29 +205,32 @@ export class OptionPage extends Component {
     const sorted_page_infos = this.sortBy(page_infos, "created_at");
     return (
       <div id='sidebar'>
-        <div className={`page_info-item ${selected_all}`} onClick={() => {this.onClickPageInfo();}}>
+        <div className={`page_info-item page_info-item--first ${selected_all}`} onClick={() => {this.onClickPageInfo();}}>
           <p>{options.assignMessage('show_all_memo_msg')}</p>
         </div>
-        {sorted_page_infos.map((page_info, index) => {
-          const url = this.decodeUrl(page_info.page_url);
-          const selected = parseInt(query.page_info) === page_info.id ? 'selected' : '';
-          return (
-            <div
-              key={page_info.id}
-              id={`page_info-${page_info.id}`}
-              className={`page_info-item ${selected}`}
-              onClick={() => {this.onClickPageInfo(page_info.id);}} >
-              <p>
-                {page_info.fav_icon_url &&
-                <img src={page_info.fav_icon_url} />}
-                {page_info.page_title}
-              </p>
-              <a href={`${url}`} target="_blank" rel="noreferrer noopener">
-                <img className='button_icon' src={`${options.image_url}/move_page_icon.png`} />
-              </a>
-              <span className='url_text'>{url}</span>
-            </div>);
-        })}
+        <div className="scroll_y">
+          {sorted_page_infos.map((page_info, index) => {
+            const url = this.decodeUrl(page_info.page_url);
+            const selected = parseInt(query.page_info) === page_info.id ? 'selected' : '';
+            return (
+              <div
+                key={page_info.id}
+                id={`page_info-${page_info.id}`}
+                className={`page_info-item ${selected}`}
+                onClick={() => {this.onClickPageInfo(page_info.id);}} >
+                <p>
+                  {page_info.fav_icon_url &&
+                    <img src={page_info.fav_icon_url} />}
+                  {page_info.page_title}
+                </p>
+                <a href={`${url}`} target="_blank" rel="noreferrer noopener">
+                  <img className='button_icon' src={`${options.image_url}/move_page_icon.png`} />
+                </a>
+                <span className='url_text'>{url}</span>
+              </div>);
+          })}
+          <div className="list_bottom"></div>
+        </div>
       </div>
     );
   }
@@ -255,6 +258,7 @@ export class OptionPage extends Component {
           memos={this.sortBy(render_memos, memo_order, (memo_order === 'title'))}
           options={options}
           actions={this.actions.bind(this)} />
+        <div className="list_bottom"></div>
       </div>
     );
   }
