@@ -353,3 +353,17 @@ h2 {
   }
 
 }
+
+#alert-area {
+  background-color: rgb(211, 45, 23);
+  color: #fff;
+  padding: 8px 16px;
+
+  a {
+    color: #fff;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}

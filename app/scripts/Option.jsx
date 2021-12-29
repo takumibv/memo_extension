@@ -14,6 +14,7 @@ export class OptionPage extends Component {
     const query = this.parseQuery();
     this.setState({
       query: query,
+      current_page: query.hash === "" ? query.hash : "#memos",
       options: options,
       page_infos: page_infos,
       memos: memos,
@@ -162,10 +163,11 @@ export class OptionPage extends Component {
     }
   }
   renderHeader() {
-    const {query, options} = this.state;
-    const memos_selected = (query.hash === '#memos' || query.hash === '') ? 'selected' : '';
-    const settings_selected = query.hash === '#settings' ? 'selected' : '';
-    const how_to_use_selected = query.hash === '#how_to_use' ? 'selected' : '';
+    const {query, options, current_page} = this.state;
+    const memos_selected = (current_page === '#memos' || current_page === '') ? 'selected' : '';
+    const settings_selected = current_page === '#settings' ? 'selected' : '';
+    const how_to_use_selected = current_page === '#how_to_use' ? 'selected' : '';
+    const data_selected = current_page === '#data' ? 'selected' : '';
     return (
       <div id='header'>
         <img className='main-icon' src={`${options.image_url}/icon_128.png`} />
@@ -174,22 +176,41 @@ export class OptionPage extends Component {
           <a
             href="#memos"
             className={`nav-item ${memos_selected}`}
-            onClick={e => {window.location.reload(true)}} >
+            onClick={e => {e.preventDefault(); this.setState({ current_page: "#memos" })}}
+            >
             {options.assignMessage('memo_header_msg')}
           </a>
           <a
             href="#settings"
             className={`nav-item ${settings_selected}`}
-            onClick={e => {window.location.reload(true)}} >
+            onClick={e => {e.preventDefault(); this.setState({ current_page: "#settings"  })}}
+            >
             {options.assignMessage('settings_header_msg')}
           </a>
           <a
             href="#how_to_use"
             className={`nav-item ${how_to_use_selected}`}
-            onClick={e => {window.location.reload(true)}} >
+            onClick={e => {e.preventDefault(); this.setState({ current_page: "#how_to_use"  })}}
+            >
             {options.assignMessage('how_to_use_header_msg')}
           </a>
+          <a
+            href="#data"
+            className={`nav-item ${data_selected}`}
+            onClick={e => {e.preventDefault(); this.setState({ current_page: "#data"  })}}
+            >
+            データ移行
+          </a>
         </div>
+      </div>
+    );
+  }
+  renderAlert() {
+    return (
+      <div id="alert-area">
+        {/* TODO 英語化, 新しいアプリケーションのリンク先貼り付け */}
+        <a href='#'>新しいアプリケーション</a>をダウンロードしてください。データの移行は、<a href='#' onClick={e => {e.preventDefault(); this.setState({ current_page: "#data"  })}}>こちら</a>から実行してください。
+        この拡張機能は2023年までにサポートを終了します。
       </div>
     );
   }
@@ -248,6 +269,7 @@ export class OptionPage extends Component {
     }
     return (
       <div id="memo_list">
+        {this.renderAlert()}
         {this.renderSearchBar()}
         <MemoCardList
           memos={this.sortBy(render_memos, memo_order, (memo_order === 'title'))}
@@ -339,16 +361,33 @@ export class OptionPage extends Component {
       </div>
     );
   }
+  renderDataPage() {
+    const { page_infos, memos } = this.state;
+    const export_data = { page_infos, memos };
+
+    // TODO 説明具体化
+    return (<div id="container" className='clearfix'>
+      <div id="settings">
+        <h2>移行用データ</h2>
+        <p>こちらをコピーして新しいアプリケーションに貼り付けてください。</p>
+        <textarea name="" id="" rows="10" style={{width: "99%"}} onClick={(e) => { e.target.select() }}>
+          {JSON.stringify(export_data)}
+        </textarea>
+      </div>
+    </div>);
+  }
   render() {
-    const {query} = this.state;
+    const {current_page} = this.state;
     return(
       <div className='wrapper'>
         {this.renderHeader()}
-        {query.hash === '#settings' &&
+        {current_page === '#data' &&
+          this.renderDataPage()}
+        {current_page === '#settings' &&
           this.renderSettingsPage()}
-        {query.hash === '#how_to_use' &&
+        {current_page === '#how_to_use' &&
           this.renderHowToUsePage()}
-        {(query.hash === '#memos' || query.hash === '') &&
+        {(current_page === '#memos' || current_page === '') &&
           this.renderMemosPage()}
       </div>
     );
