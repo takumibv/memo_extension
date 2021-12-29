@@ -1,0 +1,75 @@
+{
+  "appName": {
+    "message": "どこでもメモ",
+    "description": "The name of the application"
+  },
+  "appShortName": {
+    "message": "どこでもメモ",
+    "description": "The short_name (maximum of 12 characters recommended) is a short version of the app's name."
+  },
+  "appDescription": {
+    "message": "機能的・直感的なメモのアプリです。",
+    "description": "The description of the application"
+  },
+  "browserActionTitle": {
+    "message": "どこでもメモ",
+    "description": "The title of the browser action button"
+  },
+
+  "app_name": { "message": "どこでもメモ" },
+  "no_memo_msg": { "message": "メモがありません。" },
+  "add_memo_msg": { "message": "メモを追加する" },
+  "confirm_remove_memo_msg": { "message": "本当に削除しますか?" },
+
+  "make_memo_button_msg": { "message": "メモを作成する" },
+  "setting_button_msg": { "message": "設定" },
+  "menu_button_msg": { "message": "メモ一覧ページ" },
+  "cannot_show_memo_msg": { "message": "このページではメモを表示できません。" },
+  "no_memo_created_msg": {
+    "message": "<i class='material-icons' style='transform: rotate(90deg);'>subdirectory_arrow_left</i> メモを作成する。"
+  },
+  "no_memo_created_option_msg": {
+    "message": "右クリックの「メモを追加する」からでも作成できます。"
+  },
+  "how_to_use_page_link_msg": { "message": "使い方" },
+
+  "memo_header_msg": { "message": "メモ一覧" },
+  "settings_header_msg": { "message": "設定" },
+  "how_to_use_header_msg": { "message": "使い方" },
+  "show_all_memo_msg": { "message": "全て表示" },
+  "search_query_msg": { "message": "検索" },
+  "this_page_memo_list_msg": { "message": "このページのメモ一覧" },
+  "setting_about_this_app": { "message": "どこでもメモについて" },
+  "setting_about_this_app_created_by": { "message": "制作者" },
+  "usage01": { "message": "「x」マークが出ていないページで使うことができます。" },
+  "usage02": {
+    "message": "右上のポップアップをクリックし、「+」ボタンをクリックしてメモを作成できます。"
+  },
+  "usage02_2": { "message": "(画面上で右クリックを押しても、作成できます。)" },
+  "usage03": { "message": "ダブルクリックでタイトルと詳細を編集できます。" },
+  "usage04": { "message": "マウスドラッグで移動可能です。リサイズをすることもできます。" },
+  "usage05": {
+    "message": "ポップアップから、今開いているページで作成したメモを閲覧することができます。"
+  },
+  "usage05_2": { "message": "「＞」ボタンでメモの場所に移動できます。" },
+  "usage06": { "message": "メモ一覧ページ" },
+  "usage06_2": { "message": "で今まで作ったメモを一覧できます。" },
+  "usage07": { "message": "メモには、様々な機能があります。" },
+
+  "updated_at_msg": { "message": "更新" },
+  "created_at_msg": { "message": "作成" },
+  "updated_at_sort_option": { "message": "更新日" },
+  "created_at_sort_option": { "message": "作成日" },
+  "title_sort_option": { "message": "タイトル" },
+  "copied_msg": { "message": "コピーしました" },
+  "minimize_msg": { "message": "最小化" },
+  "maximize_msg": { "message": "最大化" },
+  "pinned_msg": { "message": "画面に固定する" },
+  "remove_pinned_msg": { "message": "ページに固定する" },
+  "detail_msg": { "message": "詳細" },
+  "edit_msg": { "message": "編集" },
+  "copy_msg": { "message": "クリップボードにコピーする" },
+  "delete_msg": { "message": "削除する" },
+  "new_memo_title_msg": { "message": "新しいメモ" },
+  "new_memo_description_msg": { "message": "ダブルクリックで編集" }
+}
