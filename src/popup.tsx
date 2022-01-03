@@ -8,18 +8,6 @@ type FormData = {
   username: string;
 };
 
-const getGitHubUsername = (url: string): string => {
-  try {
-    const urlObj = new URL(url);
-    console.log(urlObj.hostname);
-    if (urlObj.hostname === "github.com") {
-      return urlObj.pathname.split("/")[1];
-    }
-  } catch {}
-
-  return "";
-};
-
 const Popup = () => {
   const [username, setUsername] = useState("");
   const [currentStats, setCurrentStats] = useState("");
@@ -52,15 +40,15 @@ const Popup = () => {
       console.log("=== backgroundPage ===", backgroundPage);
       // const bg = backgroundPage?.bg;
       // const page_url = bg.page_info ? bg.page_info.page_url : null;
-      // const memos = bg.page_info ? bg.page_info.getMemos() : [];
-      // if (!bg.canShowMemo()) {
-      //   $('#page_infos').append(this.renderNoMemoMsg(chrome.i18n.getMessage('cannot_show_memo_msg')));
-      //   $('#make_memo_button').prop("disabled", true);
-      // } else if (memos.length === 0) {
-      //   $('#page_infos').append(this.renderNoMemoMsg(chrome.i18n.getMessage('no_memo_created_msg'), chrome.i18n.getMessage('no_memo_created_option_msg')));
+      // const notes = bg.page_info ? bg.page_info.getNotes() : [];
+      // if (!bg.canShowNote()) {
+      //   $('#page_infos').append(this.renderNoNoteMsg(chrome.i18n.getMessage('cannot_show_note_msg')));
+      //   $('#make_note_button').prop("disabled", true);
+      // } else if (notes.length === 0) {
+      //   $('#page_infos').append(this.renderNoNoteMsg(chrome.i18n.getMessage('no_note_created_msg'), chrome.i18n.getMessage('no_note_created_option_msg')));
       // } else {
-      //   for(let i in memos) {
-      //     $('#page_infos').append(this.renderMemo(memos[i]));
+      //   for(let i in notes) {
+      //     $('#page_infos').append(this.renderNote(notes[i]));
       //   }
       // }
     });
@@ -69,7 +57,7 @@ const Popup = () => {
   return (
     <>
       <div className="p-4">
-        <div className="w-96">
+        <div className="w-80">
           <div>
             <header>GitHub Language Stats Extension</header>
           </div>
