@@ -23,6 +23,7 @@ const SButton = styled.button<Props>`
   /* primary */
   color: #fff;
   background-color: #0070f3;
+  transition: background-color 300ms cubic-bezier(0.25, 0.8, 0.25, 1);
 
   &:hover,
   &:focus {
@@ -36,6 +37,7 @@ const SButton = styled.button<Props>`
       color: #0070f3;
       background-color: transparent;
       font-size: 0.75em;
+      padding: 0.25em 0.5em;
 
       &:hover,
       &:focus {

@@ -8,6 +8,7 @@ export const baseCSS = (as: keyof JSX.IntrinsicElements) => css`
   border-width: 0;
   margin: 0;
   padding: 0;
+  box-shadow: none;
 
   ::before,
   ::after {
@@ -65,6 +66,10 @@ export const baseCSS = (as: keyof JSX.IntrinsicElements) => css`
         text-align: inherit;
         text-transform: inherit;
 
+        &:focus-visible {
+          outline: -webkit-focus-ring-color solid 1px;
+        }
+
         &[type="checkbox"] {
           -webkit-appearance: checkbox;
           appearance: checkbox;
@@ -113,6 +118,10 @@ export const baseCSS = (as: keyof JSX.IntrinsicElements) => css`
         text-align: inherit;
         text-transform: inherit;
         overflow: auto;
+
+        &:focus-visible {
+          outline: -webkit-focus-ring-color solid 1px;
+        }
       `;
     if (as === "select")
       return css`

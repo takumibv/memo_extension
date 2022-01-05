@@ -36,6 +36,9 @@ module.exports = {
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
+    alias: {
+      "@mui/styled-engine": "@mui/styled-engine-sc",
+    },
   },
   plugins: [
     new CopyPlugin({

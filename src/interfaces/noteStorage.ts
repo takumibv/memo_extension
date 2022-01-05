@@ -36,4 +36,10 @@ export const getAllNotes = async () => {
 
 export const getNotesByPageId = async (pageId: number) => {};
 
-export const deleteNote = async (noteId: number) => {};
+export const deleteNote = async (noteId?: number) => {
+  if (!noteId) return new Promise((_resolve, reject) => reject("id is required"));
+
+  const notes = await getAllNotes();
+
+  return await setNoteStorage(notes.filter((_note) => _note.id !== noteId));
+};

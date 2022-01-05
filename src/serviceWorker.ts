@@ -5,13 +5,14 @@ import {
   MOVE_NOTE,
   OPEN_OPTION_PAGE,
   RESIZE_NOTE,
+  SET_ALL_NOTES,
   UPDATE_NOTE,
   UPDATE_NOTE_DESCRIPTION,
   UPDATE_NOTE_IS_FIXED,
   UPDATE_NOTE_IS_OPEN,
   UPDATE_NOTE_TITLE,
 } from "./actions";
-import { createNote, getAllNotes, updateNote } from "./interfaces/noteStorage";
+import { createNote, deleteNote, getAllNotes, updateNote } from "./interfaces/noteStorage";
 import { ActionMesssageConfig } from "./types/Actions";
 
 /**
@@ -177,10 +178,13 @@ chrome.contextMenus.onClicked.addListener(function (info) {
       return;
     }
 
-    console.log("contextMenus: ", tabs[0]);
+    createNote().then((notes) => {
+      if (!tabs || !tabs[0] || !tabs[0].id) {
+        return;
+      }
 
-    // TODO createNoteを呼び、型を合わせる
-    chrome.tabs.sendMessage(tabs[0].id, { sampleNotes });
+      chrome.tabs.sendMessage(tabs[0].id, { action: SET_ALL_NOTES, notes });
+    });
   });
 });
 
@@ -281,7 +285,16 @@ const handleMessages = (
       // updated_notes.splice(action.index, 1);
       // this.setState({notes: updated_notes});
       // delete_note(delete_note);
-      break;
+      deleteNote(action.note?.id)
+        .then((notes) => {
+          console.log("DELETE_NOTE:", notes);
+
+          sendResponse(notes);
+        })
+        .catch((e) => {
+          console.log("error DELETE_NOTE:", e);
+        });
+      return true;
     case MOVE_NOTE:
       // var updated_notes = this.state.notes;
       // if (updated_notes[action.index].position_x === action.position_x &&

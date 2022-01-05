@@ -1,25 +1,55 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { memo } from "react";
-import Draggable, { DraggableCore } from "react-draggable";
+import { DraggableCore } from "react-draggable";
 import styled, { css } from "styled-components";
-import { useNoteEdit, useNotePosition, useNoteSize } from "../hooks/useNote";
+import Tooltip from "@mui/material/Tooltip";
+import { useNoteEdit } from "../hooks/useNote";
 import { baseCSS } from "../resetCSS";
 import { Note } from "../types/Note";
 import Button from "./Button";
+import { CopyIcon, CopySuccessIcon, EditIcon, PinIcon, ResizeIcon, TrashIcon } from "./Icon";
 import IconButton from "./IconButton";
 
 type Props = {
-  note: Note;
-  onUpdateNote: (note: Note) => void;
+  id?: number;
+  page_info_id?: number;
+  title?: string;
+  description?: string;
+  position_x?: number;
+  position_y?: number;
+  width?: number;
+  height?: number;
+  is_open?: boolean;
+  is_fixed?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  onUpdateNote: (note: Note) => Promise<boolean>;
+  onDeleteNote: (note: Note) => Promise<boolean>;
 };
 
 /**
  * メモの付箋
  */
-const StickyNote: React.VFC<Props> = memo(({ note, onUpdateNote }) => {
-  const { title: defaultTitle = "", description: defaultDescription = "" } = note;
+const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defaultNote }) => {
+  const {
+    id,
+    page_info_id,
+    title: defaultTitle = "",
+    description: defaultDescription = "",
+    position_x: defaultPositionX,
+    position_y: defaultPositionY,
+    width: defaultWidth,
+    height: defaultHeight,
+    is_open: defaultIsOpen,
+    is_fixed: defaultIsFixed,
+    created_at: defaultCreatedAt,
+    updated_at: defaultUpdatedAt,
+  } = defaultNote;
+
   const noteRef = useRef(null);
   const resizeHandlerRef = useRef(null);
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  const descriptionTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const {
     title,
@@ -36,17 +66,23 @@ const StickyNote: React.VFC<Props> = memo(({ note, onUpdateNote }) => {
     setIsOpen,
     isFixed,
     setIsFixed,
-  } = useNoteEdit(note);
+  } = useNoteEdit(defaultNote);
 
   // 編集モードかどうか
   const [isEditing, setIsEditing] = useState(false);
 
   // ドラッグ可能かどうか
-  const [IsEnableDrag, setIsEnableDrag] = useState(true);
+  const [isEnableDrag, setIsEnableDrag] = useState(true);
 
-  const onEditDone = useCallback(() => {
-    onUpdateNote({
-      ...note,
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStartPositionX, setDragStartPositionX] = useState(0);
+  const [dragStartPositionY, setDragStartPositionY] = useState(0);
+
+  const [isSuccessCopy, setIsSuccessCopy] = useState(false);
+
+  const onEditDone = useCallback(async () => {
+    await onUpdateNote({
+      ...defaultNote,
       title,
       description,
       position_x: positionX,
@@ -64,22 +100,47 @@ const StickyNote: React.VFC<Props> = memo(({ note, onUpdateNote }) => {
     setDescription(defaultDescription);
     setIsEditing(false);
     setIsEnableDrag(true);
-  }, []);
+  }, [defaultTitle, defaultDescription]);
+
+  const onClickCopyButton = useCallback(() => {
+    navigator.clipboard.writeText(`${defaultTitle}\n${defaultDescription}`).then(() => {
+      setIsSuccessCopy(true);
+
+      setTimeout(() => {
+        setIsSuccessCopy(false);
+      }, 1000);
+    });
+  }, [defaultTitle, defaultDescription]);
+
+  const onClickFixedButton = () => {
+    const { isFixed: newIsFixed, positionX, positionY } = setIsFixed(!isFixed);
+
+    onUpdateNote({
+      ...defaultNote,
+      position_x: positionX,
+      position_y: positionY,
+      is_fixed: newIsFixed,
+    });
+  };
+
+  const onClickDeleteButton = () => {
+    if (confirm(`「${title || "メモ"}」を削除してよろしいですか？`)) {
+      onDeleteNote(defaultNote);
+    }
+  };
+
+  const onKeyDownEditing = (e: KeyboardEvent) => {
+    // isEnableDrag = focusしてない時 は無視する。
+    if (isEnableDrag) return;
+
+    if (e.key === "Escape" || e.key === "Esc") onEditDone();
+    else if ((e.ctrlKey || e.metaKey) && e.key === "Enter") onEditDone();
+  };
 
   const onBeforeUnload = useCallback((e: BeforeUnloadEvent) => {
     e.preventDefault();
     e.returnValue = "";
   }, []);
-
-  const onKeyDownEditing = (e: KeyboardEvent) => {
-    if (e.key === "Escape" || e.key === "Esc") {
-      onEditCancel();
-    }
-
-    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-      onEditDone();
-    }
-  };
 
   useEffect(() => {
     if (isEditing) {
@@ -94,7 +155,7 @@ const StickyNote: React.VFC<Props> = memo(({ note, onUpdateNote }) => {
       window.removeEventListener("beforeunload", onBeforeUnload, false);
       window.removeEventListener("keydown", onKeyDownEditing, false);
     };
-  }, [isEditing, title, description, positionX, positionY, width, height, isFixed]);
+  }, [isEditing, isEnableDrag, title, description, positionX, positionY, width, height, isFixed]);
 
   return (
     <SNote
@@ -105,31 +166,43 @@ const StickyNote: React.VFC<Props> = memo(({ note, onUpdateNote }) => {
         transform: `translate(${positionX}px, ${positionY}px)`,
       }}
       isFixed={isFixed}
-      onDoubleClick={() => {
-        // TODO: ダブルクリックしたInputにフォーカスを当てる
-        setIsEditing(true);
-      }}
+      isForward={isDragging || isEditing}
     >
       <DraggableCore
         scale={1}
-        onStart={(e, data) => {
-          console.log("this.handleStart", IsEnableDrag, e, data);
+        onStart={(_, data) => {
+          setIsDragging(true);
+          setDragStartPositionX(positionX - data.x);
+          setDragStartPositionY(positionY - data.y);
         }}
         onDrag={(_, data) => {
-          if (!IsEnableDrag) return false;
+          if (!isEnableDrag) return false;
 
-          setPosition(positionX + data.deltaX, positionY + data.deltaY);
+          setPosition(dragStartPositionX + data.x, dragStartPositionY + data.y);
         }}
-        onStop={(e, data) => {
-          console.log("this.handleStop)", e, data);
-          // TODO: ドラッグ終了時に移動していた場合、onUpdateNoteを呼ぶ
+        onStop={() => {
+          setIsDragging(false);
+
+          if (defaultPositionX !== positionX || defaultPositionY !== positionY) {
+            onUpdateNote({
+              ...defaultNote,
+              position_x: positionX,
+              position_y: positionY,
+            });
+          }
         }}
         nodeRef={noteRef}
       >
-        <SNoteInner>
+        <SNoteInner
+          onDoubleClick={() => {
+            setIsEditing(true);
+          }}
+        >
           <SNoteHeader>
             {isEditing ? (
               <SNoteTitleInput
+                ref={titleInputRef}
+                placeholder="タイトル"
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -137,14 +210,37 @@ const StickyNote: React.VFC<Props> = memo(({ note, onUpdateNote }) => {
                 onBlur={() => setIsEnableDrag(true)}
               />
             ) : (
-              <SNoteTitle>{title}</SNoteTitle>
+              <>
+                <SNoteTitle
+                  onDoubleClick={() => {
+                    setTimeout(() => {
+                      titleInputRef?.current?.focus();
+                    }, 10);
+                  }}
+                >
+                  {title || <SNoteSpan>タイトル</SNoteSpan>}
+                </SNoteTitle>
+                {isFixed && (
+                  <SHeaderFixedPinArea>
+                    <Tooltip title="固定を解除する" enterDelay={300} placement="top">
+                      <div>
+                        <SHeaderFixedButton onClick={onClickFixedButton}>
+                          <PinIcon fill="rgba(0, 0, 0, 0.4)" />
+                        </SHeaderFixedButton>
+                      </div>
+                    </Tooltip>
+                  </SHeaderFixedPinArea>
+                )}
+              </>
             )}
           </SNoteHeader>
           <SNoteContent>
             {isEditing ? (
               <SNoteDescriptionTextarea
+                ref={descriptionTextareaRef}
                 name=""
                 id=""
+                placeholder="メモを入力"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 onFocus={() => setIsEnableDrag(false)}
@@ -153,8 +249,16 @@ const StickyNote: React.VFC<Props> = memo(({ note, onUpdateNote }) => {
                 {description}
               </SNoteDescriptionTextarea>
             ) : (
-              <SNoteContentScroll>
-                <SNoteDescription>{description}</SNoteDescription>
+              <SNoteContentScroll
+                onDoubleClick={() => {
+                  setTimeout(() => {
+                    descriptionTextareaRef?.current?.focus();
+                  }, 10);
+                }}
+              >
+                <SNoteDescription>
+                  {description || <SNoteSpan>ダブルクリックで編集</SNoteSpan>}
+                </SNoteDescription>
               </SNoteContentScroll>
             )}
           </SNoteContent>
@@ -163,94 +267,70 @@ const StickyNote: React.VFC<Props> = memo(({ note, onUpdateNote }) => {
       <SNoteFooter>
         {isEditing ? (
           <>
-            <SButton onClick={() => onEditDone()}>保存</SButton>
-            <SButton secondary onClick={() => onEditCancel()}>
+            <SButton onClick={onEditDone}>保存</SButton>
+            <SButton secondary onClick={onEditCancel}>
               キャンセル
             </SButton>
           </>
         ) : (
           <>
-            {/* TODO ツールチップボタン */}
-            <SIconButton onClick={() => setIsEditing(true)}>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="rgba(0, 0, 0, 0.4)">
-                <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
-                <path
-                  fillRule="evenodd"
-                  d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </SIconButton>
-            <SIconButton
-              onClick={() => {
-                /** TODO コピーボタン */
-              }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="rgba(0, 0, 0, 0.4)">
-                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
-                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
-              </svg>
-            </SIconButton>
-            <SIconButton
-              onClick={() => {
-                /** TODO ピンボタン */
-              }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="rgba(0, 0, 0, 0.4)">
-                <g>
-                  <rect fill="none" height="24" width="24" />
-                </g>
-                <g>
-                  <path
-                    d="M16,9V4l1,0c0.55,0,1-0.45,1-1v0c0-0.55-0.45-1-1-1H7C6.45,2,6,2.45,6,3v0 c0,0.55,0.45,1,1,1l1,0v5c0,1.66-1.34,3-3,3h0v2h5.97v7l1,1l1-1v-7H19v-2h0C17.34,12,16,10.66,16,9z"
-                    fillRule="evenodd"
-                  />
-                </g>
-              </svg>
-            </SIconButton>
-            <SIconButton
-              onClick={() => {
-                /** TODO ゴミ箱ボタン */
-              }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="rgba(0, 0, 0, 0.4)">
-                <path
-                  fillRule="evenodd"
-                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </SIconButton>
+            <Tooltip title="編集" enterDelay={300}>
+              <SIconButtonWrap>
+                <SIconButton onClick={() => setIsEditing(true)}>
+                  <EditIcon fill="rgba(0, 0, 0, 0.4)" />
+                </SIconButton>
+              </SIconButtonWrap>
+            </Tooltip>
+            <Tooltip title={isSuccessCopy ? "コピーしました" : "コピー"} enterDelay={300}>
+              <SIconButtonWrap>
+                {isSuccessCopy ? (
+                  <SCopySuccessIcon fill="#22c55e" />
+                ) : (
+                  <SIconButton onClick={onClickCopyButton}>
+                    <CopyIcon fill="rgba(0, 0, 0, 0.4)" />
+                  </SIconButton>
+                )}
+              </SIconButtonWrap>
+            </Tooltip>
+            <Tooltip title="固定を切り替える" enterDelay={300}>
+              <SIconButtonWrap>
+                <SIconButton onClick={onClickFixedButton}>
+                  <PinIcon fill="rgba(0, 0, 0, 0.4)" />
+                </SIconButton>
+              </SIconButtonWrap>
+            </Tooltip>
+            <Tooltip title="削除" enterDelay={300}>
+              <SIconButtonWrap>
+                <SIconButton onClick={onClickDeleteButton}>
+                  <TrashIcon fill="rgba(0, 0, 0, 0.4)" />
+                </SIconButton>
+              </SIconButtonWrap>
+            </Tooltip>
           </>
         )}
       </SNoteFooter>
 
       <DraggableCore
-        onStart={(e, data) => {
-          console.log("this.handleStart", e, data);
+        onStart={(_, data) => {
+          setDragStartPositionX(width - data.x);
+          setDragStartPositionY(height - data.y);
         }}
         onDrag={(_, data) => {
-          setSize(width + data.deltaX, height + data.deltaY);
+          setSize(dragStartPositionX + data.x, dragStartPositionY + data.y);
         }}
-        onStop={(e, data) => {
-          console.log("this.handleStop", e, data);
-          // TODO: ドラッグ終了時にサイズ変更していた場合、onUpdateNoteを呼ぶ
+        onStop={() => {
+          if (defaultWidth !== width || defaultHeight !== height) {
+            onUpdateNote({
+              ...defaultNote,
+              width,
+              height,
+            });
+          }
         }}
         nodeRef={noteRef}
       >
         <SResizeHandler ref={resizeHandlerRef}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="rgba(0, 0, 0, 0.15)"
-          >
-            <path
-              fillRule="evenodd"
-              d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <ResizeIcon fill="rgba(0, 0, 0, 0.15)" />
         </SResizeHandler>
       </DraggableCore>
     </SNote>
@@ -259,6 +339,7 @@ const StickyNote: React.VFC<Props> = memo(({ note, onUpdateNote }) => {
 
 interface SNoteProps extends React.HTMLAttributes<HTMLDivElement> {
   isFixed?: boolean;
+  isForward?: boolean;
 }
 
 const SNote = styled.div<SNoteProps>`
@@ -267,7 +348,7 @@ const SNote = styled.div<SNoteProps>`
   pointer-events: initial;
   background-color: #fff;
   border-radius: 0.25em;
-  z-index: 10000;
+  z-index: 1250;
   position: absolute;
   left: 0;
   top: 0;
@@ -278,6 +359,13 @@ const SNote = styled.div<SNoteProps>`
     isFixed &&
     css`
       position: fixed;
+      z-index: 1251;
+    `}
+
+  ${({ isForward }) =>
+    isForward &&
+    css`
+      z-index: 1252;
     `}
 `;
 
@@ -309,6 +397,8 @@ const SResizeHandler = styled.div`
 const SNoteHeader = styled.div`
   ${baseCSS("div")}
 
+  display: flex;
+  justify-content: space-between;
   padding: 0.5em;
   border-bottom: 0.0625em solid rgba(0, 0, 0, 0.1);
   overflow-y: auto;
@@ -318,7 +408,7 @@ const noteTitleCSS = css`
   font-size: 1em;
   line-height: 1.25;
   color: #333;
-  border-width: 1px;
+  border-width: 0.0625em;
   border-color: transparent;
   border-radius: 0.25em;
 `;
@@ -327,6 +417,14 @@ const SNoteTitle = styled.h2`
   ${baseCSS("h2")}
 
   ${noteTitleCSS}
+  flex: 1;
+`;
+
+const SNoteSpan = styled.span`
+  ${baseCSS("span")}
+
+  color: #999;
+  flex: 1;
 `;
 
 const SNoteTitleInput = styled.input`
@@ -336,7 +434,14 @@ const SNoteTitleInput = styled.input`
   margin: -0.25em;
   padding: 0.25em;
   width: calc(100% + 0.5em);
-  border-color: rgba(0, 0, 0, 0.1);
+
+  &[type="text"],
+  &[type="text"]:focus,
+  &[type="text"]:focus-visible {
+    background-color: #fff;
+    border: 0.0625em solid rgba(0, 0, 0, 0.1);
+    box-shadow: none;
+  }
 `;
 
 const SNoteContent = styled.div`
@@ -353,37 +458,6 @@ const SNoteContentScroll = styled.div`
 
   height: 100%;
   overflow-y: auto;
-`;
-
-const SNoteFooter = styled.div`
-  ${baseCSS("div")}
-
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  pointer-events: none;
-  padding: 0.5em;
-  height: 2.5em;
-`;
-
-const SIconButton = styled(IconButton)`
-  pointer-events: initial;
-  margin-left: 0.5em;
-
-  &:first-child {
-    margin-left: 0;
-  }
-`;
-
-const SButton = styled(Button)`
-  pointer-events: initial;
-  margin-left: 0.25em;
-
-  &:first-child {
-    margin-left: 0;
-  }
 `;
 
 const noteDescriptionCSS = css`
@@ -412,7 +486,68 @@ const SNoteDescriptionTextarea = styled.textarea`
   margin: 0.25em -0.25em 0;
   padding: 0.25em;
   resize: none;
-  border-color: rgba(0, 0, 0, 0.1);
+
+  &,
+  &:focus,
+  &:focus-visible {
+    background-color: #fff;
+    border: 0.0625em solid rgba(0, 0, 0, 0.1);
+    box-shadow: none;
+  }
+`;
+
+const SNoteFooter = styled.div`
+  ${baseCSS("div")}
+
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  padding: 0.5em;
+  height: 2.5em;
+`;
+
+const SIconButtonWrap = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.5em;
+
+  &:first-child {
+    margin-left: 0;
+  }
+`;
+
+const SIconButton = styled(IconButton)`
+  pointer-events: initial;
+`;
+
+const SCopySuccessIcon = styled(CopySuccessIcon)`
+  width: 1.25em;
+  height: 1.25em;
+`;
+
+const SButton = styled(Button)`
+  pointer-events: initial;
+  margin-left: 0.25em;
+
+  &:first-child {
+    margin-left: 0;
+  }
+`;
+
+const SHeaderFixedPinArea = styled.div`
+  ${baseCSS("div")}
+
+  margin-left: 0.25rem;
+  width: 1.25em;
+  height: 1.25em;
+`;
+
+const SHeaderFixedButton = styled(IconButton)`
+  transform: rotate(45deg);
 `;
 
 export default StickyNote;

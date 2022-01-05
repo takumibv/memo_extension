@@ -24,10 +24,24 @@ export const useNoteEdit = ({
   const [title, setTitle] = useState(defaultTitle);
   const [description, setDescription] = useState(defaultDescription);
   const [isOpen, setIsOpen] = useState(defaultIsOpen);
-  const [isFixed, setIsFixed] = useState(defaultIsFixed);
-
+  const [isFixed, _setIsFixed] = useState(defaultIsFixed);
   const { positionX, positionY, setPosition } = useNotePosition(defaultPositionX, defaultPositionY);
   const { width, height, setSize } = useNoteSize(defaultWidth, defaultHeight);
+
+  const setIsFixed = useCallback(
+    (isFixed: boolean) => {
+      const fixPosition = isFixed ? -1 : 1;
+      const newPositionX = positionX + window.scrollX * fixPosition;
+      const newPositionY = positionY + window.scrollY * fixPosition;
+
+      setPosition(newPositionX, newPositionY);
+
+      _setIsFixed(isFixed);
+
+      return { isFixed, positionX: newPositionX, positionY: newPositionY };
+    },
+    [_setIsFixed, setPosition, positionX, positionY]
+  );
 
   return {
     title,

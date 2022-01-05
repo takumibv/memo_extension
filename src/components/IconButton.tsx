@@ -18,6 +18,7 @@ const SIconButton = styled.button`
   width: 1.25em;
   height: 1.25em;
   border-radius: 2.5em;
+  transition: box-shadow 300ms cubic-bezier(0.25, 0.8, 0.25, 1);
 
   &:hover,
   &:focus {

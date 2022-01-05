@@ -14,6 +14,7 @@ import {
   NoteActionType,
   UPDATE_NOTE,
   GET_ALL_NOTES,
+  SET_ALL_NOTES,
 } from "./actions";
 import { Note } from "./types/Note";
 import { baseCSS, resetCSS } from "./resetCSS";
@@ -21,8 +22,6 @@ import StickyNote from "./components/StickyNote";
 import { ActionMesssageConfig } from "./types/Actions";
 
 const ROOT_DOM_ID = "react-container-for-note-extension";
-
-console.log("in contnetsScript.tsx");
 
 /** ----------------------------------------
  * Initial Setup
@@ -50,6 +49,8 @@ const injectDomElements = () => {
 const GlobalStyle = createGlobalStyle`
   #${ROOT_DOM_ID} {
     font-size: 16px !important;
+    font-family: -apple-system,"BlinkMacSystemFont","Hiragino Kaku Gothic ProN","Hiragino Sans",Meiryo,sans-serif;
+    line-height: 1.25 !important;
   }
 `;
 
@@ -60,7 +61,7 @@ const SContainer = styled.div`
   top: 0;
   left: 0;
   pointer-events: none;
-  z-index: 1000000;
+  z-index: 1250;
 `;
 
 const SButton = styled.button`
@@ -175,38 +176,40 @@ const Main = () => {
   //   }
   // };
 
-  const save = useCallback((method: NoteActionType, updated_note?: Note) => {
+  const save = useCallback((method: NoteActionType, updated_note?: Note): Promise<boolean> => {
     console.log("sendMessage ======", method, updated_note);
-    chrome.runtime.sendMessage<ActionMesssageConfig>(
-      {
-        method: method,
-        action_type: "App",
-        page_url: "", // updated_note.page_info.page_url,
-        note: updated_note,
-      },
-      (response: Note[]) => {
-        console.log("response ======", response);
-        setNotes(response);
-      }
-    );
-  }, []);
-  const getAllNotes = () => {
-    save(GET_ALL_NOTES);
-  };
-  const createNote = () => {
-    save(CREATE_NOTE);
-  };
-  const updateNote = (updated_note: Note) => {
-    save(UPDATE_NOTE, updated_note);
-  };
-  const delete_note = (note: {}) => {
-    chrome.runtime.sendMessage<ActionMesssageConfig>({
-      method: DELETE_NOTE,
-      action_type: "App",
-      note: note,
-      page_url: "", // note.page_info.page_url,
+    return new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage<ActionMesssageConfig>(
+        {
+          method: method,
+          action_type: "App",
+          page_url: "", // updated_note.page_info.page_url,
+          note: updated_note,
+        },
+        (response: Note[]) => {
+          console.log("response ======", response);
+          if (chrome.runtime.lastError) {
+            reject();
+          } else {
+            setNotes(response);
+            resolve(true);
+          }
+        }
+      );
     });
-  };
+  }, []);
+  const getAllNotes = useCallback(async () => {
+    return await save(GET_ALL_NOTES);
+  }, []);
+  const createNote = useCallback(async () => {
+    return await save(CREATE_NOTE);
+  }, []);
+  const updateNote = useCallback(async (note: Note) => {
+    return await save(UPDATE_NOTE, note);
+  }, []);
+  const deleteNote = useCallback(async (note: Note) => {
+    return await save(DELETE_NOTE, note);
+  }, []);
   const open_option_page = () => {
     chrome.runtime.sendMessage<ActionMesssageConfig>({
       method: OPEN_OPTION_PAGE,
@@ -217,19 +220,53 @@ const Main = () => {
 
   useEffect(() => {
     getAllNotes();
-    chrome.runtime.onMessage.addListener(function (request, sender) {
+    chrome.runtime.onMessage.addListener(function (
+      request: { action: string; notes: Note[] },
+      sender
+    ) {
       // TODO background → contentScript のアクションを受け取る
       console.log("=== onMessage ===", request, sender);
-      // const { action } = request;
+      const { action, notes } = request;
+
+      switch (action) {
+        case SET_ALL_NOTES:
+          setNotes(notes);
+          break;
+        default:
+          break;
+      }
     });
   }, []);
+
+  useEffect(() => {
+    console.log("=== useEffect notes ===");
+  }, [notes]);
+  useEffect(() => {
+    console.log("=== useEffect setNotes ===");
+  }, [setNotes]);
 
   return (
     <>
       <GlobalStyle />
       <SContainer>
-        {notes.map((note: Note, index: number) => (
-          <StickyNote key={note.id} note={note} onUpdateNote={(note: Note) => updateNote(note)} />
+        {notes.map((note: Note) => (
+          <StickyNote
+            key={note.id}
+            id={note.id}
+            page_info_id={note.page_info_id}
+            title={note.title}
+            description={note.description}
+            position_x={note.position_x}
+            position_y={note.position_y}
+            width={note.width}
+            height={note.height}
+            is_open={note.is_open}
+            is_fixed={note.is_fixed}
+            created_at={note.created_at}
+            updated_at={note.updated_at}
+            onUpdateNote={updateNote}
+            onDeleteNote={deleteNote}
+          />
         ))}
       </SContainer>
     </>
