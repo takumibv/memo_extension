@@ -1,8 +1,51 @@
+import {
+  CREATE_NOTE,
+  DELETE_NOTE,
+  GET_ALL_NOTES,
+  MOVE_NOTE,
+  OPEN_OPTION_PAGE,
+  RESIZE_NOTE,
+  UPDATE_NOTE,
+  UPDATE_NOTE_DESCRIPTION,
+  UPDATE_NOTE_IS_FIXED,
+  UPDATE_NOTE_IS_OPEN,
+  UPDATE_NOTE_TITLE,
+} from "../actions";
 import { Note } from "./Note";
+import { PageInfo } from "./PageInfo";
 
-export type ActionMesssageConfig = {
-  method: string;
-  action_type: string;
+export type ToBackgroundMessage = {
+  method: ToBackgroundMessageMethodType;
+  type: string;
   page_url: string;
+  pageInfo?: PageInfo;
   note?: Note;
+  data?: any;
 };
+
+export type ToBackgroundMessageMethodType =
+  | typeof GET_ALL_NOTES
+  | typeof CREATE_NOTE
+  | typeof UPDATE_NOTE
+  | typeof DELETE_NOTE
+  | typeof OPEN_OPTION_PAGE;
+
+export type ToContentScriptMessage = {
+  method: string;
+  type: string;
+  page_url: string;
+  notes: Note[];
+  data?: any;
+};
+
+export type NoteActionType =
+  | typeof GET_ALL_NOTES
+  | typeof CREATE_NOTE
+  | typeof UPDATE_NOTE
+  | typeof UPDATE_NOTE_TITLE
+  | typeof UPDATE_NOTE_DESCRIPTION
+  | typeof UPDATE_NOTE_IS_OPEN
+  | typeof UPDATE_NOTE_IS_FIXED
+  | typeof DELETE_NOTE
+  | typeof MOVE_NOTE
+  | typeof RESIZE_NOTE;

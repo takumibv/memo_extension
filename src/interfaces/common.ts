@@ -4,12 +4,12 @@ export const getStorage = async (storage_name: string) => {
 };
 
 export const setStorage = async (storage_name: string, data: any) => {
-  return await chrome.storage.local.set({ [storage_name]: data });
+  await chrome.storage.local.set({ [storage_name]: data });
+  return !chrome.runtime.lastError;
 };
 
 export const getNewId = (storage_data: { id?: number }[]) => {
   let new_id = Math.floor(Math.random() * 1000000);
-  console.log(storage_data.some((a) => a.id === new_id));
   while (storage_data.some((a) => a.id === new_id)) {
     new_id = Math.floor(Math.random() * 1000000);
   }

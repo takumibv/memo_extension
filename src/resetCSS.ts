@@ -20,11 +20,15 @@ export const baseCSS = (as: keyof JSX.IntrinsicElements) => css`
   ${() => {
     if (as === "h1" || as === "h2" || as === "h3" || as === "h4" || as === "h5" || as === "h6")
       return css`
+        ${defaultFontFamilyCSS}
         font-size: inherit;
         font-weight: inherit;
         margin: 0;
       `;
-    if (as === "p") return css``;
+    if (as === "p")
+      return css`
+        ${defaultFontFamilyCSS}
+      `;
     if (as === "div") return css``;
     if (as === "span") return css``;
     if (as === "a")
@@ -603,4 +607,9 @@ export const resetCSS = css`
     text-align: left;
     font-weight: bold;
   }
+`;
+
+export const defaultFontFamilyCSS = css`
+  font-family: -apple-system, "BlinkMacSystemFont", "Hiragino Kaku Gothic ProN", "Hiragino Sans",
+    Meiryo, sans-serif;
 `;

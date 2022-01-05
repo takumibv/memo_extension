@@ -12,8 +12,16 @@ import {
   UPDATE_NOTE_IS_OPEN,
   UPDATE_NOTE_TITLE,
 } from "./actions";
-import { createNote, deleteNote, getAllNotes, updateNote } from "./interfaces/noteStorage";
-import { ActionMesssageConfig } from "./types/Actions";
+import {
+  createNote,
+  deleteNote,
+  getAllNotes,
+  getAllNotesByPageId,
+  updateNote,
+} from "./interfaces/noteStorage";
+import { getOrCreatePageInfoByUrl, getPageInfoByUrl } from "./interfaces/pageInfoStorage";
+import { ToBackgroundMessage, ToContentScriptMessage } from "./types/Actions";
+import { Note } from "./types/Note";
 
 /**
  * Service Worker
@@ -33,6 +41,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 chrome.contextMenus.create({
   id: "note-extension-context-menu-create",
   title: "メモを追加",
+  contexts: ["page", "frame", "editable", "image", "video", "audio", "link", "selection"],
   // title: chrome.i18n.getMessage("add_note_msg"),
 });
 
@@ -169,21 +178,32 @@ const samplePageInfo = [
   },
 ];
 
-chrome.contextMenus.onClicked.addListener(function (info) {
-  console.log("onclick ", info);
+chrome.contextMenus.onClicked.addListener((info) => {
+  const { pageUrl } = info;
+  console.log("chrome.contextMenus.onClicked.addListener:", info);
 
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    if (!tabs || !tabs[0] || !tabs[0].id) {
+  chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
+    if (!tab || !tab.id) {
       console.log("contextMenus: no tabs.id");
       return;
     }
 
-    createNote().then((notes) => {
-      if (!tabs || !tabs[0] || !tabs[0].id) {
-        return;
-      }
+    console.log("chrome.tabs.query:", tab);
+    getOrCreatePageInfoByUrl(pageUrl).then((pageInfo) => {
+      if (!pageInfo.id) return;
 
-      chrome.tabs.sendMessage(tabs[0].id, { action: SET_ALL_NOTES, notes });
+      createNote(pageInfo.id).then(({ allNotes }) => {
+        if (!tab || !tab.id) {
+          return;
+        }
+
+        chrome.tabs.sendMessage<ToContentScriptMessage>(tab.id, {
+          method: SET_ALL_NOTES,
+          type: "App",
+          notes: allNotes,
+          page_url: pageUrl,
+        });
+      });
     });
   });
 });
@@ -212,124 +232,85 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 });
 
 const handleMessages = (
-  action: ActionMesssageConfig,
+  action: ToBackgroundMessage,
   sender: chrome.runtime.MessageSender,
-  sendResponse: (response?: any) => void
+  sendResponse: (response?: Note[]) => void
 ) => {
+  const { method, page_url, note } = action;
   console.log("==== handleMessage ====", action, sender);
 
-  // TODO アクションの精査
-  switch (action.method) {
-    case GET_ALL_NOTES:
-      getAllNotes().then((notes) => {
-        console.log("GET_ALL_NOTES:", notes);
+  // if (!pageInfo.id) return sendResponse([]);
 
-        sendResponse(notes);
+  // TODO アクションの精査
+  switch (method) {
+    case GET_ALL_NOTES:
+      getPageInfoByUrl(page_url).then((pageInfo) => {
+        if (!pageInfo || !pageInfo.id) return sendResponse([]);
+        getAllNotesByPageId(pageInfo.id)
+          .then((notes) => {
+            console.log("GET_ALL_NOTES:", notes);
+
+            sendResponse(notes);
+          })
+          .catch((e) => {
+            console.log("error GET_ALL_NOTES:", e);
+          });
       });
       return true;
     case CREATE_NOTE:
-      createNote().then((notes) => {
-        sendResponse(notes);
+      getOrCreatePageInfoByUrl(page_url).then((pageInfo) => {
+        createNote(pageInfo.id!)
+          .then(({ note, allNotes }) => {
+            console.log("CREATE_NOTE:", note);
+            sendResponse(allNotes);
+          })
+          .catch((e) => {
+            console.log("error CREATE_NOTE:", e);
+          });
       });
       return true;
     case UPDATE_NOTE:
-      updateNote(action.note || {})
-        .then((notes) => {
-          console.log("UPDATE_NOTE:", notes);
+      if (!note) return sendResponse([]);
 
-          sendResponse(notes);
-        })
-        .catch((e) => {
-          console.log("error UPDATE_NOTE:", e);
-        });
+      getOrCreatePageInfoByUrl(page_url).then((pageInfo) => {
+        updateNote(pageInfo.id!, note)
+          .then(({ allNotes }) => {
+            console.log("UPDATE_NOTE:", allNotes);
+
+            sendResponse(allNotes);
+          })
+          .catch((e) => {
+            console.log("error UPDATE_NOTE:", e);
+          });
+      });
 
       return true;
-    case UPDATE_NOTE_TITLE:
-      // var updated_notes = this.state.notes;
-      // if (updated_notes[action.index].title === action.title) { break; }
-      // updated_notes[action.index].title       = action.title;
-      // updated_notes[action.index].updated_at  = new Date().toISOString();
-      // this.setState({notes: updated_notes});
-      // save(UPDATE_NOTE_TITLE, updated_notes);
-      break;
-    case UPDATE_NOTE_DESCRIPTION:
-      // var updated_notes = this.state.notes;
-      // if (updated_notes[action.index].description === action.description) { break; }
-      // updated_notes[action.index].description = action.description;
-      // updated_notes[action.index].updated_at  = new Date().toISOString();
-      // this.setState({notes: updated_notes});
-      // save(UPDATE_NOTE_DESCRIPTION, updated_notes);
-      break;
-    case UPDATE_NOTE_IS_OPEN:
-      // var updated_notes = this.state.notes;
-      // updated_notes[action.index].is_open     = action.is_open;
-      // updated_notes[action.index].updated_at  = new Date().toISOString();
-      // this.setState({notes: updated_notes});
-      // save(UPDATE_NOTE_IS_OPEN, updated_notes);
-      break;
-    case UPDATE_NOTE_IS_FIXED:
-      // var updated_notes = this.state.notes;
-      // updated_notes[action.index].is_fixed     = action.is_fixed;
-      // const fix_position = updated_notes[action.index].is_fixed ? -1 : 1;
-      // updated_notes[action.index].position_x += $(window).scrollLeft() * fix_position;
-      // updated_notes[action.index].position_y += $(window).scrollTop() * fix_position;
-      // if(updated_notes[action.index].position_x < 0){ updated_notes[action.index].position_x = 0; }
-      // if(updated_notes[action.index].position_y < 0){ updated_notes[action.index].position_y = 0; }
-      // updated_notes[action.index].updated_at  = new Date().toISOString();
-      // this.setState({notes: updated_notes});
-      // save(UPDATE_NOTE_IS_FIXED, updated_notes);
-      break;
     case DELETE_NOTE:
       // var updated_notes = this.state.notes;
-      // var delete_note   = this.state.notes[action.index];
-      // updated_notes.splice(action.index, 1);
+      // var delete_note   = this.state.notes[index];
+      // updated_notes.splice(index, 1);
       // this.setState({notes: updated_notes});
       // delete_note(delete_note);
-      deleteNote(action.note?.id)
-        .then((notes) => {
-          console.log("DELETE_NOTE:", notes);
+      getPageInfoByUrl(page_url).then((pageInfo) => {
+        if (!pageInfo || !pageInfo.id) return sendResponse([]);
+        deleteNote(pageInfo.id, note?.id)
+          .then(({ allNotes }) => {
+            console.log("DELETE_NOTE:", allNotes);
 
-          sendResponse(notes);
-        })
-        .catch((e) => {
-          console.log("error DELETE_NOTE:", e);
-        });
+            sendResponse(allNotes);
+          })
+          .catch((e) => {
+            console.log("error DELETE_NOTE:", e);
+          });
+      });
       return true;
-    case MOVE_NOTE:
-      // var updated_notes = this.state.notes;
-      // if (updated_notes[action.index].position_x === action.position_x &&
-      //   updated_notes[action.index].position_y === action.position_y) {
-      //   break;
-      // }
-      // updated_notes[action.index].position_x = action.position_x;
-      // updated_notes[action.index].position_y = action.position_y;
-      // if (updated_notes[action.index].is_fixed) {
-      //   updated_notes[action.index].position_x -= $(window).scrollLeft();
-      //   updated_notes[action.index].position_y -= $(window).scrollTop();
-      // }
-      // if(updated_notes[action.index].position_x < 0){ updated_notes[action.index].position_x = 0; }
-      // if(updated_notes[action.index].position_y < 0){ updated_notes[action.index].position_y = 0; }
-      // updated_notes[action.index].updated_at = new Date().toISOString();
-      // this.setState({notes: updated_notes});
-      // save(MOVE_NOTE, updated_notes);
-      break;
-    case RESIZE_NOTE:
-      // var updated_notes = this.state.notes;
-      // if (!updated_notes[action.index].is_open) {
-      //   break;
-      // }
-      // updated_notes[action.index].width       = action.width;
-      // updated_notes[action.index].height      = action.height;
-      // updated_notes[action.index].updated_at  = new Date().toISOString();
-      // this.setState({notes: updated_notes});
-      // save(RESIZE_NOTE, updated_notes);
-      break;
     case OPEN_OPTION_PAGE:
       // open_option_page();
       break;
     default:
       break;
   }
+  // });
 };
 
 chrome.runtime.onMessage.addListener(handleMessages);

@@ -16,15 +16,3 @@ export const OPEN_OPTION_PAGE = "OPEN_OPTION_PAGE";
 // background → contentScript, Popup
 export const SET_NOTE = "SET_NOTE"; // 単一のメモをセットする
 export const SET_ALL_NOTES = "SET_ALL_NOTES"; // 全てのメモをセットする
-
-export type NoteActionType =
-  | typeof GET_ALL_NOTES
-  | typeof CREATE_NOTE
-  | typeof UPDATE_NOTE
-  | typeof UPDATE_NOTE_TITLE
-  | typeof UPDATE_NOTE_DESCRIPTION
-  | typeof UPDATE_NOTE_IS_OPEN
-  | typeof UPDATE_NOTE_IS_FIXED
-  | typeof DELETE_NOTE
-  | typeof MOVE_NOTE
-  | typeof RESIZE_NOTE;
