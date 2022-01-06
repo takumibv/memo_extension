@@ -1,6 +1,7 @@
 import React from "react";
 import { useCallback, useEffect, useState } from "react";
 import {
+  CONTENT_SCRIPT,
   DELETE_NOTE,
   GET_ALL_NOTES,
   OPEN_OPTION_PAGE,
@@ -10,7 +11,7 @@ import {
 import StickyNote from "../components/StickyNote/StickyNote";
 import {
   ToBackgroundMessage,
-  ToBackgroundMessageMethodType,
+  ToBackgroundMessageMethod,
   ToContentScriptMessage,
 } from "../types/Actions";
 import { Note } from "../types/Note";
@@ -19,25 +20,41 @@ import { GlobalStyle, SContainer } from "./Main.style";
 const Main: React.VFC = () => {
   const [notes, setNotes] = useState<Note[]>([]);
 
+  const handleMessages = (
+    request: ToContentScriptMessage,
+    sender: chrome.runtime.MessageSender,
+    sendResponse: (response?: any) => void
+  ) => {
+    // TODO background → contentScript のアクションを受け取る
+    console.log("=== onMessage ===", request, sender);
+    const { method, notes } = request;
+
+    switch (method) {
+      case SET_ALL_NOTES:
+        setNotes(notes);
+        break;
+      default:
+        break;
+    }
+    sendResponse();
+    return;
+  };
+
   const sendAction = useCallback(
-    (method: ToBackgroundMessageMethodType, newNote?: Note): Promise<boolean> => {
-      console.log("sendMessage ======", method, newNote);
+    (method: ToBackgroundMessageMethod, targetNote?: Note): Promise<boolean> => {
+      console.log("sendMessage ======", method, window.location.href, targetNote);
       return new Promise((resolve, reject) => {
         chrome.runtime.sendMessage<ToBackgroundMessage>(
           {
             method: method,
-            type: "App",
-            page_url: window.location.href, // newNote.page_info.page_url,
-            pageInfo: {
-              page_url: window.location.href,
-              page_title: document.title,
-            },
-            note: newNote,
+            senderType: CONTENT_SCRIPT,
+            page_url: window.location.href, // targetNote.page_info.page_url,
+            targetNote,
           },
           (response: Note[]) => {
             console.log("response ======", response, chrome.runtime.lastError);
             if (chrome.runtime.lastError) {
-              reject();
+              reject(chrome.runtime.lastError.message);
             } else {
               setNotes(response);
               resolve(true);
@@ -64,26 +81,18 @@ const Main: React.VFC = () => {
   const open_option_page = () => {
     chrome.runtime.sendMessage<ToBackgroundMessage>({
       method: OPEN_OPTION_PAGE,
-      type: "App",
+      senderType: CONTENT_SCRIPT,
       page_url: "",
     });
   };
 
   useEffect(() => {
     getAllNotes();
-    chrome.runtime.onMessage.addListener(function (request: ToContentScriptMessage, sender) {
-      // TODO background → contentScript のアクションを受け取る
-      console.log("=== onMessage ===", request, sender);
-      const { method, notes } = request;
+    chrome.runtime.onMessage.addListener(handleMessages);
 
-      switch (method) {
-        case SET_ALL_NOTES:
-          setNotes(notes);
-          break;
-        default:
-          break;
-      }
-    });
+    return () => {
+      chrome.runtime.onMessage.removeListener(handleMessages);
+    };
   }, []);
 
   return (

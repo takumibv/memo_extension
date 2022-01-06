@@ -35,7 +35,7 @@ export const createPageInfo = async (url: string): Promise<PageInfoCRUDResponseT
 
   if (await setPageInfoStorage(allPageInfos)) return { pageInfo: newPageInfo, allPageInfos };
 
-  throw new Error("createPageInfo failed: " + chrome.runtime.lastError);
+  throw new Error("createPageInfo failed: " + chrome.runtime.lastError?.message);
 };
 
 export const updatePageInfo = async (pageInfo: PageInfo): Promise<PageInfoCRUDResponseType> => {
@@ -48,7 +48,7 @@ export const updatePageInfo = async (pageInfo: PageInfo): Promise<PageInfoCRUDRe
 
   if (await setPageInfoStorage(allPageInfos)) return { pageInfo, allPageInfos };
 
-  throw new Error("updatePageInfo failed: " + chrome.runtime.lastError);
+  throw new Error("updatePageInfo failed: " + chrome.runtime.lastError?.message);
 };
 
 export const getAllPageInfos = async (): Promise<PageInfo[]> => {
@@ -88,5 +88,5 @@ export const deletePageInfo = async (pageId: number): Promise<PageInfoCRUDRespon
 
   // TODO 削除したPageInfoを履歴に残す
 
-  throw new Error("deletePageInfo failed: " + chrome.runtime.lastError);
+  throw new Error("deletePageInfo failed: " + chrome.runtime.lastError?.message);
 };

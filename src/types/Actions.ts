@@ -1,9 +1,12 @@
 import {
+  BACKGROUND,
+  CONTENT_SCRIPT,
   CREATE_NOTE,
   DELETE_NOTE,
   GET_ALL_NOTES,
   MOVE_NOTE,
   OPEN_OPTION_PAGE,
+  POPUP,
   RESIZE_NOTE,
   UPDATE_NOTE,
   UPDATE_NOTE_DESCRIPTION,
@@ -15,15 +18,15 @@ import { Note } from "./Note";
 import { PageInfo } from "./PageInfo";
 
 export type ToBackgroundMessage = {
-  method: ToBackgroundMessageMethodType;
-  type: string;
+  method: ToBackgroundMessageMethod;
+  senderType: SenderType;
   page_url: string;
-  pageInfo?: PageInfo;
-  note?: Note;
+  targetPageInfo?: PageInfo;
+  targetNote?: Note;
   data?: any;
 };
 
-export type ToBackgroundMessageMethodType =
+export type ToBackgroundMessageMethod =
   | typeof GET_ALL_NOTES
   | typeof CREATE_NOTE
   | typeof UPDATE_NOTE
@@ -49,3 +52,5 @@ export type NoteActionType =
   | typeof DELETE_NOTE
   | typeof MOVE_NOTE
   | typeof RESIZE_NOTE;
+
+export type SenderType = typeof POPUP | typeof CONTENT_SCRIPT | typeof BACKGROUND;

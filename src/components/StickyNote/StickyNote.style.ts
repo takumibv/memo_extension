@@ -4,10 +4,10 @@ import Button from "../Button/Button";
 import { CopySuccessIcon } from "../Icon";
 import IconButton from "../Button/IconButton";
 
-interface SNoteProps extends React.HTMLAttributes<HTMLDivElement> {
+type SNoteProps = React.HTMLAttributes<HTMLDivElement> & {
   isFixed?: boolean;
   isForward?: boolean;
-}
+};
 
 export const SNote = styled.div<SNoteProps>`
   ${baseCSS("div")}

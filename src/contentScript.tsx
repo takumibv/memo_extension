@@ -10,7 +10,7 @@ export const ROOT_DOM_ID = "react-container-for-note-extension";
 const initialize = () => {
   console.log("=== initialize ===");
 
-  // メモを配置
+  // DOMを挿入
   injectDomElements();
 };
 

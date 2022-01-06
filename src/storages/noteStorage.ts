@@ -1,5 +1,5 @@
 import { Note } from "../types/Note";
-import { getNewId, getStorage, setStorage } from "./common";
+import { getNewId, getStorage, removeStorage, setStorage } from "./common";
 import { deletePageInfo } from "./pageInfoStorage";
 
 const NOTE_STORAGE_NAME = "notes";
@@ -17,6 +17,10 @@ const setNoteStorageByPageId = async (pageId: number, notes: Note[]): Promise<bo
   return await setStorage(storageName, notes);
 };
 
+const removeNoteStorageByPageId = async (pageId: number): Promise<boolean> => {
+  return await removeStorage(getStorageName(pageId));
+};
+
 export type NoteCRUDResponseType = { note?: Note; allNotes: Note[] };
 
 export const createNote = async (pageId: number): Promise<NoteCRUDResponseType> => {
@@ -27,7 +31,7 @@ export const createNote = async (pageId: number): Promise<NoteCRUDResponseType> 
   const allNotes = [...notes, newNote];
   if (await setNoteStorageByPageId(pageId, allNotes)) return { note: newNote, allNotes };
 
-  throw new Error("createNote failed: " + chrome.runtime.lastError);
+  throw new Error("createNote failed: " + chrome.runtime.lastError?.message);
 };
 
 export const updateNote = async (pageId: number, note: Note): Promise<NoteCRUDResponseType> => {
@@ -40,7 +44,7 @@ export const updateNote = async (pageId: number, note: Note): Promise<NoteCRUDRe
 
   if (await setNoteStorageByPageId(pageId, allNotes)) return { note, allNotes };
 
-  throw new Error("updateNote failed: " + chrome.runtime.lastError);
+  throw new Error("updateNote failed: " + chrome.runtime.lastError?.message);
 };
 
 export const getAllNotesByPageId = async (pageId: number): Promise<Note[]> => {
@@ -67,11 +71,16 @@ export const deleteNote = async (
   const note = notes.find((_note) => _note.id === noteId);
   const allNotes = notes.filter((_note) => _note.id !== noteId);
 
-  if (allNotes.length === 0) deletePageInfo(pageId);
-
   // TODO 削除したNoteを履歴に残す
 
-  if (await setNoteStorageByPageId(pageId, allNotes)) return { note, allNotes };
+  if (await setNoteStorageByPageId(pageId, allNotes)) {
+    if (allNotes.length === 0) {
+      deletePageInfo(pageId);
+      removeNoteStorageByPageId(pageId);
+    }
 
-  throw new Error("deleteNote failed: " + chrome.runtime.lastError);
+    return { note, allNotes };
+  }
+
+  throw new Error("deleteNote failed: " + chrome.runtime.lastError?.message);
 };

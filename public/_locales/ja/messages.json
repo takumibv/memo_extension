@@ -17,28 +17,28 @@
   },
 
   "app_name": { "message": "どこでもメモ" },
-  "no_memo_msg": { "message": "メモがありません。" },
-  "add_memo_msg": { "message": "メモを追加する" },
-  "confirm_remove_memo_msg": { "message": "本当に削除しますか?" },
+  "no_note_msg": { "message": "メモがありません。" },
+  "add_note_msg": { "message": "メモを追加する" },
+  "confirm_remove_note_msg": { "message": "本当に削除しますか?" },
 
-  "make_memo_button_msg": { "message": "メモを作成する" },
+  "make_note_button_msg": { "message": "メモを作成する" },
   "setting_button_msg": { "message": "設定" },
   "menu_button_msg": { "message": "メモ一覧ページ" },
-  "cannot_show_memo_msg": { "message": "このページではメモを表示できません。" },
-  "no_memo_created_msg": {
+  "cannot_show_note_msg": { "message": "このページではメモを表示できません。" },
+  "no_note_created_msg": {
     "message": "<i class='material-icons' style='transform: rotate(90deg);'>subdirectory_arrow_left</i> メモを作成する。"
   },
-  "no_memo_created_option_msg": {
+  "no_note_created_option_msg": {
     "message": "右クリックの「メモを追加する」からでも作成できます。"
   },
   "how_to_use_page_link_msg": { "message": "使い方" },
 
-  "memo_header_msg": { "message": "メモ一覧" },
+  "note_header_msg": { "message": "メモ一覧" },
   "settings_header_msg": { "message": "設定" },
   "how_to_use_header_msg": { "message": "使い方" },
-  "show_all_memo_msg": { "message": "全て表示" },
+  "show_all_note_msg": { "message": "全て表示" },
   "search_query_msg": { "message": "検索" },
-  "this_page_memo_list_msg": { "message": "このページのメモ一覧" },
+  "this_page_note_list_msg": { "message": "このページのメモ一覧" },
   "setting_about_this_app": { "message": "どこでもメモについて" },
   "setting_about_this_app_created_by": { "message": "制作者" },
   "usage01": { "message": "「x」マークが出ていないページで使うことができます。" },
@@ -70,6 +70,6 @@
   "edit_msg": { "message": "編集" },
   "copy_msg": { "message": "クリップボードにコピーする" },
   "delete_msg": { "message": "削除する" },
-  "new_memo_title_msg": { "message": "新しいメモ" },
-  "new_memo_description_msg": { "message": "ダブルクリックで編集" }
+  "new_note_title_msg": { "message": "新しいメモ" },
+  "new_note_description_msg": { "message": "ダブルクリックで編集" }
 }

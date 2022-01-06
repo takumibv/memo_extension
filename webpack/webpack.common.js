@@ -17,7 +17,7 @@ module.exports = {
     splitChunks: {
       name: "vendor",
       chunks(chunk) {
-        return chunk.name !== "background";
+        return chunk.name !== "serviceWorker";
       },
     },
   },
@@ -30,7 +30,11 @@ module.exports = {
       },
       {
         test: /\.pcss$/i,
-        use: ["style-loader", "css-loader", "postcss-loader"],
+        use: [
+          "style-loader",
+          "css-loader",
+          // "postcss-loader"
+        ],
       },
     ],
   },

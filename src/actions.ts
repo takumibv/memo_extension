@@ -16,3 +16,8 @@ export const OPEN_OPTION_PAGE = "OPEN_OPTION_PAGE";
 // background → contentScript, Popup
 export const SET_NOTE = "SET_NOTE"; // 単一のメモをセットする
 export const SET_ALL_NOTES = "SET_ALL_NOTES"; // 全てのメモをセットする
+
+// type
+export const POPUP = "POPUP";
+export const CONTENT_SCRIPT = "CONTENT_SCRIPT";
+export const BACKGROUND = "BACKGROUND";

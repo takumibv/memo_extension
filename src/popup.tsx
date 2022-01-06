@@ -1,79 +1,93 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import "./index.pcss";
+import { ToBackgroundMessage, ToBackgroundMessageMethod } from "./types/Actions";
+import { Note } from "./types/Note";
+import { CREATE_NOTE, DELETE_NOTE, GET_ALL_NOTES, POPUP } from "./actions";
+import IconButton from "./components/Button/IconButton";
+import { PlusIcon, TrashIcon } from "./components/Icon";
 
 type FormData = {
   username: string;
 };
 
 const Popup = () => {
-  const [username, setUsername] = useState("");
-  const [currentStats, setCurrentStats] = useState("");
-  const [currentTopLanguage, setCurrentTopLanguage] = useState("");
-  const {
-    register,
-    setValue,
-    handleSubmit,
-    formState,
-    formState: { errors },
-  } = useForm<FormData>();
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [currentUrl, setCurrentUrl] = useState("");
 
-  const onSubmit = handleSubmit((data) => {
-    console.log(data["username"]);
-    setUsername(data["username"]);
-  });
+  const sendAction = useCallback(
+    (method: ToBackgroundMessageMethod, page_url: string, targetNote?: Note): Promise<boolean> => {
+      console.log("sendMessage ======", method, targetNote);
+
+      return new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage<ToBackgroundMessage>(
+          {
+            method: method,
+            senderType: POPUP,
+            page_url,
+            targetNote,
+          },
+          (notes: Note[]) => {
+            console.log("response ======", notes, chrome.runtime.lastError);
+            if (chrome.runtime.lastError) {
+              reject(chrome.runtime.lastError.message);
+            } else {
+              setNotes(notes);
+              resolve(true);
+            }
+          }
+        );
+      });
+    },
+    []
+  );
+
+  const onClickAddNote = () => {
+    if (currentUrl !== "") sendAction(CREATE_NOTE, currentUrl);
+  };
+
+  const onClickDelete = (noteId: number) => {
+    if (currentUrl !== "") sendAction(DELETE_NOTE, currentUrl, { id: noteId });
+  };
 
   useEffect(() => {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tab) => {
-      console.log(tab[0].id, tab[0].url);
-    });
-
-    const value = "test";
-    chrome.storage.sync.set({ key: value }, function () {
-      console.log("Value is set to " + value);
-    });
-
-    // バックグラウンドから現状の設定値を持ってきて、UIにセットする。
-    chrome.runtime.getBackgroundPage((backgroundPage) => {
-      console.log("=== backgroundPage ===", backgroundPage);
-      // const bg = backgroundPage?.bg;
-      // const page_url = bg.page_info ? bg.page_info.page_url : null;
-      // const notes = bg.page_info ? bg.page_info.getNotes() : [];
-      // if (!bg.canShowNote()) {
-      //   $('#page_infos').append(this.renderNoNoteMsg(chrome.i18n.getMessage('cannot_show_note_msg')));
-      //   $('#make_note_button').prop("disabled", true);
-      // } else if (notes.length === 0) {
-      //   $('#page_infos').append(this.renderNoNoteMsg(chrome.i18n.getMessage('no_note_created_msg'), chrome.i18n.getMessage('no_note_created_option_msg')));
-      // } else {
-      //   for(let i in notes) {
-      //     $('#page_infos').append(this.renderNote(notes[i]));
-      //   }
-      // }
+    chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+      console.log("tab", tab);
+      if (tab && tab.url) {
+        setCurrentUrl(tab.url);
+        sendAction(GET_ALL_NOTES, tab.url);
+      } else {
+        // TODO あとで消す
+        chrome.action.setBadgeText({ text: "x" });
+        chrome.action.setBadgeBackgroundColor({ color: "#DB1C21" });
+      }
     });
   }, []);
 
   return (
     <>
-      <div className="p-4">
-        <div className="w-80">
-          <div>
-            <header>GitHub Language Stats Extension</header>
-          </div>
-          <div>
-            <div dangerouslySetInnerHTML={{ __html: currentStats }} />
-            <div dangerouslySetInnerHTML={{ __html: currentTopLanguage }} />
-          </div>
-          <div>
-            <form onSubmit={onSubmit}>
-              <label>GitHub username</label>
-              <input placeholder="GitHub username" {...register("username", { required: true })} />
-              <p>{errors.username && "GitHub username is required"}</p>
-              <button type="submit">Submit</button>
-            </form>
-          </div>
-        </div>
+      <div className="p-4" style={{ width: "320px" }}>
+        <IconButton onClick={onClickAddNote}>
+          <PlusIcon />
+        </IconButton>
+        {notes.length === 0 ? (
+          <p>メモがありません</p>
+        ) : (
+          <ul>
+            {notes.map((note) => (
+              <li key={note.id}>
+                <p>
+                  {note.title}:{note.description}
+                  <IconButton onClick={() => note.id && onClickDelete(note.id)}>
+                    <TrashIcon />
+                  </IconButton>
+                </p>
+                <hr />
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </>
   );

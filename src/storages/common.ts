@@ -8,6 +8,11 @@ export const setStorage = async (storage_name: string, data: any) => {
   return !chrome.runtime.lastError;
 };
 
+export const removeStorage = async (storage_name: string) => {
+  await chrome.storage.local.remove(storage_name);
+  return !chrome.runtime.lastError;
+};
+
 export const getNewId = (storage_data: { id?: number }[]) => {
   let new_id = Math.floor(Math.random() * 1000000);
   while (storage_data.some((a) => a.id === new_id)) {

@@ -8,7 +8,7 @@
     "description": "The short_name (maximum of 12 characters recommended) is a short version of the app's name."
   },
   "appDescription": {
-    "message": "This is a functional and intuitive memo application.",
+    "message": "This is a functional and intuitive note application.",
     "description": "The description of the application"
   },
   "browserActionTitle": {
@@ -16,38 +16,38 @@
     "description": "The title of the browser action button"
   },
   "app_name": { "message": "Memo Anywhere" },
-  "no_memo_msg": { "message": "There is no memo." },
-  "add_memo_msg": { "message": "add memo" },
-  "confirm_remove_memo_msg": { "message": "Do you really want to delete this?" },
-  "make_memo_button_msg": { "message": "make memo" },
+  "no_note_msg": { "message": "There is no note." },
+  "add_note_msg": { "message": "add note" },
+  "confirm_remove_note_msg": { "message": "Do you really want to delete this?" },
+  "make_note_button_msg": { "message": "make note" },
   "setting_button_msg": { "message": "settings" },
-  "menu_button_msg": { "message": "memo list page" },
-  "cannot_show_memo_msg": { "message": "Memos can not be shown on this page." },
-  "no_memo_created_msg": {
-    "message": "<i class='material-icons' style='transform: rotate(90deg);'>subdirectory_arrow_left</i> add memo"
+  "menu_button_msg": { "message": "note list page" },
+  "cannot_show_note_msg": { "message": "Memos can not be shown on this page." },
+  "no_note_created_msg": {
+    "message": "<i class='material-icons' style='transform: rotate(90deg);'>subdirectory_arrow_left</i> add note"
   },
-  "no_memo_created_option_msg": { "message": "or right click and \"add memo\"" },
+  "no_note_created_option_msg": { "message": "or right click and \"add note\"" },
   "how_to_use_page_link_msg": { "message": "How to Use" },
-  "memo_header_msg": { "message": "Memos" },
+  "note_header_msg": { "message": "Memos" },
   "settings_header_msg": { "message": "Setting" },
   "how_to_use_header_msg": { "message": "Usage" },
-  "show_all_memo_msg": { "message": "show all" },
+  "show_all_note_msg": { "message": "show all" },
   "search_query_msg": { "message": "search" },
-  "this_page_memo_list_msg": { "message": "Memo list of this page" },
+  "this_page_note_list_msg": { "message": "Memo list of this page" },
   "setting_about_this_app": { "message": "About Memo Anywhere" },
   "setting_about_this_app_created_by": { "message": "Created by" },
   "usage01": { "message": "You can use on the page where the \"x\" mark is not appeared." },
   "usage02": {
-    "message": "Click on the popup in the upper right and click the \"+\" button, and you can create a memo."
+    "message": "Click on the popup in the upper right and click the \"+\" button, and you can create a note."
   },
   "usage02_2": { "message": "(You can also create by right click on the screen.)" },
   "usage03": { "message": "Double click to edit title and details." },
   "usage04": { "message": "Move by mouse drag. You can also resize." },
-  "usage05": { "message": "From the popup, you can view the memos created on the open page." },
-  "usage05_2": { "message": "You can move to the location of the memo with \">\" button." },
+  "usage05": { "message": "From the popup, you can view the notes created on the open page." },
+  "usage05_2": { "message": "You can move to the location of the note with \">\" button." },
   "usage06": { "message": "Memos page" },
-  "usage06_2": { "message": " shows memos you made up to now." },
-  "usage07": { "message": "The memo has various functions." },
+  "usage06_2": { "message": " shows notes you made up to now." },
+  "usage07": { "message": "The note has various functions." },
   "updated_at_msg": { "message": "Update" },
   "created_at_msg": { "message": "Created" },
   "updated_at_sort_option": { "message": "Update" },
@@ -62,6 +62,6 @@
   "edit_msg": { "message": "edit" },
   "copy_msg": { "message": "Copy to Clipboard" },
   "delete_msg": { "message": "delete" },
-  "new_memo_title_msg": { "message": "New Note" },
-  "new_memo_description_msg": { "message": "Double-click to edit" }
+  "new_note_title_msg": { "message": "New Note" },
+  "new_note_description_msg": { "message": "Double-click to edit" }
 }
