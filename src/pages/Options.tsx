@@ -4,7 +4,7 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { ToBackgroundMessage, ToBackgroundMessageMethod } from "../types/Actions";
 import { Note } from "../types/Note";
-import { CREATE_NOTE, DELETE_NOTE, GET_ALL_NOTES, POPUP } from "../actions";
+import { CREATE_NOTE, DELETE_NOTE, GET_ALL_NOTES, OPTIONS, POPUP } from "../actions";
 import IconButton from "../components/Button/IconButton";
 import { EyeIcon, PlusIcon, TrashIcon } from "../components/Icon";
 
@@ -20,7 +20,7 @@ const Options = () => {
   const sendAction = useCallback(
     (
       method: ToBackgroundMessageMethod,
-      tab: chrome.tabs.Tab,
+      tab?: chrome.tabs.Tab,
       targetNote?: Note
     ): Promise<boolean> => {
       console.log("sendMessage ======", method, targetNote);
@@ -29,7 +29,7 @@ const Options = () => {
         chrome.runtime.sendMessage<ToBackgroundMessage>(
           {
             method: method,
-            senderType: POPUP,
+            senderType: OPTIONS,
             page_url: tab?.url || "",
             tab,
             targetNote,
@@ -58,18 +58,7 @@ const Options = () => {
   };
 
   useEffect(() => {
-    chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-      console.log("tab", tab);
-      if (tab && tab.url) {
-        setCurrentUrl(tab.url);
-        setCurrentTab(tab);
-        sendAction(GET_ALL_NOTES, tab);
-      } else {
-        // TODO あとで消す
-        chrome.action.setBadgeText({ text: "x" });
-        chrome.action.setBadgeBackgroundColor({ color: "#DB1C21" });
-      }
-    });
+    sendAction(GET_ALL_NOTES);
   }, []);
 
   return (

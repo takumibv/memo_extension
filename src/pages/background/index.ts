@@ -4,6 +4,7 @@ import {
   DELETE_NOTE,
   GET_ALL_NOTES,
   OPEN_OPTION_PAGE,
+  OPTIONS,
   POPUP,
   SET_ALL_NOTES,
   UPDATE_NOTE,
@@ -130,32 +131,29 @@ const _handleMessagesFromPopup = (
   const tabUrl = tab?.url;
   if (!tabId || !tabUrl) return sendResponse([]);
 
+  const sendResponseAndSetNotes = (notes: Note[]) => {
+    sendResponse(notes);
+    actions.setAllNotes(tabId, tabUrl, notes);
+  };
+
   switch (method) {
     case GET_ALL_NOTES:
       actions
         .fetchAllNotesByPageUrl(tabUrl)
-        .then((notes: Note[]) => {
-          sendResponse(notes);
-          actions.setAllNotes(tabId, tabUrl, notes);
-        })
+        .then(sendResponseAndSetNotes)
         .catch((e) => console.log("error GET_ALL_NOTES:", e));
       return true;
     case CREATE_NOTE:
+      // TODO content_scriptが無効なページは、createNoteを実行しないようにする
       actions
         .createNote(tabUrl)
-        .then((notes: Note[]) => {
-          sendResponse(notes);
-          actions.setAllNotes(tabId, tabUrl, notes);
-        })
+        .then(sendResponseAndSetNotes)
         .catch((e) => console.log("error CREATE_NOTE:", e));
       return true;
     case UPDATE_NOTE:
       actions
         .updateNote(tabUrl, targetNote)
-        .then((notes: Note[]) => {
-          sendResponse(notes);
-          actions.setAllNotes(tabId, tabUrl, notes);
-        })
+        .then(sendResponseAndSetNotes)
         .catch((e) => {
           console.log("error UPDATE_NOTE:", e);
         });
@@ -163,13 +161,27 @@ const _handleMessagesFromPopup = (
     case DELETE_NOTE:
       actions
         .deleteNote(tabUrl, targetNote?.id)
-        .then((notes: Note[]) => {
-          sendResponse(notes);
-          actions.setAllNotes(tabId, tabUrl, notes);
-        })
+        .then(sendResponseAndSetNotes)
         .catch((e) => {
           console.log("error DELETE_NOTE:", e);
         });
+      return true;
+    default:
+      break;
+  }
+};
+
+const _handleMessagesFromOption = (
+  method: ToBackgroundMessageMethod,
+  sendResponse: (response?: Note[]) => void,
+  targetNote?: Note
+) => {
+  switch (method) {
+    case GET_ALL_NOTES:
+      actions
+        .fetchAllNotes()
+        .then(sendResponse)
+        .catch((e) => console.log("error GET_ALL_NOTES:", e));
       return true;
     default:
       break;
@@ -190,6 +202,8 @@ const handleMessages = (
       return _handleMessagesFromContentScript(method, page_url, sendResponse, targetNote);
     case POPUP:
       return _handleMessagesFromPopup(method, sendResponse, action.tab, targetNote);
+    case OPTIONS:
+      return _handleMessagesFromOption(method, sendResponse, targetNote);
     default:
       sendResponse();
       return;

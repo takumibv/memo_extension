@@ -6,6 +6,7 @@ import {
   GET_ALL_NOTES,
   MOVE_NOTE,
   OPEN_OPTION_PAGE,
+  OPTIONS,
   POPUP,
   RESIZE_NOTE,
   SET_ALL_NOTES,
@@ -57,4 +58,4 @@ export type NoteActionType =
   | typeof MOVE_NOTE
   | typeof RESIZE_NOTE;
 
-export type SenderType = typeof POPUP | typeof CONTENT_SCRIPT | typeof BACKGROUND;
+export type SenderType = typeof POPUP | typeof CONTENT_SCRIPT | typeof BACKGROUND | typeof OPTIONS;

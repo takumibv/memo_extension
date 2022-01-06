@@ -1,5 +1,6 @@
 import { DEAULT_NOTE_HEIGHT, DEAULT_NOTE_WIDTH, Note } from "../types/Note";
-import { getNewId, getStorage, removeStorage, setStorage } from "./common";
+import { msg } from "../utils";
+import { getAllStorage, getNewId, getStorage, removeStorage, setStorage } from "./common";
 import { deletePageInfo } from "./pageInfoStorage";
 
 const NOTE_STORAGE_NAME = "notes";
@@ -29,6 +30,7 @@ export const createNote = async (pageId: number): Promise<NoteCRUDResponseType> 
   const id = getNewId(notes);
   const newNote: Note = {
     id,
+    title: msg("new_note_title_msg"),
     page_info_id: pageId,
     width: DEAULT_NOTE_WIDTH,
     height: DEAULT_NOTE_HEIGHT,
@@ -58,9 +60,13 @@ export const getAllNotesByPageId = async (pageId: number): Promise<Note[]> => {
   return await getNoteStorage(getStorageName(pageId));
 };
 
-export const getAllNotes = async (pageId: number): Promise<Note[]> => {
-  // TODO
-  return new Promise((_resolve, reject) => reject("getAllNotes is not implemented"));
+export const getAllNotes = async (): Promise<Note[]> => {
+  const storage = await getAllStorage();
+  const filteredNotes = Object.keys(storage)
+    .filter((key) => key.match(new RegExp(`^${NOTE_STORAGE_NAME}_`, "g")))
+    .map((key) => storage[key])
+    .flat();
+  return filteredNotes;
 };
 
 export const getNotesByPageId = async (pageId: number): Promise<Note[]> => {

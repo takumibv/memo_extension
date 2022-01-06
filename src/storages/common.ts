@@ -1,4 +1,7 @@
-// localStorageのデータを丸ごと持ってくる。
+export const getAllStorage = async () => {
+  return await chrome.storage.local.get(null);
+};
+
 export const getStorage = async (storage_name: string) => {
   return await chrome.storage.local.get(storage_name);
 };

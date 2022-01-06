@@ -4,16 +4,25 @@ import {
   updateNote as _updateNote,
   deleteNote as _deleteNote,
   getAllNotesByPageId,
+  getAllNotes,
 } from "../../storages/noteStorage";
 import { getOrCreatePageInfoByUrl, getPageInfoByUrl } from "../../storages/pageInfoStorage";
 import { ToContentScriptMessage } from "../../types/Actions";
 import { Note } from "../../types/Note";
 
+export const fetchAllNotes = async (): Promise<Note[]> => {
+  const notes = await getAllNotes();
+
+  console.log("GET_ALL_NOTES:", notes);
+
+  return notes;
+};
+
 export const fetchAllNotesByPageUrl = async (page_url: string): Promise<Note[]> => {
   const pageInfo = await getPageInfoByUrl(page_url);
   if (!pageInfo || !pageInfo.id) return [];
 
-  const notes = getAllNotesByPageId(pageInfo.id);
+  const notes = await getAllNotesByPageId(pageInfo.id);
 
   console.log("GET_ALL_NOTES:", notes);
 
