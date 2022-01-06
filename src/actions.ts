@@ -21,3 +21,4 @@ export const SET_ALL_NOTES = "SET_ALL_NOTES"; // 全てのメモをセットす�
 export const POPUP = "POPUP";
 export const CONTENT_SCRIPT = "CONTENT_SCRIPT";
 export const BACKGROUND = "BACKGROUND";
+export const OPTIONS = "OPTIONS";

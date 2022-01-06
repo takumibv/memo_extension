@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import Main from "./contentScript/Main";
+import App from "./App";
 
 export const ROOT_DOM_ID = "react-container-for-note-extension";
 
@@ -22,7 +22,7 @@ const injectDomElements = () => {
   const rootElement = document.createElement("div");
   rootElement.id = ROOT_DOM_ID;
   document.body.appendChild(rootElement);
-  ReactDOM.render(<Main />, rootElement);
+  ReactDOM.render(<App />, rootElement);
 };
 
 (function () {

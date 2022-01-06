@@ -25,7 +25,7 @@ import {
   SHeaderFixedPinArea,
   SHeaderFixedButton,
 } from "./StickyNote.style";
-import { ROOT_DOM_ID } from "../../contentScript";
+import { ROOT_DOM_ID } from "../../pages/contentScript";
 
 type Props = {
   id?: number;

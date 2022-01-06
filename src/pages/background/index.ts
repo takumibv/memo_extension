@@ -7,17 +7,22 @@ import {
   POPUP,
   SET_ALL_NOTES,
   UPDATE_NOTE,
-} from "./actions";
-import * as actions from "./serviceWorkers/actions";
-import { createNote, deleteNote, getAllNotesByPageId, updateNote } from "./storages/noteStorage";
-import { getOrCreatePageInfoByUrl, getPageInfoByUrl } from "./storages/pageInfoStorage";
+} from "../../actions";
+import * as actions from "./actions";
+import {
+  createNote,
+  deleteNote,
+  getAllNotesByPageId,
+  updateNote,
+} from "../../storages/noteStorage";
+import { getOrCreatePageInfoByUrl, getPageInfoByUrl } from "../../storages/pageInfoStorage";
 import {
   ToBackgroundMessage,
   ToBackgroundMessageMethod,
   ToContentScriptMessage,
-} from "./types/Actions";
-import { Note } from "./types/Note";
-import { msg } from "./utils";
+} from "../../types/Actions";
+import { Note } from "../../types/Note";
+import { msg } from "../../utils";
 
 /**
  * Service Worker

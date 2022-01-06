@@ -7,15 +7,15 @@ import {
   OPEN_OPTION_PAGE,
   SET_ALL_NOTES,
   UPDATE_NOTE,
-} from "../actions";
-import StickyNote from "../components/StickyNote/StickyNote";
+} from "../../actions";
+import StickyNote from "../../components/StickyNote/StickyNote";
 import {
   ToBackgroundMessage,
   ToBackgroundMessageMethod,
   ToContentScriptMessage,
-} from "../types/Actions";
-import { Note } from "../types/Note";
-import { GlobalStyle, SContainer } from "./Main.style";
+} from "../../types/Actions";
+import { Note } from "../../types/Note";
+import { GlobalStyle, SContainer } from "./App.style";
 
 const Main: React.VFC = () => {
   const [notes, setNotes] = useState<Note[]>([]);

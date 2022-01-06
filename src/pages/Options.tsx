@@ -2,17 +2,17 @@ import React, { useCallback, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import { ToBackgroundMessage, ToBackgroundMessageMethod } from "./types/Actions";
-import { Note } from "./types/Note";
-import { CREATE_NOTE, DELETE_NOTE, GET_ALL_NOTES, POPUP } from "./actions";
-import IconButton from "./components/Button/IconButton";
-import { EyeIcon, PlusIcon, TrashIcon } from "./components/Icon";
+import { ToBackgroundMessage, ToBackgroundMessageMethod } from "../types/Actions";
+import { Note } from "../types/Note";
+import { CREATE_NOTE, DELETE_NOTE, GET_ALL_NOTES, POPUP } from "../actions";
+import IconButton from "../components/Button/IconButton";
+import { EyeIcon, PlusIcon, TrashIcon } from "../components/Icon";
 
 type FormData = {
   username: string;
 };
 
-const Popup = () => {
+const Options = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [currentUrl, setCurrentUrl] = useState("");
   const [currentTab, setCurrentTab] = useState<chrome.tabs.Tab>();
@@ -105,7 +105,7 @@ const Popup = () => {
 
 ReactDOM.render(
   <React.StrictMode>
-    <Popup />
+    <Options />
   </React.StrictMode>,
   document.getElementById("root")
 );

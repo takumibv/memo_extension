@@ -1,5 +1,5 @@
 import styled, { createGlobalStyle } from "styled-components";
-import { baseCSS, defaultFontFamilyCSS } from "../resetCSS";
+import { baseCSS, defaultFontFamilyCSS } from "../../resetCSS";
 
 export const GlobalStyle = createGlobalStyle`
   #react-container-for-note-extension {

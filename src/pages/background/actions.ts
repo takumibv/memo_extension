@@ -1,13 +1,13 @@
-import { BACKGROUND, SET_ALL_NOTES } from "../actions";
+import { BACKGROUND, SET_ALL_NOTES } from "../../actions";
 import {
   createNote as _createNote,
   updateNote as _updateNote,
   deleteNote as _deleteNote,
   getAllNotesByPageId,
-} from "../storages/noteStorage";
-import { getOrCreatePageInfoByUrl, getPageInfoByUrl } from "../storages/pageInfoStorage";
-import { ToContentScriptMessage } from "../types/Actions";
-import { Note } from "../types/Note";
+} from "../../storages/noteStorage";
+import { getOrCreatePageInfoByUrl, getPageInfoByUrl } from "../../storages/pageInfoStorage";
+import { ToContentScriptMessage } from "../../types/Actions";
+import { Note } from "../../types/Note";
 
 export const fetchAllNotesByPageUrl = async (page_url: string): Promise<Note[]> => {
   const pageInfo = await getPageInfoByUrl(page_url);
