@@ -100,6 +100,7 @@ const Main: React.VFC = () => {
       <GlobalStyle />
       <SContainer>
         {notes.map((note: Note) => (
+          // TODO Focusの実施
           <StickyNote
             key={note.id}
             id={note.id}

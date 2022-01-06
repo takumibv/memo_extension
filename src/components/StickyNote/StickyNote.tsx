@@ -25,6 +25,7 @@ import {
   SHeaderFixedPinArea,
   SHeaderFixedButton,
 } from "./StickyNote.style";
+import { ROOT_DOM_ID } from "../../contentScript";
 
 type Props = {
   id?: number;
@@ -145,6 +146,7 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
     }
   };
 
+  // TODO Deleteで削除する
   const onKeyDownEditing = (e: KeyboardEvent) => {
     // isEnableDrag = focusしてない時 は無視する。
     if (isEnableDrag) return;
@@ -173,8 +175,13 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
     };
   }, [isEditing, isEnableDrag, title, description, positionX, positionY, width, height, isFixed]);
 
+  useEffect(() => {
+    console.log(defaultPositionX, defaultPositionY);
+  }, []);
+
   return (
     <SNote
+      id={`${ROOT_DOM_ID}-sticky-note-${id}`}
       ref={noteRef}
       style={{
         width: width,

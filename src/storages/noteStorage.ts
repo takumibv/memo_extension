@@ -1,4 +1,4 @@
-import { Note } from "../types/Note";
+import { DEAULT_NOTE_HEIGHT, DEAULT_NOTE_WIDTH, Note } from "../types/Note";
 import { getNewId, getStorage, removeStorage, setStorage } from "./common";
 import { deletePageInfo } from "./pageInfoStorage";
 
@@ -27,7 +27,14 @@ export const createNote = async (pageId: number): Promise<NoteCRUDResponseType> 
   const notes = await getAllNotesByPageId(pageId);
 
   const id = getNewId(notes);
-  const newNote: Note = { id, page_info_id: pageId, created_at: new Date().toISOString() };
+  const newNote: Note = {
+    id,
+    page_info_id: pageId,
+    width: DEAULT_NOTE_WIDTH,
+    height: DEAULT_NOTE_HEIGHT,
+    is_fixed: true,
+    created_at: new Date().toISOString(),
+  };
   const allNotes = [...notes, newNote];
   if (await setNoteStorageByPageId(pageId, allNotes)) return { note: newNote, allNotes };
 

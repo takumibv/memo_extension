@@ -8,6 +8,7 @@ import {
   OPEN_OPTION_PAGE,
   POPUP,
   RESIZE_NOTE,
+  SET_ALL_NOTES,
   UPDATE_NOTE,
   UPDATE_NOTE_DESCRIPTION,
   UPDATE_NOTE_IS_FIXED,
@@ -23,6 +24,7 @@ export type ToBackgroundMessage = {
   page_url: string;
   targetPageInfo?: PageInfo;
   targetNote?: Note;
+  tab?: chrome.tabs.Tab;
   data?: any;
 };
 
@@ -34,12 +36,14 @@ export type ToBackgroundMessageMethod =
   | typeof OPEN_OPTION_PAGE;
 
 export type ToContentScriptMessage = {
-  method: string;
-  type: string;
+  method: ToContentScriptMessageMethod;
+  senderType: SenderType;
   page_url: string;
   notes: Note[];
   data?: any;
 };
+
+export type ToContentScriptMessageMethod = typeof SET_ALL_NOTES;
 
 export type NoteActionType =
   | typeof GET_ALL_NOTES

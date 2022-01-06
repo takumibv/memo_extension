@@ -1,4 +1,5 @@
 import {
+  CONTENT_SCRIPT,
   CREATE_NOTE,
   DELETE_NOTE,
   GET_ALL_NOTES,
@@ -7,9 +8,14 @@ import {
   SET_ALL_NOTES,
   UPDATE_NOTE,
 } from "./actions";
+import * as actions from "./serviceWorkers/actions";
 import { createNote, deleteNote, getAllNotesByPageId, updateNote } from "./storages/noteStorage";
 import { getOrCreatePageInfoByUrl, getPageInfoByUrl } from "./storages/pageInfoStorage";
-import { ToBackgroundMessage, ToContentScriptMessage } from "./types/Actions";
+import {
+  ToBackgroundMessage,
+  ToBackgroundMessageMethod,
+  ToContentScriptMessage,
+} from "./types/Actions";
 import { Note } from "./types/Note";
 import { msg } from "./utils";
 
@@ -50,16 +56,11 @@ chrome.contextMenus.onClicked.addListener((info) => {
       if (!pageInfo.id) return;
 
       createNote(pageInfo.id).then(({ allNotes }) => {
-        if (!tab || !tab.id) {
+        if (!tab?.id) {
           return;
         }
 
-        chrome.tabs.sendMessage(tab.id, {
-          method: SET_ALL_NOTES,
-          type: "App",
-          notes: allNotes,
-          page_url: pageUrl,
-        });
+        actions.setAllNotes(tab.id, pageUrl, allNotes);
       });
     });
   });
@@ -70,75 +71,40 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
   console.log("chrome.tabs.onActivated.addListener:", activeInfo);
 });
 
-const handleMessages = (
-  action: ToBackgroundMessage,
-  sender: chrome.runtime.MessageSender,
-  sendResponse: (response?: Note[]) => void
+const _handleMessagesFromContentScript = (
+  method: ToBackgroundMessageMethod,
+  page_url: string,
+  sendResponse: (response?: Note[]) => void,
+  targetNote?: Note
 ) => {
-  const { method, page_url, targetNote, senderType } = action;
-  console.log("==== handleMessage ====", action, sender);
-
-  // TODO アクションの精査
   switch (method) {
     case GET_ALL_NOTES:
-      getPageInfoByUrl(page_url).then((pageInfo) => {
-        if (!pageInfo || !pageInfo.id) return sendResponse([]);
-        getAllNotesByPageId(pageInfo.id)
-          .then((notes) => {
-            console.log("GET_ALL_NOTES:", notes);
-
-            sendResponse(notes);
-          })
-          .catch((e) => {
-            console.log("error GET_ALL_NOTES:", e);
-          });
-      });
+      actions
+        .fetchAllNotesByPageUrl(page_url)
+        .then(sendResponse)
+        .catch((e) => console.log("error GET_ALL_NOTES:", e));
       return true;
     case CREATE_NOTE:
-      getOrCreatePageInfoByUrl(page_url).then((pageInfo) => {
-        createNote(pageInfo.id!)
-          .then(({ note, allNotes }) => {
-            console.log("CREATE_NOTE:", note);
-            sendResponse(allNotes);
-          })
-          .catch((e) => {
-            console.log("error CREATE_NOTE:", e);
-          });
-      });
+      actions
+        .createNote(page_url)
+        .then(sendResponse)
+        .catch((e) => console.log("error CREATE_NOTE:", e));
       return true;
     case UPDATE_NOTE:
-      if (!targetNote) return sendResponse([]);
-
-      getOrCreatePageInfoByUrl(page_url).then((pageInfo) => {
-        updateNote(pageInfo.id!, targetNote)
-          .then(({ allNotes }) => {
-            console.log("UPDATE_NOTE:", allNotes);
-
-            sendResponse(allNotes);
-          })
-          .catch((e) => {
-            console.log("error UPDATE_NOTE:", e);
-          });
-      });
-
+      actions
+        .updateNote(page_url, targetNote)
+        .then(sendResponse)
+        .catch((e) => {
+          console.log("error UPDATE_NOTE:", e);
+        });
       return true;
     case DELETE_NOTE:
-      getPageInfoByUrl(page_url).then((pageInfo) => {
-        if (!pageInfo || !pageInfo.id) return sendResponse([]);
-        deleteNote(pageInfo.id, targetNote?.id)
-          .then(({ allNotes }) => {
-            console.log("DELETE_NOTE:", allNotes);
-
-            sendResponse(allNotes);
-
-            if (senderType === POPUP) {
-              console.log("ContentScriptへメッセージを送信");
-            }
-          })
-          .catch((e) => {
-            console.log("error DELETE_NOTE:", e);
-          });
-      });
+      actions
+        .deleteNote(page_url, targetNote?.id)
+        .then(sendResponse)
+        .catch((e) => {
+          console.log("error DELETE_NOTE:", e);
+        });
       return true;
     case OPEN_OPTION_PAGE:
       // open_option_page();
@@ -146,7 +112,83 @@ const handleMessages = (
     default:
       break;
   }
-  // });
+  return false;
+};
+
+const _handleMessagesFromPopup = (
+  method: ToBackgroundMessageMethod,
+  sendResponse: (response?: Note[]) => void,
+  tab?: chrome.tabs.Tab,
+  targetNote?: Note
+) => {
+  const tabId = tab?.id;
+  const tabUrl = tab?.url;
+  if (!tabId || !tabUrl) return sendResponse([]);
+
+  switch (method) {
+    case GET_ALL_NOTES:
+      actions
+        .fetchAllNotesByPageUrl(tabUrl)
+        .then((notes: Note[]) => {
+          sendResponse(notes);
+          actions.setAllNotes(tabId, tabUrl, notes);
+        })
+        .catch((e) => console.log("error GET_ALL_NOTES:", e));
+      return true;
+    case CREATE_NOTE:
+      actions
+        .createNote(tabUrl)
+        .then((notes: Note[]) => {
+          sendResponse(notes);
+          actions.setAllNotes(tabId, tabUrl, notes);
+        })
+        .catch((e) => console.log("error CREATE_NOTE:", e));
+      return true;
+    case UPDATE_NOTE:
+      actions
+        .updateNote(tabUrl, targetNote)
+        .then((notes: Note[]) => {
+          sendResponse(notes);
+          actions.setAllNotes(tabId, tabUrl, notes);
+        })
+        .catch((e) => {
+          console.log("error UPDATE_NOTE:", e);
+        });
+      return true;
+    case DELETE_NOTE:
+      actions
+        .deleteNote(tabUrl, targetNote?.id)
+        .then((notes: Note[]) => {
+          sendResponse(notes);
+          actions.setAllNotes(tabId, tabUrl, notes);
+        })
+        .catch((e) => {
+          console.log("error DELETE_NOTE:", e);
+        });
+      return true;
+    default:
+      break;
+  }
+};
+
+const handleMessages = (
+  action: ToBackgroundMessage,
+  sender: chrome.runtime.MessageSender,
+  sendResponse: (response?: any) => void
+) => {
+  const { method, page_url, targetNote, senderType } = action;
+  const { tab } = sender;
+  console.log("==== handleMessage ====", senderType, action, tab);
+
+  switch (senderType) {
+    case CONTENT_SCRIPT:
+      return _handleMessagesFromContentScript(method, page_url, sendResponse, targetNote);
+    case POPUP:
+      return _handleMessagesFromPopup(method, sendResponse, action.tab, targetNote);
+    default:
+      sendResponse();
+      return;
+  }
 };
 
 chrome.runtime.onMessage.addListener(handleMessages);

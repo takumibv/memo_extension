@@ -1,3 +1,6 @@
+export const DEAULT_NOTE_WIDTH = 300;
+export const DEAULT_NOTE_HEIGHT = 180;
+
 export type Note = {
   id?: number;
   page_info_id?: number;

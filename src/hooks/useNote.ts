@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { Note } from "../types/Note";
+import { DEAULT_NOTE_HEIGHT, DEAULT_NOTE_WIDTH, Note } from "../types/Note";
 
 export const MIN_NOTE_WIDTH = 160;
 export const MIN_NOTE_HEIGHT = 120;
@@ -14,8 +14,8 @@ export const NOTE_LEFT_POSITION = 0;
 export const useNoteEdit = ({
   title: defaultTitle = "",
   description: defaultDescription = "",
-  position_x: defaultPositionX = NOTE_LEFT_POSITION,
-  position_y: defaultPositionY = NOTE_TOP_POSITION,
+  position_x: defaultPositionX,
+  position_y: defaultPositionY,
   width: defaultWidth = MIN_NOTE_WIDTH,
   height: defaultHeight = MIN_NOTE_HEIGHT,
   is_open: defaultIsOpen = false,
@@ -25,7 +25,15 @@ export const useNoteEdit = ({
   const [description, setDescription] = useState(defaultDescription);
   const [isOpen, setIsOpen] = useState(defaultIsOpen);
   const [isFixed, _setIsFixed] = useState(defaultIsFixed);
-  const { positionX, positionY, setPosition } = useNotePosition(defaultPositionX, defaultPositionY);
+
+  // initial: defaultがセットされていないときの値
+  const initialPositionX = (window.innerWidth - DEAULT_NOTE_WIDTH) / 2;
+  const initialPositionY = (window.innerHeight - DEAULT_NOTE_HEIGHT) / 2;
+
+  const { positionX, positionY, setPosition } = useNotePosition(
+    defaultPositionX || initialPositionX,
+    defaultPositionY || initialPositionY
+  );
   const { width, height, setSize } = useNoteSize(defaultWidth, defaultHeight);
 
   const setIsFixed = useCallback(
@@ -61,12 +69,9 @@ export const useNoteEdit = ({
   };
 };
 
-export const useNotePosition = (
-  defaultPositionX: number = NOTE_LEFT_POSITION,
-  defaultPositionY: number = NOTE_TOP_POSITION
-) => {
-  const [positionX, setPositionX] = useState(defaultPositionX);
-  const [positionY, setPositionY] = useState(defaultPositionY);
+export const useNotePosition = (defaultPositionX: number, defaultPositionY: number) => {
+  const [positionX, setPositionX] = useState<number>(defaultPositionX);
+  const [positionY, setPositionY] = useState<number>(defaultPositionY);
 
   const setPosition = useCallback((positionX: number, positionY: number) => {
     setPositionX(positionX >= NOTE_LEFT_POSITION ? positionX : NOTE_LEFT_POSITION);
