@@ -12,6 +12,7 @@ import StickyNote from "../../components/StickyNote/StickyNote";
 import {
   ToBackgroundMessage,
   ToBackgroundMessageMethod,
+  ToBackgroundMessageResponse,
   ToContentScriptMessage,
 } from "../../types/Actions";
 import { Note } from "../../types/Note";
@@ -44,19 +45,21 @@ const Main: React.VFC = () => {
     (method: ToBackgroundMessageMethod, targetNote?: Note): Promise<boolean> => {
       console.log("sendMessage ======", method, window.location.href, targetNote);
       return new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage<ToBackgroundMessage>(
+        chrome.runtime.sendMessage<ToBackgroundMessage, ToBackgroundMessageResponse>(
           {
             method: method,
             senderType: CONTENT_SCRIPT,
             page_url: window.location.href, // targetNote.page_info.page_url,
             targetNote,
           },
-          (response: Note[]) => {
-            console.log("response ======", response, chrome.runtime.lastError);
+          ({ notes, error }) => {
+            console.log("response ======", notes, chrome.runtime.lastError);
             if (chrome.runtime.lastError) {
               reject(chrome.runtime.lastError.message);
+            } else if (error) {
+              reject(error.message);
             } else {
-              setNotes(response);
+              setNotes(notes || []);
               resolve(true);
             }
           }
@@ -79,7 +82,7 @@ const Main: React.VFC = () => {
   }, []);
 
   const open_option_page = () => {
-    chrome.runtime.sendMessage<ToBackgroundMessage>({
+    chrome.runtime.sendMessage<ToBackgroundMessage, ToBackgroundMessageResponse>({
       method: OPEN_OPTION_PAGE,
       senderType: CONTENT_SCRIPT,
       page_url: "",

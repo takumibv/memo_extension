@@ -2,7 +2,11 @@ import React, { useCallback, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import { ToBackgroundMessage, ToBackgroundMessageMethod } from "../types/Actions";
+import {
+  ToBackgroundMessage,
+  ToBackgroundMessageMethod,
+  ToBackgroundMessageResponse,
+} from "../types/Actions";
 import { Note } from "../types/Note";
 import { CREATE_NOTE, DELETE_NOTE, GET_ALL_NOTES, OPTIONS, POPUP } from "../actions";
 import IconButton from "../components/Button/IconButton";
@@ -26,7 +30,7 @@ const Options = () => {
       console.log("sendMessage ======", method, targetNote);
 
       return new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage<ToBackgroundMessage>(
+        chrome.runtime.sendMessage<ToBackgroundMessage, ToBackgroundMessageResponse>(
           {
             method: method,
             senderType: OPTIONS,
@@ -34,12 +38,12 @@ const Options = () => {
             tab,
             targetNote,
           },
-          (notes: Note[]) => {
+          ({ notes, error }) => {
             console.log("response ======", notes, chrome.runtime.lastError);
             if (chrome.runtime.lastError) {
               reject(chrome.runtime.lastError.message);
             } else {
-              setNotes(notes);
+              setNotes(notes || []);
               resolve(true);
             }
           }

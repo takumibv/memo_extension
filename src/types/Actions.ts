@@ -29,6 +29,11 @@ export type ToBackgroundMessage = {
   data?: any;
 };
 
+export type ToBackgroundMessageResponse = {
+  notes?: Note[];
+  error?: Error;
+};
+
 export type ToBackgroundMessageMethod =
   | typeof GET_ALL_NOTES
   | typeof CREATE_NOTE

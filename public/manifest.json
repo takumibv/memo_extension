@@ -16,13 +16,6 @@
   "action": {
     "default_popup": "popup.html"
   },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "css": [],
-      "js": ["vendor.js", "contentScript.js"]
-    }
-  ],
-  "permissions": ["tabs", "contextMenus", "storage"],
+  "permissions": ["tabs", "contextMenus", "storage", "scripting"],
   "host_permissions": ["*://*/*"]
 }

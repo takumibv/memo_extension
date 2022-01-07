@@ -78,6 +78,7 @@ const noteTitleCSS = css`
   border-width: 0.0625em;
   border-color: transparent;
   border-radius: 0.25em;
+  word-break: break-all;
 `;
 
 export const SNoteTitle = styled.h2`
@@ -135,6 +136,7 @@ const noteDescriptionCSS = css`
   border-width: 1px;
   border-color: transparent;
   border-radius: 0.25em;
+  word-break: break-all;
 `;
 
 export const SNoteDescription = styled.p`

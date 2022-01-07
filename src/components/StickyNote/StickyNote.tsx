@@ -26,6 +26,7 @@ import {
   SHeaderFixedButton,
 } from "./StickyNote.style";
 import { ROOT_DOM_ID } from "../../pages/contentScript";
+import { msg } from "../../utils";
 
 type Props = {
   id?: number;
@@ -85,16 +86,25 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
     setIsFixed,
   } = useNoteEdit(defaultNote);
 
-  // 編集モードかどうか
+  /**
+   * 編集モードかどうか
+   * 編集モード: タイトルと説明を編集可能にする状態.
+   * 発生条件
+   * ・メモをダブルクリックした時
+   * ・編集ボタンをクリックした時
+   */
   const [isEditing, setIsEditing] = useState(false);
 
   // ドラッグ可能かどうか
   const [isEnableDrag, setIsEnableDrag] = useState(true);
+  // ドラッグ中かどうか
+  const [isDragging, setIsDragging] = useState(false);
 
   // ドラッグ開始位置
   const [dragStartPositionX, setDragStartPositionX] = useState(0);
   const [dragStartPositionY, setDragStartPositionY] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
+
+  // コピー成功アイコンの表示
   const [isSuccessCopy, setIsSuccessCopy] = useState(false);
 
   const onEditDone = useCallback(async () => {
@@ -155,10 +165,15 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
     else if ((e.ctrlKey || e.metaKey) && e.key === "Enter") onEditDone();
   };
 
-  const onBeforeUnload = useCallback((e: BeforeUnloadEvent) => {
-    e.preventDefault();
-    e.returnValue = "";
-  }, []);
+  const onBeforeUnload = useCallback(
+    (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      if (defaultTitle !== title || defaultDescription !== description) {
+        e.returnValue = "";
+      }
+    },
+    [title, description]
+  );
 
   useEffect(() => {
     if (isEditing) {
@@ -174,10 +189,6 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
       window.removeEventListener("keydown", onKeyDownEditing, false);
     };
   }, [isEditing, isEnableDrag, title, description, positionX, positionY, width, height, isFixed]);
-
-  useEffect(() => {
-    console.log(defaultPositionX, defaultPositionY);
-  }, []);
 
   return (
     <SNote
@@ -238,6 +249,9 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
                   onDoubleClick={() => {
                     setTimeout(() => {
                       titleInputRef?.current?.focus();
+                      if (defaultTitle === msg("new_note_title_msg")) {
+                        titleInputRef?.current?.select();
+                      }
                     }, 10);
                   }}
                 >
@@ -338,11 +352,10 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
           setDragStartPositionX(width - data.x);
           setDragStartPositionY(height - data.y);
         }}
-        onDrag={(_, data) => {
-          setSize(dragStartPositionX + data.x, dragStartPositionY + data.y);
-        }}
+        onDrag={(_, data) => setSize(dragStartPositionX + data.x, dragStartPositionY + data.y)}
         onStop={() => {
           if (defaultWidth !== width || defaultHeight !== height) {
+            // 変化がなければ更新しない
             onUpdateNote({
               ...defaultNote,
               width,

@@ -18,7 +18,7 @@ module.exports = {
     splitChunks: {
       name: "vendor",
       chunks(chunk) {
-        return chunk.name !== "background";
+        return chunk.name !== "background" && chunk.name !== "contentScript";
       },
     },
   },

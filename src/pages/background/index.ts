@@ -10,6 +10,7 @@ import {
   UPDATE_NOTE,
 } from "../../actions";
 import * as actions from "./actions";
+import * as contentScript from "../contentScript";
 import {
   createNote,
   deleteNote,
@@ -20,10 +21,11 @@ import { getOrCreatePageInfoByUrl, getPageInfoByUrl } from "../../storages/pageI
 import {
   ToBackgroundMessage,
   ToBackgroundMessageMethod,
+  ToBackgroundMessageResponse,
   ToContentScriptMessage,
 } from "../../types/Actions";
 import { Note } from "../../types/Note";
-import { msg } from "../../utils";
+import { isSystemLink, msg } from "../../utils";
 
 /**
  * Service Worker
@@ -45,71 +47,96 @@ chrome.contextMenus.create({
   title: msg("add_note_msg"),
   contexts: ["page", "frame", "editable", "image", "video", "audio", "link", "selection"],
 });
-// title: "メモを追加する",
 
 chrome.contextMenus.onClicked.addListener((info) => {
   const { pageUrl } = info;
-  console.log("chrome.contextMenus.onClicked.addListener:", info);
 
   chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
-    if (!tab || !tab.id) {
-      console.log("contextMenus: no tabs.id");
-      return;
-    }
+    if (!tab?.id) return;
 
-    console.log("chrome.tabs.query:", tab);
-    getOrCreatePageInfoByUrl(pageUrl).then((pageInfo) => {
-      if (!pageInfo.id) return;
+    isScriptAllowedPage(tab.id)
+      .then((isAllowed) => {
+        if (isAllowed) {
+          getOrCreatePageInfoByUrl(pageUrl).then((pageInfo) => {
+            if (!pageInfo.id) return;
 
-      createNote(pageInfo.id).then(({ allNotes }) => {
-        if (!tab?.id) {
-          return;
+            createNote(pageInfo.id).then(({ allNotes }) => {
+              if (!tab?.id) return;
+
+              actions.setAllNotes(tab.id, pageUrl, allNotes);
+            });
+          });
         }
-
-        actions.setAllNotes(tab.id, pageUrl, allNotes);
+      })
+      .catch((e) => {
+        // TODO: エラー時の処理
       });
-    });
   });
 });
 
-chrome.tabs.onActivated.addListener((activeInfo) => {
-  // TODO タブが切り替えられた時に呼ばれる.
-  console.log("chrome.tabs.onActivated.addListener:", activeInfo);
+const isScriptAllowedPage = async (tabId: number) => {
+  await chrome.scripting.executeScript({
+    target: { tabId },
+    func: () => {},
+  });
+  return !chrome.runtime.lastError;
+};
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  const { status } = changeInfo;
+  if (status !== "complete") return;
+
+  chrome.scripting
+    .executeScript({
+      target: { tabId },
+      files: ["contentScript.js"],
+    })
+    .then((result) => {
+      console.log("chrome.scripting.executeScript", result);
+    });
 });
 
 const _handleMessagesFromContentScript = (
   method: ToBackgroundMessageMethod,
   page_url: string,
-  sendResponse: (response?: Note[]) => void,
+  sendResponse: (response?: ToBackgroundMessageResponse) => void,
   targetNote?: Note
 ) => {
   switch (method) {
     case GET_ALL_NOTES:
       actions
         .fetchAllNotesByPageUrl(page_url)
-        .then(sendResponse)
-        .catch((e) => console.log("error GET_ALL_NOTES:", e));
+        .then((notes) => sendResponse({ notes }))
+        .catch((e) => {
+          console.log("error GET_ALL_NOTES:", e);
+          sendResponse({ error: e });
+        });
       return true;
     case CREATE_NOTE:
       actions
         .createNote(page_url)
-        .then(sendResponse)
-        .catch((e) => console.log("error CREATE_NOTE:", e));
+        .then((notes) => sendResponse({ notes }))
+        .catch((e) => {
+          console.log("error CREATE_NOTE:", e);
+          sendResponse({ error: e });
+        });
       return true;
     case UPDATE_NOTE:
       actions
         .updateNote(page_url, targetNote)
-        .then(sendResponse)
+        .then((notes) => sendResponse({ notes }))
         .catch((e) => {
           console.log("error UPDATE_NOTE:", e);
+          sendResponse({ error: e });
         });
       return true;
     case DELETE_NOTE:
       actions
         .deleteNote(page_url, targetNote?.id)
-        .then(sendResponse)
+        .then((notes) => sendResponse({ notes }))
         .catch((e) => {
           console.log("error DELETE_NOTE:", e);
+          sendResponse({ error: e });
         });
       return true;
     case OPEN_OPTION_PAGE:
@@ -123,64 +150,74 @@ const _handleMessagesFromContentScript = (
 
 const _handleMessagesFromPopup = (
   method: ToBackgroundMessageMethod,
-  sendResponse: (response?: Note[]) => void,
+  sendResponse: (response?: ToBackgroundMessageResponse, error?: Error) => void,
   tab?: chrome.tabs.Tab,
   targetNote?: Note
 ) => {
   const tabId = tab?.id;
   const tabUrl = tab?.url;
-  if (!tabId || !tabUrl) return sendResponse([]);
+  if (!tabId || !tabUrl)
+    return sendResponse({ notes: [], error: new Error("このページでは使用できません") });
 
   const sendResponseAndSetNotes = (notes: Note[]) => {
-    sendResponse(notes);
+    sendResponse({ notes });
     actions.setAllNotes(tabId, tabUrl, notes);
   };
 
-  switch (method) {
-    case GET_ALL_NOTES:
-      actions
-        .fetchAllNotesByPageUrl(tabUrl)
-        .then(sendResponseAndSetNotes)
-        .catch((e) => console.log("error GET_ALL_NOTES:", e));
-      return true;
-    case CREATE_NOTE:
-      // TODO content_scriptが無効なページは、createNoteを実行しないようにする
-      actions
-        .createNote(tabUrl)
-        .then(sendResponseAndSetNotes)
-        .catch((e) => console.log("error CREATE_NOTE:", e));
-      return true;
-    case UPDATE_NOTE:
-      actions
-        .updateNote(tabUrl, targetNote)
-        .then(sendResponseAndSetNotes)
-        .catch((e) => {
-          console.log("error UPDATE_NOTE:", e);
-        });
-      return true;
-    case DELETE_NOTE:
-      actions
-        .deleteNote(tabUrl, targetNote?.id)
-        .then(sendResponseAndSetNotes)
-        .catch((e) => {
-          console.log("error DELETE_NOTE:", e);
-        });
-      return true;
-    default:
-      break;
-  }
+  if (isSystemLink(tabUrl))
+    return sendResponse({ notes: [], error: new Error("このページでは使用できません") });
+
+  isScriptAllowedPage(tabId).then((isAllowed) => {
+    if (!isAllowed) sendResponse({ notes: [], error: new Error("このページでは使用できません") });
+
+    switch (method) {
+      case GET_ALL_NOTES:
+        actions
+          .fetchAllNotesByPageUrl(tabUrl)
+          .then((notes) => sendResponse({ notes }))
+          .catch((e) => console.log("error GET_ALL_NOTES:", e));
+        return true;
+      case CREATE_NOTE:
+        // TODO content_scriptが無効なページは、createNoteを実行しないようにする
+        actions
+          .createNote(tabUrl)
+          .then(sendResponseAndSetNotes)
+          .catch((e) => console.log("error CREATE_NOTE:", e));
+        return true;
+      case UPDATE_NOTE:
+        actions
+          .updateNote(tabUrl, targetNote)
+          .then(sendResponseAndSetNotes)
+          .catch((e) => {
+            console.log("error UPDATE_NOTE:", e);
+          });
+        return true;
+      case DELETE_NOTE:
+        actions
+          .deleteNote(tabUrl, targetNote?.id)
+          .then(sendResponseAndSetNotes)
+          .catch((e) => {
+            console.log("error DELETE_NOTE:", e);
+          });
+        return true;
+      default:
+        break;
+    }
+  });
+
+  return true;
 };
 
 const _handleMessagesFromOption = (
   method: ToBackgroundMessageMethod,
-  sendResponse: (response?: Note[]) => void,
+  sendResponse: (response?: ToBackgroundMessageResponse) => void,
   targetNote?: Note
 ) => {
   switch (method) {
     case GET_ALL_NOTES:
       actions
         .fetchAllNotes()
-        .then(sendResponse)
+        .then((notes) => sendResponse({ notes }))
         .catch((e) => console.log("error GET_ALL_NOTES:", e));
       return true;
     default:
@@ -191,7 +228,7 @@ const _handleMessagesFromOption = (
 const handleMessages = (
   action: ToBackgroundMessage,
   sender: chrome.runtime.MessageSender,
-  sendResponse: (response?: any) => void
+  sendResponse: (response?: ToBackgroundMessageResponse) => void
 ) => {
   const { method, page_url, targetNote, senderType } = action;
   const { tab } = sender;

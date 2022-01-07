@@ -31,8 +31,8 @@ export const useNoteEdit = ({
   const initialPositionY = (window.innerHeight - DEAULT_NOTE_HEIGHT) / 2;
 
   const { positionX, positionY, setPosition } = useNotePosition(
-    defaultPositionX || initialPositionX,
-    defaultPositionY || initialPositionY
+    defaultPositionX ?? initialPositionX,
+    defaultPositionY ?? initialPositionY
   );
   const { width, height, setSize } = useNoteSize(defaultWidth, defaultHeight);
 
