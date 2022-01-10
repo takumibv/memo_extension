@@ -44,7 +44,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 
 chrome.contextMenus.create({
   id: "note-extension-context-menu-create",
-  title: msg("add_note_msg"),
+  title: msg("add_note_msg", true),
   contexts: ["page", "frame", "editable", "image", "video", "audio", "link", "selection"],
 });
 
@@ -82,9 +82,17 @@ const isScriptAllowedPage = async (tabId: number) => {
   return !chrome.runtime.lastError;
 };
 
+// 直近に読み込まれたページURL
+let currentUrl = "";
+
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   const { status } = changeInfo;
   if (status !== "complete") return;
+
+  const { url } = tab;
+  // iframeを読み込まれたタイミングでも走るので、同一URLを読み込んだ際は無視するようにする
+  if (url === undefined || currentUrl === url) return;
+  currentUrl = url;
 
   chrome.scripting
     .executeScript({
@@ -92,6 +100,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       files: ["contentScript.js"],
     })
     .then((result) => {
+      currentUrl = "";
       console.log("chrome.scripting.executeScript", result);
     });
 });
@@ -123,7 +132,7 @@ const _handleMessagesFromContentScript = (
       return true;
     case UPDATE_NOTE:
       actions
-        .updateNote(page_url, targetNote)
+        .updateNote(targetNote!)
         .then((notes) => sendResponse({ notes }))
         .catch((e) => {
           console.log("error UPDATE_NOTE:", e);
@@ -132,7 +141,7 @@ const _handleMessagesFromContentScript = (
       return true;
     case DELETE_NOTE:
       actions
-        .deleteNote(page_url, targetNote?.id)
+        .deleteNote(targetNote!)
         .then((notes) => sendResponse({ notes }))
         .catch((e) => {
           console.log("error DELETE_NOTE:", e);
@@ -156,7 +165,12 @@ const _handleMessagesFromPopup = (
 ) => {
   const tabId = tab?.id;
   const tabUrl = tab?.url;
+
   if (!tabId || !tabUrl)
+    return sendResponse({ notes: [], error: new Error("このページでは使用できません") });
+
+  // Chromeシステム画面は、アクションを実行しないようにする
+  if (isSystemLink(tabUrl))
     return sendResponse({ notes: [], error: new Error("このページでは使用できません") });
 
   const sendResponseAndSetNotes = (notes: Note[]) => {
@@ -164,10 +178,8 @@ const _handleMessagesFromPopup = (
     actions.setAllNotes(tabId, tabUrl, notes);
   };
 
-  if (isSystemLink(tabUrl))
-    return sendResponse({ notes: [], error: new Error("このページでは使用できません") });
-
   isScriptAllowedPage(tabId).then((isAllowed) => {
+    // content_scriptが無効なページは、アクションを実行しないようにする
     if (!isAllowed) sendResponse({ notes: [], error: new Error("このページでは使用できません") });
 
     switch (method) {
@@ -178,7 +190,6 @@ const _handleMessagesFromPopup = (
           .catch((e) => console.log("error GET_ALL_NOTES:", e));
         return true;
       case CREATE_NOTE:
-        // TODO content_scriptが無効なページは、createNoteを実行しないようにする
         actions
           .createNote(tabUrl)
           .then(sendResponseAndSetNotes)
@@ -186,7 +197,7 @@ const _handleMessagesFromPopup = (
         return true;
       case UPDATE_NOTE:
         actions
-          .updateNote(tabUrl, targetNote)
+          .updateNote(targetNote!)
           .then(sendResponseAndSetNotes)
           .catch((e) => {
             console.log("error UPDATE_NOTE:", e);
@@ -194,7 +205,7 @@ const _handleMessagesFromPopup = (
         return true;
       case DELETE_NOTE:
         actions
-          .deleteNote(tabUrl, targetNote?.id)
+          .deleteNote(targetNote!)
           .then(sendResponseAndSetNotes)
           .catch((e) => {
             console.log("error DELETE_NOTE:", e);

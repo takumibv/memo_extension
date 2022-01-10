@@ -38,21 +38,39 @@ export const createNote = async (page_url: string): Promise<Note[]> => {
   return allNotes;
 };
 
-export const updateNote = async (page_url: string, note?: Note): Promise<Note[]> => {
-  if (!note) return [];
+// export const updateNote = async (page_url: string, note?: Note): Promise<Note[]> => {
+//   if (!note) return [];
 
-  const pageInfo = await getOrCreatePageInfoByUrl(page_url);
-  const { allNotes } = await _updateNote(pageInfo.id!, note);
+//   const pageInfo = await getOrCreatePageInfoByUrl(page_url);
+//   const { allNotes } = await _updateNote(pageInfo.id!, note);
+//   console.log("UPDATE_NOTE:", allNotes);
+
+//   return allNotes;
+// };
+
+export const updateNote = async (note: Note): Promise<Note[]> => {
+  if (!note.page_info_id) return [];
+
+  const { allNotes } = await _updateNote(note.page_info_id, note);
   console.log("UPDATE_NOTE:", allNotes);
 
   return allNotes;
 };
 
-export const deleteNote = async (page_url: string, note_id?: number): Promise<Note[]> => {
-  const pageInfo = await getPageInfoByUrl(page_url);
-  if (!pageInfo || !pageInfo.id) return [];
+// export const deleteNote = async (page_url: string, note_id?: number): Promise<Note[]> => {
+//   const pageInfo = await getPageInfoByUrl(page_url);
+//   if (!pageInfo || !pageInfo.id) return [];
 
-  const { allNotes } = await _deleteNote(pageInfo.id, note_id);
+//   const { allNotes } = await _deleteNote(pageInfo.id, note_id);
+//   console.log("DELETE_NOTE:", allNotes);
+
+//   return allNotes;
+// };
+
+export const deleteNote = async (note: Note): Promise<Note[]> => {
+  if (!note.page_info_id) return [];
+
+  const { allNotes } = await _deleteNote(note.page_info_id, note.id);
   console.log("DELETE_NOTE:", allNotes);
 
   return allNotes;

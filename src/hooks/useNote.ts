@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { DEAULT_NOTE_HEIGHT, DEAULT_NOTE_WIDTH, Note } from "../types/Note";
 
 export const MIN_NOTE_WIDTH = 160;
@@ -12,60 +12,56 @@ export const NOTE_LEFT_POSITION = 0;
  * @returns 各要素と、更新する関数
  */
 export const useNoteEdit = ({
-  title: defaultTitle = "",
-  description: defaultDescription = "",
-  position_x: defaultPositionX,
-  position_y: defaultPositionY,
-  width: defaultWidth = MIN_NOTE_WIDTH,
-  height: defaultHeight = MIN_NOTE_HEIGHT,
-  is_open: defaultIsOpen = false,
-  is_fixed: defaultIsFixed,
+  title = "",
+  description = "",
+  position_x,
+  position_y,
+  width = MIN_NOTE_WIDTH,
+  height = MIN_NOTE_HEIGHT,
+  is_open = false,
+  is_fixed,
 }: Note) => {
-  const [title, setTitle] = useState(defaultTitle);
-  const [description, setDescription] = useState(defaultDescription);
-  const [isOpen, setIsOpen] = useState(defaultIsOpen);
-  const [isFixed, _setIsFixed] = useState(defaultIsFixed);
+  const [editTitle, setEditTitle] = useState(title);
+  const [editDescription, setEditDescription] = useState(description);
 
   // initial: defaultがセットされていないときの値
-  const initialPositionX = (window.innerWidth - DEAULT_NOTE_WIDTH) / 2;
-  const initialPositionY = (window.innerHeight - DEAULT_NOTE_HEIGHT) / 2;
+  const initialPositionX = useMemo(() => (window.innerWidth - DEAULT_NOTE_WIDTH) / 2, []);
+  const initialPositionY = useMemo(() => (window.innerHeight - DEAULT_NOTE_HEIGHT) / 2, []);
 
-  const { positionX, positionY, setPosition } = useNotePosition(
-    defaultPositionX ?? initialPositionX,
-    defaultPositionY ?? initialPositionY
-  );
-  const { width, height, setSize } = useNoteSize(defaultWidth, defaultHeight);
+  const {
+    positionX: editPositionX,
+    positionY: editPositionY,
+    setPosition: setEditPosition,
+  } = useNotePosition(position_x ?? initialPositionX, position_y ?? initialPositionY);
+  const { width: editWidth, height: editHeight, setSize: setEditSize } = useNoteSize(width, height);
 
-  const setIsFixed = useCallback(
+  /**
+   * 新isFixedに対する修正位置を返却する
+   */
+  const getFixedPosition = useCallback(
     (isFixed: boolean) => {
       const fixPosition = isFixed ? -1 : 1;
-      const newPositionX = positionX + window.scrollX * fixPosition;
-      const newPositionY = positionY + window.scrollY * fixPosition;
+      const newPositionX = editPositionX + window.scrollX * fixPosition;
+      const newPositionY = editPositionY + window.scrollY * fixPosition;
 
-      setPosition(newPositionX, newPositionY);
-
-      _setIsFixed(isFixed);
-
-      return { isFixed, positionX: newPositionX, positionY: newPositionY };
+      console.log("getFixedPosition", window.scrollX, window.scrollY, newPositionX, newPositionY);
+      return { positionX: newPositionX, positionY: newPositionY };
     },
-    [_setIsFixed, setPosition, positionX, positionY]
+    [editPositionX, editPositionY]
   );
 
   return {
-    title,
-    setTitle,
-    description,
-    setDescription,
-    positionX,
-    positionY,
-    setPosition,
-    width,
-    height,
-    setSize,
-    isOpen,
-    setIsOpen,
-    isFixed,
-    setIsFixed,
+    editTitle,
+    setEditTitle,
+    editDescription,
+    setEditDescription,
+    editPositionX,
+    editPositionY,
+    setEditPosition,
+    editWidth,
+    editHeight,
+    setEditSize,
+    getFixedPosition,
   };
 };
 

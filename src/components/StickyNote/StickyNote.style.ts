@@ -151,7 +151,9 @@ export const SNoteDescriptionTextarea = styled.textarea`
 
   ${noteDescriptionCSS}
   width: calc(100% + 0.5em);
+  min-width: calc(100% + 0.5em);
   height: calc(100% - 0.25em);
+  min-height: calc(100% - 0.25em);
   margin: 0.25em -0.25em 0;
   padding: 0.25em;
   resize: none;

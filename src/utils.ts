@@ -1,15 +1,24 @@
-import _message from "../public/_locales/ja/messages.json";
+import ja from "../public/_locales/ja/messages.json";
+import en from "../public/_locales/en/messages.json";
+
+const i18n: { [key: string]: typeof ja } = {
+  ja,
+  en,
+};
 
 /**
- * 翻訳されたメッセージを取得する
+ * 翻訳されたメッセージを取得する\n
+ * ServiceWorker上で「Uncaught TypeError: chrome.i18n.getMessage is not a function」というエラーが出るため、
  * @param key
  * @returns
  */
-export const msg = (key: string): string => {
-  if (process.env.NODE_ENV === "production") {
-    return chrome.i18n.getMessage(key);
+export const msg = (key: string, isBackground?: boolean): string => {
+  if (isBackground || process.env.NODE_ENV !== "production") {
+    // default: English
+    const lang = navigator.language.slice(0, 2);
+    return (i18n[lang] ? i18n[lang][key]?.message : en[key]?.message) ?? "";
   } else {
-    return _message[key] ? _message[key].message : "";
+    return chrome.i18n.getMessage(key);
   }
 };
 
@@ -24,7 +33,12 @@ export const formURL = (url: string): string => {
   }`;
 };
 
-export function isSystemLink(link: string) {
+/**
+ * chromeのシステム画面かどうかを判定する
+ * @param link
+ * @returns boolean
+ */
+export function isSystemLink(link: string): boolean {
   return (
     link.startsWith("chrome://") ||
     link.startsWith("chrome-extension://") ||

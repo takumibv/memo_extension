@@ -57,8 +57,8 @@ const Options = () => {
     if (currentTab) sendAction(CREATE_NOTE, currentTab);
   };
 
-  const onClickDelete = (noteId: number) => {
-    if (currentTab) sendAction(DELETE_NOTE, currentTab, { id: noteId });
+  const onClickDelete = (note: Note) => {
+    if (currentTab) sendAction(DELETE_NOTE, currentTab, note);
   };
 
   useEffect(() => {
@@ -82,7 +82,7 @@ const Options = () => {
               <li key={note.id}>
                 <p>
                   {note.title}:{note.description}
-                  <IconButton onClick={() => note.id && onClickDelete(note.id)}>
+                  <IconButton onClick={() => note.id && onClickDelete(note)}>
                     <TrashIcon />
                   </IconButton>
                 </p>

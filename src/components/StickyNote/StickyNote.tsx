@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { memo } from "react";
 import { DraggableCore } from "react-draggable";
 import Tooltip from "@mui/material/Tooltip";
@@ -52,16 +52,16 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
   const {
     id,
     page_info_id,
-    title: defaultTitle = "",
-    description: defaultDescription = "",
-    position_x: defaultPositionX,
-    position_y: defaultPositionY,
-    width: defaultWidth,
-    height: defaultHeight,
-    is_open: defaultIsOpen,
-    is_fixed: defaultIsFixed,
-    created_at: defaultCreatedAt,
-    updated_at: defaultUpdatedAt,
+    title = "",
+    description = "",
+    position_x,
+    position_y,
+    width,
+    height,
+    is_open,
+    is_fixed,
+    created_at,
+    updated_at,
   } = defaultNote;
 
   const noteRef = useRef(null);
@@ -70,20 +70,17 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
   const descriptionTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   const {
-    title,
-    setTitle,
-    description,
-    setDescription,
-    positionX,
-    positionY,
-    setPosition,
-    width,
-    height,
-    setSize,
-    isOpen,
-    setIsOpen,
-    isFixed,
-    setIsFixed,
+    editTitle,
+    setEditTitle,
+    editDescription,
+    setEditDescription,
+    editPositionX,
+    editPositionY,
+    setEditPosition,
+    editWidth,
+    editHeight,
+    setEditSize,
+    getFixedPosition,
   } = useNoteEdit(defaultNote);
 
   /**
@@ -110,45 +107,44 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
   const onEditDone = useCallback(async () => {
     await onUpdateNote({
       ...defaultNote,
-      title,
-      description,
-      position_x: positionX,
-      position_y: positionY,
-      width,
-      height,
-      is_fixed: isFixed,
+      title: editTitle,
+      description: editDescription,
+      position_x: editPositionX,
+      position_y: editPositionY,
+      width: editWidth,
+      height: editHeight,
     });
     setIsEditing(false);
     setIsEnableDrag(true);
-  }, [title, description, positionX, positionY, width, height, isFixed]);
+  }, [editTitle, editDescription, editPositionX, editPositionY, editWidth, editHeight]);
 
   const onEditCancel = useCallback(() => {
-    setTitle(defaultTitle);
-    setDescription(defaultDescription);
+    setEditTitle(title);
+    setEditDescription(description);
     setIsEditing(false);
     setIsEnableDrag(true);
-  }, [defaultTitle, defaultDescription]);
+  }, [title, description]);
 
   const onClickCopyButton = useCallback(() => {
-    navigator.clipboard.writeText(`${defaultTitle}\n${defaultDescription}`).then(() => {
+    navigator.clipboard.writeText(`${title}\n${description}`).then(() => {
       setIsSuccessCopy(true);
 
       setTimeout(() => {
         setIsSuccessCopy(false);
       }, 1000);
     });
-  }, [defaultTitle, defaultDescription]);
+  }, [title, description]);
 
-  const onClickFixedButton = () => {
-    const { isFixed: newIsFixed, positionX, positionY } = setIsFixed(!isFixed);
-
+  const onClickFixedButton = useCallback(() => {
+    const { positionX, positionY } = getFixedPosition(!is_fixed);
+    setEditPosition(positionX, positionY);
     onUpdateNote({
       ...defaultNote,
+      is_fixed: !is_fixed,
       position_x: positionX,
       position_y: positionY,
-      is_fixed: newIsFixed,
     });
-  };
+  }, [getFixedPosition, onUpdateNote, defaultNote]);
 
   const onClickDeleteButton = () => {
     if (confirm(`「${title || "メモ"}」を削除してよろしいですか？`)) {
@@ -168,11 +164,11 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
   const onBeforeUnload = useCallback(
     (e: BeforeUnloadEvent) => {
       e.preventDefault();
-      if (defaultTitle !== title || defaultDescription !== description) {
+      if (title !== editTitle || description !== editDescription) {
         e.returnValue = "";
       }
     },
-    [title, description]
+    [editTitle, editDescription]
   );
 
   useEffect(() => {
@@ -188,40 +184,49 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
       window.removeEventListener("beforeunload", onBeforeUnload, false);
       window.removeEventListener("keydown", onKeyDownEditing, false);
     };
-  }, [isEditing, isEnableDrag, title, description, positionX, positionY, width, height, isFixed]);
+  }, [
+    isEditing,
+    isEnableDrag,
+    editTitle,
+    editDescription,
+    editPositionX,
+    editPositionY,
+    editWidth,
+    editHeight,
+  ]);
 
   return (
     <SNote
-      id={`${ROOT_DOM_ID}-sticky-note-${id}`}
+      id={`${ROOT_DOM_ID}-sticky-note-${page_info_id}-${id}`}
       ref={noteRef}
       style={{
-        width: width,
-        height: height,
-        transform: `translate(${positionX}px, ${positionY}px)`,
+        width: editWidth,
+        height: editHeight,
+        transform: `translate(${editPositionX}px, ${editPositionY}px)`,
       }}
-      isFixed={isFixed}
+      isFixed={is_fixed}
       isForward={isDragging || isEditing}
     >
       <DraggableCore
         scale={1}
         onStart={(_, data) => {
           setIsDragging(true);
-          setDragStartPositionX(positionX - data.x);
-          setDragStartPositionY(positionY - data.y);
+          setDragStartPositionX(editPositionX - data.x);
+          setDragStartPositionY(editPositionY - data.y);
         }}
         onDrag={(_, data) => {
           if (!isEnableDrag) return false;
 
-          setPosition(dragStartPositionX + data.x, dragStartPositionY + data.y);
+          setEditPosition(dragStartPositionX + data.x, dragStartPositionY + data.y);
         }}
         onStop={() => {
           setIsDragging(false);
 
-          if (defaultPositionX !== positionX || defaultPositionY !== positionY) {
+          if (position_x !== editPositionX || position_y !== editPositionY) {
             onUpdateNote({
               ...defaultNote,
-              position_x: positionX,
-              position_y: positionY,
+              position_x: editPositionX,
+              position_y: editPositionY,
             });
           }
         }}
@@ -238,8 +243,8 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
                 ref={titleInputRef}
                 placeholder="タイトル"
                 type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
                 onFocus={() => setIsEnableDrag(false)}
                 onBlur={() => setIsEnableDrag(true)}
               />
@@ -249,7 +254,7 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
                   onDoubleClick={() => {
                     setTimeout(() => {
                       titleInputRef?.current?.focus();
-                      if (defaultTitle === msg("new_note_title_msg")) {
+                      if (title === msg("new_note_title_msg")) {
                         titleInputRef?.current?.select();
                       }
                     }, 10);
@@ -257,7 +262,7 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
                 >
                   {title || <SNoteSpan>タイトル</SNoteSpan>}
                 </SNoteTitle>
-                {isFixed && (
+                {is_fixed && (
                   <SHeaderFixedPinArea>
                     <Tooltip title="固定を解除する" enterDelay={300} placement="top">
                       <div>
@@ -278,12 +283,12 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
                 name=""
                 id=""
                 placeholder="メモを入力"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
                 onFocus={() => setIsEnableDrag(false)}
                 onBlur={() => setIsEnableDrag(true)}
               >
-                {description}
+                {editDescription}
               </SNoteDescriptionTextarea>
             ) : (
               <SNoteContentScroll
@@ -349,17 +354,17 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
 
       <DraggableCore
         onStart={(_, data) => {
-          setDragStartPositionX(width - data.x);
-          setDragStartPositionY(height - data.y);
+          setDragStartPositionX(editWidth - data.x);
+          setDragStartPositionY(editHeight - data.y);
         }}
-        onDrag={(_, data) => setSize(dragStartPositionX + data.x, dragStartPositionY + data.y)}
+        onDrag={(_, data) => setEditSize(dragStartPositionX + data.x, dragStartPositionY + data.y)}
         onStop={() => {
-          if (defaultWidth !== width || defaultHeight !== height) {
+          if (width !== editWidth || height !== editHeight) {
             // 変化がなければ更新しない
             onUpdateNote({
               ...defaultNote,
-              width,
-              height,
+              width: editWidth,
+              height: editHeight,
             });
           }
         }}

@@ -8,9 +8,9 @@ import {
   ToBackgroundMessageResponse,
 } from "../types/Actions";
 import { Note } from "../types/Note";
-import { CREATE_NOTE, DELETE_NOTE, GET_ALL_NOTES, POPUP } from "../actions";
+import { CREATE_NOTE, DELETE_NOTE, GET_ALL_NOTES, POPUP, UPDATE_NOTE } from "../actions";
 import IconButton from "../components/Button/IconButton";
-import { EyeIcon, EyeOffIcon, PlusIcon, TrashIcon } from "../components/Icon";
+import { EyeIcon, EyeOffIcon, PinIcon, PlusIcon, TrashIcon } from "../components/Icon";
 import FabIconButton from "../components/Button/FabIconButton";
 import styled, { createGlobalStyle } from "styled-components";
 import { resetCSS } from "../resetCSS";
@@ -71,9 +71,17 @@ const Popup = () => {
     }
   };
 
-  const onClickDelete = (noteId: number) => {
-    if (currentTab && confirm("メモを削除してよろしいですか？"))
-      sendAction(DELETE_NOTE, currentTab, { id: noteId });
+  const onClickDelete = (note: Note) => {
+    const { id, title } = note;
+    if (currentTab && confirm(`${title ? `「${title}」` : "メモ"}を削除してよろしいですか？`)) {
+      sendAction(DELETE_NOTE, currentTab, note);
+    }
+  };
+
+  const onClickPin = (note: Note) => {
+    if (currentTab) {
+      sendAction(UPDATE_NOTE, currentTab, { ...note, is_fixed: !note.is_fixed });
+    }
   };
 
   useEffect(() => {
@@ -114,7 +122,12 @@ const Popup = () => {
                 <li key={note.id}>
                   <p>
                     {note.title}:{note.description}
-                    <IconButton onClick={() => note.id && onClickDelete(note.id)}>
+                    {note.is_fixed && (
+                      <IconButton onClick={() => onClickPin(note)}>
+                        <PinIcon />
+                      </IconButton>
+                    )}
+                    <IconButton onClick={() => onClickDelete(note)}>
                       <TrashIcon />
                     </IconButton>
                   </p>

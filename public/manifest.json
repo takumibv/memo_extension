@@ -16,6 +16,6 @@
   "action": {
     "default_popup": "popup.html"
   },
-  "permissions": ["tabs", "contextMenus", "storage", "scripting"],
+  "permissions": ["tabs", "contextMenus", "storage", "scripting", "webNavigation"],
   "host_permissions": ["*://*/*"]
 }

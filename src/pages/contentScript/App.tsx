@@ -32,6 +32,7 @@ const Main: React.VFC = () => {
 
     switch (method) {
       case SET_ALL_NOTES:
+        console.log("SET_ALL_NOTES==");
         setNotes(notes);
         break;
       default:
