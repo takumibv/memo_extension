@@ -20,12 +20,14 @@ export const SNote = styled.div<SNoteProps>`
   left: 0;
   top: 0;
   transition: box-shadow 300ms cubic-bezier(0.25, 0.8, 0.25, 1);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow: rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.2) 0px 3px 1px -2px,
+    rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
 
   ${({ isFixed }) =>
     isFixed &&
     css`
       position: fixed;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
       z-index: 1251;
     `}
 
@@ -79,6 +81,7 @@ const noteTitleCSS = css`
   border-color: transparent;
   border-radius: 0.25em;
   word-break: break-all;
+  white-space: pre-line;
 `;
 
 export const SNoteTitle = styled.h2`
@@ -137,13 +140,13 @@ const noteDescriptionCSS = css`
   border-color: transparent;
   border-radius: 0.25em;
   word-break: break-all;
+  white-space: pre-line;
 `;
 
 export const SNoteDescription = styled.p`
   ${baseCSS("p")}
 
   ${noteDescriptionCSS}
-  white-space: pre-line;
 `;
 
 export const SNoteDescriptionTextarea = styled.textarea`
@@ -191,8 +194,15 @@ export const SIconButtonWrap = styled.div`
   }
 `;
 
-export const SIconButton = styled(IconButton)`
+export const SIconButton = styled(IconButton)<{ isFocus?: boolean }>`
   pointer-events: initial;
+
+  ${({ isFocus }) =>
+    isFocus &&
+    css`
+      background-color: rgba(0, 0, 0, 0.1);
+      box-shadow: 0 0 0 0.25em rgba(0, 0, 0, 0.1);
+    `}
 `;
 
 export const SCopySuccessIcon = styled(CopySuccessIcon)`

@@ -27,6 +27,7 @@ import {
 } from "./StickyNote.style";
 import { ROOT_DOM_ID } from "../../pages/contentScript";
 import { msg } from "../../utils";
+import { useClipboard } from "../../hooks/useClipboard";
 
 type Props = {
   id?: number;
@@ -101,8 +102,7 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
   const [dragStartPositionX, setDragStartPositionX] = useState(0);
   const [dragStartPositionY, setDragStartPositionY] = useState(0);
 
-  // コピー成功アイコンの表示
-  const [isSuccessCopy, setIsSuccessCopy] = useState(false);
+  const { isSuccessCopy, copyClipboard } = useClipboard();
 
   const onEditDone = useCallback(async () => {
     await onUpdateNote({
@@ -123,16 +123,6 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
     setEditDescription(description);
     setIsEditing(false);
     setIsEnableDrag(true);
-  }, [title, description]);
-
-  const onClickCopyButton = useCallback(() => {
-    navigator.clipboard.writeText(`${title}\n${description}`).then(() => {
-      setIsSuccessCopy(true);
-
-      setTimeout(() => {
-        setIsSuccessCopy(false);
-      }, 1000);
-    });
   }, [title, description]);
 
   const onClickFixedButton = useCallback(() => {
@@ -237,8 +227,8 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
             setIsEditing(true);
           }}
         >
-          <SNoteHeader>
-            {isEditing ? (
+          {isEditing && (
+            <SNoteHeader>
               <SNoteTitleInput
                 ref={titleInputRef}
                 placeholder="タイトル"
@@ -248,34 +238,35 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
                 onFocus={() => setIsEnableDrag(false)}
                 onBlur={() => setIsEnableDrag(true)}
               />
-            ) : (
-              <>
-                <SNoteTitle
-                  onDoubleClick={() => {
-                    setTimeout(() => {
-                      titleInputRef?.current?.focus();
-                      if (title === msg("new_note_title_msg")) {
-                        titleInputRef?.current?.select();
-                      }
-                    }, 10);
-                  }}
-                >
-                  {title || <SNoteSpan>タイトル</SNoteSpan>}
-                </SNoteTitle>
-                {is_fixed && (
-                  <SHeaderFixedPinArea>
-                    <Tooltip title="固定を解除する" enterDelay={300} placement="top">
-                      <div>
-                        <SHeaderFixedButton onClick={onClickFixedButton}>
-                          <PinIcon fill="rgba(0, 0, 0, 0.4)" />
-                        </SHeaderFixedButton>
-                      </div>
-                    </Tooltip>
-                  </SHeaderFixedPinArea>
-                )}
-              </>
-            )}
-          </SNoteHeader>
+            </SNoteHeader>
+          )}
+          {!isEditing && title && (
+            <SNoteHeader>
+              <SNoteTitle
+                onDoubleClick={() => {
+                  setTimeout(() => {
+                    titleInputRef?.current?.focus();
+                    if (title === msg("new_note_title_msg")) {
+                      titleInputRef?.current?.select();
+                    }
+                  }, 10);
+                }}
+              >
+                {title || <SNoteSpan>タイトル</SNoteSpan>}
+              </SNoteTitle>
+              {is_fixed && (
+                <SHeaderFixedPinArea>
+                  <Tooltip title="固定を解除する" enterDelay={300} placement="top">
+                    <div>
+                      <SHeaderFixedButton onClick={onClickFixedButton}>
+                        <PinIcon fill="rgba(0, 0, 0, 0.4)" />
+                      </SHeaderFixedButton>
+                    </div>
+                  </Tooltip>
+                </SHeaderFixedPinArea>
+              )}
+            </SNoteHeader>
+          )}
           <SNoteContent>
             {isEditing ? (
               <SNoteDescriptionTextarea
@@ -328,7 +319,7 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
                 {isSuccessCopy ? (
                   <SCopySuccessIcon fill="#22c55e" />
                 ) : (
-                  <SIconButton onClick={onClickCopyButton}>
+                  <SIconButton onClick={() => copyClipboard(`${title}\n${description}`)}>
                     <CopyIcon fill="rgba(0, 0, 0, 0.4)" />
                   </SIconButton>
                 )}
@@ -336,7 +327,7 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
             </Tooltip>
             <Tooltip title="固定を切り替える" enterDelay={300}>
               <SIconButtonWrap>
-                <SIconButton onClick={onClickFixedButton}>
+                <SIconButton onClick={onClickFixedButton} isFocus={is_fixed}>
                   <PinIcon fill="rgba(0, 0, 0, 0.4)" />
                 </SIconButton>
               </SIconButtonWrap>

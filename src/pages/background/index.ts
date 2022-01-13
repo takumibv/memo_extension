@@ -3,6 +3,7 @@ import {
   CREATE_NOTE,
   DELETE_NOTE,
   GET_ALL_NOTES,
+  GET_ALL_NOTES_AND_PAGE_INFO,
   OPEN_OPTION_PAGE,
   OPTIONS,
   POPUP,
@@ -26,6 +27,8 @@ import {
 } from "../../types/Actions";
 import { Note } from "../../types/Note";
 import { isSystemLink, msg } from "../../utils";
+
+export const ROOT_DOM_ID = "react-container-for-note-extension";
 
 /**
  * Service Worker
@@ -63,7 +66,9 @@ chrome.contextMenus.onClicked.addListener((info) => {
             createNote(pageInfo.id).then(({ allNotes }) => {
               if (!tab?.id) return;
 
-              actions.setAllNotes(tab.id, pageUrl, allNotes);
+              injectContentScript(tab.id).then(() =>
+                actions.setAllNotes(tab.id!, pageUrl, allNotes)
+              );
             });
           });
         }
@@ -82,9 +87,36 @@ const isScriptAllowedPage = async (tabId: number) => {
   return !chrome.runtime.lastError;
 };
 
+const hasContentScript = async (tabId: number): Promise<boolean> => {
+  const [res] = await chrome.scripting.executeScript({
+    target: { tabId },
+    func: () => {
+      const noteDOM = document.getElementById("react-container-for-note-extension");
+      return !!noteDOM;
+    },
+  });
+  return res.result as boolean;
+};
+
+const injectContentScript = async (tabId: number) => {
+  const hasScript = await hasContentScript(tabId);
+  console.log("hasScript:", hasScript);
+  if (hasScript) return false;
+
+  return await chrome.scripting.executeScript({
+    target: { tabId },
+    files: ["contentScript.js"],
+  });
+};
+
 // 直近に読み込まれたページURL
 let currentUrl = "";
 
+/**
+ * タブが更新された時に呼ばれる
+ * 1. ページに紐づくメモがない場合、contentScriptを実行せず、[]を返す（SPA対策）
+ * 2. ページに紐づくメモがある場合、contentScriptを実行し、メモを返す
+ */
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   const { status } = changeInfo;
   if (status !== "complete") return;
@@ -94,14 +126,17 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (url === undefined || currentUrl === url) return;
   currentUrl = url;
 
-  chrome.scripting
-    .executeScript({
-      target: { tabId },
-      files: ["contentScript.js"],
-    })
-    .then((result) => {
+  actions
+    .fetchAllNotesByPageUrl(url)
+    .then((notes) => {
       currentUrl = "";
-      console.log("chrome.scripting.executeScript", result);
+
+      if (notes.length === 0) return actions.setAllNotes(tabId, url, []);
+
+      injectContentScript(tabId).then(() => actions.setAllNotes(tabId, url, notes));
+    })
+    .catch((e) => {
+      console.log("error chrome.tabs.onUpdated.addListener", e);
     });
 });
 
@@ -173,9 +208,13 @@ const _handleMessagesFromPopup = (
   if (isSystemLink(tabUrl))
     return sendResponse({ notes: [], error: new Error("このページでは使用できません") });
 
+  hasContentScript(tabId).then((isInjecting) => {
+    console.log("hasContentScript _handleMessagesFromPopup", isInjecting);
+  });
+
   const sendResponseAndSetNotes = (notes: Note[]) => {
     sendResponse({ notes });
-    actions.setAllNotes(tabId, tabUrl, notes);
+    injectContentScript(tabId).then(() => actions.setAllNotes(tabId, tabUrl, notes));
   };
 
   isScriptAllowedPage(tabId).then((isAllowed) => {
@@ -230,6 +269,22 @@ const _handleMessagesFromOption = (
         .fetchAllNotes()
         .then((notes) => sendResponse({ notes }))
         .catch((e) => console.log("error GET_ALL_NOTES:", e));
+      return true;
+    case GET_ALL_NOTES_AND_PAGE_INFO:
+      actions
+        .fetchAllNotesAndPageInfo()
+        .then(({ notes, pageInfos }) => sendResponse({ notes, pageInfos }))
+        .catch((e) => console.log("error GET_ALL_NOTES:", e));
+      return true;
+    case DELETE_NOTE:
+      actions
+        .deleteNote(targetNote!)
+        .then(() => {
+          actions
+            .fetchAllNotesAndPageInfo()
+            .then(({ notes, pageInfos }) => sendResponse({ notes, pageInfos }));
+        })
+        .catch((e) => console.log("error DELETE_NOTE:", e));
       return true;
     default:
       break;

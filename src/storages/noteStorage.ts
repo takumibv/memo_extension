@@ -1,7 +1,8 @@
 import { DEAULT_NOTE_HEIGHT, DEAULT_NOTE_WIDTH, Note } from "../types/Note";
+import { PageInfo } from "../types/PageInfo";
 import { msg } from "../utils";
 import { getAllStorage, getNewId, getStorage, removeStorage, setStorage } from "./common";
-import { deletePageInfo } from "./pageInfoStorage";
+import { deletePageInfo, getAllPageInfos } from "./pageInfoStorage";
 
 const NOTE_STORAGE_NAME = "notes";
 
@@ -74,6 +75,12 @@ export const getNotesByPageId = async (pageId: number): Promise<Note[]> => {
   return new Promise((_resolve, reject) => reject("getAllNotes is not implemented"));
 };
 
+/**
+ *
+ * @param pageId
+ * @param noteId
+ * @returns note: 削除したメモ, allNotes: 削除後の全てのメモ, pageInfos: 削除後のページ情報
+ */
 export const deleteNote = async (
   pageId: number,
   noteId?: number
@@ -88,8 +95,8 @@ export const deleteNote = async (
 
   if (await setNoteStorageByPageId(pageId, allNotes)) {
     if (allNotes.length === 0) {
-      deletePageInfo(pageId);
-      removeNoteStorageByPageId(pageId);
+      await deletePageInfo(pageId);
+      await removeNoteStorageByPageId(pageId);
     }
 
     return { note, allNotes };

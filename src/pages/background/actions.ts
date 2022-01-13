@@ -6,9 +6,14 @@ import {
   getAllNotesByPageId,
   getAllNotes,
 } from "../../storages/noteStorage";
-import { getOrCreatePageInfoByUrl, getPageInfoByUrl } from "../../storages/pageInfoStorage";
+import {
+  getAllPageInfos,
+  getOrCreatePageInfoByUrl,
+  getPageInfoByUrl,
+} from "../../storages/pageInfoStorage";
 import { ToContentScriptMessage } from "../../types/Actions";
 import { Note } from "../../types/Note";
+import { PageInfo } from "../../types/PageInfo";
 
 export const fetchAllNotes = async (): Promise<Note[]> => {
   const notes = await getAllNotes();
@@ -16,6 +21,18 @@ export const fetchAllNotes = async (): Promise<Note[]> => {
   console.log("GET_ALL_NOTES:", notes);
 
   return notes;
+};
+
+export const fetchAllNotesAndPageInfo = async (): Promise<{
+  notes: Note[];
+  pageInfos: PageInfo[];
+}> => {
+  const notes = await getAllNotes();
+  const pageInfos = await getAllPageInfos();
+
+  console.log("GET_ALL_NOTES_AND_PAGE_INFO:", notes, pageInfos);
+
+  return { notes, pageInfos };
 };
 
 export const fetchAllNotesByPageUrl = async (page_url: string): Promise<Note[]> => {
@@ -84,4 +101,12 @@ export const setAllNotes = (tabId: number, page_url: string, notes: Note[]) => {
     notes,
     page_url,
   });
+};
+
+export const fetchAllPageInfo = async (): Promise<PageInfo[]> => {
+  const pageInfos = await getAllPageInfos();
+
+  console.log("GET_ALL_PAGEINFOS:", pageInfos);
+
+  return pageInfos;
 };

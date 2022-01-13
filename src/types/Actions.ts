@@ -4,6 +4,7 @@ import {
   CREATE_NOTE,
   DELETE_NOTE,
   GET_ALL_NOTES,
+  GET_ALL_NOTES_AND_PAGE_INFO,
   MOVE_NOTE,
   OPEN_OPTION_PAGE,
   OPTIONS,
@@ -31,6 +32,7 @@ export type ToBackgroundMessage = {
 
 export type ToBackgroundMessageResponse = {
   notes?: Note[];
+  pageInfos?: PageInfo[];
   error?: Error;
 };
 
@@ -39,7 +41,8 @@ export type ToBackgroundMessageMethod =
   | typeof CREATE_NOTE
   | typeof UPDATE_NOTE
   | typeof DELETE_NOTE
-  | typeof OPEN_OPTION_PAGE;
+  | typeof OPEN_OPTION_PAGE
+  | typeof GET_ALL_NOTES_AND_PAGE_INFO;
 
 export type ToContentScriptMessage = {
   method: ToContentScriptMessageMethod;

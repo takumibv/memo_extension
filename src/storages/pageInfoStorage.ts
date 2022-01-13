@@ -17,7 +17,7 @@ export type PageInfoCRUDResponseType = { pageInfo?: PageInfo; allPageInfos: Page
 
 export const createPageInfo = async (url: string): Promise<PageInfoCRUDResponseType> => {
   const pageInfos = await getAllPageInfos();
-  const encodedURL = encodeFormURL(url);
+  const encodedURL = formURL(url);
 
   const id = getNewId(pageInfos);
   const [tab] = await chrome.tabs.query({ url: formURL(url) });
@@ -61,7 +61,7 @@ export const getPageInfoById = async (pageId: number): Promise<PageInfo> => {
 };
 
 export const getPageInfoByUrl = async (url: string): Promise<PageInfo | undefined> => {
-  const encodedURL = encodeFormURL(url);
+  const encodedURL = formURL(url);
   const pageInfos = await getAllPageInfos();
 
   return pageInfos.find((_pageInfo) => _pageInfo.page_url === encodedURL);
