@@ -1,3 +1,4 @@
+import equal from "fast-deep-equal";
 import ja from "../public/_locales/ja/messages.json";
 import en from "../public/_locales/en/messages.json";
 
@@ -50,10 +51,22 @@ export const formatDate = (date: Date): string => {
  * @param link
  * @returns boolean
  */
-export function isSystemLink(link: string): boolean {
+export const isSystemLink = (link: string): boolean => {
   return (
     link.startsWith("chrome://") ||
     link.startsWith("chrome-extension://") ||
     link.startsWith("chrome-search://")
   );
-}
+};
+
+/**
+ * Objectの比較. 1階層のみ
+ * @returns
+ */
+export const isEqualsObject = (a: object, b: object): boolean => {
+  if (a === b) {
+    return true;
+  }
+
+  return equal(a, b);
+};

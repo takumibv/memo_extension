@@ -12,27 +12,21 @@ export const NOTE_LEFT_POSITION = 0;
  * @returns 各要素と、更新する関数
  */
 export const useNoteEdit = ({
-  title = "",
-  description = "",
+  title,
+  description,
   position_x,
   position_y,
   width = MIN_NOTE_WIDTH,
   height = MIN_NOTE_HEIGHT,
-  is_open = false,
-  is_fixed,
 }: Note) => {
   const [editTitle, setEditTitle] = useState(title);
   const [editDescription, setEditDescription] = useState(description);
-
-  // initial: defaultがセットされていないときの値
-  const initialPositionX = useMemo(() => (window.innerWidth - DEAULT_NOTE_WIDTH) / 2, []);
-  const initialPositionY = useMemo(() => (window.innerHeight - DEAULT_NOTE_HEIGHT) / 2, []);
 
   const {
     positionX: editPositionX,
     positionY: editPositionY,
     setPosition: setEditPosition,
-  } = useNotePosition(position_x ?? initialPositionX, position_y ?? initialPositionY);
+  } = useNotePosition(position_x, position_y);
   const { width: editWidth, height: editHeight, setSize: setEditSize } = useNoteSize(width, height);
 
   /**
@@ -41,10 +35,9 @@ export const useNoteEdit = ({
   const getFixedPosition = useCallback(
     (isFixed: boolean) => {
       const fixPosition = isFixed ? -1 : 1;
-      const newPositionX = editPositionX + window.scrollX * fixPosition;
-      const newPositionY = editPositionY + window.scrollY * fixPosition;
+      const newPositionX = (editPositionX ?? initialPositionX()) + window.scrollX * fixPosition;
+      const newPositionY = (editPositionY ?? initialPositionY()) + window.scrollY * fixPosition;
 
-      console.log("getFixedPosition", window.scrollX, window.scrollY, newPositionX, newPositionY);
       return { positionX: newPositionX, positionY: newPositionY };
     },
     [editPositionX, editPositionY]
@@ -65,13 +58,26 @@ export const useNoteEdit = ({
   };
 };
 
-export const useNotePosition = (defaultPositionX: number, defaultPositionY: number) => {
-  const [positionX, setPositionX] = useState<number>(defaultPositionX);
-  const [positionY, setPositionY] = useState<number>(defaultPositionY);
+// initial: defaultがセットされていないときの値
+export const initialPositionX = () => (window.innerWidth - DEAULT_NOTE_WIDTH) / 2;
+export const initialPositionY = () => (window.innerHeight - DEAULT_NOTE_HEIGHT) / 2;
 
-  const setPosition = useCallback((positionX: number, positionY: number) => {
-    setPositionX(positionX >= NOTE_LEFT_POSITION ? positionX : NOTE_LEFT_POSITION);
-    setPositionY(positionY >= NOTE_TOP_POSITION ? positionY : NOTE_TOP_POSITION);
+export const useNotePosition = (defaultPositionX?: number, defaultPositionY?: number) => {
+  const [positionX, setPositionX] = useState<number | undefined>(defaultPositionX);
+  const [positionY, setPositionY] = useState<number | undefined>(defaultPositionY);
+
+  const setPosition = useCallback((positionX?: number, positionY?: number) => {
+    if (positionX === undefined) {
+      setPositionX(undefined);
+    } else {
+      setPositionX(positionX >= NOTE_LEFT_POSITION ? positionX : NOTE_LEFT_POSITION);
+    }
+
+    if (positionY === undefined) {
+      setPositionY(undefined);
+    } else {
+      setPositionY(positionY >= NOTE_TOP_POSITION ? positionY : NOTE_TOP_POSITION);
+    }
   }, []);
 
   return {

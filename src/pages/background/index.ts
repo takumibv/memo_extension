@@ -276,6 +276,19 @@ const _handleMessagesFromOption = (
         .then(({ notes, pageInfos }) => sendResponse({ notes, pageInfos }))
         .catch((e) => console.log("error GET_ALL_NOTES:", e));
       return true;
+    case UPDATE_NOTE:
+      actions
+        .updateNote(targetNote!)
+        .then(() => {
+          actions
+            .fetchAllNotesAndPageInfo()
+            .then(({ notes, pageInfos }) => sendResponse({ notes, pageInfos }));
+        })
+        .catch((e) => {
+          console.log("error UPDATE_NOTE:", e);
+          sendResponse({ error: e });
+        });
+      return true;
     case DELETE_NOTE:
       actions
         .deleteNote(targetNote!)
@@ -287,7 +300,8 @@ const _handleMessagesFromOption = (
         .catch((e) => console.log("error DELETE_NOTE:", e));
       return true;
     default:
-      break;
+      sendResponse({ notes: [], pageInfos: [], error: new Error("無効なアクションです") });
+      return true;
   }
 };
 

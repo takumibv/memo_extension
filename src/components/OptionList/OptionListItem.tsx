@@ -10,23 +10,24 @@ import IconButton from "../Button/IconButton";
 import { PageInfo } from "../../types/PageInfo";
 import { Backdrop, Modal, Tooltip } from "@mui/material";
 import { ModalUnstyled } from "@mui/base";
-import TextareaAutosize from "react-textarea-autosize";
 import { useClipboard } from "../../hooks/useClipboard";
+import Button from "../Button/Button";
+import { NoteEditModal } from "../NoteEditModal/NoteEditModal";
 
 type Props = {
   note: Note;
   pageInfo?: PageInfo;
   showPageInfo?: boolean;
+  onUpdate: (note: Note) => void;
   onDelete: (note: Note) => void;
   onClickLink: (url: string) => void;
   onClickFilter: (pageInfoId?: number) => void;
 };
 
 const OptionListItem: React.VFC<Props> = memo(
-  ({ note, pageInfo, showPageInfo, onDelete, onClickLink, onClickFilter }) => {
+  ({ note, pageInfo, showPageInfo, onUpdate, onDelete, onClickLink, onClickFilter }) => {
+    const { id, title, description, created_at, updated_at } = note;
     const [openModal, setOpenModal] = useState(false);
-    const [editDescription, setEditDescription] = useState(note.description || "");
-    const [editTitle, setEditTitle] = useState(note.title || "");
     const { isSuccessCopy, copyClipboard } = useClipboard();
 
     return (
@@ -38,10 +39,10 @@ const OptionListItem: React.VFC<Props> = memo(
           }}
         >
           <SCardHeader>
-            <SCardTitle>{note.title}</SCardTitle>
+            <SCardTitle>{title}</SCardTitle>
           </SCardHeader>
           <SCardDescription>
-            <SCardDescriptionText>{note.description}</SCardDescriptionText>
+            <SCardDescriptionText>{description}</SCardDescriptionText>
           </SCardDescription>
           {showPageInfo && pageInfo && (
             <SPageInfoWrap>
@@ -93,7 +94,7 @@ const OptionListItem: React.VFC<Props> = memo(
                     <SIconButton
                       onClick={(e) => {
                         e.stopPropagation();
-                        copyClipboard(`${note.title}\n${note.description}`);
+                        copyClipboard(`${title}\n${description}`);
                       }}
                     >
                       <CopyIcon fill="rgba(0, 0, 0, 0.4)" />
@@ -106,7 +107,7 @@ const OptionListItem: React.VFC<Props> = memo(
                   <SIconButton
                     onClick={(e) => {
                       e.stopPropagation();
-                      note.id && onDelete(note);
+                      id && onDelete(note);
                     }}
                   >
                     <TrashIcon fill="rgba(0, 0, 0, 0.4)" />
@@ -117,7 +118,7 @@ const OptionListItem: React.VFC<Props> = memo(
                 <SIconButtonWrap>
                   <SIconButton
                     onClick={(e) => {
-                      e.preventDefault();
+                      e.stopPropagation();
                       onClickLink(pageInfo?.page_url ?? "");
                     }}
                   >
@@ -127,42 +128,21 @@ const OptionListItem: React.VFC<Props> = memo(
               </Tooltip>
             </SCardActions>
             <SCardDate>
-              {note?.created_at && <p> 作成: {formatDate(new Date(note?.created_at))}</p>}
-              {note?.updated_at && <p> 編集: {formatDate(new Date(note?.updated_at))}</p>}
+              {created_at && (
+                <SCardDateText> 作成: {formatDate(new Date(created_at))}</SCardDateText>
+              )}
+              {updated_at && (
+                <SCardDateText> 編集: {formatDate(new Date(updated_at))}</SCardDateText>
+              )}
             </SCardDate>
           </SCardFooter>
         </SCard>
-        <ModalUnstyled
-          open={openModal}
+        <NoteEditModal
+          isOpen={openModal}
           onClose={() => setOpenModal(false)}
-          BackdropComponent={Backdrop}
-        >
-          <SModalWrapper>
-            <SModal>
-              <SModalHeader>
-                <SModalTitle
-                  placeholder="タイトル"
-                  onChange={(e) => setEditTitle(e.target.value)}
-                  minRows={1}
-                >
-                  {note.title}
-                </SModalTitle>
-              </SModalHeader>
-              <SModalContent>
-                <SModalDescription>
-                  <SModalDescriptionText
-                    minRows={1}
-                    placeholder="メモ"
-                    onChange={(e) => setEditDescription(e.target.value)}
-                  >
-                    {note.description}
-                  </SModalDescriptionText>
-                  {/* {editDescription === "" && <SNoteSpan>メモ</SNoteSpan>} */}
-                </SModalDescription>
-              </SModalContent>
-            </SModal>
-          </SModalWrapper>
-        </ModalUnstyled>
+          note={note}
+          onUpdateNote={onUpdate}
+        />
       </>
     );
   }
@@ -229,6 +209,10 @@ const SCardDate = styled.div`
   color: #777;
 `;
 
+const SCardDateText = styled.span`
+  margin-right: 1em;
+`;
+
 const SCardFooter = styled.div`
   display: flex;
   justify-content: space-between;
@@ -256,7 +240,7 @@ const SIconButton = styled(IconButton)`
 
 const SPageInfoWrap = styled.div`
   display: inline-flex;
-  margin-bottom: 0.25em;
+  margin-bottom: 0.5em;
 `;
 
 const SPageInfo = styled.div<{ isFilter?: boolean }>`
@@ -315,67 +299,6 @@ const SPageInfoLink = styled.p`
 const SFilterIcon = styled(FilterIcon)`
   width: 1em;
   height: 1em;
-`;
-
-const SModalWrapper = styled.div`
-  position: absolute;
-  width: 100%;
-  max-height: 100%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 2em;
-  overflow-y: auto;
-  pointer-events: none;
-  outline: none;
-`;
-
-const SModal = styled.div`
-  pointer-events: initial;
-  margin: auto;
-  width: 600px;
-  max-width: 100%;
-  background-color: #fff;
-  border-radius: 0.25em;
-`;
-
-const SModalHeader = styled.div`
-  padding: 1em 1.5em 0.5em;
-`;
-
-const SModalTitle = styled(TextareaAutosize)`
-  padding: 0.2em;
-  width: 100%;
-  font-size: 1.25em;
-  line-height: 1.5;
-  word-break: break-all;
-  white-space: pre-line;
-  resize: none;
-`;
-
-const SModalContent = styled.div`
-  padding: 0 1.5em 1em;
-`;
-
-const SModalDescription = styled.div`
-  position: relative;
-`;
-
-const SModalDescriptionText = styled(TextareaAutosize)`
-  padding: 0.25em;
-  width: 100%;
-  font-size: 1em;
-  word-break: break-all;
-  white-space: pre-line;
-  resize: none;
-`;
-
-const SNoteSpan = styled.span`
-  position: absolute;
-  left: 0.25em;
-  top: 0.25em;
-  pointer-events: none;
-  color: #999;
 `;
 
 export default OptionListItem;

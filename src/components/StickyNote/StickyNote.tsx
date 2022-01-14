@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { memo } from "react";
 import { DraggableCore } from "react-draggable";
 import Tooltip from "@mui/material/Tooltip";
-import { useNoteEdit } from "../../hooks/useNote";
+import { initialPositionX, initialPositionY, useNoteEdit } from "../../hooks/useNote";
 import { Note } from "../../types/Note";
 import { CopyIcon, EditIcon, PinIcon, ResizeIcon, TrashIcon } from "../Icon";
 import {
@@ -104,6 +104,9 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
 
   const { isSuccessCopy, copyClipboard } = useClipboard();
 
+  const displayPositionX = useMemo(() => editPositionX ?? initialPositionX(), [editPositionX]);
+  const displayPositionY = useMemo(() => editPositionY ?? initialPositionY(), [editPositionY]);
+
   const onEditDone = useCallback(async () => {
     await onUpdateNote({
       ...defaultNote,
@@ -127,6 +130,7 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
 
   const onClickFixedButton = useCallback(() => {
     const { positionX, positionY } = getFixedPosition(!is_fixed);
+    console.log("getFixedPosition::", positionX, positionY);
     setEditPosition(positionX, positionY);
     onUpdateNote({
       ...defaultNote,
@@ -192,7 +196,7 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
       style={{
         width: editWidth,
         height: editHeight,
-        transform: `translate(${editPositionX}px, ${editPositionY}px)`,
+        transform: `translate(${displayPositionX}px, ${displayPositionY}px)`,
       }}
       isFixed={is_fixed}
       isForward={isDragging || isEditing}
@@ -201,8 +205,8 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
         scale={1}
         onStart={(_, data) => {
           setIsDragging(true);
-          setDragStartPositionX(editPositionX - data.x);
-          setDragStartPositionY(editPositionY - data.y);
+          setDragStartPositionX(displayPositionX - data.x);
+          setDragStartPositionY(displayPositionY - data.y);
         }}
         onDrag={(_, data) => {
           if (!isEnableDrag) return false;

@@ -17,6 +17,7 @@ import {
   GET_ALL_NOTES_AND_PAGE_INFO,
   OPTIONS,
   POPUP,
+  UPDATE_NOTE,
 } from "../actions";
 import IconButton from "../components/Button/IconButton";
 import { CopyIcon, EditIcon, EyeIcon, LaunchIcon, PlusIcon, TrashIcon } from "../components/Icon";
@@ -32,6 +33,7 @@ interface Props extends RouteComponentProps<{}> {}
 const Options: React.VFC<Props> = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [pageInfos, setPageInfos] = useState<PageInfo[]>([]);
+  const [sortBy, setSortBy] = useState<string>("updated_at");
   const query = useQuery();
   const history = useHistory();
   const currentPageInfoId = query.get("filter") ? Number(query.get("filter")) : undefined;
@@ -40,13 +42,25 @@ const Options: React.VFC<Props> = () => {
     return pageInfos.find((pageInfo) => pageInfo.id === currentPageInfoId);
   }, [pageInfos, currentPageInfoId]);
 
-  const filteredNotes = useMemo(
-    () =>
+  const filteredNotes = useMemo(() => {
+    const targetNotes =
       currentPageInfoId === undefined
         ? notes
-        : notes.filter((note) => note.page_info_id === currentPageInfoId),
-    [notes, currentPageInfoId]
-  );
+        : notes.filter((note) => note.page_info_id === currentPageInfoId);
+
+    if (sortBy === "updated_at")
+      return [...targetNotes].sort((a, b) =>
+        new Date(a?.updated_at ?? "") < new Date(b?.updated_at ?? "") ? 1 : -1
+      );
+    if (sortBy === "created_at")
+      return [...targetNotes].sort((a, b) =>
+        new Date(a?.created_at ?? "") < new Date(b?.created_at ?? "") ? 1 : -1
+      );
+    if (sortBy === "title")
+      return [...targetNotes].sort((a, b) => ((a?.title ?? "") > (b?.title ?? "") ? 1 : -1));
+
+    return targetNotes;
+  }, [sortBy, notes, currentPageInfoId]);
 
   const sendAction = useCallback(
     (method: ToBackgroundMessageMethod, page_url?: string, targetNote?: Note): Promise<boolean> => {
@@ -76,6 +90,10 @@ const Options: React.VFC<Props> = () => {
     []
   );
 
+  const onChangeSort = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortBy(e.target.value);
+  }, []);
+
   const onClickFilter = (pageInfoId?: number) => {
     pageInfoId ? query.set("filter", `${pageInfoId}`) : query.delete("filter");
     history.push({ search: query.toString() });
@@ -84,6 +102,10 @@ const Options: React.VFC<Props> = () => {
   const onClickAddNote = () => {
     // TODO
     // if (currentTab) sendAction(CREATE_NOTE, "", currentTab);
+  };
+
+  const onUpdate = (note: Note) => {
+    sendAction(UPDATE_NOTE, pageInfos.find((p) => p.id === note.page_info_id)?.page_url, note);
   };
 
   const onDelete = (note: Note) => {
@@ -111,49 +133,6 @@ const Options: React.VFC<Props> = () => {
   useEffect(() => {
     sendAction(GET_ALL_NOTES_AND_PAGE_INFO);
   }, []);
-
-  const renderCardList = () => {
-    let currentPageInfoId: number | undefined = undefined;
-    return filteredNotes.map((note) => {
-      const hasHeader = currentPageInfoId !== note.page_info_id;
-
-      if (hasHeader) {
-        currentPageInfoId = note.page_info_id;
-      }
-
-      const pageInfo = pageInfos.find((p) => p.id === note.page_info_id);
-
-      return (
-        <li key={`note-${note.page_info_id}-${note.id}`}>
-          {/* {hasHeader && pageInfo && (
-            <SCurrentPageArea>
-              <SCurrentPageAreaHeader>
-                <SCurrentPageFaviconImage src={pageInfo.fav_icon_url} />
-                <SCurrentPageTitle>{pageInfo.page_title}</SCurrentPageTitle>
-              </SCurrentPageAreaHeader>
-              <SCurrentPageLink
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  onClickLink(pageInfo.page_url ?? "");
-                }}
-              >
-                {pageInfo.page_url}
-              </SCurrentPageLink>
-            </SCurrentPageArea>
-          )}
-          <SCardListItem>
-            <OptionListItem
-              note={note}
-              pageInfo={pageInfos.find((p) => p.id === note.page_info_id)}
-              onDelete={onDelete}
-              onClickLink={onClickLink}
-            />
-          </SCardListItem> */}
-        </li>
-      );
-    });
-  };
 
   return (
     <>
@@ -201,8 +180,10 @@ const Options: React.VFC<Props> = () => {
             <SMainRight>
               <SMainRightHeader>
                 <SInput type="text" />
-                <SSelect>
-                  <option value="">画面ごと</option>
+                <SSelect onChange={onChangeSort}>
+                  <option value="updated_at">更新日</option>
+                  <option value="created_at">作成日</option>
+                  <option value="title">タイトル</option>
                 </SSelect>
               </SMainRightHeader>
               {currentPageInfo && (
@@ -228,12 +209,16 @@ const Options: React.VFC<Props> = () => {
                 <SCardList>
                   {/* {renderCardList()} */}
                   {filteredNotes.map((note) => (
-                    <SCardListItem key={`note-${note.page_info_id}-${note.id}`}>
+                    <SCardListItem
+                      id={`note-${note.page_info_id}-${note.id}`}
+                      key={`note-${note.page_info_id}-${note.id}`}
+                    >
                       <OptionListItem
                         note={note}
                         showPageInfo={!currentPageInfo}
                         pageInfo={pageInfos.find((p) => p.id === note.page_info_id)}
                         onDelete={onDelete}
+                        onUpdate={onUpdate}
                         onClickLink={onClickLink}
                         onClickFilter={onClickFilter}
                       />
@@ -275,7 +260,7 @@ const SContainer = styled.div`
 const SHeader = styled.header`
   padding: 0.75em;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  background-color: #4c4722;
+  /* background-color: #4c4722; */
 `;
 
 const SMain = styled.div`

@@ -113,6 +113,10 @@ export const SNoteTitleInput = styled.input`
     border: 0.0625em solid rgba(0, 0, 0, 0.1);
     box-shadow: none;
   }
+
+  &::placeholder {
+    color: #999;
+  }
 `;
 
 export const SNoteContent = styled.div`
@@ -167,6 +171,10 @@ export const SNoteDescriptionTextarea = styled.textarea`
     background-color: #fff;
     border: 0.0625em solid rgba(0, 0, 0, 0.1);
     box-shadow: none;
+  }
+
+  &::placeholder {
+    color: #aaa;
   }
 `;
 
