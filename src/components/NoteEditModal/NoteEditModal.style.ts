@@ -1,6 +1,7 @@
 import TextareaAutosize from "react-textarea-autosize";
 import styled, { css } from "styled-components";
 import Button from "../Button/Button";
+import IconButton from "../Button/IconButton";
 import NumberInput from "../TextInput/NumberInput";
 
 export const SModalWrapper = styled.div<{ isApeal?: boolean }>`
@@ -89,13 +90,48 @@ export const SModalDescriptionText = styled(TextareaAutosize)`
 
 export const SModalActions = styled.div`
   display: flex;
-  justify-content: flex-start;
+  align-items: center;
+  justify-content: space-between;
   padding: 1em 0.75em;
 `;
 
-export const SButton = styled(Button)`
-  margin-right: 0.75em;
+export const SModalActionsLeft = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+export const SModalActionsRight = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+export const SMenuList = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+`;
+
+export const SMenuListItem = styled.button`
+  min-width: 8.5em;
   padding: 0.75em 1em;
+  font-size: 0.875em;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+
+  &:not(:first-child) {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+`;
+
+export const SButton = styled(Button)`
+  margin-right: 1.25em;
+  padding: 0.75em 1em;
+`;
+
+export const SIconButton = styled(IconButton)`
+  margin-right: 1em;
 `;
 
 export const SDivider = styled.hr`
@@ -149,4 +185,8 @@ export const SNoteDetailDataInput = styled(NumberInput)`
   text-align: left;
   padding: 0em 0.25em;
   width: 3.75em;
+`;
+
+export const SNoteDetailDataSpan = styled.span`
+  vertical-align: middle;
 `;

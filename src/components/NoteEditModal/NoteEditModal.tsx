@@ -1,9 +1,11 @@
-import { Backdrop, ModalUnstyled } from "@mui/material";
+import { Backdrop, ModalUnstyled, Popover, styled } from "@mui/material";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { VFC } from "react";
 import { MIN_NOTE_HEIGHT, MIN_NOTE_WIDTH, useNoteEdit } from "../../hooks/useNote";
 import { Note } from "../../types/Note";
+import { PageInfo } from "../../types/PageInfo";
 import { formatDate, isEqualsObject } from "../../utils";
+import { MoreIcon, TrashIcon } from "../Icon";
 import {
   SModalWrapper,
   SModal,
@@ -26,6 +28,12 @@ import {
   SNoteDetailData,
   SNoteDetailDataInput,
   SModalScrollContent,
+  SModalActionsLeft,
+  SModalActionsRight,
+  SIconButton,
+  SMenuList,
+  SMenuListItem,
+  SNoteDetailDataSpan,
 } from "./NoteEditModal.style";
 
 type Props = {
@@ -33,9 +41,16 @@ type Props = {
   onClose?: () => void;
   note: Note;
   onUpdateNote: (note: Note) => void;
+  onDeleteNote?: (note: Note) => boolean;
 };
 
-export const NoteEditModal: VFC<Props> = ({ isOpen, note, onClose, onUpdateNote }) => {
+export const NoteEditModal: VFC<Props> = ({
+  isOpen,
+  note,
+  onClose,
+  onUpdateNote,
+  onDeleteNote,
+}) => {
   const {
     title,
     description,
@@ -48,6 +63,8 @@ export const NoteEditModal: VFC<Props> = ({ isOpen, note, onClose, onUpdateNote 
     updated_at,
   } = note;
   const [editIsFixed, setEditIsFixed] = useState(is_fixed);
+  const [isApeal, setIsApeal] = useState(false);
+  const [anchorActionsEl, setAnchorActionsEl] = useState<HTMLButtonElement | null>(null);
 
   const {
     editTitle,
@@ -61,8 +78,6 @@ export const NoteEditModal: VFC<Props> = ({ isOpen, note, onClose, onUpdateNote 
     editHeight,
     setEditSize,
   } = useNoteEdit(note);
-
-  const [isApeal, setIsApeal] = useState(false);
 
   const editedNote: Note = {
     ...note,
@@ -119,6 +134,21 @@ export const NoteEditModal: VFC<Props> = ({ isOpen, note, onClose, onUpdateNote 
     onClose && onClose();
   }, [note, onClose]);
 
+  const onDelete = useCallback(() => {
+    if (onDeleteNote && onDeleteNote(note)) {
+      onClose && onClose();
+      handleCloseActions();
+    }
+  }, []);
+
+  const onClickMoreActions = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorActionsEl(e.currentTarget);
+  };
+
+  const handleCloseActions = () => {
+    setAnchorActionsEl(null);
+  };
+
   useEffect(() => {
     console.log("editNote", note, editedNote, isEqualsObject(note, editedNote));
   }, [editedNote]);
@@ -161,7 +191,7 @@ export const NoteEditModal: VFC<Props> = ({ isOpen, note, onClose, onUpdateNote 
                 </SModalDescription>
               </SModalSection>
               <SDivider />
-              <SAccordion open>
+              <SAccordion>
                 <SAccordionSummary>
                   <SAccordionSummaryText>詳細</SAccordionSummaryText>
                 </SAccordionSummary>
@@ -182,12 +212,12 @@ export const NoteEditModal: VFC<Props> = ({ isOpen, note, onClose, onUpdateNote 
                     <SNoteDetail>
                       <SNoteDetailTitle>位置</SNoteDetailTitle>
                       <SNoteDetailData>
-                        x:
+                        <SNoteDetailDataSpan>x:</SNoteDetailDataSpan>
                         <SNoteDetailDataInput
                           valueNum={editPositionX ?? 0}
                           onChangeNumber={(val) => setEditPosition(val, editPositionY)}
                         />
-                        y:
+                        <SNoteDetailDataSpan>y:</SNoteDetailDataSpan>
                         <SNoteDetailDataInput
                           valueNum={editPositionY ?? 0}
                           onChangeNumber={(val) => setEditPosition(editPositionX, val)}
@@ -197,12 +227,12 @@ export const NoteEditModal: VFC<Props> = ({ isOpen, note, onClose, onUpdateNote 
                     <SNoteDetail>
                       <SNoteDetailTitle>サイズ</SNoteDetailTitle>
                       <SNoteDetailData>
-                        幅:
+                        <SNoteDetailDataSpan>幅:</SNoteDetailDataSpan>
                         <SNoteDetailDataInput
                           valueNum={editWidth}
                           onChangeNumber={(val) => setEditSize(val, editHeight)}
                         />
-                        高さ:
+                        <SNoteDetailDataSpan>高さ:</SNoteDetailDataSpan>
                         <SNoteDetailDataInput
                           valueNum={editHeight}
                           onChangeNumber={(val) => setEditSize(editWidth, val)}
@@ -228,12 +258,37 @@ export const NoteEditModal: VFC<Props> = ({ isOpen, note, onClose, onUpdateNote 
           </SModalScrollContent>
           <SDivider />
           <SModalActions>
-            <SButton onClick={onSaveAndClose} disabled={!isEditing}>
-              保存
-            </SButton>
-            <SButton secondary onClick={onCloseWithoutSave}>
-              {isEditing ? "変更を破棄して閉じる" : "閉じる"}
-            </SButton>
+            <SModalActionsLeft>
+              <SButton onClick={onSaveAndClose} disabled={!isEditing}>
+                保存する
+              </SButton>
+              <SButton secondary onClick={onCloseWithoutSave}>
+                {isEditing ? "変更を破棄して閉じる" : "閉じる"}
+              </SButton>
+            </SModalActionsLeft>
+            <SModalActionsRight>
+              <SIconButton aria-labelledby="action-popover" onClick={onClickMoreActions}>
+                <MoreIcon fill="rgba(0, 0, 0, 0.4)" />
+              </SIconButton>
+              <Popover
+                id="action-popover"
+                open={Boolean(anchorActionsEl)}
+                anchorEl={anchorActionsEl}
+                onClose={handleCloseActions}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "left",
+                }}
+                transformOrigin={{
+                  vertical: "bottom",
+                  horizontal: "left",
+                }}
+              >
+                <SMenuList>
+                  <SMenuListItem onClick={onDelete}>削除</SMenuListItem>
+                </SMenuList>
+              </Popover>
+            </SModalActionsRight>
           </SModalActions>
         </SModal>
       </SModalWrapper>

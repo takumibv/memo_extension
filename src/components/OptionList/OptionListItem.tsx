@@ -19,7 +19,7 @@ type Props = {
   pageInfo?: PageInfo;
   showPageInfo?: boolean;
   onUpdate: (note: Note) => void;
-  onDelete: (note: Note) => void;
+  onDelete: (note: Note) => boolean;
   onClickLink: (url: string) => void;
   onClickFilter: (pageInfoId?: number) => void;
 };
@@ -114,7 +114,7 @@ const OptionListItem: React.VFC<Props> = memo(
                   </SIconButton>
                 </SIconButtonWrap>
               </Tooltip>
-              <Tooltip title="ページへ移動" enterDelay={300}>
+              {/* <Tooltip title="ページへ移動" enterDelay={300}>
                 <SIconButtonWrap>
                   <SIconButton
                     onClick={(e) => {
@@ -125,7 +125,7 @@ const OptionListItem: React.VFC<Props> = memo(
                     <LaunchIcon fill="rgba(0, 0, 0, 0.4)" />
                   </SIconButton>
                 </SIconButtonWrap>
-              </Tooltip>
+              </Tooltip> */}
             </SCardActions>
             <SCardDate>
               {created_at && (
@@ -142,23 +142,28 @@ const OptionListItem: React.VFC<Props> = memo(
           onClose={() => setOpenModal(false)}
           note={note}
           onUpdateNote={onUpdate}
+          onDeleteNote={onDelete}
         />
       </>
     );
   }
 );
 
-const SCard = styled.div`
+const SCard = styled.button`
   display: flex;
   flex-direction: column;
+  align-items: stretch;
   background-color: #fff;
   border-radius: 0.25em;
   padding: 0.75em 1em;
+  width: 100%;
   height: 100%;
   box-shadow: rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
   transition: box-shadow 300ms cubic-bezier(0.25, 0.8, 0.25, 1);
 
-  &:hover {
+  &:hover,
+  &:focus {
+    outline: 0;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
   }
 `;
@@ -225,7 +230,7 @@ const SCardActions = styled.div`
 `;
 
 const SIconButtonWrap = styled.div`
-  margin-right: 0.5em;
+  margin-right: 1em;
 `;
 
 const SCopySuccessIcon = styled(CopySuccessIcon)`
@@ -240,7 +245,7 @@ const SIconButton = styled(IconButton)`
 
 const SPageInfoWrap = styled.div`
   display: inline-flex;
-  margin-bottom: 0.5em;
+  margin-bottom: 0.75em;
 `;
 
 const SPageInfo = styled.div<{ isFilter?: boolean }>`
@@ -286,6 +291,7 @@ const SPageInfoFaviconImage = styled.img`
 const SPageInfoTitle = styled.p`
   font-size: 0.75em;
   line-height: 1.25;
+  word-break: break-all;
 `;
 const SPageInfoLink = styled.p`
   font-size: 0.625em;

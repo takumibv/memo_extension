@@ -20,7 +20,16 @@ import {
   UPDATE_NOTE,
 } from "../actions";
 import IconButton from "../components/Button/IconButton";
-import { CopyIcon, EditIcon, EyeIcon, LaunchIcon, PlusIcon, TrashIcon } from "../components/Icon";
+import {
+  CopyIcon,
+  EditIcon,
+  EyeIcon,
+  LaunchIcon,
+  PlusIcon,
+  SearchIcon,
+  SortIcon,
+  TrashIcon,
+} from "../components/Icon";
 import { PageInfo } from "../types/PageInfo";
 import styled, { createGlobalStyle, css } from "styled-components";
 import { resetCSS } from "../resetCSS";
@@ -110,7 +119,12 @@ const Options: React.VFC<Props> = () => {
 
   const onDelete = (note: Note) => {
     console.log("onDelete", note);
-    sendAction(DELETE_NOTE, pageInfos.find((p) => p.id === note.page_info_id)?.page_url, note);
+    if (confirm("削除してもよろしいですか？")) {
+      sendAction(DELETE_NOTE, pageInfos.find((p) => p.id === note.page_info_id)?.page_url, note);
+      return true;
+    } else {
+      return false;
+    }
   };
 
   const onClickLink = async (url: string) => {
@@ -139,7 +153,6 @@ const Options: React.VFC<Props> = () => {
       <GlobalStyle />
       <div className="p-4">
         <SContainer>
-          <SHeader>header</SHeader>
           <SMain>
             <SMainLeft>
               <SSideNav>
@@ -179,12 +192,18 @@ const Options: React.VFC<Props> = () => {
             </SMainLeft>
             <SMainRight>
               <SMainRightHeader>
-                <SInput type="text" />
-                <SSelect onChange={onChangeSort}>
-                  <option value="updated_at">更新日</option>
-                  <option value="created_at">作成日</option>
-                  <option value="title">タイトル</option>
-                </SSelect>
+                <SInputWrap>
+                  <SInputIcon fill="rgba(0,0,0,0.4)" />
+                  <SInput type="text" />
+                </SInputWrap>
+                <SSelectWrap>
+                  <SSelectIcon fill="rgba(0,0,0,0.4)" />
+                  <SSelect onChange={onChangeSort}>
+                    <option value="updated_at">更新日</option>
+                    <option value="created_at">作成日</option>
+                    <option value="title">タイトル</option>
+                  </SSelect>
+                </SSelectWrap>
               </SMainRightHeader>
               {currentPageInfo && (
                 <SCurrentPageArea>
@@ -228,6 +247,7 @@ const Options: React.VFC<Props> = () => {
               )}
             </SMainRight>
           </SMain>
+          <SHeader>header</SHeader>
         </SContainer>
       </div>
     </>
@@ -251,29 +271,37 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 const SContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
+  /* height: 100vh; */
   position: relative;
 `;
 
 const SHeader = styled.header`
-  padding: 0.75em;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2.75em;
+  padding: 0 0.75em;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: #fff;
   /* background-color: #4c4722; */
 `;
 
 const SMain = styled.div`
-  position: relative;
-  display: flex;
-  flex: 1;
   overflow: hidden;
-  padding: 0 1.125em;
+  /* padding: 0 1.125em; */
 `;
 
 const SMainLeft = styled.div`
+  position: fixed;
+  left: 0;
+  top: 2.75em;
+  bottom: 0;
   overflow-y: auto;
   width: 18em;
+  padding-left: 1em;
 `;
 
 const SSideNav = styled.ul`
@@ -341,9 +369,7 @@ const SSideNavItemLink = styled.p`
 
 const SMainRight = styled.main`
   overflow-y: auto;
-  flex: 1;
-  justify-self: stretch;
-  padding: 1.5em 0.75em;
+  padding: 4em 2em 1.5em 19em;
 `;
 
 const SMainRightHeader = styled.div`
@@ -351,11 +377,25 @@ const SMainRightHeader = styled.div`
   margin-bottom: 0.25em;
 `;
 
+const SInputWrap = styled.div`
+  position: relative;
+  flex: 1;
+`;
+
+const SInputIcon = styled(SearchIcon)`
+  position: absolute;
+  left: 0.75em;
+  top: 50%;
+  width: 1.25em;
+  transform: translateY(-50%);
+  pointer-events: none;
+`;
+
 const SInput = styled.input`
   border: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 0.5em 0.75em;
-  flex: 1;
+  padding: 0.5em 0.75em 0.5em 2.25em;
   border-radius: 999em;
+  width: 100%;
 
   &:hover,
   &:focus {
@@ -363,13 +403,27 @@ const SInput = styled.input`
   }
 `;
 
+const SSelectWrap = styled.div`
+  position: relative;
+  margin-left: 0.75em;
+  width: 12em;
+`;
+
+const SSelectIcon = styled(SortIcon)`
+  position: absolute;
+  left: 0.5em;
+  top: 50%;
+  width: 1.25em;
+  transform: translateY(-50%);
+  pointer-events: none;
+`;
+
 const SSelect = styled.select`
   border: 1px solid rgba(0, 0, 0, 0.1);
-  margin-left: 0.75em;
-  padding: 0.5em 0.75em;
-  width: 12em;
+  padding: 0.5em 0.75em 0.5em 2em;
   border-radius: 0.2em;
   cursor: pointer;
+  width: 100%;
 
   &:hover,
   &:focus {
