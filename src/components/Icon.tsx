@@ -1,5 +1,7 @@
 import React, { VFC } from "react";
 
+// https://heroicons.com/ からSVGを書き出し
+
 export const CopyIcon: VFC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" {...props}>
     <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
@@ -54,7 +56,7 @@ export const EditIcon: VFC<React.SVGProps<SVGSVGElement>> = (props) => (
 );
 
 export const ResizeIcon: VFC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" {...props}>
     <path
       fillRule="evenodd"
       d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
@@ -64,7 +66,7 @@ export const ResizeIcon: VFC<React.SVGProps<SVGSVGElement>> = (props) => (
 );
 
 export const PlusIcon: VFC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" {...props}>
     <path
       fillRule="evenodd"
       d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
@@ -74,7 +76,7 @@ export const PlusIcon: VFC<React.SVGProps<SVGSVGElement>> = (props) => (
 );
 
 export const EyeIcon: VFC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" {...props}>
     <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
     <path
       fillRule="evenodd"
@@ -85,7 +87,7 @@ export const EyeIcon: VFC<React.SVGProps<SVGSVGElement>> = (props) => (
 );
 
 export const EyeOffIcon: VFC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" {...props}>
     <path
       fillRule="evenodd"
       d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z"
@@ -96,14 +98,14 @@ export const EyeOffIcon: VFC<React.SVGProps<SVGSVGElement>> = (props) => (
 );
 
 export const LaunchIcon: VFC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" {...props}>
     <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
     <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
   </svg>
 );
 
 export const FilterIcon: VFC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" {...props}>
     <path
       fillRule="evenodd"
       d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z"
@@ -113,13 +115,13 @@ export const FilterIcon: VFC<React.SVGProps<SVGSVGElement>> = (props) => (
 );
 
 export const SortIcon: VFC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" {...props}>
     <path d="M5 12a1 1 0 102 0V6.414l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L5 6.414V12zM15 8a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L15 13.586V8z" />
   </svg>
 );
 
 export const SearchIcon: VFC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" {...props}>
     <path
       fillRule="evenodd"
       d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
@@ -129,7 +131,39 @@ export const SearchIcon: VFC<React.SVGProps<SVGSVGElement>> = (props) => (
 );
 
 export const MoreIcon: VFC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" {...props}>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" {...props}>
     <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+  </svg>
+);
+
+export const SettingIcon: VFC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" {...props}>
+    <path
+      fillRule="evenodd"
+      d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+      clipRule="evenodd"
+    />
+  </svg>
+);
+
+export const CloseIcon: VFC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" {...props}>
+    <path
+      fillRule="evenodd"
+      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+      clipRule="evenodd"
+    />
+  </svg>
+);
+
+export const SubdirectoryArrowLeftIcon: VFC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
+    <path d="m11 9 1.42 1.42L8.83 14H18V4h2v12H8.83l3.59 3.58L11 21l-6-6 6-6z"></path>
+  </svg>
+);
+
+export const NotesIcon: VFC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg viewBox="0 0 24 24" {...props}>
+    <path d="M3 18h12v-2H3v2zM3 6v2h18V6H3zm0 7h18v-2H3v2z"></path>
   </svg>
 );

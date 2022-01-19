@@ -10,9 +10,17 @@ import {
 import { Note } from "../types/Note";
 import { CREATE_NOTE, DELETE_NOTE, GET_ALL_NOTES, POPUP, UPDATE_NOTE } from "../actions";
 import IconButton from "../components/Button/IconButton";
-import { EyeIcon, EyeOffIcon, PinIcon, PlusIcon, TrashIcon } from "../components/Icon";
+import {
+  EyeIcon,
+  EyeOffIcon,
+  NotesIcon,
+  PinIcon,
+  PlusIcon,
+  SubdirectoryArrowLeftIcon,
+  TrashIcon,
+} from "../components/Icon";
 import FabIconButton from "../components/Button/FabIconButton";
-import styled, { createGlobalStyle } from "styled-components";
+import styled, { createGlobalStyle, css } from "styled-components";
 import { resetCSS } from "../resetCSS";
 
 type FormData = {
@@ -71,6 +79,10 @@ const Popup = () => {
     }
   };
 
+  const onClickNotesButton = () => {
+    if (chrome.runtime.openOptionsPage) chrome.runtime.openOptionsPage();
+  };
+
   const onClickDelete = (note: Note) => {
     const { id, title } = note;
     if (currentTab && confirm(`${title ? `「${title}」` : "メモ"}を削除してよろしいですか？`)) {
@@ -102,37 +114,58 @@ const Popup = () => {
       <GlobalStyle />
       <div style={{ width: "320px" }}>
         <SHeader>
-          <FabIconButton onClick={onClickAddNote} disabled={!isEnabled}>
-            <PlusIcon fill="#fff" />
-          </FabIconButton>
-          <SIconButton onClick={() => setIsVisible(!isVisible)} disabled={!isEnabled}>
-            {isVisible ? (
-              <EyeIcon fill="rgba(0, 0, 0, 0.4)" />
-            ) : (
-              <EyeOffIcon fill="rgba(0, 0, 0, 0.4)" />
-            )}
-          </SIconButton>
+          <SHeaderLeft>
+            <FabIconButton onClick={onClickAddNote} disabled={!isEnabled}>
+              <PlusIcon fill="#fff" />
+            </FabIconButton>
+            <SIconButton onClick={() => setIsVisible(!isVisible)} disabled={!isEnabled}>
+              {isVisible ? (
+                <EyeIcon fill="rgba(0, 0, 0, 0.4)" />
+              ) : (
+                <EyeOffIcon fill="rgba(0, 0, 0, 0.4)" />
+              )}
+            </SIconButton>
+          </SHeaderLeft>
+          <SHeaderRight>
+            <SIconButton onClick={onClickNotesButton}>
+              <NotesIcon fill="rgba(0, 0, 0, 0.4)" />
+            </SIconButton>
+          </SHeaderRight>
         </SHeader>
         <SContent>
-          {!isEnabled && <p>この画面ではメモの作成はできません</p>}
-          {isEnabled && notes.length === 0 && <p>メモがありません</p>}
+          {!isEnabled && (
+            <SOptionMessageText>この画面ではメモの作成はできません</SOptionMessageText>
+          )}
+          {isEnabled && notes.length === 0 && (
+            <>
+              <SOptionActionMessageText>
+                <SSubdirectoryArrowLeftIcon />
+                <SOptionActionMessageSpan>メモを作成する。</SOptionActionMessageSpan>
+              </SOptionActionMessageText>
+              <SOptionMessageText>
+                もしくは、右クリック「メモを追加する」から作成できます。
+              </SOptionMessageText>
+            </>
+          )}
           {isEnabled && notes.length !== 0 && (
             <ul>
               {notes.map((note) => (
-                <li key={note.id}>
-                  <p>
-                    {note.title}:{note.description}
-                    {note.is_fixed && (
-                      <IconButton onClick={() => onClickPin(note)}>
-                        <PinIcon />
-                      </IconButton>
-                    )}
-                    <IconButton onClick={() => onClickDelete(note)}>
-                      <TrashIcon />
-                    </IconButton>
-                  </p>
-                  <hr />
-                </li>
+                <SOptionListItem key={note.id}>
+                  <SOptionListItemLeft disabled={note.is_fixed}>{note.title}</SOptionListItemLeft>
+                  <SOptionListItemRight>
+                    <SOptionPinIconButton
+                      onClick={() => onClickPin(note)}
+                      isPin={!!note.is_fixed}
+                      disabled={!note.is_fixed}
+                    >
+                      <PinIcon fill="rgba(0, 0, 0, 0.4)" />
+                    </SOptionPinIconButton>
+
+                    <SOptionIconButton onClick={() => onClickDelete(note)}>
+                      <TrashIcon fill="rgba(0, 0, 0, 0.4)" />
+                    </SOptionIconButton>
+                  </SOptionListItemRight>
+                </SOptionListItem>
               ))}
             </ul>
           )}
@@ -152,8 +185,65 @@ const SHeader = styled.header`
   align-items: center;
 `;
 
-const SContent = styled.div`
-  padding: 1em 1em 2em;
+const SHeaderLeft = styled.div`
+  flex: 1;
+`;
+
+const SHeaderRight = styled.div``;
+
+const SContent = styled.div``;
+
+const SOptionMessageText = styled.p`
+  padding: 1em;
+  color: #aaa;
+`;
+
+const SOptionActionMessageText = styled.p`
+  padding: 1em;
+`;
+
+const SOptionActionMessageSpan = styled.span`
+  font-size: 1.25em;
+`;
+
+const SSubdirectoryArrowLeftIcon = styled(SubdirectoryArrowLeftIcon)`
+  width: 2em;
+  height: 2em;
+  transform: rotate(90deg);
+  margin-left: 0.75em;
+  margin-right: 0.5em;
+`;
+
+const SOptionListItem = styled.li`
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+`;
+
+const SOptionListItemLeft = styled.div<{ disabled?: boolean }>`
+  padding: 1em;
+  flex: 1;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  ${({ disabled }) =>
+    disabled &&
+    css`
+      cursor: default;
+
+      &:hover {
+        background-color: transparent;
+      }
+    `}
+`;
+const SOptionListItemRight = styled.div`
+  padding: 1em;
 `;
 
 const SIconButton = styled(IconButton)`
@@ -161,6 +251,26 @@ const SIconButton = styled(IconButton)`
   width: 2em;
   height: 2em;
   padding: 0.25em;
+`;
+
+const SOptionPinIconButton = styled(IconButton)<{ isPin: boolean }>`
+  margin: 0 0.5em;
+
+  ${({ isPin }) =>
+    isPin &&
+    css`
+      opacity: 0;
+
+      &:hover {
+        opacity: 1;
+      }
+    `}
+
+  ${({ disabled }) => css``}
+`;
+
+const SOptionIconButton = styled(IconButton)`
+  margin: 0 0.5em;
 `;
 
 ReactDOM.render(

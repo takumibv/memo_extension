@@ -28,7 +28,7 @@ export const SModal = styled.div`
   flex-direction: column;
   pointer-events: initial;
   margin: auto;
-  width: 600px;
+  width: 800px;
   max-width: 100%;
   max-height: calc(100vh - 4em);
   background-color: #fff;

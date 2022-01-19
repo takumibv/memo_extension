@@ -258,9 +258,9 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
               >
                 {title || <SNoteSpan>タイトル</SNoteSpan>}
               </SNoteTitle>
-              {is_fixed && (
+              {!is_fixed && (
                 <SHeaderFixedPinArea>
-                  <Tooltip title="固定を解除する" enterDelay={300} placement="top">
+                  <Tooltip title="固定する" enterDelay={300} placement="top">
                     <div>
                       <SHeaderFixedButton onClick={onClickFixedButton}>
                         <PinIcon fill="rgba(0, 0, 0, 0.4)" />
@@ -331,7 +331,7 @@ const StickyNote: React.VFC<Props> = memo(({ onUpdateNote, onDeleteNote, ...defa
             </Tooltip>
             <Tooltip title="固定を切り替える" enterDelay={300}>
               <SIconButtonWrap>
-                <SIconButton onClick={onClickFixedButton} isFocus={is_fixed}>
+                <SIconButton onClick={onClickFixedButton} isFocus={!is_fixed}>
                   <PinIcon fill="rgba(0, 0, 0, 0.4)" />
                 </SIconButton>
               </SIconButtonWrap>
