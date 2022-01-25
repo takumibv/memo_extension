@@ -14,7 +14,6 @@ import { useQuery } from "../../hooks/useRouter";
 import {
   GlobalStyle,
   SContainer,
-  SHeader,
   SMain,
   SMainLeft,
   SSideNav,
@@ -43,6 +42,7 @@ import {
 } from "./Options.style";
 import IconButton from "../../components/Button/IconButton";
 import { CloseIcon } from "../../components/Icon";
+import OptionHeader from "../../components/OptionHeader/OptionHeader";
 
 interface Props extends RouteComponentProps<{}> {}
 
@@ -283,7 +283,7 @@ const Options: React.VFC<Props> = () => {
               )}
             </SMainRight>
           </SMain>
-          <SHeader>header</SHeader>
+          <OptionHeader current="memos" />
         </SContainer>
       </div>
     </>

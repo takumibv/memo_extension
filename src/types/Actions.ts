@@ -16,6 +16,7 @@ import {
   UPDATE_NOTE_IS_FIXED,
   UPDATE_NOTE_IS_OPEN,
   UPDATE_NOTE_TITLE,
+  SCROLL_TO_TARGET_NOTE,
 } from "../actions";
 import { Note } from "./Note";
 import { PageInfo } from "./PageInfo";
@@ -42,7 +43,8 @@ export type ToBackgroundMessageMethod =
   | typeof UPDATE_NOTE
   | typeof DELETE_NOTE
   | typeof OPEN_OPTION_PAGE
-  | typeof GET_ALL_NOTES_AND_PAGE_INFO;
+  | typeof GET_ALL_NOTES_AND_PAGE_INFO
+  | typeof SCROLL_TO_TARGET_NOTE;
 
 export type ToContentScriptMessage = {
   method: ToContentScriptMessageMethod;

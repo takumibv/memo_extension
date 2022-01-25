@@ -110,3 +110,11 @@ export const fetchAllPageInfo = async (): Promise<PageInfo[]> => {
 
   return pageInfos;
 };
+
+export const scrollTo = async (tabId: number, note: Note) => {
+  return await chrome.scripting.executeScript({
+    target: { tabId },
+    func: (position_x, position_y) => window.scrollTo(position_x ?? 0, position_y ?? 0),
+    args: [note.position_x, note.position_y],
+  });
+};

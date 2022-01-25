@@ -7,23 +7,16 @@ import {
   OPEN_OPTION_PAGE,
   OPTIONS,
   POPUP,
-  SET_ALL_NOTES,
+  SCROLL_TO_TARGET_NOTE,
   UPDATE_NOTE,
 } from "../../actions";
 import * as actions from "./actions";
-import * as contentScript from "../contentScript";
-import {
-  createNote,
-  deleteNote,
-  getAllNotesByPageId,
-  updateNote,
-} from "../../storages/noteStorage";
-import { getOrCreatePageInfoByUrl, getPageInfoByUrl } from "../../storages/pageInfoStorage";
+import { createNote } from "../../storages/noteStorage";
+import { getOrCreatePageInfoByUrl } from "../../storages/pageInfoStorage";
 import {
   ToBackgroundMessage,
   ToBackgroundMessageMethod,
   ToBackgroundMessageResponse,
-  ToContentScriptMessage,
 } from "../../types/Actions";
 import { Note } from "../../types/Note";
 import { isSystemLink, msg } from "../../utils";
@@ -75,6 +68,7 @@ chrome.contextMenus.onClicked.addListener((info) => {
       })
       .catch((e) => {
         // TODO: エラー時の処理
+        if (chrome.runtime.openOptionsPage) chrome.runtime.openOptionsPage();
       });
   });
 });
@@ -233,6 +227,9 @@ const _handleMessagesFromPopup = (
           .createNote(tabUrl)
           .then(sendResponseAndSetNotes)
           .catch((e) => console.log("error CREATE_NOTE:", e));
+        return true;
+      case SCROLL_TO_TARGET_NOTE:
+        actions.scrollTo(tabId, targetNote!).then(() => sendResponse());
         return true;
       case UPDATE_NOTE:
         actions

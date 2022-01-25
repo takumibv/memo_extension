@@ -25,20 +25,6 @@ export const SContainer = styled.div`
   position: relative;
 `;
 
-export const SHeader = styled.header`
-  display: flex;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 2.75em;
-  padding: 0 1.75em;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  background-color: #fff;
-  /* background-color: #4c4722; */
-`;
-
 export const SMain = styled.div`
   overflow: hidden;
   /* padding: 0 1.125em; */

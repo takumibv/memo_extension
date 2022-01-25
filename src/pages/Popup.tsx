@@ -8,7 +8,14 @@ import {
   ToBackgroundMessageResponse,
 } from "../types/Actions";
 import { Note } from "../types/Note";
-import { CREATE_NOTE, DELETE_NOTE, GET_ALL_NOTES, POPUP, UPDATE_NOTE } from "../actions";
+import {
+  CREATE_NOTE,
+  DELETE_NOTE,
+  GET_ALL_NOTES,
+  POPUP,
+  SCROLL_TO_TARGET_NOTE,
+  UPDATE_NOTE,
+} from "../actions";
 import IconButton from "../components/Button/IconButton";
 import {
   EyeIcon,
@@ -60,7 +67,7 @@ const Popup = () => {
               setIsEnabled(false);
               reject(error.message);
             } else {
-              setNotes(notes || []);
+              notes && setNotes(notes);
               setIsEnabled(true);
               resolve(true);
             }
@@ -87,6 +94,14 @@ const Popup = () => {
     const { id, title } = note;
     if (currentTab && confirm(`${title ? `「${title}」` : "メモ"}を削除してよろしいですか？`)) {
       sendAction(DELETE_NOTE, currentTab, note);
+    }
+  };
+
+  const onClickNote = (note: Note) => {
+    if (currentTab) {
+      sendAction(SCROLL_TO_TARGET_NOTE, currentTab, note).then((result) => {
+        window.close();
+      });
     }
   };
 
@@ -118,54 +133,55 @@ const Popup = () => {
             <FabIconButton onClick={onClickAddNote} disabled={!isEnabled}>
               <PlusIcon fill="#fff" />
             </FabIconButton>
-            <SIconButton onClick={() => setIsVisible(!isVisible)} disabled={!isEnabled}>
+            <SHeaderIconButton onClick={() => setIsVisible(!isVisible)} disabled={!isEnabled}>
               {isVisible ? (
                 <EyeIcon fill="rgba(0, 0, 0, 0.4)" />
               ) : (
                 <EyeOffIcon fill="rgba(0, 0, 0, 0.4)" />
               )}
-            </SIconButton>
+            </SHeaderIconButton>
           </SHeaderLeft>
           <SHeaderRight>
-            <SIconButton onClick={onClickNotesButton}>
+            <SHeaderIconButton onClick={onClickNotesButton}>
               <NotesIcon fill="rgba(0, 0, 0, 0.4)" />
-            </SIconButton>
+            </SHeaderIconButton>
           </SHeaderRight>
         </SHeader>
         <SContent>
-          {!isEnabled && (
-            <SOptionMessageText>この画面ではメモの作成はできません</SOptionMessageText>
-          )}
+          {!isEnabled && <SMessageText>この画面ではメモの作成はできません</SMessageText>}
           {isEnabled && notes.length === 0 && (
             <>
-              <SOptionActionMessageText>
+              <SActionMessageText>
                 <SSubdirectoryArrowLeftIcon />
-                <SOptionActionMessageSpan>メモを作成する。</SOptionActionMessageSpan>
-              </SOptionActionMessageText>
-              <SOptionMessageText>
-                もしくは、右クリック「メモを追加する」から作成できます。
-              </SOptionMessageText>
+                <SActionMessageSpan>メモを作成する。</SActionMessageSpan>
+              </SActionMessageText>
+              <SMessageText>もしくは、右クリック「メモを追加する」から作成できます。</SMessageText>
             </>
           )}
           {isEnabled && notes.length !== 0 && (
             <ul>
               {notes.map((note) => (
-                <SOptionListItem key={note.id}>
-                  <SOptionListItemLeft disabled={note.is_fixed}>{note.title}</SOptionListItemLeft>
-                  <SOptionListItemRight>
-                    <SOptionPinIconButton
+                <SListItem key={note.id}>
+                  <SListItemLeft
+                    disabled={note.is_fixed}
+                    onClick={() => !note.is_fixed && onClickNote(note)}
+                  >
+                    {note.title}
+                  </SListItemLeft>
+                  <SListItemRight>
+                    <SPinIconButton
                       onClick={() => onClickPin(note)}
                       isPin={!!note.is_fixed}
                       disabled={!note.is_fixed}
                     >
-                      <PinIcon fill="rgba(0, 0, 0, 0.4)" />
-                    </SOptionPinIconButton>
+                      <PinIcon fill="rgba(0, 0, 0, 1)" />
+                    </SPinIconButton>
 
-                    <SOptionIconButton onClick={() => onClickDelete(note)}>
+                    <SIconButton onClick={() => onClickDelete(note)}>
                       <TrashIcon fill="rgba(0, 0, 0, 0.4)" />
-                    </SOptionIconButton>
-                  </SOptionListItemRight>
-                </SOptionListItem>
+                    </SIconButton>
+                  </SListItemRight>
+                </SListItem>
               ))}
             </ul>
           )}
@@ -193,16 +209,16 @@ const SHeaderRight = styled.div``;
 
 const SContent = styled.div``;
 
-const SOptionMessageText = styled.p`
+const SMessageText = styled.p`
   padding: 1em;
   color: #aaa;
 `;
 
-const SOptionActionMessageText = styled.p`
+const SActionMessageText = styled.p`
   padding: 1em;
 `;
 
-const SOptionActionMessageSpan = styled.span`
+const SActionMessageSpan = styled.span`
   font-size: 1.25em;
 `;
 
@@ -214,13 +230,13 @@ const SSubdirectoryArrowLeftIcon = styled(SubdirectoryArrowLeftIcon)`
   margin-right: 0.5em;
 `;
 
-const SOptionListItem = styled.li`
+const SListItem = styled.li`
   display: flex;
   justify-content: space-between;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
 `;
 
-const SOptionListItemLeft = styled.div<{ disabled?: boolean }>`
+const SListItemLeft = styled.div<{ disabled?: boolean }>`
   padding: 1em;
   flex: 1;
   text-overflow: ellipsis;
@@ -242,34 +258,38 @@ const SOptionListItemLeft = styled.div<{ disabled?: boolean }>`
       }
     `}
 `;
-const SOptionListItemRight = styled.div`
+const SListItemRight = styled.div`
   padding: 1em;
 `;
 
-const SIconButton = styled(IconButton)`
+const SHeaderIconButton = styled(IconButton)`
   margin-left: 1em;
   width: 2em;
   height: 2em;
   padding: 0.25em;
 `;
 
-const SOptionPinIconButton = styled(IconButton)<{ isPin: boolean }>`
+const SPinIconButton = styled(IconButton)<{ isPin: boolean }>`
   margin: 0 0.5em;
 
   ${({ isPin }) =>
     isPin &&
     css`
-      opacity: 0;
+      opacity: 0.2;
 
       &:hover {
         opacity: 1;
       }
     `}
 
-  ${({ disabled }) => css``}
+  ${({ disabled }) =>
+    disabled &&
+    css`
+      opacity: 1;
+    `}
 `;
 
-const SOptionIconButton = styled(IconButton)`
+const SIconButton = styled(IconButton)`
   margin: 0 0.5em;
 `;
 
