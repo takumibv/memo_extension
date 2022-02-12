@@ -40,8 +40,8 @@ type Props = {
   isOpen?: boolean;
   onClose?: () => void;
   note: Note;
-  onUpdateNote: (note: Note) => void;
-  onDeleteNote?: (note: Note) => boolean;
+  onUpdateNote: (note: Note) => Promise<boolean>;
+  onDeleteNote?: (note: Note) => Promise<boolean>;
 };
 
 export const NoteEditModal: VFC<Props> = ({
@@ -134,8 +134,8 @@ export const NoteEditModal: VFC<Props> = ({
     onClose && onClose();
   }, [note, onClose]);
 
-  const onDelete = useCallback(() => {
-    if (onDeleteNote && onDeleteNote(note)) {
+  const onDelete = useCallback(async () => {
+    if (onDeleteNote && (await onDeleteNote(note))) {
       onClose && onClose();
       handleCloseActions();
     }
@@ -198,14 +198,14 @@ export const NoteEditModal: VFC<Props> = ({
                 <SModalSection>
                   <SNoteDetailArea>
                     <SNoteDetail>
-                      <SNoteDetailTitle>固定</SNoteDetailTitle>
+                      <SNoteDetailTitle>ピン</SNoteDetailTitle>
                       <SNoteDetailData>
                         <select
                           value={editIsFixed ? "fixed" : "unfixed"}
                           onChange={onChangeEditIsFixed}
                         >
-                          <option value="fixed">固定する</option>
-                          <option value="unfixed">固定しない</option>
+                          <option value="unfixed">あり</option>
+                          <option value="fixed">なし</option>
                         </select>
                       </SNoteDetailData>
                     </SNoteDetail>

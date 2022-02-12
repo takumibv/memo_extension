@@ -1,4 +1,4 @@
-import { BACKGROUND, SET_ALL_NOTES } from "../../actions";
+import { BACKGROUND, SET_ALL_NOTES } from "../message/actions";
 import {
   createNote as _createNote,
   updateNote as _updateNote,
@@ -6,6 +6,10 @@ import {
   getAllNotesByPageId,
   getAllNotes,
 } from "../../storages/noteStorage";
+import {
+  getIsVisibleNote as _getIsVisibleNote,
+  setIsVisibleNote as _setIsVisibleNote,
+} from "../../storages/noteVisibleStorage";
 import {
   getAllPageInfos,
   getOrCreatePageInfoByUrl,
@@ -93,15 +97,15 @@ export const deleteNote = async (note: Note): Promise<Note[]> => {
   return allNotes;
 };
 
-export const setAllNotes = (tabId: number, page_url: string, notes: Note[]) => {
-  console.log("sendMessage ======", SET_ALL_NOTES, tabId, page_url, notes);
-  chrome.tabs.sendMessage<ToContentScriptMessage>(tabId, {
-    method: SET_ALL_NOTES,
-    senderType: BACKGROUND,
-    notes,
-    page_url,
-  });
-};
+// export const setAllNotes = (tabId: number, page_url: string, notes: Note[]) => {
+//   console.log("sendMessage ======", SET_ALL_NOTES, tabId, page_url, notes);
+//   chrome.tabs.sendMessage<ToContentScriptMessage>(tabId, {
+//     method: SET_ALL_NOTES,
+//     senderType: BACKGROUND,
+//     notes,
+//     page_url,
+//   });
+// };
 
 export const fetchAllPageInfo = async (): Promise<PageInfo[]> => {
   const pageInfos = await getAllPageInfos();
@@ -117,4 +121,12 @@ export const scrollTo = async (tabId: number, note: Note) => {
     func: (position_x, position_y) => window.scrollTo(position_x ?? 0, position_y ?? 0),
     args: [note.position_x, note.position_y],
   });
+};
+
+export const getIsVisibleNote = async () => {
+  return await _getIsVisibleNote();
+};
+
+export const setIsVisibleNote = async (isVisible: boolean) => {
+  return await _setIsVisibleNote(isVisible);
 };

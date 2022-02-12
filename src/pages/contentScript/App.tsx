@@ -7,7 +7,7 @@ import {
   OPEN_OPTION_PAGE,
   SET_ALL_NOTES,
   UPDATE_NOTE,
-} from "../../actions";
+} from "../message/actions";
 import StickyNote from "../../components/StickyNote/StickyNote";
 import {
   ToBackgroundMessage,
@@ -17,6 +17,7 @@ import {
 } from "../../types/Actions";
 import { Note } from "../../types/Note";
 import { GlobalStyle, SContainer } from "./App.style";
+import { sendFetchAllNotes, sendUpdateNote, sendDeleteNote } from "../message/sender/contentScript";
 
 const Main: React.VFC = () => {
   const [notes, setNotes] = useState<Note[]>([]);
@@ -42,56 +43,41 @@ const Main: React.VFC = () => {
     return;
   };
 
-  const sendAction = useCallback(
-    (method: ToBackgroundMessageMethod, targetNote?: Note): Promise<boolean> => {
-      console.log("sendMessage ======", method, window.location.href, targetNote);
-      return new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage<ToBackgroundMessage, ToBackgroundMessageResponse>(
-          {
-            method: method,
-            senderType: CONTENT_SCRIPT,
-            page_url: window.location.href, // targetNote.page_info.page_url,
-            targetNote,
-          },
-          ({ notes, error }) => {
-            console.log("response ======", notes, chrome.runtime.lastError);
-            if (chrome.runtime.lastError) {
-              reject(chrome.runtime.lastError.message);
-            } else if (error) {
-              reject(error.message);
-            } else {
-              setNotes(notes || []);
-              resolve(true);
-            }
-          }
-        );
-      });
-    },
-    []
-  );
-
-  const getAllNotes = useCallback(async () => {
-    return await sendAction(GET_ALL_NOTES);
+  const fetchAllNotes = useCallback(async () => {
+    try {
+      const notes = await sendFetchAllNotes();
+      setNotes(notes);
+      return true;
+    } catch (error) {
+      // TODO
+    }
+    return false;
   }, []);
 
   const updateNote = useCallback(async (note: Note) => {
-    return await sendAction(UPDATE_NOTE, note);
+    try {
+      const notes = await sendUpdateNote(note);
+      setNotes(notes);
+      return true;
+    } catch (error) {
+      // TODO
+    }
+    return false;
   }, []);
 
   const deleteNote = useCallback(async (note: Note) => {
-    return await sendAction(DELETE_NOTE, note);
+    try {
+      const notes = await sendDeleteNote(note);
+      setNotes(notes);
+      return true;
+    } catch (error) {
+      // TODO
+    }
+    return false;
   }, []);
 
-  const open_option_page = () => {
-    chrome.runtime.sendMessage<ToBackgroundMessage, ToBackgroundMessageResponse>({
-      method: OPEN_OPTION_PAGE,
-      senderType: CONTENT_SCRIPT,
-      page_url: "",
-    });
-  };
-
   useEffect(() => {
-    getAllNotes();
+    fetchAllNotes();
     chrome.runtime.onMessage.addListener(handleMessages);
 
     return () => {
@@ -103,7 +89,7 @@ const Main: React.VFC = () => {
     <>
       <GlobalStyle />
       <SContainer>
-        {notes.map((note: Note) => (
+        {notes.map((note) => (
           // TODO Focusの実施
           <StickyNote
             key={note.id}

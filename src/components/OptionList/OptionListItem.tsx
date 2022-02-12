@@ -32,8 +32,8 @@ type Props = {
   note: Note;
   pageInfo?: PageInfo;
   showPageInfo?: boolean;
-  onUpdate: (note: Note) => void;
-  onDelete: (note: Note) => boolean;
+  onUpdate: (note: Note) => Promise<boolean>;
+  onDelete: (note: Note) => Promise<boolean>;
   onClickLink: (url: string) => void;
   onClickFilter: (pageInfoId?: number) => void;
 };

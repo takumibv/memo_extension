@@ -1,13 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { useHistory } from "react-router";
-import {
-  ToBackgroundMessage,
-  ToBackgroundMessageMethod,
-  ToBackgroundMessageResponse,
-} from "../../types/Actions";
 import { Note } from "../../types/Note";
-import { DELETE_NOTE, GET_ALL_NOTES_AND_PAGE_INFO, OPTIONS, UPDATE_NOTE } from "../../actions";
 import { PageInfo } from "../../types/PageInfo";
 import OptionListItem from "../../components/OptionList/OptionListItem";
 import { useQuery } from "../../hooks/useRouter";
@@ -40,9 +34,9 @@ import {
   SNoNoteText,
   SCurrentPageCloseButton,
 } from "./Options.style";
-import IconButton from "../../components/Button/IconButton";
 import { CloseIcon } from "../../components/Icon";
 import OptionHeader from "../../components/OptionHeader/OptionHeader";
+import * as sender from "../message/sender/options";
 
 interface Props extends RouteComponentProps<{}> {}
 
@@ -94,33 +88,33 @@ const Options: React.VFC<Props> = () => {
     return filteredPageInfos.reverse();
   }, [searchText, pageInfos]);
 
-  const sendAction = useCallback(
-    (method: ToBackgroundMessageMethod, page_url?: string, targetNote?: Note): Promise<boolean> => {
-      console.log("sendMessage ======", method, targetNote);
+  // const sendAction = useCallback(
+  //   (method: ToBackgroundMessageMethod, page_url?: string, targetNote?: Note): Promise<boolean> => {
+  //     console.log("sendMessage ======", method, targetNote);
 
-      return new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage<ToBackgroundMessage, ToBackgroundMessageResponse>(
-          {
-            method: method,
-            senderType: OPTIONS,
-            page_url: page_url ?? "",
-            targetNote,
-          },
-          ({ notes, pageInfos, error }) => {
-            console.log("response ======", notes, pageInfos, chrome.runtime.lastError);
-            if (chrome.runtime.lastError) {
-              reject(chrome.runtime.lastError.message);
-            } else {
-              notes && setNotes(notes || []);
-              pageInfos && setPageInfos(pageInfos || []);
-              resolve(true);
-            }
-          }
-        );
-      });
-    },
-    []
-  );
+  //     return new Promise((resolve, reject) => {
+  //       chrome.runtime.sendMessage<ToBackgroundMessage, ToBackgroundMessageResponse>(
+  //         {
+  //           method: method,
+  //           senderType: OPTIONS,
+  //           page_url: page_url ?? "",
+  //           targetNote,
+  //         },
+  //         ({ notes, pageInfos, error }) => {
+  //           console.log("response ======", notes, pageInfos, chrome.runtime.lastError);
+  //           if (chrome.runtime.lastError) {
+  //             reject(chrome.runtime.lastError.message);
+  //           } else {
+  //             notes && setNotes(notes || []);
+  //             pageInfos && setPageInfos(pageInfos || []);
+  //             resolve(true);
+  //           }
+  //         }
+  //       );
+  //     });
+  //   },
+  //   []
+  // );
 
   const onChangeSort = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
     setSortBy(e.target.value);
@@ -137,15 +131,30 @@ const Options: React.VFC<Props> = () => {
     history.push({ search: query.toString() });
   };
 
-  const onUpdate = (note: Note) => {
-    sendAction(UPDATE_NOTE, pageInfos.find((p) => p.id === note.page_info_id)?.page_url, note);
+  const onUpdate = async (note: Note) => {
+    try {
+      const page_url = pageInfos.find((p) => p.id === note.page_info_id)?.page_url;
+      const { notes, pageInfos: newPageInfos } = await sender.sendUpdateNote(note, page_url);
+      notes && setNotes(notes);
+      newPageInfos && setPageInfos(newPageInfos);
+      return true;
+    } catch (error) {
+      return false;
+    }
   };
 
-  const onDelete = (note: Note) => {
+  const onDelete = async (note: Note) => {
     console.log("onDelete", note);
     if (confirm("削除してもよろしいですか？")) {
-      sendAction(DELETE_NOTE, pageInfos.find((p) => p.id === note.page_info_id)?.page_url, note);
-      return true;
+      try {
+        const page_url = pageInfos.find((p) => p.id === note.page_info_id)?.page_url;
+        const { notes, pageInfos: newPageInfos } = await sender.sendDeleteNote(note, page_url);
+        notes && setNotes(notes);
+        newPageInfos && setPageInfos(newPageInfos);
+        return true;
+      } catch (error) {
+        return false;
+      }
     } else {
       return false;
     }
@@ -169,7 +178,7 @@ const Options: React.VFC<Props> = () => {
   };
 
   useEffect(() => {
-    sendAction(GET_ALL_NOTES_AND_PAGE_INFO);
+    sender.sendFetchAllNotes();
   }, []);
 
   return (
