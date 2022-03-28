@@ -1,4 +1,4 @@
-import { Backdrop, ModalUnstyled, Popover, styled } from "@mui/material";
+import { ModalUnstyled, Popover, styled } from "@mui/material";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { VFC } from "react";
 import { MIN_NOTE_HEIGHT, MIN_NOTE_WIDTH, useNoteEdit } from "../../hooks/useNote";
@@ -33,6 +33,7 @@ import {
   SMenuList,
   SMenuListItem,
   SNoteDetailDataSpan,
+  SBackdrop,
 } from "./NoteEditModal.style";
 
 type Props = {
@@ -165,7 +166,7 @@ export const NoteEditModal: VFC<Props> = ({
           onCloseWithoutSave();
         }
       }}
-      BackdropComponent={Backdrop}
+      BackdropComponent={SBackdrop}
     >
       <SModalWrapper $isApeal={isApeal}>
         <SModal>

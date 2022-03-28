@@ -189,6 +189,7 @@ const Options: React.VFC<Props> = () => {
       <GlobalStyle />
       <div className="p-4">
         <SContainer>
+          <OptionHeader current="memos" />
           <SMain>
             <SMainLeft>
               <SSideNav>
@@ -295,7 +296,6 @@ const Options: React.VFC<Props> = () => {
               )}
             </SMainRight>
           </SMain>
-          <OptionHeader current="memos" />
         </SContainer>
       </div>
     </>

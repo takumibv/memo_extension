@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState, VFC } from "react";
+import React, { VFC } from "react";
 import styled, { css } from "styled-components";
 import { Link } from "react-router-dom";
 
@@ -40,7 +40,7 @@ export const SHeader = styled.header`
   padding: 0 1.75em;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   background-color: #fff;
-  /* background-color: #4c4722; */
+  z-index: 1;
 `;
 
 export const SHeaderLeft = styled.div`

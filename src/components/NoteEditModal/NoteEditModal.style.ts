@@ -1,3 +1,4 @@
+import { Backdrop } from "@mui/material";
 import TextareaAutosize from "react-textarea-autosize";
 import styled, { css } from "styled-components";
 import Button from "../Button/Button";
@@ -15,6 +16,7 @@ export const SModalWrapper = styled.div<{ $isApeal?: boolean }>`
   pointer-events: none;
   outline: none;
   transition: transform 0.15s ease-in-out;
+  z-index: 1300;
 
   ${({ $isApeal }) =>
     $isApeal &&
@@ -34,6 +36,10 @@ export const SModal = styled.div`
   background-color: #fff;
   border-radius: 0.25em;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+`;
+
+export const SBackdrop = styled(Backdrop)`
+  z-index: 1300;
 `;
 
 export const SModalScrollContent = styled.div`

@@ -21,13 +21,11 @@ export const GlobalStyle = createGlobalStyle`
 `;
 
 export const SContainer = styled.div`
-  /* height: 100vh; */
   position: relative;
 `;
 
 export const SMain = styled.div`
   overflow: hidden;
-  /* padding: 0 1.125em; */
 `;
 
 export const SMainLeft = styled.div`
@@ -104,8 +102,13 @@ export const SSideNavItemLink = styled.p`
 `;
 
 export const SMainRight = styled.main`
-  overflow-y: auto;
   padding: 4em 2em 1.5em 19em;
+`;
+
+export const SMainContent = styled.main`
+  padding: 4em 2em 1.5em;
+  margin: 0 auto;
+  max-width: 44rem;
 `;
 
 export const SMainRightHeader = styled.div`
@@ -218,6 +221,4 @@ export const SCardList = styled(Reorder.Group)`
 export const SCardListItem = styled(Reorder.Item)`
   padding: 0.5em;
   width: 100%;
-  /* width: 50%; */
-  /* transition: all 0.2s ease-in-out; */
 `;
