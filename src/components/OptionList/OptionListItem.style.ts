@@ -101,7 +101,7 @@ export const SPageInfoWrap = styled.div`
   margin-bottom: 0.75em;
 `;
 
-export const SPageInfo = styled.div<{ isFilter?: boolean }>`
+export const SPageInfo = styled.div<{ $isFilter?: boolean }>`
   display: inline-block;
   justify-self: stretch;
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -110,8 +110,8 @@ export const SPageInfo = styled.div<{ isFilter?: boolean }>`
   background-color: #fff;
   cursor: pointer;
 
-  ${({ isFilter }) =>
-    isFilter &&
+  ${({ $isFilter }) =>
+    $isFilter &&
     css`
       display: inline-flex;
       align-items: center;

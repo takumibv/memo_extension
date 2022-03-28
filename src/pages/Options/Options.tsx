@@ -178,7 +178,10 @@ const Options: React.VFC<Props> = () => {
   };
 
   useEffect(() => {
-    sender.sendFetchAllNotes();
+    sender.sendFetchAllNotes().then(({ notes, pageInfos }) => {
+      notes && setNotes(notes);
+      pageInfos && setPageInfos(pageInfos);
+    });
   }, []);
 
   return (
@@ -196,7 +199,7 @@ const Options: React.VFC<Props> = () => {
                       e.preventDefault();
                       onClickFilter();
                     }}
-                    isActive={currentPageInfoId === undefined}
+                    $isActive={currentPageInfoId === undefined}
                   >
                     <SSideNavItemHeader>
                       <SSideNavItemTitle>すべてのメモ</SSideNavItemTitle>
@@ -211,7 +214,7 @@ const Options: React.VFC<Props> = () => {
                         e.preventDefault();
                         onClickFilter(pageInfo.id);
                       }}
-                      isActive={pageInfo.id === currentPageInfoId}
+                      $isActive={pageInfo.id === currentPageInfoId}
                     >
                       <SSideNavItemHeader>
                         <SFaviconImage src={pageInfo.fav_icon_url} />

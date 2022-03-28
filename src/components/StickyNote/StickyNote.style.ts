@@ -5,8 +5,8 @@ import { CopySuccessIcon } from "../Icon";
 import IconButton from "../Button/IconButton";
 
 type SNoteProps = React.HTMLAttributes<HTMLDivElement> & {
-  isFixed?: boolean;
-  isForward?: boolean;
+  $isFixed?: boolean;
+  $isForward?: boolean;
 };
 
 export const SNote = styled.div<SNoteProps>`
@@ -23,16 +23,16 @@ export const SNote = styled.div<SNoteProps>`
   box-shadow: rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.2) 0px 3px 1px -2px,
     rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
 
-  ${({ isFixed }) =>
-    isFixed &&
+  ${({ $isFixed }) =>
+    $isFixed &&
     css`
       position: fixed;
       box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
       z-index: 1251;
     `}
 
-  ${({ isForward }) =>
-    isForward &&
+  ${({ $isForward }) =>
+    $isForward &&
     css`
       z-index: 1252;
     `}

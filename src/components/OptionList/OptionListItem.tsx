@@ -75,7 +75,7 @@ const OptionListItem: React.VFC<Props> = memo(
               </SPageInfo>
               <Tooltip title="このページに移動する">
                 <SPageInfo
-                  isFilter
+                  $isFilter
                   onClick={(e) => {
                     e.stopPropagation();
                     onClickLink(pageInfo.page_url ?? "");

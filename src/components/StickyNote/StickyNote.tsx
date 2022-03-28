@@ -232,8 +232,8 @@ const StickyNote: React.VFC<Props> = memo(
           height: editHeight,
           transform: `translate(${displayPositionX}px, ${displayPositionY}px)`,
         }}
-        isFixed={is_fixed}
-        isForward={isDragging || isEditing}
+        $isFixed={is_fixed}
+        $isForward={isDragging || isEditing}
       >
         <DraggableCore
           scale={1}

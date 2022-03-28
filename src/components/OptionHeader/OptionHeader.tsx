@@ -16,10 +16,10 @@ export const OptionHeader: VFC<Props> = ({ current }) => {
         </STopLink>
       </SHeaderLeft>
       <SHeaderContent>
-        <SHeaderContentLink isActive={current === "memos"} to="/memos.html">
+        <SHeaderContentLink $isActive={current === "memos"} to="/memos.html">
           メモ一覧
         </SHeaderContentLink>
-        <SHeaderContentLink isActive={current === "setting"} to="/setting.html">
+        <SHeaderContentLink $isActive={current === "setting"} to="/setting.html">
           設定
         </SHeaderContentLink>
       </SHeaderContent>
@@ -76,7 +76,7 @@ export const SHeaderContent = styled.div`
   padding: 0 1em;
 `;
 
-export const SHeaderContentLink = styled(Link)<{ isActive?: boolean }>`
+export const SHeaderContentLink = styled(Link)<{ $isActive?: boolean }>`
   display: flex;
   align-items: center;
   position: relative;
@@ -88,8 +88,8 @@ export const SHeaderContentLink = styled(Link)<{ isActive?: boolean }>`
     background-color: rgba(0, 0, 0, 0.05);
   }
 
-  ${({ isActive }) =>
-    isActive &&
+  ${({ $isActive }) =>
+    $isActive &&
     css`
       &:after {
         content: "";

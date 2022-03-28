@@ -45,7 +45,7 @@ export const SSideNav = styled.ul`
   padding: 1.5em 0.75em;
 `;
 
-export const SSideNavItem = styled.a<{ isActive?: boolean }>`
+export const SSideNavItem = styled.a<{ $isActive?: boolean }>`
   display: block;
   border-radius: 0.5em;
   padding: 0.75em;
@@ -56,8 +56,8 @@ export const SSideNavItem = styled.a<{ isActive?: boolean }>`
     background-color: rgba(0, 0, 0, 0.05);
   }
 
-  ${({ isActive }) =>
-    isActive &&
+  ${({ $isActive }) =>
+    $isActive &&
     css`
       font-weight: bold;
       cursor: default;

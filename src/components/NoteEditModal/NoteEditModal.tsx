@@ -13,7 +13,6 @@ import {
   SModalTitle,
   SModalContent,
   SModalSection,
-  SModalSectionTitle,
   SModalDescription,
   SModalDescriptionText,
   SModalActions,
@@ -168,7 +167,7 @@ export const NoteEditModal: VFC<Props> = ({
       }}
       BackdropComponent={Backdrop}
     >
-      <SModalWrapper isApeal={isApeal}>
+      <SModalWrapper $isApeal={isApeal}>
         <SModal>
           <SModalScrollContent>
             <SModalHeader>

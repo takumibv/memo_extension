@@ -4,8 +4,8 @@ import Button from "../Button/Button";
 import IconButton from "../Button/IconButton";
 import NumberInput from "../TextInput/NumberInput";
 
-export const SModalWrapper = styled.div<{ isApeal?: boolean }>`
-  position: absolute;
+export const SModalWrapper = styled.div<{ $isApeal?: boolean }>`
+  position: fixed;
   width: 100%;
   max-height: 100%;
   top: 50%;
@@ -16,8 +16,8 @@ export const SModalWrapper = styled.div<{ isApeal?: boolean }>`
   outline: none;
   transition: transform 0.15s ease-in-out;
 
-  ${({ isApeal }) =>
-    isApeal &&
+  ${({ $isApeal }) =>
+    $isApeal &&
     css`
       transform: translate(-50%, -50%) scale(1.03);
     `}
