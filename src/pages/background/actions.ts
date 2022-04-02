@@ -1,4 +1,3 @@
-import { BACKGROUND, SET_ALL_NOTES } from "../message/actions";
 import {
   createNote as _createNote,
   updateNote as _updateNote,
@@ -15,7 +14,6 @@ import {
   getOrCreatePageInfoByUrl,
   getPageInfoByUrl,
 } from "../../storages/pageInfoStorage";
-import { ToContentScriptMessage } from "../../types/Actions";
 import { Note } from "../../types/Note";
 import { PageInfo } from "../../types/PageInfo";
 
@@ -59,16 +57,6 @@ export const createNote = async (page_url: string): Promise<Note[]> => {
   return allNotes;
 };
 
-// export const updateNote = async (page_url: string, note?: Note): Promise<Note[]> => {
-//   if (!note) return [];
-
-//   const pageInfo = await getOrCreatePageInfoByUrl(page_url);
-//   const { allNotes } = await _updateNote(pageInfo.id!, note);
-//   console.log("UPDATE_NOTE:", allNotes);
-
-//   return allNotes;
-// };
-
 export const updateNote = async (note: Note): Promise<Note[]> => {
   if (!note.page_info_id) return [];
 
@@ -78,16 +66,6 @@ export const updateNote = async (note: Note): Promise<Note[]> => {
   return allNotes;
 };
 
-// export const deleteNote = async (page_url: string, note_id?: number): Promise<Note[]> => {
-//   const pageInfo = await getPageInfoByUrl(page_url);
-//   if (!pageInfo || !pageInfo.id) return [];
-
-//   const { allNotes } = await _deleteNote(pageInfo.id, note_id);
-//   console.log("DELETE_NOTE:", allNotes);
-
-//   return allNotes;
-// };
-
 export const deleteNote = async (note: Note): Promise<Note[]> => {
   if (!note.page_info_id) return [];
 
@@ -96,16 +74,6 @@ export const deleteNote = async (note: Note): Promise<Note[]> => {
 
   return allNotes;
 };
-
-// export const setAllNotes = (tabId: number, page_url: string, notes: Note[]) => {
-//   console.log("sendMessage ======", SET_ALL_NOTES, tabId, page_url, notes);
-//   chrome.tabs.sendMessage<ToContentScriptMessage>(tabId, {
-//     method: SET_ALL_NOTES,
-//     senderType: BACKGROUND,
-//     notes,
-//     page_url,
-//   });
-// };
 
 export const fetchAllPageInfo = async (): Promise<PageInfo[]> => {
   const pageInfos = await getAllPageInfos();
@@ -128,5 +96,7 @@ export const getIsVisibleNote = async () => {
 };
 
 export const setIsVisibleNote = async (isVisible: boolean) => {
-  return await _setIsVisibleNote(isVisible);
+  await _setIsVisibleNote(isVisible);
+
+  return isVisible;
 };

@@ -75,8 +75,7 @@ export const Popup = () => {
     if (currentTab) {
       sender
         .sendScrollToTargetNote(currentTab, note)
-        .then(({ notes }) => {
-          notes && setNotes(notes);
+        .then(() => {
           setIsEnabled(true);
         })
         .catch((error) => {
@@ -85,6 +84,14 @@ export const Popup = () => {
         .finally(() => {
           window.close();
         });
+    }
+  };
+
+  const onClickVisibleButton = () => {
+    if (currentTab) {
+      sender.sendUpdateNoteVisible(currentTab, !isVisible).then(({ isVisible }) => {
+        setIsVisible(!!isVisible);
+      });
     }
   };
 
@@ -109,8 +116,10 @@ export const Popup = () => {
         setCurrentTab(tab);
         sender
           .fetchAllNotes(tab)
-          .then(({ notes }) => {
+          .then((data) => {
+            const { notes, isVisible } = data;
             notes && setNotes(notes);
+            isVisible !== undefined && setIsVisible(isVisible);
             setIsEnabled(true);
           })
           .catch((error) => {
@@ -131,7 +140,7 @@ export const Popup = () => {
             <FabIconButton onClick={onClickAddNote} disabled={!isEnabled}>
               <PlusIcon fill="#fff" />
             </FabIconButton>
-            <SHeaderIconButton onClick={() => setIsVisible(!isVisible)} disabled={!isEnabled}>
+            <SHeaderIconButton onClick={onClickVisibleButton} disabled={!isEnabled}>
               {isVisible ? (
                 <EyeIcon fill="rgba(0, 0, 0, 0.4)" />
               ) : (

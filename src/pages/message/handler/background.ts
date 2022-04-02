@@ -9,23 +9,18 @@ import {
   POPUP,
   SCROLL_TO_TARGET_NOTE,
   UPDATE_NOTE,
+  GET_NOTE_VISIBLE,
   UPDATE_NOTE_VISIBLE,
 } from "../actions";
 import * as actions from "../../background/actions";
-import { createNote } from "../../../storages/noteStorage";
-import { getOrCreatePageInfoByUrl } from "../../../storages/pageInfoStorage";
-import {
-  ToBackgroundMessage,
-  ToBackgroundMessageMethod,
-  ToBackgroundMessageResponse,
-} from "../../../types/Actions";
+import { MessageRequest, MessageResponse, MessageMethod, MessageRequestPayload } from "../message";
 import { Note } from "../../../types/Note";
 import { isSystemLink, msg } from "../../../utils";
-import { sendSetAllNotes } from "../sender/background";
+import { setupIsVisible, setupPage } from "../sender/background";
 
 export const ROOT_DOM_ID = "react-container-for-note-extension";
 
-const isScriptAllowedPage = async (tabId: number) => {
+export const isScriptAllowedPage = async (tabId: number) => {
   await chrome.scripting.executeScript({
     target: { tabId },
     func: () => {},
@@ -33,7 +28,7 @@ const isScriptAllowedPage = async (tabId: number) => {
   return !chrome.runtime.lastError;
 };
 
-const hasContentScript = async (tabId: number): Promise<boolean> => {
+export const hasContentScript = async (tabId: number): Promise<boolean> => {
   const [res] = await chrome.scripting.executeScript({
     target: { tabId },
     func: () => {
@@ -44,9 +39,8 @@ const hasContentScript = async (tabId: number): Promise<boolean> => {
   return res.result as boolean;
 };
 
-const injectContentScript = async (tabId: number) => {
+export const injectContentScript = async (tabId: number) => {
   const hasScript = await hasContentScript(tabId);
-  console.log("hasScript:", hasScript);
   if (hasScript) return false;
 
   return await chrome.scripting.executeScript({
@@ -56,16 +50,16 @@ const injectContentScript = async (tabId: number) => {
 };
 
 const _handleMessagesFromContentScript = (
-  method: ToBackgroundMessageMethod,
-  sendResponse: (response?: ToBackgroundMessageResponse) => void,
-  page_url: string,
-  targetNote?: Note
+  method: MessageMethod,
+  sendResponse: (response?: MessageResponse) => void,
+  payload: MessageRequestPayload
 ) => {
+  const { url = "", note } = payload;
   switch (method) {
     case GET_ALL_NOTES:
       actions
-        .fetchAllNotesByPageUrl(page_url)
-        .then((notes) => sendResponse({ notes }))
+        .fetchAllNotesByPageUrl(url)
+        .then((notes) => sendResponse({ data: { notes } }))
         .catch((e) => {
           console.log("error GET_ALL_NOTES:", e);
           sendResponse({ error: e });
@@ -73,8 +67,8 @@ const _handleMessagesFromContentScript = (
       return true;
     case CREATE_NOTE:
       actions
-        .createNote(page_url)
-        .then((notes) => sendResponse({ notes }))
+        .createNote(url)
+        .then((notes) => sendResponse({ data: { notes } }))
         .catch((e) => {
           console.log("error CREATE_NOTE:", e);
           sendResponse({ error: e });
@@ -82,8 +76,8 @@ const _handleMessagesFromContentScript = (
       return true;
     case UPDATE_NOTE:
       actions
-        .updateNote(targetNote!)
-        .then((notes) => sendResponse({ notes }))
+        .updateNote(note!)
+        .then((notes) => sendResponse({ data: { notes } }))
         .catch((e) => {
           console.log("error UPDATE_NOTE:", e);
           sendResponse({ error: e });
@@ -91,8 +85,8 @@ const _handleMessagesFromContentScript = (
       return true;
     case DELETE_NOTE:
       actions
-        .deleteNote(targetNote!)
-        .then((notes) => sendResponse({ notes }))
+        .deleteNote(note!)
+        .then((notes) => sendResponse({ data: { notes } }))
         .catch((e) => {
           console.log("error DELETE_NOTE:", e);
           sendResponse({ error: e });
@@ -101,6 +95,15 @@ const _handleMessagesFromContentScript = (
     case OPEN_OPTION_PAGE:
       // open_option_page();
       break;
+    case GET_NOTE_VISIBLE:
+      actions
+        .getIsVisibleNote()
+        .then((isVisible) => sendResponse({ data: { isVisible } }))
+        .catch((e) => {
+          console.log("error GET_NOTE_VISIBLE:", e);
+          sendResponse({ error: e });
+        });
+      break;
     default:
       break;
   }
@@ -108,39 +111,42 @@ const _handleMessagesFromContentScript = (
 };
 
 const _handleMessagesFromPopup = (
-  method: ToBackgroundMessageMethod,
-  sendResponse: (response?: ToBackgroundMessageResponse, error?: Error) => void,
-  tab?: chrome.tabs.Tab,
-  targetNote?: Note
+  method: MessageMethod,
+  sendResponse: (response?: MessageResponse, error?: Error) => void,
+  payload: MessageRequestPayload
 ) => {
+  const { tab, note, isVisible } = payload;
   const tabId = tab?.id;
   const tabUrl = tab?.url;
 
   if (!tabId || !tabUrl)
-    return sendResponse({ notes: [], error: new Error("このページでは使用できません") });
+    return sendResponse({ data: { notes: [] }, error: new Error("このページでは使用できません") });
 
   // Chromeシステム画面は、アクションを実行しないようにする
   if (isSystemLink(tabUrl))
-    return sendResponse({ notes: [], error: new Error("このページでは使用できません") });
-
-  hasContentScript(tabId).then((isInjecting) => {
-    console.log("hasContentScript _handleMessagesFromPopup", isInjecting);
-  });
+    return sendResponse({ data: { notes: [] }, error: new Error("このページでは使用できません") });
 
   const sendResponseAndSetNotes = (notes: Note[]) => {
-    sendResponse({ notes });
-    injectContentScript(tabId).then(() => sendSetAllNotes(tabId, tabUrl, notes));
+    actions.getIsVisibleNote().then((isVisible) => {
+      sendResponse({ data: { notes } });
+      injectContentScript(tabId).then(() => setupPage(tabId, tabUrl, notes, isVisible));
+    });
   };
 
   isScriptAllowedPage(tabId).then((isAllowed) => {
     // content_scriptが無効なページは、アクションを実行しないようにする
-    if (!isAllowed) sendResponse({ notes: [], error: new Error("このページでは使用できません") });
+    if (!isAllowed)
+      sendResponse({ data: { notes: [] }, error: new Error("このページでは使用できません") });
 
     switch (method) {
       case GET_ALL_NOTES:
         actions
           .fetchAllNotesByPageUrl(tabUrl)
-          .then((notes) => sendResponse({ notes }))
+          .then((notes) => {
+            actions.getIsVisibleNote().then((isVisible) => {
+              sendResponse({ data: { notes, isVisible } });
+            });
+          })
           .catch((e) => console.log("error GET_ALL_NOTES:", e));
         return true;
       case CREATE_NOTE:
@@ -150,11 +156,11 @@ const _handleMessagesFromPopup = (
           .catch((e) => console.log("error CREATE_NOTE:", e));
         return true;
       case SCROLL_TO_TARGET_NOTE:
-        actions.scrollTo(tabId, targetNote!).then(() => sendResponse());
+        actions.scrollTo(tabId, note!).then(() => sendResponse());
         return true;
       case UPDATE_NOTE:
         actions
-          .updateNote(targetNote!)
+          .updateNote(note!)
           .then(sendResponseAndSetNotes)
           .catch((e) => {
             console.log("error UPDATE_NOTE:", e);
@@ -162,14 +168,23 @@ const _handleMessagesFromPopup = (
         return true;
       case DELETE_NOTE:
         actions
-          .deleteNote(targetNote!)
+          .deleteNote(note!)
           .then(sendResponseAndSetNotes)
           .catch((e) => {
             console.log("error DELETE_NOTE:", e);
           });
         return true;
+      case GET_NOTE_VISIBLE:
+        actions.getIsVisibleNote().then((isVisible) => {
+          sendResponse({ data: { isVisible } });
+          injectContentScript(tabId).then(() => setupIsVisible(tabId, tabUrl, isVisible));
+        });
+        break;
       case UPDATE_NOTE_VISIBLE:
-        actions.setIsVisibleNote(true);
+        actions.setIsVisibleNote(!!isVisible).then((isVisible) => {
+          sendResponse({ data: { isVisible } });
+          injectContentScript(tabId).then(() => setupIsVisible(tabId, tabUrl, isVisible));
+        });
         return true;
       default:
         break;
@@ -180,30 +195,32 @@ const _handleMessagesFromPopup = (
 };
 
 const _handleMessagesFromOption = (
-  method: ToBackgroundMessageMethod,
-  sendResponse: (response?: ToBackgroundMessageResponse) => void,
-  targetNote?: Note
+  method: MessageMethod,
+  sendResponse: (response?: MessageResponse) => void,
+  payload: MessageRequestPayload
 ) => {
+  const { note } = payload;
+
   switch (method) {
     case GET_ALL_NOTES:
       actions
         .fetchAllNotes()
-        .then((notes) => sendResponse({ notes }))
+        .then((notes) => sendResponse({ data: { notes } }))
         .catch((e) => console.log("error GET_ALL_NOTES:", e));
       return true;
     case GET_ALL_NOTES_AND_PAGE_INFO:
       actions
         .fetchAllNotesAndPageInfo()
-        .then(({ notes, pageInfos }) => sendResponse({ notes, pageInfos }))
+        .then(({ notes, pageInfos }) => sendResponse({ data: { notes, pageInfos } }))
         .catch((e) => console.log("error GET_ALL_NOTES:", e));
       return true;
     case UPDATE_NOTE:
       actions
-        .updateNote(targetNote!)
+        .updateNote(note!)
         .then(() => {
           actions
             .fetchAllNotesAndPageInfo()
-            .then(({ notes, pageInfos }) => sendResponse({ notes, pageInfos }));
+            .then(({ notes, pageInfos }) => sendResponse({ data: { notes, pageInfos } }));
         })
         .catch((e) => {
           console.log("error UPDATE_NOTE:", e);
@@ -212,40 +229,42 @@ const _handleMessagesFromOption = (
       return true;
     case DELETE_NOTE:
       actions
-        .deleteNote(targetNote!)
+        .deleteNote(note!)
         .then(() => {
           actions
             .fetchAllNotesAndPageInfo()
-            .then(({ notes, pageInfos }) => sendResponse({ notes, pageInfos }));
+            .then(({ notes, pageInfos }) => sendResponse({ data: { notes, pageInfos } }));
         })
         .catch((e) => console.log("error DELETE_NOTE:", e));
       return true;
     default:
-      sendResponse({ notes: [], pageInfos: [], error: new Error("無効なアクションです") });
+      sendResponse({
+        data: { notes: [], pageInfos: [] },
+        error: new Error("無効なアクションです"),
+      });
       return true;
   }
 };
 
-export const handleMessages: handleMessageType = (action, sender, sendResponse) => {
-  const { method, page_url, targetNote, senderType } = action;
-  const { tab } = sender;
-  console.log("==== handleMessage ====", senderType, action, tab);
+export const handleMessages = (
+  action: MessageRequest,
+  sender: chrome.runtime.MessageSender,
+  sendResponse: (response?: MessageResponse) => void
+) => {
+  const { method, senderType, payload } = action;
+  console.log("==== handleMessage ====", action, payload);
 
   switch (senderType) {
     case CONTENT_SCRIPT:
-      return _handleMessagesFromContentScript(method, sendResponse, page_url, targetNote);
+      return _handleMessagesFromContentScript(method, sendResponse, payload ?? {});
     case POPUP:
-      return _handleMessagesFromPopup(method, sendResponse, action.tab, targetNote);
+      return _handleMessagesFromPopup(method, sendResponse, payload ?? {});
     case OPTIONS:
-      return _handleMessagesFromOption(method, sendResponse, targetNote);
+      return _handleMessagesFromOption(method, sendResponse, payload ?? {});
     default:
-      sendResponse();
+      sendResponse({
+        error: new Error("無効なアクションです"),
+      });
       return;
   }
 };
-
-type handleMessageType = (
-  action: ToBackgroundMessage,
-  sender: chrome.runtime.MessageSender,
-  sendResponse: (response?: ToBackgroundMessageResponse) => void
-) => void;

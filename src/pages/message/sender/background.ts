@@ -1,13 +1,17 @@
-import { ToContentScriptMessage } from "../../../types/Actions";
 import { Note } from "../../../types/Note";
-import { BACKGROUND, SET_ALL_NOTES } from "../actions";
+import { BACKGROUND, SETUP_PAGE, SET_NOTE_VISIBLE } from "../actions";
+import { sendActionToTab } from "./base";
 
-export const sendSetAllNotes = (tabId: number, page_url: string, notes: Note[]) => {
-  console.log("sendMessage ======", SET_ALL_NOTES, tabId, page_url, notes);
-  chrome.tabs.sendMessage<ToContentScriptMessage>(tabId, {
-    method: SET_ALL_NOTES,
-    senderType: BACKGROUND,
-    notes,
-    page_url,
-  });
+/**
+ * メモ情報をContentScriptにセットする
+ */
+export const setupPage = (tabId: number, url: string, notes: Note[], isVisible: boolean) => {
+  sendActionToTab(tabId, SETUP_PAGE, BACKGROUND, { url, notes, isVisible });
+};
+
+/**
+ * メモの表示/非表示をContentScriptにセットする
+ */
+export const setupIsVisible = (tabId: number, url: string, isVisible: boolean) => {
+  sendActionToTab(tabId, SET_NOTE_VISIBLE, BACKGROUND, { url, isVisible });
 };

@@ -1,40 +1,37 @@
 import React from "react";
 import { useCallback, useEffect, useState } from "react";
-import {
-  CONTENT_SCRIPT,
-  DELETE_NOTE,
-  GET_ALL_NOTES,
-  OPEN_OPTION_PAGE,
-  SET_ALL_NOTES,
-  UPDATE_NOTE,
-} from "../message/actions";
+import { SETUP_PAGE, SET_NOTE_VISIBLE } from "../message/actions";
 import StickyNote from "../../components/StickyNote/StickyNote";
-import {
-  ToBackgroundMessage,
-  ToBackgroundMessageMethod,
-  ToBackgroundMessageResponse,
-  ToContentScriptMessage,
-} from "../../types/Actions";
 import { Note } from "../../types/Note";
 import { GlobalStyle, SContainer } from "./App.style";
-import { sendFetchAllNotes, sendUpdateNote, sendDeleteNote } from "../message/sender/contentScript";
+import {
+  sendFetchAllNotes,
+  sendUpdateNote,
+  sendDeleteNote,
+  sendFetchNoteVisible,
+} from "../message/sender/contentScript";
+import { MessageRequest, MessageResponse } from "../message/message";
 
 const Main: React.VFC = () => {
   const [notes, setNotes] = useState<Note[]>([]);
+  const [isVisible, setIsVisible] = useState(true);
 
   const handleMessages = (
-    request: ToContentScriptMessage,
+    request: MessageRequest,
     sender: chrome.runtime.MessageSender,
-    sendResponse: (response?: any) => void
+    sendResponse: (response?: MessageResponse) => void
   ) => {
-    // TODO background → contentScript のアクションを受け取る
     console.log("=== onMessage ===", request, sender);
-    const { method, notes } = request;
+    const { method, payload } = request;
+    const { notes, isVisible } = payload ?? {};
 
     switch (method) {
-      case SET_ALL_NOTES:
-        console.log("SET_ALL_NOTES==");
-        setNotes(notes);
+      case SETUP_PAGE:
+        notes && setNotes(notes);
+        isVisible !== undefined && setIsVisible(!!isVisible);
+        break;
+      case SET_NOTE_VISIBLE:
+        isVisible !== undefined && setIsVisible(!!isVisible);
         break;
       default:
         break;
@@ -45,8 +42,8 @@ const Main: React.VFC = () => {
 
   const fetchAllNotes = useCallback(async () => {
     try {
-      const notes = await sendFetchAllNotes();
-      setNotes(notes);
+      const { notes } = await sendFetchAllNotes();
+      notes && setNotes(notes);
       return true;
     } catch (error) {
       // TODO
@@ -56,8 +53,8 @@ const Main: React.VFC = () => {
 
   const updateNote = useCallback(async (note: Note) => {
     try {
-      const notes = await sendUpdateNote(note);
-      setNotes(notes);
+      const { notes } = await sendUpdateNote(note);
+      notes && setNotes(notes);
       return true;
     } catch (error) {
       // TODO
@@ -67,8 +64,8 @@ const Main: React.VFC = () => {
 
   const deleteNote = useCallback(async (note: Note) => {
     try {
-      const notes = await sendDeleteNote(note);
-      setNotes(notes);
+      const { notes } = await sendDeleteNote(note);
+      notes && setNotes(notes);
       return true;
     } catch (error) {
       // TODO
@@ -76,8 +73,12 @@ const Main: React.VFC = () => {
     return false;
   }, []);
 
+  const fetchNoteVisible = useCallback(async () => {
+    const { isVisible } = await sendFetchNoteVisible();
+    setIsVisible(!!isVisible);
+  }, []);
+
   useEffect(() => {
-    fetchAllNotes();
     chrome.runtime.onMessage.addListener(handleMessages);
 
     return () => {
@@ -89,26 +90,27 @@ const Main: React.VFC = () => {
     <>
       <GlobalStyle />
       <SContainer>
-        {notes.map((note) => (
-          // TODO Focusの実施
-          <StickyNote
-            key={note.id}
-            id={note.id}
-            page_info_id={note.page_info_id}
-            title={note.title}
-            description={note.description}
-            position_x={note.position_x}
-            position_y={note.position_y}
-            width={note.width}
-            height={note.height}
-            is_open={note.is_open}
-            is_fixed={note.is_fixed}
-            created_at={note.created_at}
-            updated_at={note.updated_at}
-            onUpdateNote={updateNote}
-            onDeleteNote={deleteNote}
-          />
-        ))}
+        {isVisible &&
+          notes.map((note) => (
+            // TODO Focusの実施
+            <StickyNote
+              key={note.id}
+              id={note.id}
+              page_info_id={note.page_info_id}
+              title={note.title}
+              description={note.description}
+              position_x={note.position_x}
+              position_y={note.position_y}
+              width={note.width}
+              height={note.height}
+              is_open={note.is_open}
+              is_fixed={note.is_fixed}
+              created_at={note.created_at}
+              updated_at={note.updated_at}
+              onUpdateNote={updateNote}
+              onDeleteNote={deleteNote}
+            />
+          ))}
       </SContainer>
     </>
   );
