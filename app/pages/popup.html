@@ -1,32 +1,44 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8" />
-  <title>Popup</title>
-  <link rel="stylesheet" type="text/css" href="../styles/popup.css">
-</head>
-<body>
+  <head>
+    <meta charset="utf-8" />
+    <title>Popup</title>
+    <link rel="stylesheet" type="text/css" href="../styles/popup.css" />
+  </head>
+  <body>
+    <div id="react-container-for-memo-extension">
+      <button
+        id="make_memo_button"
+        class="makeMemo mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-button--colored"
+      >
+        <i class="material-icons">add</i>
+      </button>
+      <div
+        id="make_memo_button_msg"
+        class="mdl-tooltip"
+        data-mdl-for="make_memo_button"
+      ></div>
 
-  <div id="react-container-for-memo-extension">
-    <!-- <button id="make_memo_button" class="makeMemo">make memo</button> -->
-    <button id="make_memo_button" class="makeMemo mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect mdl-button--colored">
-      <i class="material-icons">add</i>
-    </button>
-    <div id="make_memo_button_msg" class="mdl-tooltip" data-mdl-for="make_memo_button"></div>
+      <div
+        id="setting_button_msg"
+        class="mdl-tooltip"
+        data-mdl-for="setting_button"
+      ></div>
+      <button
+        id="menu_button"
+        class="mdl-list__item-secondary-action mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect float-right"
+      >
+        <i class="material-icons">menu</i>
+      </button>
+      <div
+        id="menu_button_msg"
+        class="mdl-tooltip"
+        data-mdl-for="menu_button"
+      ></div>
 
-    <a id="how_to_use_page_link" href="">使い方</a>
-    <button id="setting_button" class="mdl-list__item-secondary-action mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect float-right">
-      <i class="material-icons">settings</i>
-    </button>
-    <div id="setting_button_msg" class="mdl-tooltip" data-mdl-for="setting_button"></div>
-    <button id="menu_button" class="mdl-list__item-secondary-action mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect float-right">
-      <i class="material-icons">menu</i>
-    </button>
-    <div id="menu_button_msg" class="mdl-tooltip" data-mdl-for="menu_button"></div>
+      <div id="page_infos" class="mdl-list"></div>
+    </div>
 
-    <div id="page_infos" class="mdl-list"></div>
-  </div>
-
-  <script src="../scripts/popup.js"></script>
-</body>
+    <script src="../scripts/popup.js"></script>
+  </body>
 </html>

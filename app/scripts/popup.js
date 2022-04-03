@@ -1,12 +1,16 @@
-const $ = require('jquery');
-require('material-design-lite/material');
+const $ = require("jquery");
+require("material-design-lite/material");
 
 var popup;
-$(function() {
+$(function () {
   class Popup {
     constructor() {
       this.start();
-      chrome.runtime.sendMessage({ method: 'SEND_PAGE_TRACKING', action_type: 'POPUP', page_url: location.pathname });
+      chrome.runtime.sendMessage({
+        method: "SEND_PAGE_TRACKING",
+        action_type: "POPUP",
+        page_url: location.pathname,
+      });
     }
     start() {
       this.assignMessages();
@@ -18,49 +22,49 @@ $(function() {
     assignMessages() {
       // 文言の割り当て
       let hash = {
-        "make_memo_button_msg": "make_memo_button_msg",
-        "setting_button_msg": "setting_button_msg",
-        "menu_button_msg": "menu_button_msg",
-        "how_to_use_page_link": "how_to_use_page_link_msg",
+        make_memo_button_msg: "make_memo_button_msg",
+        setting_button_msg: "setting_button_msg",
+        menu_button_msg: "menu_button_msg",
+        how_to_use_page_link: "how_to_use_page_link_msg",
       };
       for (var key in hash) {
         $("#" + key).html(chrome.i18n.getMessage(hash[key]));
       }
     }
     assignEventHandlers() {
-      $(document).on('click', '.makeMemo', e => {
+      $(document).on("click", ".makeMemo", (e) => {
         this.onClickMakeMemoButton();
         window.close();
       });
 
-      $(document).on('click', '#setting_button', e => {
-        this.onClickOpenSettingPageButton();
-        window.close();
-      });
+      // $(document).on('click', '#setting_button', e => {
+      //   this.onClickOpenSettingPageButton();
+      //   window.close();
+      // });
 
-      $(document).on('click', '#menu_button', e => {
+      $(document).on("click", "#menu_button", (e) => {
         this.onClickOpenMemoPageButton(null);
         window.close();
       });
 
-      $(document).on('click', '#how_to_use_page_link', e => {
-        this.onClickOpenHowToUsePageButton();
-        window.close();
+      // $(document).on('click', '#how_to_use_page_link', e => {
+      //   this.onClickOpenHowToUsePageButton();
+      //   window.close();
+      // });
+
+      $(document).on("click", ".memo .move_position-button", (e) => {
+        this.onClickMovePositionButton($(e.currentTarget).attr("target"));
       });
 
-      $(document).on('click', '.memo .move_position-button', e => {
-        this.onClickMovePositionButton($(e.currentTarget).attr('target'));
-      });
-
-      $(document).on('click', '.memo .open_option-button', e => {
-        this.onClickOpenMemoPageButton($(e.currentTarget).attr('target'));
+      $(document).on("click", ".memo .open_option-button", (e) => {
+        this.onClickOpenMemoPageButton($(e.currentTarget).attr("target"));
       });
     }
     setProps() {
       const query = { active: true, currentWindow: true };
       chrome.tabs.query(query, (tab) => {
-        this.tabId  = tab[0].id;
-        this.url    = tab[0].url;
+        this.tabId = tab[0].id;
+        this.url = tab[0].url;
       });
     }
     setDefaultSize() {
@@ -93,8 +97,8 @@ $(function() {
       });
     }
     renderMemo(memo) {
-      const disabled = memo.is_fixed ? 'disabled' : '';
-      return (`<div id='memo-${memo.id}' class="memo mdl-list__item">
+      const disabled = memo.is_fixed ? "disabled" : "";
+      return `<div id='memo-${memo.id}' class="memo mdl-list__item">
                 <span class="mdl-list__item-primary-content">
                   <span>${memo.title}</span>
                 </span>
@@ -104,17 +108,20 @@ $(function() {
                 <button class="open_option-button mdl-list__item-secondary-action mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect" target='${memo.id}'>
                   <i class="material-icons">info</i>
                 </button>
-              </div>`);
+              </div>`;
     }
     renderNoMemoMsg(msg, option_msg = "") {
-      return (`<div class="memo mdl-list__item" style="padding: 10px;line-height: 1.2;">
+      return `<div class="memo mdl-list__item" style="padding: 10px;line-height: 1.2;">
                 <span class="clearfix">
                   ${msg}
                   <br /><br />
-                  ${option_msg === "" ? "" :
-                    `<span style="font-size: 12px;color: #aaa;">${option_msg}</span>`}
+                  ${
+                    option_msg === ""
+                      ? ""
+                      : `<span style="font-size: 12px;color: #aaa;">${option_msg}</span>`
+                  }
                 </span>
-              </div>`);
+              </div>`;
     }
     restoreConfigurations(memo) {
       // バックグラウンドから現状の設定値を持ってきて、UIにセットする。
@@ -124,13 +131,20 @@ $(function() {
         const memos = bg.page_info ? bg.page_info.getMemos() : [];
 
         if (!bg.canShowMemo()) {
-          $('#page_infos').append(this.renderNoMemoMsg(chrome.i18n.getMessage('cannot_show_memo_msg')));
-          $('#make_memo_button').prop("disabled", true);
+          $("#page_infos").append(
+            this.renderNoMemoMsg(chrome.i18n.getMessage("cannot_show_memo_msg"))
+          );
+          $("#make_memo_button").prop("disabled", true);
         } else if (memos.length === 0) {
-          $('#page_infos').append(this.renderNoMemoMsg(chrome.i18n.getMessage('no_memo_created_msg'), chrome.i18n.getMessage('no_memo_created_option_msg')));
+          $("#page_infos").append(
+            this.renderNoMemoMsg(
+              chrome.i18n.getMessage("no_memo_created_msg"),
+              chrome.i18n.getMessage("no_memo_created_option_msg")
+            )
+          );
         } else {
-          for(let i in memos) {
-            $('#page_infos').append(this.renderMemo(memos[i]));
+          for (let i in memos) {
+            $("#page_infos").append(this.renderMemo(memos[i]));
           }
         }
       });
