@@ -57,31 +57,77 @@ export default class Memo extends Base {
     }
     this.updated_at = new Date().toISOString();
     super.save();
+    this.save_strorage_api();
   }
   save_strorage_api() {
-    const storage_name = `${this.storage_name}_${this.page_info_id}`;
+    const storage_name = `notes_${this.page_info_id}`;
     chrome.storage.local.get(storage_name, (storage) => {
-      // let index = storage
-      //   .map((a, i) => (a.id == this.id ? i : false))
-      //   .filter((v) => v || v === 0)[0];
-      // if (index || index === 0) {
-      //   // update
-      //   const updated_data = this.serialize_for_save();
-      //   if (
-      //     storage[index].page_title &&
-      //     (!updated_data.page_title || updated_data.page_title === "Option")
-      //   ) {
-      //     updated_data.page_title = storage[index].page_title;
-      //   }
-      //   storage[index] = updated_data;
-      //   localStorage[this.storage_name] = JSON.stringify(storage);
-      //   console.log("save!", this.serialize_for_save());
-      // } else {
-      //   // create
-      //   storage.push(this.serialize_for_save());
-      //   localStorage[this.storage_name] = JSON.stringify(storage);
-      //   console.log("create!", this.serialize_for_save());
-      // }
+      const memos = storage[storage_name] || [];
+      const memoIndex = memos.findIndex((m) => m.id === this.id);
+
+      if (memoIndex !== -1) {
+        // update
+        memos[memoIndex] = {
+          id: this.id,
+          page_info_id: this.page_info_id,
+          title: this.title,
+          description: this.description,
+          position_x: this.position_x,
+          position_y: this.position_y,
+          width: this.width,
+          height: this.height,
+          is_open: this.is_open,
+          is_fixed: this.is_fixed,
+          created_at: this.created_at,
+          updated_at: this.updated_at,
+        };
+      } else {
+        // create
+        memos.push({
+          id: this.id,
+          page_info_id: this.page_info_id,
+          title: this.title,
+          description: this.description,
+          position_x: this.position_x,
+          position_y: this.position_y,
+          width: this.width,
+          height: this.height,
+          is_open: this.is_open,
+          is_fixed: this.is_fixed,
+          created_at: this.created_at,
+          updated_at: this.updated_at,
+        });
+      }
+
+      chrome.storage.local.set({ [storage_name]: memos }, () => {
+        console.log("saved memos", storage_name, memos);
+      });
+    });
+  }
+  delete() {
+    super.delete();
+    this.delete_strorage_api();
+  }
+  delete_strorage_api() {
+    const storage_name = `notes_${this.page_info_id}`;
+    chrome.storage.local.get(storage_name, (storage) => {
+      const memos = storage[storage_name] || [];
+      const memoIndex = memos.findIndex((m) => m.id === this.id);
+
+      if (memoIndex !== -1) {
+        // delete
+        memos.splice(memoIndex, 1);
+
+        if (memos.length === 0) {
+          chrome.storage.local.remove(storage_name, () => {
+            console.log("removed memos", storage_name, memos);
+          });
+        } else {
+          chrome.storage.local.set({ [storage_name]: memos }, () => {
+            console.log("deleted memo", storage_name, memos);
+          });
+        }
+      }
     });
   }
   static getMemoById(memo_id) {

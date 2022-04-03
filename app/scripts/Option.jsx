@@ -455,7 +455,7 @@ export class OptionPage extends Component {
                     ></span>
                   </div>
                   <br />
-                  ==========================
+                  ------------------------------------------------------------
                   <br />
                 </div>
               );
@@ -468,7 +468,7 @@ export class OptionPage extends Component {
             onClick={handleDownload}
             style={{ display: "inline-block", margin: "16px 0" }}
           >
-            書き出し
+            {options.assignMessage("export_msg")}
           </a>
           <ul>
             <li>
@@ -558,72 +558,11 @@ export class OptionPage extends Component {
       </div>
     );
   }
-  // renderDataPage() {
-  //   const { options } = this.props;
-  //   const { page_infos, memos } = this.state;
-  //   const filename = `export_${options.assignMessage("app_name")}.txt`;
-
-  //   const handleDownload = () => {
-  //     const content = document.getElementById("export-content").innerText;
-  //     console.log(content);
-
-  //     var blob = new Blob([content], { type: "text/plain" });
-  //     console.log("window.navigator", window.navigator, filename, content);
-
-  //     if (window.navigator.msSaveBlob) {
-  //       window.navigator.msSaveBlob(blob, filename);
-  //       window.navigator.msSaveOrOpenBlob(blob, filename);
-  //     } else {
-  //       document.getElementById("download").href =
-  //         window.URL.createObjectURL(blob);
-  //     }
-  //   };
-
-  //   return (
-  //     <div id="container" className="clearfix">
-  //       <div id="settings">
-  //         <h2>書き出し</h2>
-  //         <div
-  //           id="export-content"
-  //           style={{ position: "absolute", opacity: 0, pointerEvents: "none" }}
-  //         >
-  //           {memos.map((memo) => {
-  //             return (
-  //               <div key={memo.id}>
-  //                 <p>title: {memo.title}</p>
-  //                 <p>page: {this.decodeUrl(memo.page_info.page_url)}</p>
-  //                 <div>
-  //                   content:
-  //                   <br />
-  //                   <span
-  //                     dangerouslySetInnerHTML={{ __html: memo.description }}
-  //                   ></span>
-  //                 </div>
-  //                 <br />
-  //                 ==========================
-  //                 <br />
-  //               </div>
-  //             );
-  //           })}
-  //         </div>
-  //         <a
-  //           id="download"
-  //           href="#"
-  //           download={filename}
-  //           onClick={handleDownload}
-  //         >
-  //           書き出し
-  //         </a>
-  //       </div>
-  //     </div>
-  //   );
-  // }
   render() {
     const { current_page } = this.state;
     return (
       <div className="wrapper">
         {this.renderHeader()}
-        {/* {current_page === "#data" && this.renderDataPage()} */}
         {current_page === "#settings" && this.renderSettingsPage()}
         {current_page === "#how_to_use" && this.renderHowToUsePage()}
         {(current_page === "#memos" || current_page === "") &&

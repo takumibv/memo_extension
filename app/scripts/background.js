@@ -7,21 +7,83 @@ import Memo from "./model/memos.js";
 
 // install or Updateして初めて開いた時に呼ばれる。
 chrome.runtime.onInstalled.addListener((details) => {
-  console.log("previousVersion", details.previousVersion, window.bg);
+  console.log(
+    "previousVersion",
+    details.previousVersion,
+    (details.previousVersion || "").match(/^0\.2/g),
+    window.bg
+  );
 
-  if (window.bg && window.bg.getAllMemos) {
-    const memos = window.bg.getAllMemos();
-    let pageInfoMap = {};
-    let memoMap = {};
-    memos.forEach((memo) => {
-      pageInfoMap[memo.page_info_id] = memo.page_info;
-      if (memoMap[memo.page_info_id]) {
-        memoMap[memo.page_info_id].push(memo);
-      } else {
-        memoMap[memo.page_info_id] = [memo];
-      }
-    });
-    console.log(memos, memoMap, pageInfoMap);
+  // previousVersionが 0.2.6 以下ならstorageに保存
+  try {
+    if (
+      (details.previousVersion || "").match(/^0\.2/g) &&
+      window.bg &&
+      window.bg.getAllMemos
+    ) {
+      const memos = window.bg.getAllMemos();
+      let pageInfoMap = {};
+      let memoMap = {};
+      memos.forEach((memo) => {
+        pageInfoMap[memo.page_info_id] = memo.page_info;
+
+        // TODO メモを整形
+        const targetMemo = {
+          id: memo.id,
+          page_info_id: memo.page_info_id,
+          title: memo.title,
+          description: memo.description,
+          position_x: memo.position_x,
+          position_y: memo.position_y,
+          width: memo.width,
+          height: memo.height,
+          is_open: memo.is_open,
+          is_fixed: memo.is_fixed,
+          created_at: memo.created_at,
+          updated_at: memo.updated_at,
+        };
+
+        if (memoMap[memo.page_info_id]) {
+          memoMap[memo.page_info_id].push(targetMemo);
+        } else {
+          memoMap[memo.page_info_id] = [targetMemo];
+        }
+      });
+
+      const saveMemos = () => {
+        chrome.storage.local.clear();
+        Object.keys(memoMap).forEach((page_info_id) => {
+          chrome.storage.local.set(
+            { [`notes_${page_info_id}`]: memoMap[page_info_id] },
+            () => {
+              console.log(
+                "backup: saved memos",
+                page_info_id,
+                memoMap[page_info_id]
+              );
+            }
+          );
+        });
+        const pageInfos = Object.keys(pageInfoMap).map((page_info_id) => {
+          const page_info = pageInfoMap[page_info_id];
+
+          return {
+            id: page_info.id,
+            page_url: decodeURIComponent(page_info.page_url),
+            page_title: page_info.page_title,
+            fav_icon_url: page_info.fav_icon_url,
+            created_at: page_info.created_at,
+          };
+        });
+        chrome.storage.local.set({ page_info: pageInfos }, () => {
+          console.log("backup: saved pageInfos", pageInfos);
+        });
+      };
+      saveMemos();
+    }
+    ga("send", "event", "UpdateApp", "true", "", 1);
+  } catch (e) {
+    ga("send", "event", "UpdateApp", "false", e.message, 1);
   }
 });
 

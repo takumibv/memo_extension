@@ -1,45 +1,47 @@
-const $ = require('jquery');
-import Memo from './memos.js';
-import Base from './base.js';
+const $ = require("jquery");
+import Memo from "./memos.js";
+import Base from "./base.js";
 
 const PAGE_INFO_STORAGE_NAME = "PageInfos";
 const MEMO_STORAGE_NAME = "Memos";
 
 export default class PageInfo extends Base {
   /*** props
-  * id
-  * page_url
-  * page_title
-  ****/
+   * id
+   * page_url
+   * page_title
+   ****/
   constructor(page_url = null, page_info = null) {
     super(PAGE_INFO_STORAGE_NAME);
 
     if (page_info) {
-      this.id         = page_info.id;
-      this.page_url   = page_info.page_url;
+      this.id = page_info.id;
+      this.page_url = page_info.page_url;
       this.page_title = page_info.page_title;
       this.fav_icon_url = page_info.fav_icon_url;
     } else {
       const origin_page_info = this.fetchPageInfo(page_url);
 
-      this.id         = origin_page_info.id;
-      this.page_url   = origin_page_info.page_url;
+      this.id = origin_page_info.id;
+      this.page_url = origin_page_info.page_url;
       this.page_title = origin_page_info.page_title;
       this.fav_icon_url = origin_page_info.fav_icon_url;
     }
   }
   // localStorageのpage_infoがあれば、attrにセットする。
   fetchPageInfo(page_url) {
-    const origin_page_info = this.getStorage().filter(a => a.page_url === page_url)[0];
+    const origin_page_info = this.getStorage().filter(
+      (a) => a.page_url === page_url
+    )[0];
     let id = null,
-        page_title = null,
-        fav_icon_url = null,
-        memos = [];
+      page_title = null,
+      fav_icon_url = null,
+      memos = [];
 
     if (origin_page_info) {
-      id          = origin_page_info.id;
-      page_title  = origin_page_info.page_title;
-      fav_icon_url= origin_page_info.fav_icon_url;
+      id = origin_page_info.id;
+      page_title = origin_page_info.page_title;
+      fav_icon_url = origin_page_info.fav_icon_url;
       // memos       = Memo.getMemosByPageInfoId(id);
     }
 
@@ -60,11 +62,66 @@ export default class PageInfo extends Base {
       fav_icon_url: this.fav_icon_url,
       created_at: this.created_at,
       // memos: this.memos
-    }
+    };
   }
   save() {
-    if (!this.created_at) { this.created_at = new Date().toISOString(); }
+    if (!this.created_at) {
+      this.created_at = new Date().toISOString();
+    }
     super.save();
+    this.save_strorage_api();
+  }
+  save_strorage_api() {
+    const storage_name = `page_info`;
+    chrome.storage.local.get(storage_name, (storage) => {
+      const pageInfos = storage[storage_name] || [];
+      const pageInfoIndex = pageInfos.findIndex((p) => p.id === this.id);
+
+      if (pageInfoIndex !== -1) {
+        // update
+        pageInfos[pageInfoIndex] = {
+          id: this.id,
+          page_url: decodeURIComponent(this.page_url),
+          page_title: this.page_title,
+          fav_icon_url: this.fav_icon_url,
+          created_at: this.created_at,
+        };
+      } else {
+        // create
+        pageInfos.push({
+          id: this.id,
+          page_url: decodeURIComponent(this.page_url),
+          page_title: this.page_title,
+          fav_icon_url: this.fav_icon_url,
+          created_at: this.created_at,
+        });
+      }
+
+      chrome.storage.local.set({ [storage_name]: pageInfos }, () => {
+        console.log("saved pageInfos", storage_name, pageInfos);
+      });
+    });
+  }
+  delete() {
+    super.delete();
+    this.delete_strorage_api();
+  }
+  delete_strorage_api() {
+    const storage_name = `page_info`;
+    chrome.storage.local.get(storage_name, (storage) => {
+      const pageInfos = storage[storage_name] || [];
+      const pageInfoIndex = pageInfos.findIndex((p) => p.id === this.id);
+      console.log("delete_strorage_api::", pageInfoIndex, pageInfos, this.id);
+
+      if (pageInfoIndex !== -1) {
+        // delete
+        pageInfos.splice(pageInfoIndex, 1);
+
+        chrome.storage.local.set({ [storage_name]: pageInfos }, () => {
+          console.log("deleted pageInfos", storage_name, pageInfos);
+        });
+      }
+    });
   }
   serialize_for_save() {
     return {
@@ -73,14 +130,16 @@ export default class PageInfo extends Base {
       page_title: this.page_title,
       fav_icon_url: this.fav_icon_url,
       created_at: this.created_at,
-    }
+    };
   }
   checkMemoExistance() {
-    if (this.getMemos().length === 0) { super.delete(); }
+    if (this.getMemos().length === 0) {
+      this.delete();
+    }
   }
   /****
-  * setter/getter
-  ****/
+   * setter/getter
+   ****/
   setPageUrl(page_url) {
     this.page_url = page_url;
   }
@@ -111,7 +170,7 @@ export default class PageInfo extends Base {
   }
   static getPageInfoById(id) {
     const storage = Base.getStorage(PAGE_INFO_STORAGE_NAME);
-    return storage.filter(a => a.id === id)[0];
+    return storage.filter((a) => a.id === id)[0];
   }
   static getAllPageInfo() {
     const storage = Base.getStorage(PAGE_INFO_STORAGE_NAME);
@@ -120,11 +179,16 @@ export default class PageInfo extends Base {
   static getAllPageInfoHavingMemo() {
     const all_page_infos = Base.getStorage(PAGE_INFO_STORAGE_NAME);
     const all_memos = Base.getStorage(MEMO_STORAGE_NAME);
-    all_page_infos.filter(
-      page_info => !all_memos.some(memo => memo.page_info_id===page_info.id)
-    ).forEach(page_info => {
-      new PageInfo(null, page_info).delete();
-    });
-    return all_page_infos.filter(page_info => all_memos.some(memo => memo.page_info_id===page_info.id));
+    all_page_infos
+      .filter(
+        (page_info) =>
+          !all_memos.some((memo) => memo.page_info_id === page_info.id)
+      )
+      .forEach((page_info) => {
+        new PageInfo(null, page_info).delete();
+      });
+    return all_page_infos.filter((page_info) =>
+      all_memos.some((memo) => memo.page_info_id === page_info.id)
+    );
   }
 }
