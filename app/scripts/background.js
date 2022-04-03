@@ -20,7 +20,7 @@ chrome.runtime.onInstalled.addListener((details) => {
     window.bg
   );
 
-  // previousVersionが 0.2.6 以下ならstorageに保存
+  // previousVersionが 0.2.x 以下ならstorageに保存
   try {
     if (
       (details.previousVersion || "").match(/^0\.2/g) &&
@@ -86,8 +86,17 @@ chrome.runtime.onInstalled.addListener((details) => {
         });
       };
       saveMemos();
+      ga("send", "event", "UpdateApp", "true", "", 1);
+    } else {
+      ga(
+        "send",
+        "event",
+        "UpdateApp",
+        "true",
+        "Backup action was not fired.",
+        1
+      );
     }
-    ga("send", "event", "UpdateApp", "true", "", 1);
   } catch (e) {
     ga("send", "event", "UpdateApp", "false", e.message, 1);
   }
