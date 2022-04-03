@@ -15,14 +15,10 @@
     "message": "どこでもメモ",
     "description": "The title of the browser action button"
   },
-
-  /* common term */
   "app_name": { "message": "どこでもメモ v0.2.4" },
   "no_memo_msg": { "message": "メモがありません。" },
   "add_memo_msg": { "message": "メモを追加する" },
   "confirm_remove_memo_msg": { "message": "本当に削除しますか?" },
-
-  /* popup page */
   "make_memo_button_msg": { "message": "メモを作成する" },
   "setting_button_msg": { "message": "設定" },
   "menu_button_msg": { "message": "メモ一覧ページ" },
@@ -34,8 +30,6 @@
     "message": "右クリックの「メモを追加する」からでも作成できます。"
   },
   "how_to_use_page_link_msg": { "message": "使い方" },
-
-  /* option page */
   "memo_header_msg": { "message": "メモ一覧" },
   "settings_header_msg": { "message": "設定" },
   "how_to_use_header_msg": { "message": "使い方" },
@@ -62,8 +56,6 @@
   "usage06": { "message": "メモ一覧ページ" },
   "usage06_2": { "message": "で今まで作ったメモを一覧できます。" },
   "usage07": { "message": "メモには、様々な機能があります。" },
-
-  /* memo card */
   "updated_at_msg": { "message": "更新" },
   "created_at_msg": { "message": "作成" },
   "updated_at_sort_option": { "message": "更新日" },

@@ -16,7 +16,6 @@
     "description": "The title of the browser action button"
   },
 
-  /* common term */
   "app_name": { "message": "Memo Anywhere v0.2.4" },
   "no_memo_msg": { "message": "There is no memo." },
   "add_memo_msg": { "message": "add memo" },
@@ -24,7 +23,6 @@
     "message": "Do you really want to delete this?"
   },
 
-  /* popup page */
   "make_memo_button_msg": { "message": "make memo" },
   "setting_button_msg": { "message": "settings" },
   "menu_button_msg": { "message": "memo list page" },
@@ -37,7 +35,6 @@
   },
   "how_to_use_page_link_msg": { "message": "How to Use" },
 
-  /* option page */
   "memo_header_msg": { "message": "Memos" },
   "settings_header_msg": { "message": "Setting" },
   "how_to_use_header_msg": { "message": "Usage" },
@@ -67,7 +64,6 @@
   "usage06_2": { "message": " shows memos you made up to now." },
   "usage07": { "message": "The memo has various functions." },
 
-  /* memo card */
   "updated_at_msg": { "message": "Update" },
   "created_at_msg": { "message": "Created" },
   "updated_at_sort_option": { "message": "Update" },
