@@ -15,7 +15,7 @@
     "message": "どこでもメモ",
     "description": "The title of the browser action button"
   },
-  "app_name": { "message": "どこでもメモ v0.2.4" },
+  "app_name": { "message": "どこでもメモ v0.3.1" },
   "no_memo_msg": { "message": "メモがありません。" },
   "add_memo_msg": { "message": "メモを追加する" },
   "confirm_remove_memo_msg": { "message": "本当に削除しますか?" },

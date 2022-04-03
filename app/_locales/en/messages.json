@@ -16,7 +16,7 @@
     "description": "The title of the browser action button"
   },
 
-  "app_name": { "message": "Memo Anywhere v0.2.4" },
+  "app_name": { "message": "Memo Anywhere v0.3.1" },
   "no_memo_msg": { "message": "There is no memo." },
   "add_memo_msg": { "message": "add memo" },
   "confirm_remove_memo_msg": {
