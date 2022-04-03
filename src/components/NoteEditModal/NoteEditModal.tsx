@@ -1,4 +1,4 @@
-import { ModalUnstyled, Popover, styled } from "@mui/material";
+import { Modal, Popover, styled } from "@mui/material";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { VFC } from "react";
 import { MIN_NOTE_HEIGHT, MIN_NOTE_WIDTH, useNoteEdit } from "../../hooks/useNote";
@@ -154,7 +154,7 @@ export const NoteEditModal: VFC<Props> = ({
   }, [editedNote]);
 
   return (
-    <ModalUnstyled
+    <Modal
       open={!!isOpen}
       onClose={() => {
         if (isEditing) {
@@ -292,6 +292,6 @@ export const NoteEditModal: VFC<Props> = ({
           </SModalActions>
         </SModal>
       </SModalWrapper>
-    </ModalUnstyled>
+    </Modal>
   );
 };
