@@ -5,6 +5,12 @@ import PageInfo from "./page_infos.js";
 const PAGE_INFO_STORAGE_NAME = "PageInfos";
 const MEMO_STORAGE_NAME = "Memos";
 
+const text_to_string = (raw_text) => {
+  const divNode = document.createElement("div");
+  divNode.innerHTML = raw_text;
+  return divNode.textContent;
+};
+
 export default class Memo extends Base {
   /*** props
    * id
@@ -71,7 +77,7 @@ export default class Memo extends Base {
           id: this.id,
           page_info_id: this.page_info_id,
           title: this.title,
-          description: this.description,
+          description: text_to_string(this.description),
           position_x: this.position_x,
           position_y: this.position_y,
           width: this.width,
@@ -87,7 +93,7 @@ export default class Memo extends Base {
           id: this.id,
           page_info_id: this.page_info_id,
           title: this.title,
-          description: this.description,
+          description: text_to_string(this.description),
           position_x: this.position_x,
           position_y: this.position_y,
           width: this.width,

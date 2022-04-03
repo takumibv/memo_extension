@@ -5,6 +5,12 @@ const url = require("url");
 import PageInfo from "./model/page_infos.js";
 import Memo from "./model/memos.js";
 
+const text_to_string = (raw_text) => {
+  const divNode = document.createElement("div");
+  divNode.innerHTML = raw_text;
+  return divNode.textContent;
+};
+
 // install or Updateして初めて開いた時に呼ばれる。
 chrome.runtime.onInstalled.addListener((details) => {
   console.log(
@@ -32,7 +38,7 @@ chrome.runtime.onInstalled.addListener((details) => {
           id: memo.id,
           page_info_id: memo.page_info_id,
           title: memo.title,
-          description: memo.description,
+          description: text_to_string(memo.description),
           position_x: memo.position_x,
           position_y: memo.position_y,
           width: memo.width,
