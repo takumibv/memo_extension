@@ -22,12 +22,8 @@ chrome.runtime.onInstalled.addListener((details) => {
 
   // previousVersionが 0.2.x 以下ならstorageに保存
   try {
-    if (
-      (details.previousVersion || "").match(/^0\.2/g) &&
-      window.bg &&
-      window.bg.getAllMemos
-    ) {
-      const memos = window.bg.getAllMemos();
+    if ((details.previousVersion || "").match(/^0\.2/g)) {
+      const memos = Memo.getAllMemos();
       let pageInfoMap = {};
       let memoMap = {};
       memos.forEach((memo) => {
