@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Note } from "../../types/Note";
-import {
-  EyeIcon,
-  EyeOffIcon,
-  NotesIcon,
-  PinIcon,
-  PlusIcon,
-  TrashIcon,
-} from "../../components/Icon";
+import { PinIcon } from "../../components/Icon";
+import { EyeIcon, EyeSlashIcon, Bars3Icon, PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
 import FabIconButton from "../../components/Button/FabIconButton";
 import { Tooltip } from "@mui/material";
 import {
@@ -144,13 +138,13 @@ export const Popup = () => {
               {isVisible ? (
                 <EyeIcon fill="rgba(0, 0, 0, 0.4)" />
               ) : (
-                <EyeOffIcon fill="rgba(0, 0, 0, 0.4)" />
+                <EyeSlashIcon fill="rgba(0, 0, 0, 0.4)" />
               )}
             </SHeaderIconButton>
           </SHeaderLeft>
           <SHeaderRight>
             <SHeaderIconButton onClick={onClickNotesButton}>
-              <NotesIcon fill="rgba(0, 0, 0, 0.4)" />
+              <Bars3Icon fill="rgba(0, 0, 0, 0.4)" />
             </SHeaderIconButton>
           </SHeaderRight>
         </SHeader>

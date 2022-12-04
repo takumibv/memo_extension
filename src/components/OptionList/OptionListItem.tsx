@@ -1,7 +1,8 @@
 import React, { memo, useState } from "react";
 import { Note } from "../../types/Note";
 import { formatDate } from "../../utils";
-import { CopyIcon, EditIcon, TrashIcon } from "../Icon";
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { CopyIcon  } from "../Icon";
 import { PageInfo } from "../../types/PageInfo";
 import { Tooltip } from "@mui/material";
 import { useClipboard } from "../../hooks/useClipboard";
@@ -96,7 +97,7 @@ const OptionListItem: React.VFC<Props> = memo(
                       setOpenModal(true);
                     }}
                   >
-                    <EditIcon fill="rgba(0, 0, 0, 0.4)" />
+                    <PencilSquareIcon fill="rgba(0, 0, 0, 0.4)" />
                   </SIconButton>
                 </SIconButtonWrap>
               </Tooltip>

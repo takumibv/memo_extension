@@ -4,7 +4,8 @@ import { DraggableCore } from "react-draggable";
 import Tooltip from "@mui/material/Tooltip";
 import { initialPositionX, initialPositionY, useNoteEdit } from "../../hooks/useNote";
 import { Note } from "../../types/Note";
-import { CopyIcon, EditIcon, PinIcon, ResizeIcon, TrashIcon } from "../Icon";
+import { CopyIcon, PinIcon } from "../Icon";
+import { PencilSquareIcon, TrashIcon, ArrowDownRightIcon } from "@heroicons/react/24/solid";
 import {
   SNote,
   SNoteInner,
@@ -348,7 +349,7 @@ const StickyNote: React.VFC<Props> = memo(
               <Tooltip title="編集" enterDelay={300}>
                 <SIconButtonWrap>
                   <SIconButton onClick={() => setIsEditing(true)}>
-                    <EditIcon fill="rgba(0, 0, 0, 0.4)" />
+                    <PencilSquareIcon fill="rgba(0, 0, 0, 0.4)" />
                   </SIconButton>
                 </SIconButtonWrap>
               </Tooltip>
@@ -402,7 +403,7 @@ const StickyNote: React.VFC<Props> = memo(
           nodeRef={noteRef}
         >
           <SResizeHandler ref={resizeHandlerRef}>
-            <ResizeIcon fill="rgba(0, 0, 0, 0.15)" />
+            <ArrowDownRightIcon fill="rgba(0, 0, 0, 0.15)" />
           </SResizeHandler>
         </DraggableCore>
       </SNote>

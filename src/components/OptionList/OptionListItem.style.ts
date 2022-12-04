@@ -1,5 +1,6 @@
 import styled, { css } from "styled-components";
-import { CopySuccessIcon, FilterIcon, LaunchIcon } from "../Icon";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/solid";
+import { CopySuccessIcon } from "../Icon";
 import IconButton from "../Button/IconButton";
 
 export const SCard = styled.button`
@@ -155,7 +156,7 @@ export const SPageInfoLink = styled.p`
   margin-left: 2.4em;
 `;
 
-export const SLaunchIcon = styled(LaunchIcon)`
+export const SLaunchIcon = styled(ArrowTopRightOnSquareIcon)`
   width: 1em;
   height: 1em;
 `;

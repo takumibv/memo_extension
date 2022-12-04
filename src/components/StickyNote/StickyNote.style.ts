@@ -57,10 +57,6 @@ export const SResizeHandler = styled.div`
   right: 0;
   bottom: 0;
   z-index: 1;
-
-  svg {
-    transform: rotate(45deg);
-  }
 `;
 
 export const SNoteHeader = styled.div`

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { useHistory } from "react-router";
+import { XMarkIcon } from "@heroicons/react/24/solid";
 import { Note } from "../../types/Note";
 import { PageInfo } from "../../types/PageInfo";
 import OptionListItem from "../../components/OptionList/OptionListItem";
@@ -34,7 +35,6 @@ import {
   SNoNoteText,
   SCurrentPageCloseButton,
 } from "./Options.style";
-import { CloseIcon } from "../../components/Icon";
 import OptionHeader from "../../components/OptionHeader/OptionHeader";
 import * as sender from "../message/sender/options";
 
@@ -253,7 +253,7 @@ const Options: React.VFC<Props> = () => {
                     <SCurrentPageFaviconImage src={currentPageInfo.fav_icon_url} />
                     <SCurrentPageTitle>{currentPageInfo.page_title}</SCurrentPageTitle>
                     <SCurrentPageCloseButton onClick={() => onClickFilter()}>
-                      <CloseIcon fill="rgba(0, 0, 0, 0.4)" />
+                      <XMarkIcon fill="rgba(0, 0, 0, 0.4)" />
                     </SCurrentPageCloseButton>
                   </SCurrentPageAreaHeader>
                   <SCurrentPageLink

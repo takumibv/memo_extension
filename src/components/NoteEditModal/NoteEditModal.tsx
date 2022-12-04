@@ -5,7 +5,7 @@ import { MIN_NOTE_HEIGHT, MIN_NOTE_WIDTH, useNoteEdit } from "../../hooks/useNot
 import { Note } from "../../types/Note";
 import { PageInfo } from "../../types/PageInfo";
 import { formatDate, isEqualsObject } from "../../utils";
-import { MoreIcon, TrashIcon } from "../Icon";
+import { EllipsisVerticalIcon } from "@heroicons/react/24/solid";
 import {
   SModalWrapper,
   SModal,
@@ -268,7 +268,7 @@ export const NoteEditModal: VFC<Props> = ({
             </SModalActionsLeft>
             <SModalActionsRight>
               <SIconButton aria-labelledby="action-popover" onClick={onClickMoreActions}>
-                <MoreIcon fill="rgba(0, 0, 0, 0.4)" />
+                <EllipsisVerticalIcon fill="rgba(0, 0, 0, 0.4)" />
               </SIconButton>
               <Popover
                 id="action-popover"

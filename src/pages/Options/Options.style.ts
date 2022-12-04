@@ -1,6 +1,6 @@
 import styled, { createGlobalStyle, css } from "styled-components";
 import { Reorder } from "framer-motion";
-import { SearchIcon, SortIcon } from "../../components/Icon";
+import { ArrowsUpDownIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import { resetCSS } from "../../resetCSS";
 import IconButton from "../../components/Button/IconButton";
 
@@ -121,7 +121,7 @@ export const SInputWrap = styled.div`
   flex: 1;
 `;
 
-export const SInputIcon = styled(SearchIcon)`
+export const SInputIcon = styled(MagnifyingGlassIcon)`
   position: absolute;
   left: 0.75em;
   top: 50%;
@@ -148,7 +148,7 @@ export const SSelectWrap = styled.div`
   width: 12em;
 `;
 
-export const SSelectIcon = styled(SortIcon)`
+export const SSelectIcon = styled(ArrowsUpDownIcon)`
   position: absolute;
   left: 0.5em;
   top: 50%;
