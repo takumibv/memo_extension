@@ -36,6 +36,7 @@ export const createNote = async (pageId: number): Promise<NoteCRUDResponseType> 
     width: DEAULT_NOTE_WIDTH,
     height: DEAULT_NOTE_HEIGHT,
     is_fixed: true,
+    is_open: true,
     created_at: new Date().toISOString(),
   };
   const allNotes = [...notes, newNote];

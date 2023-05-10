@@ -38,6 +38,24 @@ export const SNote = styled.div<SNoteProps>`
     `}
 `;
 
+export const SOpenButton = styled(IconButton)`
+  position: relative;
+  pointer-events: initial;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const SLogo = styled.img`
+  ${baseCSS("img")}
+
+  pointer-events: none;
+  width: 1.5rem;
+  height: 1.5rem;
+`;
+
 export const SNoteInner = styled.div`
   ${baseCSS("div")}
 
@@ -191,7 +209,7 @@ export const SIconButtonWrap = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 0.5em;
+  margin-left: 0.75em;
 
   &:first-child {
     margin-left: 0;

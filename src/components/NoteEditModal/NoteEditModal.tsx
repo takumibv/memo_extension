@@ -55,6 +55,7 @@ export const NoteEditModal: VFC<Props> = ({
     title,
     description,
     is_fixed,
+    is_open,
     position_x,
     position_y,
     width,
@@ -71,6 +72,8 @@ export const NoteEditModal: VFC<Props> = ({
     setEditTitle,
     editDescription,
     setEditDescription,
+    editIsOpen,
+    setEditIsOpen,
     editPositionX,
     editPositionY,
     setEditPosition,
@@ -88,6 +91,7 @@ export const NoteEditModal: VFC<Props> = ({
     width: editWidth,
     height: editHeight,
     is_fixed: editIsFixed,
+    is_open: editIsFixed,
   };
 
   const isEditing = useMemo(() => {
@@ -99,6 +103,7 @@ export const NoteEditModal: VFC<Props> = ({
     const isEqualWidth = width === editWidth;
     const isEqualHeight = height === editHeight;
     const isEqualIsFixed = is_fixed === editIsFixed;
+    const isEqualIsOpen = is_open === editIsOpen;
 
     return (
       !isEqualTitle ||
@@ -107,7 +112,8 @@ export const NoteEditModal: VFC<Props> = ({
       !isEqualPositionY ||
       !isEqualWidth ||
       !isEqualHeight ||
-      !isEqualIsFixed
+      !isEqualIsFixed ||
+      !isEqualIsOpen
     );
   }, [note, editedNote]);
 
@@ -118,6 +124,14 @@ export const NoteEditModal: VFC<Props> = ({
     } else {
       setEditPosition(position_x, position_y);
       setEditIsFixed(false);
+    }
+  }, []);
+
+  const onChangeEditIsOpen = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (e.target.value === "true") {
+      setEditIsOpen(true);
+    } else {
+      setEditIsOpen(false);
     }
   }, []);
 
@@ -206,6 +220,18 @@ export const NoteEditModal: VFC<Props> = ({
                         >
                           <option value="unfixed">あり</option>
                           <option value="fixed">なし</option>
+                        </select>
+                      </SNoteDetailData>
+                    </SNoteDetail>
+                    <SNoteDetail>
+                      <SNoteDetailTitle>縮小</SNoteDetailTitle>
+                      <SNoteDetailData>
+                        <select
+                          value={editIsOpen ? "true" : "false"}
+                          onChange={onChangeEditIsOpen}
+                        >
+                          <option value="false">縮小する</option>
+                          <option value="true">縮小しない</option>
                         </select>
                       </SNoteDetailData>
                     </SNoteDetail>

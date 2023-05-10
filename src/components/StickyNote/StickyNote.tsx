@@ -5,7 +5,12 @@ import Tooltip from "@mui/material/Tooltip";
 import { initialPositionX, initialPositionY, useNoteEdit } from "../../hooks/useNote";
 import { Note } from "../../types/Note";
 import { CopyIcon, PinIcon } from "../Icon";
-import { PencilSquareIcon, TrashIcon, ArrowDownRightIcon } from "@heroicons/react/24/solid";
+import {
+  PencilSquareIcon,
+  TrashIcon,
+  ArrowDownRightIcon,
+  MinusIcon,
+} from "@heroicons/react/24/solid";
 import {
   SNote,
   SNoteInner,
@@ -25,10 +30,13 @@ import {
   SButton,
   SHeaderFixedPinArea,
   SHeaderFixedButton,
+  SOpenButton,
+  SLogo,
 } from "./StickyNote.style";
 import { ROOT_DOM_ID } from "../../pages/contentScript";
 import { msg } from "../../utils";
 import { useClipboard } from "../../hooks/useClipboard";
+import IconButton from "../Button/IconButton";
 
 type Props = {
   id?: number;
@@ -152,7 +160,15 @@ const StickyNote: React.VFC<Props> = memo(
       });
       setIsEditing(false);
       setIsEnableDrag(true);
-    }, [editTitle, editDescription, editPositionX, editPositionY, editWidth, editHeight]);
+    }, [
+      defaultNote,
+      editTitle,
+      editDescription,
+      editPositionX,
+      editPositionY,
+      editWidth,
+      editHeight,
+    ]);
 
     const onEditCancel = useCallback(() => {
       setEditTitle(title);
@@ -163,7 +179,6 @@ const StickyNote: React.VFC<Props> = memo(
 
     const onClickFixedButton = useCallback(() => {
       const { positionX, positionY } = getFixedPosition(!is_fixed);
-      console.log("getFixedPosition::", positionX, positionY);
       setEditPosition(positionX, positionY);
       onUpdateNote({
         ...defaultNote,
@@ -172,6 +187,14 @@ const StickyNote: React.VFC<Props> = memo(
         position_y: positionY,
       });
     }, [getFixedPosition, onUpdateNote, defaultNote]);
+
+    const onClickOpenButton = useCallback(() => {
+      console.log("onClickOpenButton", is_open);
+      onUpdateNote({
+        ...defaultNote,
+        is_open: !is_open,
+      });
+    }, [defaultNote]);
 
     const onClickDeleteButton = () => {
       if (confirm(`「${title || "メモ"}」を削除してよろしいですか？`)) {
@@ -223,6 +246,54 @@ const StickyNote: React.VFC<Props> = memo(
       editWidth,
       editHeight,
     ]);
+
+    if (!is_open) {
+      return (
+        <SNote
+          id={`${ROOT_DOM_ID}-sticky-note-${page_info_id}-${id}`}
+          ref={noteRef}
+          style={{
+            transform: `translate(${displayPositionX}px, ${displayPositionY}px)`,
+          }}
+          $isFixed={is_fixed}
+        >
+          <DraggableCore
+            scale={1}
+            onStart={(_, data) => {
+              setIsDragging(true);
+              setDragStartPositionX(displayPositionX - data.x);
+              setDragStartPositionY(displayPositionY - data.y);
+            }}
+            onDrag={(_, data) => {
+              if (!isEnableDrag) return false;
+
+              setEditPosition(dragStartPositionX + data.x, dragStartPositionY + data.y);
+            }}
+            onStop={() => {
+              setIsDragging(false);
+
+              if (position_x !== editPositionX || position_y !== editPositionY) {
+                onUpdateNote({
+                  ...defaultNote,
+                  position_x: editPositionX,
+                  position_y: editPositionY,
+                });
+              }
+            }}
+            nodeRef={noteRef}
+          >
+            <SNoteInner style={{ padding: "0.25rem" }}>
+              <SOpenButton onClick={onClickOpenButton}>
+                <SLogo
+                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAnCAYAAABjYToLAAAACXBIWXMAAAsSAAALEgHS3X78AAAEwUlEQVRYw+2YbUhbVxjH/zc3jXnVkuZqnHUtBtfplrjCykA73Ae1bOsHsRsIESdhurHtwyaFDsbKCmO0DNQPwyl0YlooQ0hWGPh2wU5h/eDqqO0W5oYvsWxibt40ydXca7z7EL1GjTFt7kRYz5dw7rn3nB////M855wQgiDgMDa51BNWV1efNJvNjevr62cDgcBzBEHI5HK5miAIcmFhQRuNRvdbcxJAk1wimKPFxcWfeTye99VqtVqn08lMJhMsFguCwWAIgA4ADAYDKIra9i3LsrDb7dz4+LjA8/ynNE13ZKzYBlCHUqm0UhQlt1qtqKioAAAIggCfz+fPz8/X7/X94OAg+vr6eJIkR3meb6Fpei5jK2022/ns7OxbKpVK19HRAZPJJI5tQsVisaRQbrcbnZ2dHMMwAY7j6mma/kmSGGttbb3s9XovNzU1kXV1ddvG1tbW4Pf7VwVB2AXFsiwcDgdGRkaiPM9fpWn6C8mC32azdfl8vpb29nYiUaUEqBVBEFQ7vxsbG4Pdbl+TyWR3dtqWMVhzc/NFn8/X0tbWljaU2+1Gb2/v6vz8fCgajbbQNH07nbWIdOuYzWY77/V6b7e3t5PpQG3aNjQ0BLVafY1l2as0TQfTFYGoqqpKi0yn06GhoQE7YyoYDCIUCkGhUIjPJiYm0NPTA5ZlwfN80vlomib2tZL+/n5KqBuOU5icsuyCYiMBRKOcCMUwDLq7O8F4ZmGtncLpF5ILdPHLFzOv/OEICWd/Dq5cadz2PBIJIBzmRNsGBwfhdDrxyukA3nxrFsqsGOYebb2v1RAw5spgzJVhaTkrc7C794wwmZ5HWVlZUqiJiQncsF+HThPEu/V/II9ityYnAWNeHEarIaTdKx0Dx3Hh7XNif3npH6yskmAYBjdv9sLleojqs9OwlHjFdwx6GQzH4gr9J5t4OEJiZi6K8vLyeKAH3IhySjidTgz0/whLiQcfNsZtU2YROP5MHEiZRSDTlhJs2q1CUVEhtFotggE37k/OoqvrGyjkS7DW/o4CIwvDMRmMuXIczckcJn2wORWMxkL89eevuP7dLbhcD/HqmTnUVHpgzJXBoD8CueQHpxRgw6N6dNoLEGFJFBY+wseffA59DouvLv2G4iIByqzkNMOjenz97bNiX6OO4YN3/kZNpV8asJpKP2oq/ai1mcEwDDiOQyhCwFwCAHtbNjS6tW8XnVhB97WpJ1YsZdoUFkSRo12OlwiWxPDonkcrLDIKPHBpoVHHNupWLCMrU4Ipjqyj5jW/uNhQCjBHPyWqLUVLq9DUvcEAAB64tFhkFHvGV02lP2OlHgvsXIIKm8rshIqwpGRqpQ2WR3Eof3lJhEgW9EUnVlBWGj5YsEQ7dybBZtBf2Bg/cLCy0jDyDNyuJHD0U9CoY6KiBw62Mwmm51QIR0jJg/6JwBKD2zlA4e69HERYUnIbHxtMq4mJcD//kgNHPwVLaRh5FHewYIseBSZd2u12vr6VBDNuldhPPCol/koKNjyqR63NjEVvPOMaPioVM9F0cgVFJ1biZcTAoeLMkngSee/SKfwwEK9zM24Vam3mlNvYvrek/S4jkv8jVP/SvrckGQ5pewr2FOx/CybfTN/D1v4FPIYdz2gNefIAAAAASUVORK5CYII="
+                  alt=""
+                />
+              </SOpenButton>
+            </SNoteInner>
+          </DraggableCore>
+        </SNote>
+      );
+    }
 
     return (
       <SNote
@@ -293,17 +364,15 @@ const StickyNote: React.VFC<Props> = memo(
                 >
                   {title || <SNoteSpan>タイトル</SNoteSpan>}
                 </SNoteTitle>
-                {!is_fixed && (
-                  <SHeaderFixedPinArea>
-                    <Tooltip title="ピンをはずす" enterDelay={300} placement="top">
-                      <div>
-                        <SHeaderFixedButton onClick={onClickFixedButton}>
-                          <PinIcon fill="rgba(0, 0, 0, 0.4)" />
-                        </SHeaderFixedButton>
-                      </div>
-                    </Tooltip>
-                  </SHeaderFixedPinArea>
-                )}
+                <SHeaderFixedPinArea>
+                  <Tooltip title="最小化する" enterDelay={300} placement="top">
+                    <div>
+                      <IconButton onClick={onClickOpenButton}>
+                        <MinusIcon fill="rgba(0, 0, 0, 0.4)" />
+                      </IconButton>
+                    </div>
+                  </Tooltip>
+                </SHeaderFixedPinArea>
               </SNoteHeader>
             )}
             <SNoteContent>
@@ -367,7 +436,7 @@ const StickyNote: React.VFC<Props> = memo(
               <Tooltip title="ピンを切り替える" enterDelay={300}>
                 <SIconButtonWrap>
                   <SIconButton onClick={onClickFixedButton} isFocus={!is_fixed}>
-                    <PinIcon fill="rgba(0, 0, 0, 0.4)" />
+                    <PinIcon fill={is_fixed ? "rgba(0, 0, 0, 0.3)" : "rgba(0, 0, 0, 1)"} />
                   </SIconButton>
                 </SIconButtonWrap>
               </Tooltip>

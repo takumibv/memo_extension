@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DEAULT_NOTE_HEIGHT, DEAULT_NOTE_WIDTH, Note } from "../types/Note";
 
 export const MIN_NOTE_WIDTH = 160;
@@ -18,9 +18,11 @@ export const useNoteEdit = ({
   position_y,
   width = MIN_NOTE_WIDTH,
   height = MIN_NOTE_HEIGHT,
+  is_open,
 }: Note) => {
   const [editTitle, setEditTitle] = useState(title);
   const [editDescription, setEditDescription] = useState(description);
+  const [editIsOpen, setEditIsOpen] = useState(is_open);
 
   const {
     positionX: editPositionX,
@@ -48,6 +50,8 @@ export const useNoteEdit = ({
     setEditTitle,
     editDescription,
     setEditDescription,
+    editIsOpen,
+    setEditIsOpen,
     editPositionX,
     editPositionY,
     setEditPosition,
@@ -79,6 +83,10 @@ export const useNotePosition = (defaultPositionX?: number, defaultPositionY?: nu
       setPositionY(positionY >= NOTE_TOP_POSITION ? positionY : NOTE_TOP_POSITION);
     }
   }, []);
+
+  useEffect(() => {
+    setPosition(defaultPositionX, defaultPositionY);
+  }, [defaultPositionX, defaultPositionY]);
 
   return {
     positionX,
