@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { useHistory } from "react-router";
-import { XMarkIcon } from "@heroicons/react/24/solid";
+import { XMarkIcon, PencilSquareIcon } from "@heroicons/react/24/solid";
 import { Note } from "../../types/Note";
 import { PageInfo } from "../../types/PageInfo";
 import OptionListItem from "../../components/OptionList/OptionListItem";
@@ -29,7 +29,11 @@ import {
   SCurrentPageAreaHeader,
   SCurrentPageFaviconImage,
   SCurrentPageTitle,
+  SCurrentPageLinkArea,
   SCurrentPageLink,
+  SCurrentPageLinkEditButton,
+  SPageLinkEditInput,
+  SPageLinkEditButton,
   SCardList,
   SCardListItem,
   SNoNoteText,
@@ -177,6 +181,25 @@ const Options: React.VFC<Props> = () => {
     }
   };
 
+  const [linkEditMode, setLinkEditMode] = useState<boolean>(false);
+  const [editLink, setEditLink] = useState<string>("");
+  const handleEditLink = () => {
+    setEditLink(currentPageInfo?.page_url ?? "");
+    setLinkEditMode(true);
+  };
+
+  const handleSaveLink = () => {
+    if (editLink !== currentPageInfo?.page_url) {
+      sender.sendUpdatePageInfo({
+        ...currentPageInfo,
+        page_url: editLink,
+      }).then(({ pageInfos }) => {
+        if (pageInfos) setPageInfos(pageInfos);
+      });
+    }
+    setLinkEditMode(false);
+  };
+
   useEffect(() => {
     sender.sendFetchAllNotes().then(({ notes, pageInfos }) => {
       notes && setNotes(notes);
@@ -256,15 +279,30 @@ const Options: React.VFC<Props> = () => {
                       <XMarkIcon fill="rgba(0, 0, 0, 0.4)" />
                     </SCurrentPageCloseButton>
                   </SCurrentPageAreaHeader>
-                  <SCurrentPageLink
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onClickLink(currentPageInfo.page_url ?? "");
-                    }}
-                  >
-                    {currentPageInfo.page_url}
-                  </SCurrentPageLink>
+                  <SCurrentPageLinkArea>
+                    {linkEditMode ? (
+                      <>
+                        <SPageLinkEditInput value={editLink} onChange={(e) => setEditLink(e.target.value)} />
+                        <SPageLinkEditButton onClick={handleSaveLink}>保存</SPageLinkEditButton>
+                        <SPageLinkEditButton secondary onClick={() => setLinkEditMode(false)}>キャンセル</SPageLinkEditButton>
+                      </>
+                    ) : (
+                      <>
+                        <SCurrentPageLink
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            onClickLink(currentPageInfo.page_url ?? "");
+                          }}
+                        >
+                          {currentPageInfo.page_url}
+                        </SCurrentPageLink>
+                        <SCurrentPageLinkEditButton onClick={handleEditLink}>
+                          <PencilSquareIcon fill="rgba(0, 0, 0, 0.4)" />
+                        </SCurrentPageLinkEditButton>
+                      </>
+                    )}
+                  </SCurrentPageLinkArea>
                 </SCurrentPageArea>
               )}
               {filteredNotes.length === 0 && <SNoNoteText>メモがありません。</SNoNoteText>}

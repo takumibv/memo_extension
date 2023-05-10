@@ -1,5 +1,5 @@
 import { Note } from "../../../types/Note";
-import { DELETE_NOTE, GET_ALL_NOTES_AND_PAGE_INFO, OPTIONS, UPDATE_NOTE } from "../actions";
+import { DELETE_NOTE, GET_ALL_NOTES_AND_PAGE_INFO, OPTIONS, UPDATE_NOTE, UPDATE_NOTE_INFO } from "../actions";
 import { sendAction } from "./base";
 import { PageInfo } from "../../../types/PageInfo";
 
@@ -19,4 +19,8 @@ export const sendDeleteNote = async (
 
 export const sendFetchAllNotes = async (): Promise<{ notes?: Note[]; pageInfos?: PageInfo[] }> => {
   return await sendAction(GET_ALL_NOTES_AND_PAGE_INFO, OPTIONS);
+};
+
+export const sendUpdatePageInfo = async (pageInfo: PageInfo): Promise<{ pageInfos?: PageInfo[] }> => {
+  return await sendAction(UPDATE_NOTE_INFO, OPTIONS, { pageInfo });
 };

@@ -11,6 +11,7 @@ import {
 } from "../../storages/noteVisibleStorage";
 import {
   getAllPageInfos,
+  updatePageInfo as _updatePageInfo,
   getOrCreatePageInfoByUrl,
   getPageInfoByUrl,
 } from "../../storages/pageInfoStorage";
@@ -81,6 +82,15 @@ export const fetchAllPageInfo = async (): Promise<PageInfo[]> => {
   console.log("GET_ALL_PAGEINFOS:", pageInfos);
 
   return pageInfos;
+};
+
+export const updatePageInfo = async (page_info: PageInfo): Promise<PageInfo[]> => {
+  if (!page_info.id) return [];
+
+  const { allPageInfos } = await _updatePageInfo(page_info);
+  console.log("UPDATE_PAGE_INFO`:", allPageInfos);
+
+  return allPageInfos;
 };
 
 export const scrollTo = async (tabId: number, note: Note) => {

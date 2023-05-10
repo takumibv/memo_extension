@@ -11,6 +11,7 @@ import {
   UPDATE_NOTE,
   GET_NOTE_VISIBLE,
   UPDATE_NOTE_VISIBLE,
+  UPDATE_NOTE_INFO,
 } from "../actions";
 import * as actions from "../../background/actions";
 import { MessageRequest, MessageResponse, MessageMethod, MessageRequestPayload } from "../message";
@@ -199,7 +200,7 @@ const _handleMessagesFromOption = (
   sendResponse: (response?: MessageResponse) => void,
   payload: MessageRequestPayload
 ) => {
-  const { note } = payload;
+  const { note, pageInfo } = payload;
 
   switch (method) {
     case GET_ALL_NOTES:
@@ -236,6 +237,14 @@ const _handleMessagesFromOption = (
             .then(({ notes, pageInfos }) => sendResponse({ data: { notes, pageInfos } }));
         })
         .catch((e) => console.log("error DELETE_NOTE:", e));
+      return true;
+    case UPDATE_NOTE_INFO:
+      actions
+        .updatePageInfo(pageInfo!)
+        .then((pageInfos) => {
+          sendResponse({ data: { pageInfos } });
+        })
+        .catch((e) => console.log("error UPDATE_NOTE_INFO:", e));
       return true;
     default:
       sendResponse({

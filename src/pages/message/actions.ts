@@ -6,6 +6,7 @@ export const UPDATE_NOTE = "UPDATE_NOTE";
 export const DELETE_NOTE = "DELETE_NOTE";
 export const GET_ALL_NOTES_AND_PAGE_INFO = "GET_ALL_NOTES_AND_PAGE_INFO";
 export const GET_NOTE_VISIBLE = "GET_NOTE_VISIBLE";
+export const UPDATE_NOTE_INFO = "UPDATE_NOTE_INFO";
 
 // Popup → contentScript
 export const SCROLL_TO_TARGET_NOTE = "SCROLL_TO_TARGET_NOTE";

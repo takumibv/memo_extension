@@ -14,6 +14,7 @@ import {
   UPDATE_NOTE_VISIBLE,
   GET_NOTE_VISIBLE,
   SET_NOTE_VISIBLE,
+  UPDATE_NOTE_INFO,
 } from "./actions";
 import { Note } from "../../types/Note";
 import { PageInfo } from "../../types/PageInfo";
@@ -56,7 +57,8 @@ export type ToBackgroundMessageMethod =
   | typeof GET_ALL_NOTES_AND_PAGE_INFO
   | typeof SCROLL_TO_TARGET_NOTE
   | typeof GET_NOTE_VISIBLE
-  | typeof UPDATE_NOTE_VISIBLE;
+  | typeof UPDATE_NOTE_VISIBLE
+  | typeof UPDATE_NOTE_INFO;
 
 export type ToContentScriptMessageMethod = typeof SETUP_PAGE | typeof SET_NOTE_VISIBLE;
 

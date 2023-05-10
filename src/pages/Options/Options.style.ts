@@ -2,6 +2,7 @@ import styled, { createGlobalStyle, css } from "styled-components";
 import { Reorder } from "framer-motion";
 import { ArrowsUpDownIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 import { resetCSS } from "../../resetCSS";
+import Button from "../../components/Button/Button";
 import IconButton from "../../components/Button/IconButton";
 
 export const GlobalStyle = createGlobalStyle`
@@ -198,12 +199,34 @@ export const SCurrentPageCloseButton = styled(IconButton)`
   margin-left: 0.5em;
 `;
 
+export const SCurrentPageLinkArea = styled.div`
+  display: flex;
+  align-items: baseline;
+`;
+
 export const SCurrentPageLink = styled.a`
-  display: block;
+  display: inline-block;
   margin-left: 1.5em;
   word-break: break-all;
   text-decoration: underline;
   color: #00379e;
+`;
+
+export const SCurrentPageLinkEditButton = styled(IconButton)`
+  margin-left: 0.5em;
+  min-width: 1.25rem;
+`;
+
+export const SPageLinkEditInput = styled.input`
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 0.5em 0.75em;
+  flex: 1;
+`;
+
+export const SPageLinkEditButton = styled(Button)`
+  margin-left: 0.5em;
+  padding: 0.5em 0.75em;
 `;
 
 export const SNoNoteText = styled.p`
