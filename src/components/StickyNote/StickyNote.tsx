@@ -188,13 +188,17 @@ const StickyNote: React.VFC<Props> = memo(
       });
     }, [getFixedPosition, onUpdateNote, defaultNote]);
 
+    // 開閉ボタンが押せるかどうか
+    const [isEnableOpenButton, setIsEnableOpenButton] = useState(true);
     const onClickOpenButton = useCallback(() => {
-      console.log("onClickOpenButton", is_open);
-      onUpdateNote({
-        ...defaultNote,
-        is_open: !is_open,
-      });
-    }, [defaultNote]);
+      if (isEnableOpenButton) {
+        onUpdateNote({
+          ...defaultNote,
+          is_open: !is_open,
+        });
+      }
+      setIsEnableOpenButton(true);
+    }, [defaultNote, isEnableOpenButton]);
 
     const onClickDeleteButton = () => {
       if (confirm(`「${title || "メモ"}」を削除してよろしいですか？`)) {
@@ -248,6 +252,7 @@ const StickyNote: React.VFC<Props> = memo(
     ]);
 
     if (!is_open) {
+      // Close状態のスタイル
       return (
         <SNote
           id={`${ROOT_DOM_ID}-sticky-note-${page_info_id}-${id}`}
@@ -267,6 +272,7 @@ const StickyNote: React.VFC<Props> = memo(
             onDrag={(_, data) => {
               if (!isEnableDrag) return false;
 
+              setIsEnableOpenButton(false);
               setEditPosition(dragStartPositionX + data.x, dragStartPositionY + data.y);
             }}
             onStop={() => {
@@ -317,6 +323,7 @@ const StickyNote: React.VFC<Props> = memo(
           onDrag={(_, data) => {
             if (!isEnableDrag) return false;
 
+            setIsEnableOpenButton(false);
             setEditPosition(dragStartPositionX + data.x, dragStartPositionY + data.y);
           }}
           onStop={() => {

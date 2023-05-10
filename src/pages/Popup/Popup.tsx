@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Note } from "../../types/Note";
 import { PinIcon } from "../../components/Icon";
-import { EyeIcon, EyeSlashIcon, Bars3Icon, PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
+import {
+  EyeIcon,
+  EyeSlashIcon,
+  Bars3Icon,
+  PlusIcon,
+  TrashIcon,
+  ArrowPathIcon,
+} from "@heroicons/react/24/solid";
 import FabIconButton from "../../components/Button/FabIconButton";
 import { Tooltip } from "@mui/material";
 import {
@@ -81,20 +88,16 @@ export const Popup = () => {
     }
   };
 
-  const onClickVisibleButton = () => {
-    if (currentTab) {
-      sender.sendUpdateNoteVisible(currentTab, !isVisible).then(({ isVisible }) => {
-        setIsVisible(!!isVisible);
-      });
-    }
-  };
-
-  const onClickPin = (note: Note) => {
+  const onClickResetPosition = (note: Note) => {
+    const { position_x, position_y, ..._note } = note;
     if (currentTab) {
       sender
-        .sendUpdateNote(currentTab, { ...note, is_fixed: !note.is_fixed })
+        .sendUpdateNote(currentTab, {
+          ..._note,
+          is_fixed: true,
+          is_open: true,
+        })
         .then(({ notes }) => {
-          console.log("onClickPin===>", notes);
           notes && setNotes(notes);
           setIsEnabled(true);
         })
@@ -134,13 +137,13 @@ export const Popup = () => {
             <FabIconButton onClick={onClickAddNote} disabled={!isEnabled}>
               <PlusIcon fill="#fff" />
             </FabIconButton>
-            <SHeaderIconButton onClick={onClickVisibleButton} disabled={!isEnabled}>
+            {/* <SHeaderIconButton onClick={onClickVisibleButton} disabled={!isEnabled}>
               {isVisible ? (
                 <EyeIcon fill="rgba(0, 0, 0, 0.4)" />
               ) : (
                 <EyeSlashIcon fill="rgba(0, 0, 0, 0.4)" />
               )}
-            </SHeaderIconButton>
+            </SHeaderIconButton> */}
           </SHeaderLeft>
           <SHeaderRight>
             <SHeaderIconButton onClick={onClickNotesButton}>
@@ -162,29 +165,27 @@ export const Popup = () => {
           {isEnabled && notes.length !== 0 && (
             <ul>
               {notes.map((note) => (
-                <Tooltip title="TODO" placement="top" open={false}>
-                  <SListItem key={note.id}>
-                    <SListItemLeft
-                      disabled={note.is_fixed}
-                      onClick={() => !note.is_fixed && onClickNote(note)}
-                    >
-                      {note.title || note.description}
-                    </SListItemLeft>
-                    <SListItemRight>
-                      <SPinIconButton
-                        onClick={() => onClickPin(note)}
-                        isPin={!!note.is_fixed}
-                        disabled={!note.is_fixed}
-                      >
-                        <PinIcon fill="rgba(0, 0, 0, 1)" />
-                      </SPinIconButton>
+                <SListItem key={note.id}>
+                  <SListItemLeft
+                    disabled={note.is_fixed}
+                    onClick={() => !note.is_fixed && onClickNote(note)}
+                  >
+                    {note.title || note.description}
+                  </SListItemLeft>
+                  <SListItemRight>
+                    <Tooltip title="位置をリセット" placement="top">
+                      <span>
+                        <SIconButton onClick={() => onClickResetPosition(note)}>
+                          <ArrowPathIcon fill="rgba(0, 0, 0, 0.5)" />
+                        </SIconButton>
+                      </span>
+                    </Tooltip>
 
-                      <SIconButton onClick={() => onClickDelete(note)}>
-                        <TrashIcon fill="rgba(0, 0, 0, 0.4)" />
-                      </SIconButton>
-                    </SListItemRight>
-                  </SListItem>
-                </Tooltip>
+                    <SIconButton onClick={() => onClickDelete(note)}>
+                      <TrashIcon fill="rgba(0, 0, 0, 0.5)" />
+                    </SIconButton>
+                  </SListItemRight>
+                </SListItem>
               ))}
             </ul>
           )}
