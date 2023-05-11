@@ -20,7 +20,7 @@ const Main: React.VFC = () => {
     request: MessageRequest,
     sender: chrome.runtime.MessageSender,
     sendResponse: (response?: MessageResponse) => void
-  ) => {
+  ): boolean => {
     console.log("=== onMessage ===", request, sender);
     const { method, payload } = request;
     const { notes, isVisible } = payload ?? {};
@@ -37,7 +37,7 @@ const Main: React.VFC = () => {
         break;
     }
     sendResponse();
-    return;
+    return true;
   };
 
   const fetchAllNotes = useCallback(async () => {
@@ -90,27 +90,26 @@ const Main: React.VFC = () => {
     <>
       <GlobalStyle />
       <SContainer>
-        {isVisible &&
-          notes.map((note) => (
-            // TODO Focusの実施
-            <StickyNote
-              key={note.id}
-              id={note.id}
-              page_info_id={note.page_info_id}
-              title={note.title}
-              description={note.description}
-              position_x={note.position_x}
-              position_y={note.position_y}
-              width={note.width}
-              height={note.height}
-              is_open={note.is_open}
-              is_fixed={note.is_fixed}
-              created_at={note.created_at}
-              updated_at={note.updated_at}
-              onUpdateNote={updateNote}
-              onDeleteNote={deleteNote}
-            />
-          ))}
+        {notes.map((note) => (
+          // TODO Focusの実施
+          <StickyNote
+            key={note.id}
+            id={note.id}
+            page_info_id={note.page_info_id}
+            title={note.title}
+            description={note.description}
+            position_x={note.position_x}
+            position_y={note.position_y}
+            width={note.width}
+            height={note.height}
+            is_open={note.is_open}
+            is_fixed={note.is_fixed}
+            created_at={note.created_at}
+            updated_at={note.updated_at}
+            onUpdateNote={updateNote}
+            onDeleteNote={deleteNote}
+          />
+        ))}
       </SContainer>
     </>
   );

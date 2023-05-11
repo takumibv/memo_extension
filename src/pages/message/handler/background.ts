@@ -54,7 +54,7 @@ const _handleMessagesFromContentScript = (
   method: MessageMethod,
   sendResponse: (response?: MessageResponse) => void,
   payload: MessageRequestPayload
-) => {
+): boolean => {
   const { url = "", note } = payload;
   switch (method) {
     case GET_ALL_NOTES:
@@ -115,17 +115,21 @@ const _handleMessagesFromPopup = (
   method: MessageMethod,
   sendResponse: (response?: MessageResponse, error?: Error) => void,
   payload: MessageRequestPayload
-) => {
+): boolean => {
   const { tab, note, isVisible } = payload;
   const tabId = tab?.id;
   const tabUrl = tab?.url;
 
-  if (!tabId || !tabUrl)
-    return sendResponse({ data: { notes: [] }, error: new Error("このページでは使用できません") });
+  if (!tabId || !tabUrl) {
+    sendResponse({ data: { notes: [] }, error: new Error("このページでは使用できません") });
+    return true;
+  }
 
   // Chromeシステム画面は、アクションを実行しないようにする
-  if (isSystemLink(tabUrl))
-    return sendResponse({ data: { notes: [] }, error: new Error("このページでは使用できません") });
+  if (isSystemLink(tabUrl)) {
+    sendResponse({ data: { notes: [] }, error: new Error("このページでは使用できません") });
+    return true;
+  }
 
   const sendResponseAndSetNotes = (notes: Note[]) => {
     actions.getIsVisibleNote().then((isVisible) => {
@@ -180,7 +184,7 @@ const _handleMessagesFromPopup = (
           sendResponse({ data: { isVisible } });
           injectContentScript(tabId).then(() => setupIsVisible(tabId, tabUrl, isVisible));
         });
-        break;
+        return true;
       case UPDATE_NOTE_VISIBLE:
         actions.setIsVisibleNote(!!isVisible).then((isVisible) => {
           sendResponse({ data: { isVisible } });
@@ -199,7 +203,7 @@ const _handleMessagesFromOption = (
   method: MessageMethod,
   sendResponse: (response?: MessageResponse) => void,
   payload: MessageRequestPayload
-) => {
+): boolean => {
   const { note, pageInfo } = payload;
 
   switch (method) {
@@ -259,7 +263,7 @@ export const handleMessages = (
   action: MessageRequest,
   sender: chrome.runtime.MessageSender,
   sendResponse: (response?: MessageResponse) => void
-) => {
+): boolean => {
   const { method, senderType, payload } = action;
   console.log("==== handleMessage ====", action, payload);
 
@@ -274,6 +278,6 @@ export const handleMessages = (
       sendResponse({
         error: new Error("無効なアクションです"),
       });
-      return;
+      return true;
   }
 };
