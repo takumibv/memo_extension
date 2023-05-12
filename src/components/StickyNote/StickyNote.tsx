@@ -188,17 +188,17 @@ const StickyNote: React.VFC<Props> = memo(
       });
     }, [getFixedPosition, onUpdateNote, defaultNote]);
 
-    // 開閉ボタンが押せるかどうか
-    const [isEnableOpenButton, setIsEnableOpenButton] = useState(true);
-    const onClickOpenButton = useCallback(() => {
-      if (isEnableOpenButton) {
+    // 開閉ボタンが押せるかどうかの閾値 10を超えると押せない
+    const [enableOpenButtonThreshold, setEnableOpenButtonThreshold] = useState(0);
+    const onClickOpenButton = useCallback((isOpen: boolean) => {
+      if (enableOpenButtonThreshold < 10) {
         onUpdateNote({
           ...defaultNote,
-          is_open: !is_open,
+          is_open: isOpen,
         });
       }
-      setIsEnableOpenButton(true);
-    }, [defaultNote, isEnableOpenButton]);
+      setEnableOpenButtonThreshold(0);
+    }, [defaultNote, enableOpenButtonThreshold]);
 
     const onClickDeleteButton = () => {
       if (confirm(`「${title || "メモ"}」を削除してよろしいですか？`)) {
@@ -265,6 +265,7 @@ const StickyNote: React.VFC<Props> = memo(
           <DraggableCore
             scale={1}
             onStart={(_, data) => {
+              setEnableOpenButtonThreshold(0);
               setIsDragging(true);
               setDragStartPositionX(displayPositionX - data.x);
               setDragStartPositionY(displayPositionY - data.y);
@@ -272,7 +273,7 @@ const StickyNote: React.VFC<Props> = memo(
             onDrag={(_, data) => {
               if (!isEnableDrag) return false;
 
-              setIsEnableOpenButton(false);
+              setEnableOpenButtonThreshold((prev) => prev + 1);
               setEditPosition(dragStartPositionX + data.x, dragStartPositionY + data.y);
             }}
             onStop={() => {
@@ -289,7 +290,7 @@ const StickyNote: React.VFC<Props> = memo(
             nodeRef={noteRef}
           >
             <SNoteInner style={{ padding: "0.25rem" }}>
-              <SOpenButton onClick={onClickOpenButton}>
+              <SOpenButton onClick={() => onClickOpenButton(true)}>
                 <SLogo
                   src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAnCAYAAABjYToLAAAACXBIWXMAAAsSAAALEgHS3X78AAAEwUlEQVRYw+2YbUhbVxjH/zc3jXnVkuZqnHUtBtfplrjCykA73Ae1bOsHsRsIESdhurHtwyaFDsbKCmO0DNQPwyl0YlooQ0hWGPh2wU5h/eDqqO0W5oYvsWxibt40ydXca7z7EL1GjTFt7kRYz5dw7rn3nB////M855wQgiDgMDa51BNWV1efNJvNjevr62cDgcBzBEHI5HK5miAIcmFhQRuNRvdbcxJAk1wimKPFxcWfeTye99VqtVqn08lMJhMsFguCwWAIgA4ADAYDKIra9i3LsrDb7dz4+LjA8/ynNE13ZKzYBlCHUqm0UhQlt1qtqKioAAAIggCfz+fPz8/X7/X94OAg+vr6eJIkR3meb6Fpei5jK2022/ns7OxbKpVK19HRAZPJJI5tQsVisaRQbrcbnZ2dHMMwAY7j6mma/kmSGGttbb3s9XovNzU1kXV1ddvG1tbW4Pf7VwVB2AXFsiwcDgdGRkaiPM9fpWn6C8mC32azdfl8vpb29nYiUaUEqBVBEFQ7vxsbG4Pdbl+TyWR3dtqWMVhzc/NFn8/X0tbWljaU2+1Gb2/v6vz8fCgajbbQNH07nbWIdOuYzWY77/V6b7e3t5PpQG3aNjQ0BLVafY1l2as0TQfTFYGoqqpKi0yn06GhoQE7YyoYDCIUCkGhUIjPJiYm0NPTA5ZlwfN80vlomib2tZL+/n5KqBuOU5icsuyCYiMBRKOcCMUwDLq7O8F4ZmGtncLpF5ILdPHLFzOv/OEICWd/Dq5cadz2PBIJIBzmRNsGBwfhdDrxyukA3nxrFsqsGOYebb2v1RAw5spgzJVhaTkrc7C794wwmZ5HWVlZUqiJiQncsF+HThPEu/V/II9ityYnAWNeHEarIaTdKx0Dx3Hh7XNif3npH6yskmAYBjdv9sLleojqs9OwlHjFdwx6GQzH4gr9J5t4OEJiZi6K8vLyeKAH3IhySjidTgz0/whLiQcfNsZtU2YROP5MHEiZRSDTlhJs2q1CUVEhtFotggE37k/OoqvrGyjkS7DW/o4CIwvDMRmMuXIczckcJn2wORWMxkL89eevuP7dLbhcD/HqmTnUVHpgzJXBoD8CueQHpxRgw6N6dNoLEGFJFBY+wseffA59DouvLv2G4iIByqzkNMOjenz97bNiX6OO4YN3/kZNpV8asJpKP2oq/ai1mcEwDDiOQyhCwFwCAHtbNjS6tW8XnVhB97WpJ1YsZdoUFkSRo12OlwiWxPDonkcrLDIKPHBpoVHHNupWLCMrU4Ipjqyj5jW/uNhQCjBHPyWqLUVLq9DUvcEAAB64tFhkFHvGV02lP2OlHgvsXIIKm8rshIqwpGRqpQ2WR3Eof3lJhEgW9EUnVlBWGj5YsEQ7dybBZtBf2Bg/cLCy0jDyDNyuJHD0U9CoY6KiBw62Mwmm51QIR0jJg/6JwBKD2zlA4e69HERYUnIbHxtMq4mJcD//kgNHPwVLaRh5FHewYIseBSZd2u12vr6VBDNuldhPPCol/koKNjyqR63NjEVvPOMaPioVM9F0cgVFJ1biZcTAoeLMkngSee/SKfwwEK9zM24Vam3mlNvYvrek/S4jkv8jVP/SvrckGQ5pewr2FOx/CybfTN/D1v4FPIYdz2gNefIAAAAASUVORK5CYII="
                   alt=""
@@ -316,6 +317,7 @@ const StickyNote: React.VFC<Props> = memo(
         <DraggableCore
           scale={1}
           onStart={(_, data) => {
+            setEnableOpenButtonThreshold(0);
             setIsDragging(true);
             setDragStartPositionX(displayPositionX - data.x);
             setDragStartPositionY(displayPositionY - data.y);
@@ -323,7 +325,7 @@ const StickyNote: React.VFC<Props> = memo(
           onDrag={(_, data) => {
             if (!isEnableDrag) return false;
 
-            setIsEnableOpenButton(false);
+            setEnableOpenButtonThreshold((prev) => prev + 1);
             setEditPosition(dragStartPositionX + data.x, dragStartPositionY + data.y);
           }}
           onStop={() => {
@@ -374,7 +376,7 @@ const StickyNote: React.VFC<Props> = memo(
                 <SHeaderFixedPinArea>
                   <Tooltip title="最小化する" enterDelay={300} placement="top">
                     <div>
-                      <IconButton onClick={onClickOpenButton}>
+                      <IconButton onClick={() => onClickOpenButton(false)}>
                         <MinusIcon fill="rgba(0, 0, 0, 0.4)" />
                       </IconButton>
                     </div>

@@ -41,8 +41,8 @@ export const SNote = styled.div<SNoteProps>`
 export const SOpenButton = styled(IconButton)`
   position: relative;
   pointer-events: initial;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 24px;
+  height: 24px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -52,8 +52,8 @@ export const SLogo = styled.img`
   ${baseCSS("img")}
 
   pointer-events: none;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 24px;
+  height: 24px;
 `;
 
 export const SNoteInner = styled.div`
