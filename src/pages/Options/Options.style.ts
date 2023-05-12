@@ -27,6 +27,9 @@ export const SContainer = styled.div`
 
 export const SMain = styled.div`
   overflow: hidden;
+  background-color: #fafaf6;
+  height: 100vh;
+  height: 100dvh;
 `;
 
 export const SMainLeft = styled.div`
@@ -49,7 +52,7 @@ export const SSideNavItem = styled.a<{ $isActive?: boolean }>`
   display: block;
   border-radius: 0.5em;
   padding: 0.75em;
-  margin-bottom: 0.5em;
+  margin-bottom: 0.125em;
   cursor: pointer;
 
   &:hover {
@@ -61,10 +64,14 @@ export const SSideNavItem = styled.a<{ $isActive?: boolean }>`
     css`
       font-weight: bold;
       cursor: default;
-      background-color: #fef3c7;
+      background-color: rgb(0, 0, 0, 20%);
 
       &:hover {
-        background-color: #fef3c7;
+        background-color: rgb(0, 0, 0, 20%);
+      }
+
+      ${SSideNavItemLink} {
+        color: #000;
       }
     `}
 `;
@@ -106,8 +113,7 @@ export const SSideNavItemLink = styled.p`
 export const SMainRight = styled.main`
   position: relative;
   padding: 4em 2em 0 19em;
-  height: 100vh;
-  height: 100dvh;
+  height: 100%;
 `;
 
 export const SMainRightInner = styled.div`
@@ -146,6 +152,7 @@ export const SInput = styled.input`
   padding: 0.5em 0.75em 0.5em 2.25em;
   border-radius: 999em;
   width: 100%;
+  background-color: #fff;
 
   &:hover,
   &:focus {
@@ -174,6 +181,7 @@ export const SSelect = styled.select`
   border-radius: 0.2em;
   cursor: pointer;
   width: 100%;
+  background-color: #fff;
 
   &:hover,
   &:focus {

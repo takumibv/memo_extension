@@ -45,6 +45,18 @@ export const useNoteEdit = ({
     [editPositionX, editPositionY]
   );
 
+  useEffect(() => {
+    setEditIsOpen(is_open);
+  }, [is_open])
+
+  useEffect(() => {
+    setEditDescription(description);
+  }, [description])
+
+  useEffect(() => {
+    setEditTitle(title);
+  }, [title])
+
   return {
     editTitle,
     setEditTitle,

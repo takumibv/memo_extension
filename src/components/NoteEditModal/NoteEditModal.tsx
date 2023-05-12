@@ -45,13 +45,7 @@ type Props = {
   onDeleteNote?: (note: Note) => Promise<boolean>;
 };
 
-export const NoteEditModal: FC<Props> = ({
-  isOpen,
-  note,
-  onClose,
-  onUpdateNote,
-  onDeleteNote,
-}) => {
+export const NoteEditModal: FC<Props> = ({ isOpen, note, onClose, onUpdateNote, onDeleteNote }) => {
   const {
     title,
     description,
@@ -223,10 +217,7 @@ export const NoteEditModal: FC<Props> = ({
                     <SNoteDetail>
                       <SNoteDetailTitle>{msg("open_msg")}</SNoteDetailTitle>
                       <SNoteDetailData>
-                        <select
-                          value={editIsOpen ? "true" : "false"}
-                          onChange={onChangeEditIsOpen}
-                        >
+                        <select value={editIsOpen ? "true" : "false"} onChange={onChangeEditIsOpen}>
                           <option value="false">{msg("open_select_option_yes_msg")}</option>
                           <option value="true">{msg("open_select_option_no_msg")}</option>
                         </select>

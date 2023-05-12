@@ -71,7 +71,7 @@ const OptionListItem: React.FC<Props> = memo(
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  onClickFilter(pageInfo.id);
+                  onClickLink(pageInfo.page_url ?? "");
                 }}
               >
                 <SPageInfoHeader>
@@ -80,12 +80,12 @@ const OptionListItem: React.FC<Props> = memo(
                 </SPageInfoHeader>
                 <SPageInfoLink>{pageInfo.page_url}</SPageInfoLink>
               </SPageInfo>
-              <Tooltip title={msg("go_to_this_page")}>
+              <Tooltip title={msg("this_page_note_list_msg")}>
                 <SPageInfo
                   $isFilter
                   onClick={(e) => {
                     e.stopPropagation();
-                    onClickLink(pageInfo.page_url ?? "");
+                    onClickFilter(pageInfo.id);
                   }}
                 >
                   <SLaunchIcon fill="rgba(0, 0, 0, 0.4)" />
