@@ -52,6 +52,7 @@ import {
 } from "./Options.style";
 import OptionHeader from "../../components/OptionHeader/OptionHeader";
 import * as sender from "../message/sender/options";
+import { msg } from "../../utils";
 
 interface Props extends RouteComponentProps<{}> {}
 
@@ -73,6 +74,7 @@ const Options: React.FC<Props> = () => {
     return pageInfos.find((pageInfo) => pageInfo.id === currentPageInfoId);
   }, [pageInfos, currentPageInfoId]);
 
+  // 絞り込み、ソート済みのメモ一覧
   const filteredNotes = useMemo(() => {
     const targetNotes = (
       currentPageInfoId === undefined
@@ -82,12 +84,12 @@ const Options: React.FC<Props> = () => {
 
     if (sortBy === "updated_at") {
       return [...targetNotes].sort((a, b) =>
-        new Date(a?.updated_at ?? "") < new Date(b?.updated_at ?? "") ? 1 : -1
+        new Date(a?.updated_at ?? "1900/01/01") < new Date(b?.updated_at ?? "1900/01/01") ? 1 : -1
       );
     }
     if (sortBy === "created_at") {
       return [...targetNotes].sort((a, b) =>
-        new Date(a?.created_at ?? "") < new Date(b?.created_at ?? "") ? 1 : -1
+        new Date(a?.created_at ?? "1900/01/01") < new Date(b?.created_at ?? "1900/01/01") ? 1 : -1
       );
     }
     if (sortBy === "title") {
@@ -136,7 +138,7 @@ const Options: React.FC<Props> = () => {
   };
 
   const onDelete = async (note: Note) => {
-    if (confirm("削除してもよろしいですか？")) {
+    if (confirm(msg("confirm_remove_note_msg"))) {
       try {
         const page_url = pageInfos.find((p) => p.id === note.page_info_id)?.page_url;
         const { notes, pageInfos: newPageInfos } = await sender.sendDeleteNote(note, page_url);
@@ -230,7 +232,7 @@ const Options: React.FC<Props> = () => {
                     $isActive={currentPageInfoId === undefined}
                   >
                     <SSideNavItemHeader>
-                      <SSideNavItemTitle>すべてのメモ</SSideNavItemTitle>
+                      <SSideNavItemTitle>{msg("show_all_note_msg")}</SSideNavItemTitle>
                     </SSideNavItemHeader>
                   </SSideNavItem>
                 </li>
@@ -262,7 +264,7 @@ const Options: React.FC<Props> = () => {
                     <SInputWrap>
                       <SInputIcon fill="rgba(0,0,0,0.4)" />
                       <SInput
-                        placeholder="検索"
+                        placeholder={msg("search_query_msg")}
                         onChange={onChangeSearch}
                         value={searchText}
                         type="text"
@@ -271,9 +273,9 @@ const Options: React.FC<Props> = () => {
                     <SSelectWrap>
                       <SSelectIcon fill="rgba(0,0,0,0.4)" />
                       <SSelect onChange={onChangeSort}>
-                        <option value="updated_at">更新日</option>
-                        <option value="created_at">作成日</option>
-                        <option value="title">タイトル</option>
+                        <option value="updated_at">{msg("updated_at_sort_option")}</option>
+                        <option value="created_at">{msg("created_at_sort_option")}</option>
+                        <option value="title">{msg("title_sort_option")}</option>
                       </SSelect>
                     </SSelectWrap>
                   </SMainRightHeader>
@@ -294,9 +296,11 @@ const Options: React.FC<Props> = () => {
                             value={editLink}
                             onChange={(e) => setEditLink(e.target.value)}
                           />
-                          <SPageLinkEditButton onClick={handleSaveLink}>保存</SPageLinkEditButton>
+                          <SPageLinkEditButton onClick={handleSaveLink}>
+                            {msg("save_msg")}
+                          </SPageLinkEditButton>
                           <SPageLinkEditButton secondary onClick={() => setLinkEditMode(false)}>
-                            キャンセル
+                            {msg("cancel_msg")}
                           </SPageLinkEditButton>
                         </>
                       ) : (
@@ -319,7 +323,7 @@ const Options: React.FC<Props> = () => {
                   </SCurrentPageArea>
                 )}
                 {!isLoading && filteredNotes.length === 0 && (
-                  <SNoNoteText>メモがありません。</SNoNoteText>
+                  <SNoNoteText>{msg("no_note_msg")}</SNoNoteText>
                 )}
                 {!isLoading && filteredNotes.length !== 0 && (
                   <SCardList>

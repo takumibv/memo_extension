@@ -28,6 +28,7 @@ import {
   SPageInfoLink,
   SLaunchIcon,
 } from "./OptionListItem.style";
+import { msg } from "../../utils";
 
 type Props = {
   note: Note;
@@ -79,7 +80,7 @@ const OptionListItem: React.FC<Props> = memo(
                 </SPageInfoHeader>
                 <SPageInfoLink>{pageInfo.page_url}</SPageInfoLink>
               </SPageInfo>
-              <Tooltip title="このページに移動する">
+              <Tooltip title={msg("go_to_this_page")}>
                 <SPageInfo
                   $isFilter
                   onClick={(e) => {
@@ -94,7 +95,7 @@ const OptionListItem: React.FC<Props> = memo(
           )}
           <SCardFooter>
             <SCardActions>
-              <Tooltip title="編集" enterDelay={300}>
+              <Tooltip title={msg("edit")} enterDelay={300}>
                 <SIconButtonWrap>
                   <SIconButton
                     onClick={(e) => {
@@ -106,7 +107,7 @@ const OptionListItem: React.FC<Props> = memo(
                   </SIconButton>
                 </SIconButtonWrap>
               </Tooltip>
-              <Tooltip title={isSuccessCopy ? "コピーしました" : "コピー"} enterDelay={300}>
+              <Tooltip title={isSuccessCopy ? msg("copied_msg") : msg("copy_msg")} enterDelay={300}>
                 <SIconButtonWrap>
                   {isSuccessCopy ? (
                     <SCopySuccessIcon fill="#22c55e" />
@@ -122,7 +123,7 @@ const OptionListItem: React.FC<Props> = memo(
                   )}
                 </SIconButtonWrap>
               </Tooltip>
-              <Tooltip title="削除" enterDelay={300}>
+              <Tooltip title={msg("delete_msg")} enterDelay={300}>
                 <SIconButtonWrap>
                   <SIconButton
                     onClick={(e) => {
@@ -137,10 +138,10 @@ const OptionListItem: React.FC<Props> = memo(
             </SCardActions>
             <SCardDate>
               {created_at && (
-                <SCardDateText> 作成: {formatDate(new Date(created_at))}</SCardDateText>
+                <SCardDateText> {msg("created_at_msg")}: {formatDate(new Date(created_at))}</SCardDateText>
               )}
               {updated_at && (
-                <SCardDateText> 編集: {formatDate(new Date(updated_at))}</SCardDateText>
+                <SCardDateText> {msg("updated_at_msg")}: {formatDate(new Date(updated_at))}</SCardDateText>
               )}
             </SCardDate>
           </SCardFooter>

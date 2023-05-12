@@ -1,6 +1,7 @@
 import React, { VFC } from "react";
 import styled, { css } from "styled-components";
 import { Link } from "react-router-dom";
+import { msg } from "../../utils";
 
 type Props = {
   current: "memos" | "setting";
@@ -12,15 +13,15 @@ export const OptionHeader: VFC<Props> = ({ current }) => {
       <SHeaderLeft>
         <STopLink to="/memos.html">
           <SLogo src="/images/icon_38.png" alt="" />
-          <STitle>どこでもメモ</STitle>
+          <STitle>{msg("appName")}</STitle>
         </STopLink>
       </SHeaderLeft>
       <SHeaderContent>
         <SHeaderContentLink $isActive={current === "memos"} to="/memos.html">
-          メモ一覧
+          {msg("note_header_msg")}
         </SHeaderContentLink>
         <SHeaderContentLink $isActive={current === "setting"} to="/setting.html">
-          設定
+          {msg("settings_header_msg")}
         </SHeaderContentLink>
       </SHeaderContent>
     </SHeader>

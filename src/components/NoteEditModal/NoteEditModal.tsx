@@ -1,6 +1,6 @@
 import { Modal, Popover, styled } from "@mui/material";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { VFC } from "react";
+import { FC } from "react";
 import { MIN_NOTE_HEIGHT, MIN_NOTE_WIDTH, useNoteEdit } from "../../hooks/useNote";
 import { Note } from "../../types/Note";
 import { PageInfo } from "../../types/PageInfo";
@@ -35,6 +35,7 @@ import {
   SNoteDetailDataSpan,
   SBackdrop,
 } from "./NoteEditModal.style";
+import { msg } from "../../utils";
 
 type Props = {
   isOpen?: boolean;
@@ -44,7 +45,7 @@ type Props = {
   onDeleteNote?: (note: Note) => Promise<boolean>;
 };
 
-export const NoteEditModal: VFC<Props> = ({
+export const NoteEditModal: FC<Props> = ({
   isOpen,
   note,
   onClose,
@@ -183,7 +184,7 @@ export const NoteEditModal: VFC<Props> = ({
           <SModalScrollContent>
             <SModalHeader>
               <SModalTitle
-                placeholder="タイトル"
+                placeholder={msg("title_sort_option")}
                 defaultValue={title}
                 onChange={(e) => setEditTitle(e.target.value)}
                 minRows={1}
@@ -194,7 +195,7 @@ export const NoteEditModal: VFC<Props> = ({
                 <SModalDescription>
                   <SModalDescriptionText
                     minRows={1}
-                    placeholder="メモ"
+                    placeholder={msg("input_description_placeholder")}
                     defaultValue={description}
                     onChange={(e) => setEditDescription(e.target.value)}
                   />
@@ -203,36 +204,36 @@ export const NoteEditModal: VFC<Props> = ({
               <SDivider />
               <SAccordion>
                 <SAccordionSummary>
-                  <SAccordionSummaryText>詳細</SAccordionSummaryText>
+                  <SAccordionSummaryText>{msg("detail_msg")}</SAccordionSummaryText>
                 </SAccordionSummary>
                 <SModalSection>
                   <SNoteDetailArea>
                     <SNoteDetail>
-                      <SNoteDetailTitle>ピン</SNoteDetailTitle>
+                      <SNoteDetailTitle>{msg("pin_msg")}</SNoteDetailTitle>
                       <SNoteDetailData>
                         <select
                           value={editIsFixed ? "fixed" : "unfixed"}
                           onChange={onChangeEditIsFixed}
                         >
-                          <option value="unfixed">あり</option>
-                          <option value="fixed">なし</option>
+                          <option value="unfixed">{msg("pin_select_option_unfixed_msg")}</option>
+                          <option value="fixed">{msg("pin_select_option_fixed_msg")}</option>
                         </select>
                       </SNoteDetailData>
                     </SNoteDetail>
                     <SNoteDetail>
-                      <SNoteDetailTitle>縮小</SNoteDetailTitle>
+                      <SNoteDetailTitle>{msg("open_msg")}</SNoteDetailTitle>
                       <SNoteDetailData>
                         <select
                           value={editIsOpen ? "true" : "false"}
                           onChange={onChangeEditIsOpen}
                         >
-                          <option value="false">縮小する</option>
-                          <option value="true">縮小しない</option>
+                          <option value="false">{msg("open_select_option_yes_msg")}</option>
+                          <option value="true">{msg("open_select_option_no_msg")}</option>
                         </select>
                       </SNoteDetailData>
                     </SNoteDetail>
                     <SNoteDetail>
-                      <SNoteDetailTitle>位置</SNoteDetailTitle>
+                      <SNoteDetailTitle>{msg("position_msg")}</SNoteDetailTitle>
                       <SNoteDetailData>
                         <SNoteDetailDataSpan>x:</SNoteDetailDataSpan>
                         <SNoteDetailDataInput
@@ -247,14 +248,14 @@ export const NoteEditModal: VFC<Props> = ({
                       </SNoteDetailData>
                     </SNoteDetail>
                     <SNoteDetail>
-                      <SNoteDetailTitle>サイズ</SNoteDetailTitle>
+                      <SNoteDetailTitle>{msg("size_msg")}</SNoteDetailTitle>
                       <SNoteDetailData>
-                        <SNoteDetailDataSpan>幅:</SNoteDetailDataSpan>
+                        <SNoteDetailDataSpan>{msg("size_width_msg")}:</SNoteDetailDataSpan>
                         <SNoteDetailDataInput
                           valueNum={editWidth}
                           onChangeNumber={(val) => setEditSize(val, editHeight)}
                         />
-                        <SNoteDetailDataSpan>高さ:</SNoteDetailDataSpan>
+                        <SNoteDetailDataSpan>{msg("size_height_msg")}:</SNoteDetailDataSpan>
                         <SNoteDetailDataInput
                           valueNum={editHeight}
                           onChangeNumber={(val) => setEditSize(editWidth, val)}
@@ -263,13 +264,13 @@ export const NoteEditModal: VFC<Props> = ({
                     </SNoteDetail>
                     {updated_at && (
                       <SNoteDetail>
-                        <SNoteDetailTitle>更新</SNoteDetailTitle>
+                        <SNoteDetailTitle>{msg("updated_at_msg")}</SNoteDetailTitle>
                         <SNoteDetailData>{formatDate(new Date(updated_at))}</SNoteDetailData>
                       </SNoteDetail>
                     )}
                     {created_at && (
                       <SNoteDetail>
-                        <SNoteDetailTitle>作成</SNoteDetailTitle>
+                        <SNoteDetailTitle>{msg("created_at_msg")}</SNoteDetailTitle>
                         <SNoteDetailData>{formatDate(new Date(created_at))}</SNoteDetailData>
                       </SNoteDetail>
                     )}
@@ -282,10 +283,10 @@ export const NoteEditModal: VFC<Props> = ({
           <SModalActions>
             <SModalActionsLeft>
               <SButton onClick={onSaveAndClose} disabled={!isEditing}>
-                保存する
+                {msg("save_msg")}
               </SButton>
               <SButton secondary onClick={onCloseWithoutSave}>
-                {isEditing ? "変更を破棄して閉じる" : "閉じる"}
+                {isEditing ? msg("discard_close_msg") : msg("close_msg")}
               </SButton>
             </SModalActionsLeft>
             <SModalActionsRight>
@@ -307,7 +308,7 @@ export const NoteEditModal: VFC<Props> = ({
                 }}
               >
                 <SMenuList>
-                  <SMenuListItem onClick={onDelete}>削除</SMenuListItem>
+                  <SMenuListItem onClick={onDelete}>{msg("delete_msg")}</SMenuListItem>
                 </SMenuList>
               </Popover>
             </SModalActionsRight>

@@ -29,6 +29,7 @@ import {
   SIconButton,
 } from "./Popup.style";
 import * as sender from "../message/sender/popup";
+import {msg} from "../../utils";
 
 export const Popup = () => {
   const [isEnabled, setIsEnabled] = useState(false);
@@ -59,7 +60,7 @@ export const Popup = () => {
 
   const onClickDelete = (note: Note) => {
     const { id, title } = note;
-    if (currentTab && confirm(`${title ? `「${title}」` : "メモ"}を削除してよろしいですか？`)) {
+    if (currentTab && confirm(`"${title ?? msg("note")}" ${msg("confirm_remove_next_note_msg")}`)) {
       sender
         .sendDeleteNote(currentTab, note)
         .then(({ notes }) => {
@@ -152,14 +153,14 @@ export const Popup = () => {
           </SHeaderRight>
         </SHeader>
         <SContent>
-          {!isEnabled && <SMessageText>この画面ではメモの作成はできません</SMessageText>}
+          {!isEnabled && <SMessageText>{msg("note_unavailable_msg")}</SMessageText>}
           {isEnabled && notes.length === 0 && (
             <>
               <SActionMessageText>
                 <SSubdirectoryArrowLeftIcon />
-                <SActionMessageSpan>メモを作成する。</SActionMessageSpan>
+                <SActionMessageSpan>{msg("no_note_created_msg")}</SActionMessageSpan>
               </SActionMessageText>
-              <SMessageText>もしくは、右クリック「メモを追加する」から作成できます。</SMessageText>
+              <SMessageText>{msg("no_note_created_option_msg")}</SMessageText>
             </>
           )}
           {isEnabled && notes.length !== 0 && (
@@ -173,7 +174,7 @@ export const Popup = () => {
                     {note.title || note.description}
                   </SListItemLeft>
                   <SListItemRight>
-                    <Tooltip title="位置をリセット" placement="top">
+                    <Tooltip title={msg("reset_position_msg")} placement="top">
                       <span>
                         <SIconButton onClick={() => onClickResetPosition(note)}>
                           <ArrowPathIcon fill="rgba(0, 0, 0, 0.5)" />

@@ -201,7 +201,7 @@ const StickyNote: React.VFC<Props> = memo(
     }, [defaultNote, enableOpenButtonThreshold]);
 
     const onClickDeleteButton = () => {
-      if (confirm(`「${title || "メモ"}」を削除してよろしいですか？`)) {
+      if (confirm(`"${title || msg("note")}" ${msg("confirm_remove_next_note_msg")}`)) {
         onDeleteNote(defaultNote);
       }
     };
@@ -350,7 +350,7 @@ const StickyNote: React.VFC<Props> = memo(
               <SNoteHeader>
                 <SNoteTitleInput
                   ref={titleInputRef}
-                  placeholder="タイトル"
+                  placeholder={msg("title_sort_option")}
                   type="text"
                   value={editTitle}
                   onChange={(e) => setEditTitle(e.target.value)}
@@ -371,10 +371,10 @@ const StickyNote: React.VFC<Props> = memo(
                     }, 10);
                   }}
                 >
-                  {title || <SNoteSpan>タイトル</SNoteSpan>}
+                  {title || <SNoteSpan>{msg("title_sort_option")}</SNoteSpan>}
                 </SNoteTitle>
                 <SHeaderFixedPinArea>
-                  <Tooltip title="最小化する" enterDelay={300} placement="top">
+                  <Tooltip title={msg("minimize_msg")} enterDelay={300} placement="top">
                     <div>
                       <IconButton onClick={() => onClickOpenButton(false)}>
                         <MinusIcon fill="rgba(0, 0, 0, 0.4)" />
@@ -390,7 +390,7 @@ const StickyNote: React.VFC<Props> = memo(
                   ref={descriptionTextareaRef}
                   name=""
                   id=""
-                  placeholder="メモを入力"
+                  placeholder={msg("input_description_placeholder")}
                   value={editDescription}
                   onChange={(e) => setEditDescription(e.target.value)}
                   onFocus={() => setIsEnableDrag(false)}
@@ -407,7 +407,7 @@ const StickyNote: React.VFC<Props> = memo(
                   }}
                 >
                   <SNoteDescription>
-                    {description || <SNoteSpan>ダブルクリックで編集</SNoteSpan>}
+                    {description || <SNoteSpan>{msg("new_note_description_msg")}</SNoteSpan>}
                   </SNoteDescription>
                 </SNoteContentScroll>
               )}
@@ -417,21 +417,21 @@ const StickyNote: React.VFC<Props> = memo(
         <SNoteFooter>
           {isEditing ? (
             <>
-              <SButton onClick={onEditDone}>保存</SButton>
+              <SButton onClick={onEditDone}>{msg("save_msg")}</SButton>
               <SButton secondary onClick={onEditCancel}>
-                キャンセル
+                {msg("cancel_msg")}
               </SButton>
             </>
           ) : (
             <>
-              <Tooltip title="編集" enterDelay={300}>
+              <Tooltip title={msg("edit_msg")} enterDelay={300}>
                 <SIconButtonWrap>
                   <SIconButton onClick={() => setIsEditing(true)}>
                     <PencilSquareIcon fill="rgba(0, 0, 0, 0.4)" />
                   </SIconButton>
                 </SIconButtonWrap>
               </Tooltip>
-              <Tooltip title={isSuccessCopy ? "コピーしました" : "コピー"} enterDelay={300}>
+              <Tooltip title={isSuccessCopy ? msg("copied_msg") : msg("copy_msg")} enterDelay={300}>
                 <SIconButtonWrap>
                   {isSuccessCopy ? (
                     <SCopySuccessIcon fill="#22c55e" />
@@ -442,14 +442,14 @@ const StickyNote: React.VFC<Props> = memo(
                   )}
                 </SIconButtonWrap>
               </Tooltip>
-              <Tooltip title="ピンを切り替える" enterDelay={300}>
+              <Tooltip title={msg("switch_pin_msg")} enterDelay={300}>
                 <SIconButtonWrap>
                   <SIconButton onClick={onClickFixedButton} isFocus={!is_fixed}>
                     <PinIcon fill={is_fixed ? "rgba(0, 0, 0, 0.3)" : "rgba(0, 0, 0, 1)"} />
                   </SIconButton>
                 </SIconButtonWrap>
               </Tooltip>
-              <Tooltip title="削除" enterDelay={300}>
+              <Tooltip title={msg("delete_msg")} enterDelay={300}>
                 <SIconButtonWrap>
                   <SIconButton onClick={onClickDeleteButton}>
                     <TrashIcon fill="rgba(0, 0, 0, 0.4)" />
