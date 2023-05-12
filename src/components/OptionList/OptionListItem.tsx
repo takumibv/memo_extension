@@ -1,8 +1,8 @@
-import React, { memo, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { Note } from "../../types/Note";
 import { formatDate } from "../../utils";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid";
-import { CopyIcon  } from "../Icon";
+import { CopyIcon } from "../Icon";
 import { PageInfo } from "../../types/PageInfo";
 import { Tooltip } from "@mui/material";
 import { useClipboard } from "../../hooks/useClipboard";
@@ -37,19 +37,24 @@ type Props = {
   onDelete: (note: Note) => Promise<boolean>;
   onClickLink: (url: string) => void;
   onClickFilter: (pageInfoId?: number) => void;
+  measure?: () => void;
 };
 
-const OptionListItem: React.VFC<Props> = memo(
-  ({ note, pageInfo, showPageInfo, onUpdate, onDelete, onClickLink, onClickFilter }) => {
+const OptionListItem: React.FC<Props> = memo(
+  ({ note, pageInfo, showPageInfo, onUpdate, onDelete, onClickLink, onClickFilter, measure }) => {
     const { id, title, description, created_at, updated_at } = note;
     const [openModal, setOpenModal] = useState(false);
     const { isSuccessCopy, copyClipboard } = useClipboard();
 
+    useEffect(() => {
+      measure && measure();
+    }, [note]);
+
     return (
       <>
         <SCard
+          tabIndex={-1}
           onClick={() => {
-            console.log("onClick");
             setOpenModal(true);
           }}
         >

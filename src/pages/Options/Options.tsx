@@ -2,6 +2,15 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { useHistory } from "react-router";
 import { XMarkIcon, PencilSquareIcon } from "@heroicons/react/24/solid";
+import {
+  AutoSizer as _AutoSizer,
+  List as _List,
+  ListProps,
+  AutoSizerProps,
+  CellMeasurerCache,
+  CellMeasurer as _CellMeasurer,
+  CellMeasurerProps,
+} from "react-virtualized";
 import { Note } from "../../types/Note";
 import { PageInfo } from "../../types/PageInfo";
 import OptionListItem from "../../components/OptionList/OptionListItem";
@@ -18,6 +27,7 @@ import {
   SSideNavItemTitle,
   SSideNavItemLink,
   SMainRight,
+  SMainRightInner,
   SMainRightHeader,
   SInputWrap,
   SInputIcon,
@@ -38,17 +48,23 @@ import {
   SCardListItem,
   SNoNoteText,
   SCurrentPageCloseButton,
+  SSkeleton,
 } from "./Options.style";
 import OptionHeader from "../../components/OptionHeader/OptionHeader";
 import * as sender from "../message/sender/options";
 
 interface Props extends RouteComponentProps<{}> {}
 
-const Options: React.VFC<Props> = () => {
+const List = _List as unknown as React.FC<ListProps>;
+const AutoSizer = _AutoSizer as unknown as React.FC<AutoSizerProps>;
+const CellMeasurer = _CellMeasurer as unknown as React.FC<CellMeasurerProps>;
+
+const Options: React.FC<Props> = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [pageInfos, setPageInfos] = useState<PageInfo[]>([]);
   const [sortBy, setSortBy] = useState<string>("updated_at");
   const [searchText, setSearchText] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const query = useQuery();
   const history = useHistory();
   const currentPageInfoId = query.get("filter") ? Number(query.get("filter")) : undefined;
@@ -92,34 +108,6 @@ const Options: React.VFC<Props> = () => {
     return filteredPageInfos.reverse();
   }, [searchText, pageInfos]);
 
-  // const sendAction = useCallback(
-  //   (method: ToBackgroundMessageMethod, page_url?: string, targetNote?: Note): Promise<boolean> => {
-  //     console.log("sendMessage ======", method, targetNote);
-
-  //     return new Promise((resolve, reject) => {
-  //       chrome.runtime.sendMessage<ToBackgroundMessage, ToBackgroundMessageResponse>(
-  //         {
-  //           method: method,
-  //           senderType: OPTIONS,
-  //           page_url: page_url ?? "",
-  //           targetNote,
-  //         },
-  //         ({ notes, pageInfos, error }) => {
-  //           console.log("response ======", notes, pageInfos, chrome.runtime.lastError);
-  //           if (chrome.runtime.lastError) {
-  //             reject(chrome.runtime.lastError.message);
-  //           } else {
-  //             notes && setNotes(notes || []);
-  //             pageInfos && setPageInfos(pageInfos || []);
-  //             resolve(true);
-  //           }
-  //         }
-  //       );
-  //     });
-  //   },
-  //   []
-  // );
-
   const onChangeSort = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
     setSortBy(e.target.value);
   }, []);
@@ -148,7 +136,6 @@ const Options: React.VFC<Props> = () => {
   };
 
   const onDelete = async (note: Note) => {
-    console.log("onDelete", note);
     if (confirm("削除してもよろしいですか？")) {
       try {
         const page_url = pageInfos.find((p) => p.id === note.page_info_id)?.page_url;
@@ -190,21 +177,38 @@ const Options: React.VFC<Props> = () => {
 
   const handleSaveLink = () => {
     if (editLink !== currentPageInfo?.page_url) {
-      sender.sendUpdatePageInfo({
-        ...currentPageInfo,
-        page_url: editLink,
-      }).then(({ pageInfos }) => {
-        if (pageInfos) setPageInfos(pageInfos);
-      });
+      sender
+        .sendUpdatePageInfo({
+          ...currentPageInfo,
+          page_url: editLink,
+        })
+        .then(({ pageInfos }) => {
+          if (pageInfos) setPageInfos(pageInfos);
+        });
     }
     setLinkEditMode(false);
   };
 
+  const cache = useMemo(
+    () =>
+      new CellMeasurerCache({
+        fixedWidth: true,
+        defaultHeight: 50,
+      }),
+    []
+  );
+
   useEffect(() => {
-    sender.sendFetchAllNotes().then(({ notes, pageInfos }) => {
-      notes && setNotes(notes);
-      pageInfos && setPageInfos(pageInfos);
-    });
+    setIsLoading(true);
+    sender
+      .sendFetchAllNotes()
+      .then(({ notes, pageInfos }) => {
+        notes && setNotes(notes);
+        pageInfos && setPageInfos(pageInfos);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, []);
 
   return (
@@ -251,87 +255,120 @@ const Options: React.VFC<Props> = () => {
               </SSideNav>
             </SMainLeft>
             <SMainRight>
-              <SMainRightHeader>
-                <SInputWrap>
-                  <SInputIcon fill="rgba(0,0,0,0.4)" />
-                  <SInput
-                    placeholder="検索"
-                    onChange={onChangeSearch}
-                    value={searchText}
-                    type="text"
-                  />
-                </SInputWrap>
-                <SSelectWrap>
-                  <SSelectIcon fill="rgba(0,0,0,0.4)" />
-                  <SSelect onChange={onChangeSort}>
-                    <option value="updated_at">更新日</option>
-                    <option value="created_at">作成日</option>
-                    <option value="title">タイトル</option>
-                  </SSelect>
-                </SSelectWrap>
-              </SMainRightHeader>
-              {currentPageInfo && (
-                <SCurrentPageArea>
-                  <SCurrentPageAreaHeader>
-                    <SCurrentPageFaviconImage src={currentPageInfo.fav_icon_url} />
-                    <SCurrentPageTitle>{currentPageInfo.page_title}</SCurrentPageTitle>
-                    <SCurrentPageCloseButton onClick={() => onClickFilter()}>
-                      <XMarkIcon fill="rgba(0, 0, 0, 0.4)" />
-                    </SCurrentPageCloseButton>
-                  </SCurrentPageAreaHeader>
-                  <SCurrentPageLinkArea>
-                    {linkEditMode ? (
-                      <>
-                        <SPageLinkEditInput value={editLink} onChange={(e) => setEditLink(e.target.value)} />
-                        <SPageLinkEditButton onClick={handleSaveLink}>保存</SPageLinkEditButton>
-                        <SPageLinkEditButton secondary onClick={() => setLinkEditMode(false)}>キャンセル</SPageLinkEditButton>
-                      </>
-                    ) : (
-                      <>
-                        <SCurrentPageLink
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            onClickLink(currentPageInfo.page_url ?? "");
-                          }}
-                        >
-                          {currentPageInfo.page_url}
-                        </SCurrentPageLink>
-                        <SCurrentPageLinkEditButton onClick={handleEditLink}>
-                          <PencilSquareIcon fill="rgba(0, 0, 0, 0.4)" />
-                        </SCurrentPageLinkEditButton>
-                      </>
-                    )}
-                  </SCurrentPageLinkArea>
-                </SCurrentPageArea>
-              )}
-              {filteredNotes.length === 0 && <SNoNoteText>メモがありません。</SNoNoteText>}
-              {filteredNotes.length !== 0 && (
-                <SCardList axis="y" values={filteredNotes} onReorder={() => {}}>
-                  {filteredNotes.map((note) => (
-                    <SCardListItem
-                      id={`note-${note.page_info_id}-${note.id}`}
-                      key={`note-${note.page_info_id}-${note.id}`}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.35, ease: "easeInOut" }}
-                      value={note}
-                      dragListener={false}
-                    >
-                      <OptionListItem
-                        note={note}
-                        showPageInfo={!currentPageInfo}
-                        pageInfo={pageInfos.find((p) => p.id === note.page_info_id)}
-                        onDelete={onDelete}
-                        onUpdate={onUpdate}
-                        onClickLink={onClickLink}
-                        onClickFilter={onClickFilter}
+              <SMainRightInner>
+                {isLoading && <CardListSkelton />}
+                {!isLoading && (
+                  <SMainRightHeader>
+                    <SInputWrap>
+                      <SInputIcon fill="rgba(0,0,0,0.4)" />
+                      <SInput
+                        placeholder="検索"
+                        onChange={onChangeSearch}
+                        value={searchText}
+                        type="text"
                       />
-                    </SCardListItem>
-                  ))}
-                </SCardList>
-              )}
+                    </SInputWrap>
+                    <SSelectWrap>
+                      <SSelectIcon fill="rgba(0,0,0,0.4)" />
+                      <SSelect onChange={onChangeSort}>
+                        <option value="updated_at">更新日</option>
+                        <option value="created_at">作成日</option>
+                        <option value="title">タイトル</option>
+                      </SSelect>
+                    </SSelectWrap>
+                  </SMainRightHeader>
+                )}
+                {currentPageInfo && (
+                  <SCurrentPageArea>
+                    <SCurrentPageAreaHeader>
+                      <SCurrentPageFaviconImage src={currentPageInfo.fav_icon_url} />
+                      <SCurrentPageTitle>{currentPageInfo.page_title}</SCurrentPageTitle>
+                      <SCurrentPageCloseButton onClick={() => onClickFilter()}>
+                        <XMarkIcon fill="rgba(0, 0, 0, 0.4)" />
+                      </SCurrentPageCloseButton>
+                    </SCurrentPageAreaHeader>
+                    <SCurrentPageLinkArea>
+                      {linkEditMode ? (
+                        <>
+                          <SPageLinkEditInput
+                            value={editLink}
+                            onChange={(e) => setEditLink(e.target.value)}
+                          />
+                          <SPageLinkEditButton onClick={handleSaveLink}>保存</SPageLinkEditButton>
+                          <SPageLinkEditButton secondary onClick={() => setLinkEditMode(false)}>
+                            キャンセル
+                          </SPageLinkEditButton>
+                        </>
+                      ) : (
+                        <>
+                          <SCurrentPageLink
+                            href="#"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              onClickLink(currentPageInfo.page_url ?? "");
+                            }}
+                          >
+                            {currentPageInfo.page_url}
+                          </SCurrentPageLink>
+                          <SCurrentPageLinkEditButton onClick={handleEditLink}>
+                            <PencilSquareIcon fill="rgba(0, 0, 0, 0.4)" />
+                          </SCurrentPageLinkEditButton>
+                        </>
+                      )}
+                    </SCurrentPageLinkArea>
+                  </SCurrentPageArea>
+                )}
+                {!isLoading && filteredNotes.length === 0 && (
+                  <SNoNoteText>メモがありません。</SNoNoteText>
+                )}
+                {!isLoading && filteredNotes.length !== 0 && (
+                  <SCardList>
+                    <AutoSizer>
+                      {({ height, width }: any) => (
+                        <List
+                          width={width}
+                          height={height}
+                          rowCount={filteredNotes.length}
+                          deferredMeasurementCache={cache}
+                          rowHeight={cache.rowHeight}
+                          rowRenderer={({ key, parent, index, style }: any) => {
+                            const note = filteredNotes[index];
+
+                            return (
+                              <CellMeasurer
+                                key={key}
+                                cache={cache}
+                                parent={parent}
+                                columnIndex={0}
+                                rowIndex={index}
+                              >
+                                {({ measure, registerChild }) => (
+                                  <SCardListItem
+                                    id={`note-${note.page_info_id}-${note.id}`}
+                                    ref={registerChild as any}
+                                    style={style}
+                                  >
+                                    <OptionListItem
+                                      note={note}
+                                      showPageInfo={!currentPageInfo}
+                                      pageInfo={pageInfos.find((p) => p.id === note.page_info_id)}
+                                      onDelete={onDelete}
+                                      onUpdate={onUpdate}
+                                      onClickLink={onClickLink}
+                                      onClickFilter={onClickFilter}
+                                      measure={measure}
+                                    />
+                                  </SCardListItem>
+                                )}
+                              </CellMeasurer>
+                            );
+                          }}
+                        />
+                      )}
+                    </AutoSizer>
+                  </SCardList>
+                )}
+              </SMainRightInner>
             </SMainRight>
           </SMain>
         </SContainer>
@@ -339,4 +376,24 @@ const Options: React.VFC<Props> = () => {
     </>
   );
 };
+
+const CardListSkelton = () => {
+  return (
+    <>
+      <div style={{ display: "flex" }}>
+        <SSkeleton
+          style={{ borderRadius: "999rem", marginRight: "1rem" }}
+          variant="rounded"
+          width={"100%"}
+          height={36}
+        />
+        <SSkeleton variant="rounded" width={192} height={36} />
+      </div>
+      <SSkeleton variant="rounded" width={"100%"} height={100} />
+      <SSkeleton variant="rounded" width={"100%"} height={100} />
+      <SSkeleton variant="rounded" width={"100%"} height={100} />
+    </>
+  );
+};
+
 export default Options;

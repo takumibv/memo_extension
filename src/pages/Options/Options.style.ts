@@ -1,6 +1,6 @@
 import styled, { createGlobalStyle, css } from "styled-components";
-import { Reorder } from "framer-motion";
 import { ArrowsUpDownIcon, MagnifyingGlassIcon } from "@heroicons/react/24/solid";
+import Skeleton from "@mui/material/Skeleton";
 import { resetCSS } from "../../resetCSS";
 import Button from "../../components/Button/Button";
 import IconButton from "../../components/Button/IconButton";
@@ -37,6 +37,7 @@ export const SMainLeft = styled.div`
   overflow-y: auto;
   width: 18em;
   padding-left: 1em;
+  z-index: 1;
 `;
 
 export const SSideNav = styled.ul`
@@ -103,7 +104,16 @@ export const SSideNavItemLink = styled.p`
 `;
 
 export const SMainRight = styled.main`
-  padding: 4em 2em 1.5em 19em;
+  position: relative;
+  padding: 4em 2em 0 19em;
+  height: 100vh;
+  height: 100dvh;
+`;
+
+export const SMainRightInner = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 `;
 
 export const SMainContent = styled.main`
@@ -234,14 +244,19 @@ export const SNoNoteText = styled.p`
   color: #aaa;
 `;
 
-export const SCardList = styled(Reorder.Group)`
+export const SCardList = styled.div`
+  flex: 1;
   display: flex;
   flex-wrap: wrap;
   padding: 0.25em 0;
   margin: 0 -0.5em;
 `;
 
-export const SCardListItem = styled(Reorder.Item)`
+export const SCardListItem = styled.div`
   padding: 0.5em;
   width: 100%;
+`;
+
+export const SSkeleton = styled(Skeleton)`
+  margin-top: 1em;
 `;

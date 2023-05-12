@@ -163,10 +163,6 @@ export const NoteEditModal: VFC<Props> = ({
     setAnchorActionsEl(null);
   };
 
-  useEffect(() => {
-    console.log("editNote", note, editedNote, isEqualsObject(note, editedNote));
-  }, [editedNote]);
-
   return (
     <Modal
       open={!!isOpen}
