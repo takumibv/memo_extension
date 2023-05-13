@@ -77,6 +77,7 @@
   "pin_msg": { "message": "ピン" },
   "pin_select_option_unfixed_msg": { "message": "あり" },
   "pin_select_option_fixed_msg": { "message": "なし" },
+  "color_msg": { "message": "カラー" },
   "open_msg": { "message": "縮小" },
   "open_select_option_yes_msg": { "message": "縮小する" },
   "open_select_option_no_msg": { "message": "縮小しない" },
@@ -94,6 +95,7 @@
   "edit_msg": { "message": "編集" },
   "copy_msg": { "message": "コピー" },
   "delete_msg": { "message": "削除する" },
+  "default_color_msg": { "message": "メモの初期カラー" },
   "new_note_title_msg": { "message": "新しいメモ" },
   "new_note_description_msg": { "message": "ダブルクリックで編集" }
 }

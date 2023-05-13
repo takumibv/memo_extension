@@ -23,6 +23,11 @@ export const ROOT_DOM_ID = "react-container-for-note-extension";
 // install or Updateして初めて開いた時に呼ばれる。
 chrome.runtime.onInstalled.addListener((details) => {
   const previousVersion = details.previousVersion || "x.x.x";
+
+  if (previousVersion === "0.3.1") {
+    actions.setDefaultColor("#FFF7CC");
+  }
+
   console.log("previousVersion", previousVersion);
 });
 

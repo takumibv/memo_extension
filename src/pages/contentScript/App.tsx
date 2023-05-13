@@ -109,6 +109,7 @@ const Main: React.VFC = () => {
             is_fixed={note.is_fixed}
             created_at={note.created_at}
             updated_at={note.updated_at}
+            color={note.color}
             onUpdateNote={updateNote}
             onDeleteNote={deleteNote}
             defaultColor={defaultColor}

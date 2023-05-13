@@ -84,7 +84,7 @@ export const Popup = () => {
           setIsEnabled(false);
         })
         .finally(() => {
-          window.close();
+          // window.close();
         });
     }
   };

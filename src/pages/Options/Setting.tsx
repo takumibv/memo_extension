@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { GlobalStyle, SContainer, SMain, SMainContent } from "./index.style";
-import {
-  SSettingItem,
-  SSettingItemTitle,
-  SSettingItemContent,
-  SColors,
-  SColor,
-  SColorCheckIcon,
-} from "./Setting.style";
+import { SSettingItem, SSettingItemTitle, SSettingItemContent } from "./Setting.style";
 import OptionHeader from "../../components/OptionHeader/OptionHeader";
 import * as sender from "../message/sender/options";
+import ColorPicker from "../../components/ColorPicker/ColorPicker";
+import { msg } from "../../utils";
 
 interface Props extends RouteComponentProps<{}> {}
 
@@ -50,33 +45,9 @@ const Setting: React.FC<Props> = () => {
               {!isLoading && (
                 <>
                   <SSettingItem>
-                    <SSettingItemTitle>メモの初期カラー</SSettingItemTitle>
+                    <SSettingItemTitle>{msg("default_color_msg")}</SSettingItemTitle>
                     <SSettingItemContent>
-                      <SColors>
-                        {[
-                          "#fff",
-                          "#EB9694",
-                          "#FAD0C3",
-                          "#FEF3BD",
-                          "#C1E1C5",
-                          "#BEDADC",
-                          "#C4DEF6",
-                          "#D4C4FB",
-                        ].map((color) => {
-                          const isActive =
-                            (color === "#fff" && defaultColor === "") || color === defaultColor;
-                          return (
-                            <SColor
-                              key={color}
-                              $isActive={isActive}
-                              style={{ backgroundColor: color }}
-                              onClick={() => onClickDefaultColor(color)}
-                            >
-                              {isActive && <SColorCheckIcon />}
-                            </SColor>
-                          );
-                        })}
-                      </SColors>
+                      <ColorPicker color={defaultColor} onChangeColor={onClickDefaultColor} />
                     </SSettingItemContent>
                   </SSettingItem>
                   <SSettingItem>
@@ -87,8 +58,18 @@ const Setting: React.FC<Props> = () => {
                     </SSettingItemContent>
                   </SSettingItem>
                   <SSettingItem>
+                    <SSettingItemTitle>{msg("how_to_use_page_link_msg")}</SSettingItemTitle>
+                    <SSettingItemContent>
+                      使い方
+                    </SSettingItemContent>
+                  </SSettingItem>
+                  <SSettingItem>
                     <SSettingItemTitle>製作者</SSettingItemTitle>
-                    <SSettingItemContent>@takumi_bv</SSettingItemContent>
+                    <SSettingItemContent>
+                      <a href="https://twitter.com/takumi_bv" target="_blank">
+                        @takumi_bv
+                      </a>
+                    </SSettingItemContent>
                   </SSettingItem>
                 </>
               )}

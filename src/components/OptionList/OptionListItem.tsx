@@ -2,9 +2,9 @@ import React, { memo, useEffect, useState } from "react";
 import { Note } from "../../types/Note";
 import { formatDate } from "../../utils";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid";
-import { CopyIcon } from "../Icon";
+import { CopyIcon, PalletIcon } from "../Icon";
 import { PageInfo } from "../../types/PageInfo";
-import { Tooltip } from "@mui/material";
+import { Popover, Tooltip } from "@mui/material";
 import { useClipboard } from "../../hooks/useClipboard";
 import { NoteEditModal } from "../NoteEditModal/NoteEditModal";
 import {
@@ -29,6 +29,7 @@ import {
   SLaunchIcon,
 } from "./OptionListItem.style";
 import { msg } from "../../utils";
+import ColorPicker from "../ColorPicker/ColorPicker";
 
 type Props = {
   note: Note;
@@ -62,6 +63,25 @@ const OptionListItem: React.FC<Props> = memo(
       measure && measure();
     }, [note]);
 
+    // カラーピッカー
+    const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+    const onClickColorPickerButton = (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.stopPropagation();
+      setAnchorEl(event.currentTarget);
+    };
+    const handleCloseColorPicker = (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.stopPropagation();
+      setAnchorEl(null);
+    };
+    const isOpenColorPickerPopover = Boolean(anchorEl);
+    const popoverId = isOpenColorPickerPopover ? "color-picker-popover" : undefined;
+    const onChangeColor = (color: string) => {
+      onUpdate({
+        ...note,
+        color,
+      });
+    };
+
     return (
       <>
         <SCard
@@ -69,7 +89,7 @@ const OptionListItem: React.FC<Props> = memo(
           onClick={() => {
             setOpenModal(true);
           }}
-          style={{ backgroundColor: ((note as any).color ?? defaultColor) || "#fff" }}
+          style={{ backgroundColor: note.color || defaultColor || "#fff" }}
         >
           <SCardHeader>
             <SCardTitle>{title}</SCardTitle>
@@ -107,7 +127,7 @@ const OptionListItem: React.FC<Props> = memo(
           )}
           <SCardFooter>
             <SCardActions>
-              <Tooltip title={msg("edit")} enterDelay={300}>
+              <Tooltip title={msg("edit_msg")} enterDelay={300}>
                 <SIconButtonWrap>
                   <SIconButton
                     onClick={(e) => {
@@ -135,6 +155,27 @@ const OptionListItem: React.FC<Props> = memo(
                   )}
                 </SIconButtonWrap>
               </Tooltip>
+              <Tooltip title={msg("color_msg")} enterDelay={300}>
+                <SIconButtonWrap>
+                  <SIconButton onClick={onClickColorPickerButton}>
+                    <PalletIcon fill="rgba(0, 0, 0, 0.4)" />
+                  </SIconButton>
+                </SIconButtonWrap>
+              </Tooltip>
+              <Popover
+                id={popoverId}
+                open={isOpenColorPickerPopover}
+                anchorEl={anchorEl}
+                onClose={handleCloseColorPicker}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "left",
+                }}
+              >
+                <div style={{ width: "168px", textAlign: "center" }} onClick={(e) => e.stopPropagation()}>
+                  <ColorPicker hasDefault color={note.color} onChangeColor={onChangeColor} />
+                </div>
+              </Popover>
               <Tooltip title={msg("delete_msg")} enterDelay={300}>
                 <SIconButtonWrap>
                   <SIconButton

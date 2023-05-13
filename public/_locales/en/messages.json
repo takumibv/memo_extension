@@ -72,6 +72,7 @@
   "pin_msg": { "message": "Pin" },
   "pin_select_option_unfixed_msg": { "message": "on" },
   "pin_select_option_fixed_msg": { "message": "off" },
+  "color_msg": { "message": "Color" },
   "open_msg": { "message": "Minimize" },
   "open_select_option_yes_msg": { "message": "on" },
   "open_select_option_no_msg": { "message": "off" },
@@ -88,5 +89,6 @@
   "copy_msg": { "message": "Copy" },
   "delete_msg": { "message": "delete" },
   "new_note_title_msg": { "message": "New Note" },
+  "default_color_msg": { "message": "Default Color" },
   "new_note_description_msg": { "message": "Double-click to edit" }
 }

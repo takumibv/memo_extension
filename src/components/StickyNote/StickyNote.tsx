@@ -4,7 +4,7 @@ import { DraggableCore } from "react-draggable";
 import Tooltip from "@mui/material/Tooltip";
 import { initialPositionX, initialPositionY, useNoteEdit } from "../../hooks/useNote";
 import { Note } from "../../types/Note";
-import { CopyIcon, PinIcon } from "../Icon";
+import { CopyIcon, PalletIcon, PinIcon } from "../Icon";
 import {
   PencilSquareIcon,
   TrashIcon,
@@ -29,7 +29,6 @@ import {
   SCopySuccessIcon,
   SButton,
   SHeaderFixedPinArea,
-  SHeaderFixedButton,
   SOpenButton,
   SLogo,
 } from "./StickyNote.style";
@@ -37,6 +36,8 @@ import { ROOT_DOM_ID } from "../../pages/contentScript";
 import { msg } from "../../utils";
 import { useClipboard } from "../../hooks/useClipboard";
 import IconButton from "../Button/IconButton";
+import Popover from "@mui/material/Popover";
+import ColorPicker from "../ColorPicker/ColorPicker";
 
 type Props = {
   id?: number;
@@ -51,6 +52,7 @@ type Props = {
   is_fixed?: boolean;
   created_at?: string;
   updated_at?: string;
+  color?: string;
   onUpdateNote: (note: Note) => Promise<boolean>;
   onDeleteNote: (note: Note) => Promise<boolean>;
   defaultColor?: string;
@@ -59,7 +61,7 @@ type Props = {
 /**
  * メモの付箋
  */
-const StickyNote: React.VFC<Props> = memo(
+const StickyNote: React.FC<Props> = memo(
   ({
     onUpdateNote,
     onDeleteNote,
@@ -75,6 +77,7 @@ const StickyNote: React.VFC<Props> = memo(
     is_fixed,
     created_at,
     updated_at,
+    color,
     defaultColor,
   }) => {
     const defaultNote: Note = useMemo(
@@ -91,6 +94,7 @@ const StickyNote: React.VFC<Props> = memo(
         is_fixed,
         created_at,
         updated_at,
+        color,
       }),
       [
         id,
@@ -105,6 +109,7 @@ const StickyNote: React.VFC<Props> = memo(
         is_fixed,
         created_at,
         updated_at,
+        color,
       ]
     );
 
@@ -192,20 +197,40 @@ const StickyNote: React.VFC<Props> = memo(
 
     // 開閉ボタンが押せるかどうかの閾値 10を超えると押せない
     const [enableOpenButtonThreshold, setEnableOpenButtonThreshold] = useState(0);
-    const onClickOpenButton = useCallback((isOpen: boolean) => {
-      if (enableOpenButtonThreshold < 10) {
-        onUpdateNote({
-          ...defaultNote,
-          is_open: isOpen,
-        });
-      }
-      setEnableOpenButtonThreshold(0);
-    }, [defaultNote, enableOpenButtonThreshold]);
+    const onClickOpenButton = useCallback(
+      (isOpen: boolean) => {
+        if (enableOpenButtonThreshold < 10) {
+          onUpdateNote({
+            ...defaultNote,
+            is_open: isOpen,
+          });
+        }
+        setEnableOpenButtonThreshold(0);
+      },
+      [defaultNote, enableOpenButtonThreshold]
+    );
 
     const onClickDeleteButton = () => {
       if (confirm(`"${title || msg("note")}" ${msg("confirm_remove_next_note_msg")}`)) {
         onDeleteNote(defaultNote);
       }
+    };
+
+    // カラーピッカー
+    const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+    const onClickColorPickerButton = (event: React.MouseEvent<HTMLButtonElement>) => {
+      setAnchorEl(event.currentTarget);
+    };
+    const handleCloseColorPicker = () => {
+      setAnchorEl(null);
+    };
+    const isOpenColorPickerPopover = Boolean(anchorEl);
+    const popoverId = isOpenColorPickerPopover ? "color-picker-popover" : undefined;
+    const onChangeColor = (color: string) => {
+      onUpdateNote({
+        ...defaultNote,
+        color,
+      });
     };
 
     // 「編集モード」時のキーイベント
@@ -261,7 +286,7 @@ const StickyNote: React.VFC<Props> = memo(
           ref={noteRef}
           style={{
             transform: `translate(${displayPositionX}px, ${displayPositionY}px)`,
-            backgroundColor: ((defaultNote as any).color ?? defaultColor) || "#fff"
+            backgroundColor: color || defaultColor || "#fff",
           }}
           $isFixed={is_fixed}
         >
@@ -313,7 +338,7 @@ const StickyNote: React.VFC<Props> = memo(
           width: editWidth,
           height: editHeight,
           transform: `translate(${displayPositionX}px, ${displayPositionY}px)`,
-          backgroundColor: ((defaultNote as any).color ?? defaultColor) || "#fff"
+          backgroundColor: color || defaultColor || "#fff",
         }}
         $isFixed={is_fixed}
         $isForward={isDragging || isEditing}
@@ -453,6 +478,27 @@ const StickyNote: React.VFC<Props> = memo(
                   </SIconButton>
                 </SIconButtonWrap>
               </Tooltip>
+              <Tooltip title={msg("color_msg")} enterDelay={300}>
+                <SIconButtonWrap>
+                  <SIconButton onClick={onClickColorPickerButton}>
+                    <PalletIcon fill="rgba(0, 0, 0, 0.4)" />
+                  </SIconButton>
+                </SIconButtonWrap>
+              </Tooltip>
+              <Popover
+                id={popoverId}
+                open={isOpenColorPickerPopover}
+                anchorEl={anchorEl}
+                onClose={handleCloseColorPicker}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "left",
+                }}
+              >
+                <div style={{ width: "168px", textAlign: "center" }}>
+                  <ColorPicker hasDefault color={color} onChangeColor={onChangeColor} />
+                </div>
+              </Popover>
               <Tooltip title={msg("delete_msg")} enterDelay={300}>
                 <SIconButtonWrap>
                   <SIconButton onClick={onClickDeleteButton}>
