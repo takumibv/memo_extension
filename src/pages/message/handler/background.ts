@@ -12,6 +12,8 @@ import {
   GET_NOTE_VISIBLE,
   UPDATE_NOTE_VISIBLE,
   UPDATE_NOTE_INFO,
+  GET_SETTING,
+  UPDATE_DEFAULT_COLOR,
 } from "../actions";
 import * as actions from "../../background/actions";
 import { MessageRequest, MessageResponse, MessageMethod, MessageRequestPayload } from "../message";
@@ -132,9 +134,9 @@ const _handleMessagesFromPopup = (
   }
 
   const sendResponseAndSetNotes = (notes: Note[]) => {
-    actions.getIsVisibleNote().then((isVisible) => {
+    actions.getSetting().then((setting) => {
       sendResponse({ data: { notes } });
-      injectContentScript(tabId).then(() => setupPage(tabId, tabUrl, notes, isVisible));
+      injectContentScript(tabId).then(() => setupPage(tabId, tabUrl, notes, setting));
     });
   };
 
@@ -249,6 +251,22 @@ const _handleMessagesFromOption = (
           sendResponse({ data: { pageInfos } });
         })
         .catch((e) => console.log("error UPDATE_NOTE_INFO:", e));
+      return true;
+    case GET_SETTING:
+      actions
+        .getSetting()
+        .then((setting) => {
+          sendResponse({ data: { setting } });
+        })
+        .catch((e) => console.log("error GET_SETTING:", e));
+      return true;
+    case UPDATE_DEFAULT_COLOR:
+      actions
+        .setDefaultColor(payload.defaultColor!)
+        .then((setting) => {
+          sendResponse({ data: { setting } });
+        })
+        .catch((e) => console.log("error UPDATE_DEFAULT_COLOR:", e));
       return true;
     default:
       sendResponse({

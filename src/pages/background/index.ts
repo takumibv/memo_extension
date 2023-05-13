@@ -45,11 +45,11 @@ chrome.contextMenus.onClicked.addListener((info) => {
             if (!pageInfo.id) return;
 
             createNote(pageInfo.id).then(({ allNotes }) => {
-              actions.getIsVisibleNote().then((isVisibleNote) => {
+              actions.getSetting().then((setting) => {
                 if (!tab?.id) return;
 
                 injectContentScript(tab.id).then(() =>
-                  setupPage(tab.id!, pageUrl, allNotes, isVisibleNote)
+                  setupPage(tab.id!, pageUrl, allNotes, setting)
                 );
               });
             });
@@ -88,12 +88,12 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       actions
         .fetchAllNotesByPageUrl(url)
         .then((notes) => {
-          actions.getIsVisibleNote().then((isVisible) => {
+          actions.getSetting().then((setting) => {
             currentUrl = "";
 
-            if (notes.length === 0) return setupPage(tabId, url, [], isVisible);
+            if (notes.length === 0) return setupPage(tabId, url, [], setting);
 
-            injectContentScript(tabId).then(() => setupPage(tabId, url, notes, isVisible));
+            injectContentScript(tabId).then(() => setupPage(tabId, url, notes, setting));
           });
         })
         .catch((e) => {

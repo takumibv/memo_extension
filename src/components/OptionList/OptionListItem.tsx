@@ -32,6 +32,7 @@ import { msg } from "../../utils";
 
 type Props = {
   note: Note;
+  defaultColor?: string;
   pageInfo?: PageInfo;
   showPageInfo?: boolean;
   onUpdate: (note: Note) => Promise<boolean>;
@@ -42,7 +43,17 @@ type Props = {
 };
 
 const OptionListItem: React.FC<Props> = memo(
-  ({ note, pageInfo, showPageInfo, onUpdate, onDelete, onClickLink, onClickFilter, measure }) => {
+  ({
+    note,
+    defaultColor,
+    pageInfo,
+    showPageInfo,
+    onUpdate,
+    onDelete,
+    onClickLink,
+    onClickFilter,
+    measure,
+  }) => {
     const { id, title, description, created_at, updated_at } = note;
     const [openModal, setOpenModal] = useState(false);
     const { isSuccessCopy, copyClipboard } = useClipboard();
@@ -58,6 +69,7 @@ const OptionListItem: React.FC<Props> = memo(
           onClick={() => {
             setOpenModal(true);
           }}
+          style={{ backgroundColor: ((note as any).color ?? defaultColor) || "#fff" }}
         >
           <SCardHeader>
             <SCardTitle>{title}</SCardTitle>
@@ -138,10 +150,14 @@ const OptionListItem: React.FC<Props> = memo(
             </SCardActions>
             <SCardDate>
               {created_at && (
-                <SCardDateText> {msg("created_at_msg")}: {formatDate(new Date(created_at))}</SCardDateText>
+                <SCardDateText>
+                  {msg("created_at_msg")}: {formatDate(new Date(created_at))}
+                </SCardDateText>
               )}
               {updated_at && (
-                <SCardDateText> {msg("updated_at_msg")}: {formatDate(new Date(updated_at))}</SCardDateText>
+                <SCardDateText>
+                  {msg("updated_at_msg")}: {formatDate(new Date(updated_at))}
+                </SCardDateText>
               )}
             </SCardDate>
           </SCardFooter>

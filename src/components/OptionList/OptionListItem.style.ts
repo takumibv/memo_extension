@@ -108,7 +108,6 @@ export const SPageInfo = styled.div<{ $isFilter?: boolean }>`
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 0.25em;
   padding: 0.5em 0.75em;
-  background-color: #fff;
   cursor: pointer;
 
   ${({ $isFilter }) =>

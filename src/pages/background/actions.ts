@@ -10,6 +10,10 @@ import {
   setIsVisibleNote as _setIsVisibleNote,
 } from "../../storages/noteVisibleStorage";
 import {
+  getDefaultColor as _getDefaultColor,
+  setDefaultColor as _setDefaultColor,
+} from "../../storages/defaultColorStorage";
+import {
   getAllPageInfos,
   updatePageInfo as _updatePageInfo,
   getOrCreatePageInfoByUrl,
@@ -17,6 +21,7 @@ import {
 } from "../../storages/pageInfoStorage";
 import { Note } from "../../types/Note";
 import { PageInfo } from "../../types/PageInfo";
+import { Setting } from "../../types/Setting";
 
 export const fetchAllNotes = async (): Promise<Note[]> => {
   const notes = await getAllNotes();
@@ -109,4 +114,23 @@ export const setIsVisibleNote = async (isVisible: boolean) => {
   await _setIsVisibleNote(isVisible);
 
   return isVisible;
+};
+
+export const getDefaultColor = async () => {
+  return await _getDefaultColor();
+};
+
+export const setDefaultColor = async (color: string) => {
+  await _setDefaultColor(color);
+
+  return await getSetting();
+};
+
+export const getSetting = async (): Promise<Setting> => {
+  const setting = {
+    is_visible: await _getIsVisibleNote(),
+    default_color: await _getDefaultColor(),
+  };
+
+  return setting;
 };

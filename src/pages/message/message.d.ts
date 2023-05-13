@@ -15,9 +15,12 @@ import {
   GET_NOTE_VISIBLE,
   SET_NOTE_VISIBLE,
   UPDATE_NOTE_INFO,
+  GET_SETTING,
+  UPDATE_DEFAULT_COLOR,
 } from "./actions";
 import { Note } from "../../types/Note";
 import { PageInfo } from "../../types/PageInfo";
+import { Setting } from "../../types/Setting";
 
 export type MessageRequest = {
   method: MessageMethod;
@@ -33,6 +36,8 @@ export type MessageRequestPayload = {
   notes?: Note[];
   pageInfo?: PageInfo;
   isVisible?: boolean;
+  defaultColor?: string;
+  // setting?: Setting;
 };
 
 export type MessageResponse = {
@@ -43,6 +48,8 @@ export type MessageResponse = {
 export type MessageResponseData = {
   notes?: Note[];
   pageInfos?: PageInfo[];
+  setting?: Setting;
+  // TODO 不要
   isVisible?: boolean;
 };
 
@@ -58,7 +65,9 @@ export type ToBackgroundMessageMethod =
   | typeof SCROLL_TO_TARGET_NOTE
   | typeof GET_NOTE_VISIBLE
   | typeof UPDATE_NOTE_VISIBLE
-  | typeof UPDATE_NOTE_INFO;
+  | typeof UPDATE_NOTE_INFO
+  | typeof GET_SETTING
+  | typeof UPDATE_DEFAULT_COLOR;
 
 export type ToContentScriptMessageMethod = typeof SETUP_PAGE | typeof SET_NOTE_VISIBLE;
 

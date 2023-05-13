@@ -53,6 +53,7 @@ type Props = {
   updated_at?: string;
   onUpdateNote: (note: Note) => Promise<boolean>;
   onDeleteNote: (note: Note) => Promise<boolean>;
+  defaultColor?: string;
 };
 
 /**
@@ -74,6 +75,7 @@ const StickyNote: React.VFC<Props> = memo(
     is_fixed,
     created_at,
     updated_at,
+    defaultColor,
   }) => {
     const defaultNote: Note = useMemo(
       () => ({
@@ -259,6 +261,7 @@ const StickyNote: React.VFC<Props> = memo(
           ref={noteRef}
           style={{
             transform: `translate(${displayPositionX}px, ${displayPositionY}px)`,
+            backgroundColor: ((defaultNote as any).color ?? defaultColor) || "#fff"
           }}
           $isFixed={is_fixed}
         >
@@ -310,6 +313,7 @@ const StickyNote: React.VFC<Props> = memo(
           width: editWidth,
           height: editHeight,
           transform: `translate(${displayPositionX}px, ${displayPositionY}px)`,
+          backgroundColor: ((defaultNote as any).color ?? defaultColor) || "#fff"
         }}
         $isFixed={is_fixed}
         $isForward={isDragging || isEditing}

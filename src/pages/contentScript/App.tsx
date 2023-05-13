@@ -15,6 +15,7 @@ import { MessageRequest, MessageResponse } from "../message/message";
 const Main: React.VFC = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [isVisible, setIsVisible] = useState(true);
+  const [defaultColor, setDefaultColor] = useState<string>();
 
   const handleMessages = (
     request: MessageRequest,
@@ -23,15 +24,17 @@ const Main: React.VFC = () => {
   ): boolean => {
     console.log("=== onMessage ===", request, sender);
     const { method, payload } = request;
-    const { notes, isVisible } = payload ?? {};
+    const { notes, isVisible, defaultColor } = payload ?? {};
 
     switch (method) {
       case SETUP_PAGE:
         notes && setNotes(notes);
         isVisible !== undefined && setIsVisible(!!isVisible);
+        defaultColor && setDefaultColor(defaultColor);
         break;
       case SET_NOTE_VISIBLE:
         isVisible !== undefined && setIsVisible(!!isVisible);
+        defaultColor && setDefaultColor(defaultColor);
         break;
       default:
         break;
@@ -108,6 +111,7 @@ const Main: React.VFC = () => {
             updated_at={note.updated_at}
             onUpdateNote={updateNote}
             onDeleteNote={deleteNote}
+            defaultColor={defaultColor}
           />
         ))}
       </SContainer>

@@ -108,7 +108,7 @@ export const SNoteTitle = styled.h2`
 export const SNoteSpan = styled.span`
   ${baseCSS("span")}
 
-  color: #999;
+  color: rgb(0, 0, 0, 50%);
   flex: 1;
 `;
 
@@ -129,7 +129,7 @@ export const SNoteTitleInput = styled.input`
   }
 
   &::placeholder {
-    color: #999;
+    color: rgb(0, 0, 0, 50%);
   }
 `;
 

@@ -16,19 +16,12 @@ import { PageInfo } from "../../types/PageInfo";
 import OptionListItem from "../../components/OptionList/OptionListItem";
 import { useQuery } from "../../hooks/useRouter";
 import {
-  GlobalStyle,
-  SContainer,
-  SMain,
-  SMainLeft,
   SSideNav,
   SSideNavItem,
   SFaviconImage,
   SSideNavItemHeader,
   SSideNavItemTitle,
   SSideNavItemLink,
-  SMainRight,
-  SMainRightInner,
-  SMainRightHeader,
   SInputWrap,
   SInputIcon,
   SInput,
@@ -50,6 +43,15 @@ import {
   SCurrentPageCloseButton,
   SSkeleton,
 } from "./Options.style";
+import {
+  GlobalStyle,
+  SContainer,
+  SMain,
+  SMainLeft,
+  SMainRight,
+  SMainRightInner,
+  SMainRightHeader,
+} from "./index.style";
 import OptionHeader from "../../components/OptionHeader/OptionHeader";
 import * as sender from "../message/sender/options";
 import { msg } from "../../utils";
@@ -61,6 +63,7 @@ const AutoSizer = _AutoSizer as unknown as React.FC<AutoSizerProps>;
 const CellMeasurer = _CellMeasurer as unknown as React.FC<CellMeasurerProps>;
 
 const Options: React.FC<Props> = () => {
+  const [defaultColor, setDefaultColor] = useState<string>("");
   const [notes, setNotes] = useState<Note[]>([]);
   const [pageInfos, setPageInfos] = useState<PageInfo[]>([]);
   const [sortBy, setSortBy] = useState<string>("updated_at");
@@ -211,6 +214,11 @@ const Options: React.FC<Props> = () => {
       .finally(() => {
         setIsLoading(false);
       });
+    sender
+      .sendFetchSetting()
+      .then(({ setting }) => {
+        setDefaultColor(setting?.default_color ?? "");
+      })
   }, []);
 
   return (
@@ -354,6 +362,7 @@ const Options: React.FC<Props> = () => {
                                   >
                                     <OptionListItem
                                       note={note}
+                                      defaultColor={defaultColor}
                                       showPageInfo={!currentPageInfo}
                                       pageInfo={pageInfos.find((p) => p.id === note.page_info_id)}
                                       onDelete={onDelete}
