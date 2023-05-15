@@ -36,6 +36,7 @@ type Props = {
   defaultColor?: string;
   pageInfo?: PageInfo;
   showPageInfo?: boolean;
+  currentPageInfoId?: number;
   onUpdate: (note: Note) => Promise<boolean>;
   onDelete: (note: Note) => Promise<boolean>;
   onClickLink: (url: string) => void;
@@ -49,6 +50,7 @@ const OptionListItem: React.FC<Props> = memo(
     defaultColor,
     pageInfo,
     showPageInfo,
+    currentPageInfoId,
     onUpdate,
     onDelete,
     onClickLink,
@@ -61,7 +63,7 @@ const OptionListItem: React.FC<Props> = memo(
 
     useEffect(() => {
       measure && measure();
-    }, [note]);
+    }, [note, currentPageInfoId]);
 
     // カラーピッカー
     const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);

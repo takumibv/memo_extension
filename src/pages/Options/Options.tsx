@@ -362,6 +362,7 @@ const Options: React.FC<Props> = () => {
                                       note={note}
                                       defaultColor={defaultColor}
                                       showPageInfo={!currentPageInfo}
+                                      currentPageInfoId={currentPageInfoId}
                                       pageInfo={pageInfos.find((p) => p.id === note.page_info_id)}
                                       onDelete={onDelete}
                                       onUpdate={onUpdate}
