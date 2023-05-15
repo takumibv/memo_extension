@@ -394,9 +394,6 @@ const StickyNote: React.FC<Props> = memo(
                   onDoubleClick={() => {
                     setTimeout(() => {
                       titleInputRef?.current?.focus();
-                      if (title === msg("new_note_title_msg")) {
-                        titleInputRef?.current?.select();
-                      }
                     }, 10);
                   }}
                 >

@@ -31,13 +31,13 @@ export const createNote = async (pageId: number): Promise<NoteCRUDResponseType> 
   const id = getNewId(notes);
   const newNote: Note = {
     id,
-    title: msg("new_note_title_msg"),
     page_info_id: pageId,
     width: DEAULT_NOTE_WIDTH,
     height: DEAULT_NOTE_HEIGHT,
     is_fixed: true,
     is_open: true,
     created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   };
   const allNotes = [...notes, newNote];
   if (await setNoteStorageByPageId(pageId, allNotes)) return { note: newNote, allNotes };

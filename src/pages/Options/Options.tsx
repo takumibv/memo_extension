@@ -66,7 +66,7 @@ const Options: React.FC<Props> = () => {
   const [defaultColor, setDefaultColor] = useState<string>("");
   const [notes, setNotes] = useState<Note[]>([]);
   const [pageInfos, setPageInfos] = useState<PageInfo[]>([]);
-  const [sortBy, setSortBy] = useState<string>("updated_at");
+  const [sortBy, setSortBy] = useState<string>("created_at");
   const [searchText, setSearchText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const query = useQuery();
@@ -214,11 +214,9 @@ const Options: React.FC<Props> = () => {
       .finally(() => {
         setIsLoading(false);
       });
-    sender
-      .sendFetchSetting()
-      .then(({ setting }) => {
-        setDefaultColor(setting?.default_color ?? "");
-      })
+    sender.sendFetchSetting().then(({ setting }) => {
+      setDefaultColor(setting?.default_color ?? "");
+    });
   }, []);
 
   return (
@@ -281,8 +279,8 @@ const Options: React.FC<Props> = () => {
                     <SSelectWrap>
                       <SSelectIcon fill="rgba(0,0,0,0.4)" />
                       <SSelect onChange={onChangeSort}>
-                        <option value="updated_at">{msg("updated_at_sort_option")}</option>
                         <option value="created_at">{msg("created_at_sort_option")}</option>
+                        <option value="updated_at">{msg("updated_at_sort_option")}</option>
                         <option value="title">{msg("title_sort_option")}</option>
                       </SSelect>
                     </SSelectWrap>
