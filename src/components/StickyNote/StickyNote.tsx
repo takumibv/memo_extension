@@ -4,13 +4,7 @@ import { DraggableCore } from "react-draggable";
 import Tooltip from "@mui/material/Tooltip";
 import { initialPositionX, initialPositionY, useNoteEdit } from "../../hooks/useNote";
 import { Note } from "../../types/Note";
-import { CopyIcon, PalletIcon, PinIcon } from "../Icon";
-import {
-  PencilSquareIcon,
-  TrashIcon,
-  ArrowDownRightIcon,
-  MinusIcon,
-} from "@heroicons/react/24/solid";
+import { ArrowDownRightIcon, MinusIcon } from "@heroicons/react/24/solid";
 import {
   SNote,
   SNoteInner,
@@ -24,20 +18,16 @@ import {
   SNoteDescription,
   SNoteDescriptionTextarea,
   SNoteFooter,
-  SIconButtonWrap,
-  SIconButton,
-  SCopySuccessIcon,
   SButton,
   SHeaderFixedPinArea,
   SOpenButton,
   SLogo,
+  SIconButtonWrap,
 } from "./StickyNote.style";
 import { ROOT_DOM_ID } from "../../pages/contentScript";
 import { msg } from "../../utils";
-import { useClipboard } from "../../hooks/useClipboard";
 import IconButton from "../Button/IconButton";
-import Popover from "@mui/material/Popover";
-import ColorPicker from "../ColorPicker/ColorPicker";
+import StickyNoteActions from "./StickyNoteActions";
 
 type Props = {
   id?: number;
@@ -150,8 +140,6 @@ const StickyNote: React.FC<Props> = memo(
     const [dragStartPositionX, setDragStartPositionX] = useState(0);
     const [dragStartPositionY, setDragStartPositionY] = useState(0);
 
-    const { isSuccessCopy, copyClipboard } = useClipboard();
-
     const displayPositionX = useMemo(() => editPositionX ?? initialPositionX(), [editPositionX]);
     const displayPositionY = useMemo(() => editPositionY ?? initialPositionY(), [editPositionY]);
 
@@ -210,22 +198,7 @@ const StickyNote: React.FC<Props> = memo(
       [defaultNote, enableOpenButtonThreshold]
     );
 
-    const onClickDeleteButton = () => {
-      if (confirm(`"${title || msg("note")}" ${msg("confirm_remove_next_note_msg")}`)) {
-        onDeleteNote(defaultNote);
-      }
-    };
-
     // カラーピッカー
-    const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
-    const onClickColorPickerButton = (event: React.MouseEvent<HTMLButtonElement>) => {
-      setAnchorEl(event.currentTarget);
-    };
-    const handleCloseColorPicker = () => {
-      setAnchorEl(null);
-    };
-    const isOpenColorPickerPopover = Boolean(anchorEl);
-    const popoverId = isOpenColorPickerPopover ? "color-picker-popover" : undefined;
     const onChangeColor = (color: string) => {
       onUpdateNote({
         ...defaultNote,
@@ -278,6 +251,34 @@ const StickyNote: React.FC<Props> = memo(
       editHeight,
     ]);
 
+    // ドラッグ&ドロップのエリアのProps
+    const draggableCoreProps = {
+      scale: 1,
+      onStart: (_: any, data: any) => {
+        setEnableOpenButtonThreshold(0);
+        setIsDragging(true);
+        setDragStartPositionX(displayPositionX - data.x);
+        setDragStartPositionY(displayPositionY - data.y);
+      },
+      onDrag: (_: any, data: any) => {
+        if (!isEnableDrag) return false;
+
+        setEnableOpenButtonThreshold((prev) => prev + 1);
+        setEditPosition(dragStartPositionX + data.x, dragStartPositionY + data.y);
+      },
+      onStop: () => {
+        setIsDragging(false);
+
+        if (position_x !== editPositionX || position_y !== editPositionY) {
+          onUpdateNote({
+            ...defaultNote,
+            position_x: editPositionX,
+            position_y: editPositionY,
+          });
+        }
+      },
+    };
+
     if (!is_open) {
       // Close状態のスタイル
       return (
@@ -290,33 +291,7 @@ const StickyNote: React.FC<Props> = memo(
           }}
           $isFixed={is_fixed}
         >
-          <DraggableCore
-            scale={1}
-            onStart={(_, data) => {
-              setEnableOpenButtonThreshold(0);
-              setIsDragging(true);
-              setDragStartPositionX(displayPositionX - data.x);
-              setDragStartPositionY(displayPositionY - data.y);
-            }}
-            onDrag={(_, data) => {
-              if (!isEnableDrag) return false;
-
-              setEnableOpenButtonThreshold((prev) => prev + 1);
-              setEditPosition(dragStartPositionX + data.x, dragStartPositionY + data.y);
-            }}
-            onStop={() => {
-              setIsDragging(false);
-
-              if (position_x !== editPositionX || position_y !== editPositionY) {
-                onUpdateNote({
-                  ...defaultNote,
-                  position_x: editPositionX,
-                  position_y: editPositionY,
-                });
-              }
-            }}
-            nodeRef={noteRef}
-          >
+          <DraggableCore {...draggableCoreProps} nodeRef={noteRef}>
             <SNoteInner style={{ padding: "0.25rem" }}>
               <SOpenButton onClick={() => onClickOpenButton(true)}>
                 <SLogo
@@ -343,33 +318,7 @@ const StickyNote: React.FC<Props> = memo(
         $isFixed={is_fixed}
         $isForward={isDragging || isEditing}
       >
-        <DraggableCore
-          scale={1}
-          onStart={(_, data) => {
-            setEnableOpenButtonThreshold(0);
-            setIsDragging(true);
-            setDragStartPositionX(displayPositionX - data.x);
-            setDragStartPositionY(displayPositionY - data.y);
-          }}
-          onDrag={(_, data) => {
-            if (!isEnableDrag) return false;
-
-            setEnableOpenButtonThreshold((prev) => prev + 1);
-            setEditPosition(dragStartPositionX + data.x, dragStartPositionY + data.y);
-          }}
-          onStop={() => {
-            setIsDragging(false);
-
-            if (position_x !== editPositionX || position_y !== editPositionY) {
-              onUpdateNote({
-                ...defaultNote,
-                position_x: editPositionX,
-                position_y: editPositionY,
-              });
-            }
-          }}
-          nodeRef={noteRef}
-        >
+        <DraggableCore {...draggableCoreProps} nodeRef={noteRef}>
           <SNoteInner
             onDoubleClick={() => {
               setIsEditing(true);
@@ -450,59 +399,17 @@ const StickyNote: React.FC<Props> = memo(
             </>
           ) : (
             <>
-              <Tooltip title={msg("edit_msg")} enterDelay={300}>
-                <SIconButtonWrap>
-                  <SIconButton onClick={() => setIsEditing(true)}>
-                    <PencilSquareIcon fill="rgba(0, 0, 0, 0.4)" />
-                  </SIconButton>
-                </SIconButtonWrap>
-              </Tooltip>
-              <Tooltip title={isSuccessCopy ? msg("copied_msg") : msg("copy_msg")} enterDelay={300}>
-                <SIconButtonWrap>
-                  {isSuccessCopy ? (
-                    <SCopySuccessIcon fill="#22c55e" />
-                  ) : (
-                    <SIconButton onClick={() => copyClipboard(`${title}\n${description}`)}>
-                      <CopyIcon fill="rgba(0, 0, 0, 0.4)" />
-                    </SIconButton>
-                  )}
-                </SIconButtonWrap>
-              </Tooltip>
-              <Tooltip title={msg("switch_pin_msg")} enterDelay={300}>
-                <SIconButtonWrap>
-                  <SIconButton onClick={onClickFixedButton} isFocus={!is_fixed}>
-                    <PinIcon fill={is_fixed ? "rgba(0, 0, 0, 0.3)" : "rgba(0, 0, 0, 1)"} />
-                  </SIconButton>
-                </SIconButtonWrap>
-              </Tooltip>
-              <Tooltip title={msg("color_msg")} enterDelay={300}>
-                <SIconButtonWrap>
-                  <SIconButton onClick={onClickColorPickerButton}>
-                    <PalletIcon fill="rgba(0, 0, 0, 0.4)" />
-                  </SIconButton>
-                </SIconButtonWrap>
-              </Tooltip>
-              <Popover
-                id={popoverId}
-                open={isOpenColorPickerPopover}
-                anchorEl={anchorEl}
-                onClose={handleCloseColorPicker}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "left",
-                }}
-              >
-                <div style={{ width: "168px", textAlign: "center" }}>
-                  <ColorPicker hasDefault color={color} onChangeColor={onChangeColor} />
-                </div>
-              </Popover>
-              <Tooltip title={msg("delete_msg")} enterDelay={300}>
-                <SIconButtonWrap>
-                  <SIconButton onClick={onClickDeleteButton}>
-                    <TrashIcon fill="rgba(0, 0, 0, 0.4)" />
-                  </SIconButton>
-                </SIconButtonWrap>
-              </Tooltip>
+              <StickyNoteActions
+                title={title}
+                description={description}
+                is_fixed={is_fixed}
+                color={color}
+                setIsEditing={setIsEditing}
+                onClickFixedButton={onClickFixedButton}
+                onChangeColor={onChangeColor}
+                onDeleteNote={() => onDeleteNote(defaultNote)}
+                onCloseNote={() => onClickOpenButton(false)}
+              />
             </>
           )}
         </SNoteFooter>
