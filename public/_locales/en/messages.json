@@ -8,7 +8,7 @@
     "description": "The short_name (maximum of 12 characters recommended) is a short version of the app's name."
   },
   "appDescription": {
-    "message": "This is a functional and intuitive note application.",
+    "message": "This is intuitive note application.",
     "description": "The description of the application"
   },
   "browserActionTitle": {
@@ -96,6 +96,7 @@
   "export_msg": { "message": "Export" },
   "csv_download_msg": { "message": "CSV Download" },
   "text_download_msg": { "message": "txt Download" },
+  "please_reload_msg": { "message": "Reload the page." },
   "maker_msg": { "message": "Developer" },
   "pin_explain_msg": { "message": "Pinning a Note will follow scrolling." },
   "edit_explain_msg": { "message": "Switch a Note to edit mode. (or double-click to edit)." },

@@ -8,7 +8,7 @@
     "description": "The short_name (maximum of 12 characters recommended) is a short version of the app's name."
   },
   "appDescription": {
-    "message": "機能的・直感的なメモのアプリです。",
+    "message": "直感的なメモのアプリです。",
     "description": "The description of the application"
   },
   "browserActionTitle": {
@@ -101,6 +101,7 @@
   "export_msg": { "message": "書き出し" },
   "csv_download_msg": { "message": "CSVダウンロード" },
   "text_download_msg": { "message": "txtダウンロード" },
+  "please_reload_msg": { "message": "ページをリロードしてください。" },
   "maker_msg": { "message": "製作者" },
   "pin_explain_msg": { "message": "メモをピン留めすると、スクロールに追従します。" },
   "edit_explain_msg": { "message": "メモを編集モードに切り替えます。（もしくはダブルクリックで編集できます）" },
