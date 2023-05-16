@@ -8,6 +8,10 @@ import {
 } from "../actions";
 import { sendAction } from "./base";
 
+/**
+ * コンテンツスクリプトから送信するメッセージ
+ */
+
 export const sendFetchAllNotes = async (): Promise<{ notes?: Note[] }> => {
   return await sendAction(GET_ALL_NOTES, CONTENT_SCRIPT, { url: window.location.href });
 };

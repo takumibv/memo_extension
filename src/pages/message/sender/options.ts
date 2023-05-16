@@ -4,6 +4,10 @@ import { sendAction } from "./base";
 import { PageInfo } from "../../../types/PageInfo";
 import { Setting } from "../../../types/Setting";
 
+/**
+ * オプションページから送信するメッセージ
+ */
+
 export const sendUpdateNote = async (
   note?: Note,
   url?: string

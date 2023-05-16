@@ -11,6 +11,10 @@ import {
 } from "../actions";
 import { sendAction } from "./base";
 
+/**
+ * ポップアップから送信するメッセージ
+ */
+
 export const fetchAllNotes = async (
   tab: chrome.tabs.Tab
 ): Promise<{ notes?: Note[]; isVisible?: boolean }> => {

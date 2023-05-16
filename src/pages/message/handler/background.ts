@@ -23,6 +23,7 @@ import { setupIsVisible, setupPage } from "../sender/background";
 
 export const ROOT_DOM_ID = "react-container-for-note-extension";
 
+// メモ挿入が可能なページかどうかを判定する
 export const isScriptAllowedPage = async (tabId: number) => {
   await chrome.scripting.executeScript({
     target: { tabId },
@@ -31,6 +32,7 @@ export const isScriptAllowedPage = async (tabId: number) => {
   return !chrome.runtime.lastError;
 };
 
+// 既にコンテンツスクリプトが挿入されているかどうかを判定する
 export const hasContentScript = async (tabId: number): Promise<boolean> => {
   const [res] = await chrome.scripting.executeScript({
     target: { tabId },
@@ -42,8 +44,10 @@ export const hasContentScript = async (tabId: number): Promise<boolean> => {
   return res.result as boolean;
 };
 
+// コンテンツスクリプトを挿入する
 export const injectContentScript = async (tabId: number) => {
   const hasScript = await hasContentScript(tabId);
+  // 既に挿入されている場合は何もしない
   if (hasScript) return false;
 
   return await chrome.scripting.executeScript({
@@ -52,6 +56,7 @@ export const injectContentScript = async (tabId: number) => {
   });
 };
 
+// コンテンツスクリプトからのメッセージハンドラ
 const _handleMessagesFromContentScript = (
   method: MessageMethod,
   sendResponse: (response?: MessageResponse) => void,
@@ -127,6 +132,7 @@ const _handleMessagesFromContentScript = (
   return false;
 };
 
+// ポップアップからのメッセージハンドラ
 const _handleMessagesFromPopup = (
   method: MessageMethod,
   sendResponse: (response?: MessageResponse, error?: Error) => void,
@@ -221,6 +227,7 @@ const _handleMessagesFromPopup = (
   return true;
 };
 
+// オプションページからのメッセージハンドラ
 const _handleMessagesFromOption = (
   method: MessageMethod,
   sendResponse: (response?: MessageResponse) => void,

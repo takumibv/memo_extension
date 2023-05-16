@@ -6,13 +6,17 @@ import * as actions from "../../background/actions";
 import { cache } from "../../background/cache";
 
 /**
+ * backgroundから送信するメッセージ
+ */
+
+/**
  * メモ情報をContentScriptにセットする
  */
 export const setupPage = (tabId: number, url: string, notes: Note[], setting: Setting) => {
   cache.badge[tabId] = notes.length ?? 0;
   actions.setBadgeText(tabId, notes.length ?? 0);
 
-  sendActionToTab(tabId, SETUP_PAGE, BACKGROUND, {
+  return sendActionToTab(tabId, SETUP_PAGE, BACKGROUND, {
     url,
     notes,
     isVisible: setting?.is_visible,
@@ -24,5 +28,5 @@ export const setupPage = (tabId: number, url: string, notes: Note[], setting: Se
  * メモの表示/非表示をContentScriptにセットする
  */
 export const setupIsVisible = (tabId: number, url: string, isVisible: boolean) => {
-  sendActionToTab(tabId, SET_NOTE_VISIBLE, BACKGROUND, { url, isVisible });
+  return sendActionToTab(tabId, SET_NOTE_VISIBLE, BACKGROUND, { url, isVisible });
 };
