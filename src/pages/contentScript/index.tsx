@@ -1,6 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
+import { StyleSheetManager } from "styled-components";
+import { ThemeProvider, createTheme } from "@mui/material";
 
 export const ROOT_DOM_ID = "react-container-for-note-extension";
 
@@ -23,7 +25,38 @@ const injectDomElements = () => {
   const rootElement = document.createElement("div");
   rootElement.id = ROOT_DOM_ID;
   document.body.appendChild(rootElement);
-  ReactDOM.render(<App />, rootElement);
+  const shadowRoot = rootElement.attachShadow({ mode: "open" });
+  const shadowWrapper = document.createElement("div");
+  shadowRoot.append(shadowWrapper);
+
+  const theme = createTheme({
+    components: {
+      MuiPopover: {
+        defaultProps: {
+          container: shadowWrapper,
+        },
+      },
+      MuiPopper: {
+        defaultProps: {
+          container: shadowWrapper,
+        },
+      },
+      MuiModal: {
+        defaultProps: {
+          container: shadowWrapper,
+        },
+      },
+    },
+  });
+
+  ReactDOM.render(
+    <StyleSheetManager target={shadowRoot}>
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
+    </StyleSheetManager>,
+    shadowWrapper
+  );
 };
 
 (function () {

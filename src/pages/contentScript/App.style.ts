@@ -2,12 +2,10 @@ import styled, { createGlobalStyle } from "styled-components";
 import { baseCSS, defaultFontFamilyCSS } from "../../resetCSS";
 
 export const GlobalStyle = createGlobalStyle`
-  #react-container-for-note-extension {
-    font-size: 16px !important;
-    line-height: 1.25 !important;
+  font-size: 16px !important;
+  line-height: 1.25 !important;
 
-    ${defaultFontFamilyCSS}
-  }
+  ${defaultFontFamilyCSS}
 `;
 
 export const SContainer = styled.div`

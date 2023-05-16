@@ -1,5 +1,4 @@
-import React from "react";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { SETUP_PAGE, SET_NOTE_VISIBLE } from "../message/actions";
 import StickyNote from "../../components/StickyNote/StickyNote";
 import { Note } from "../../types/Note";
