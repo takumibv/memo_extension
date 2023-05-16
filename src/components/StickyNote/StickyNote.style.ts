@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 import { baseCSS } from "../../resetCSS";
 import Button from "../Button/Button";
-import { CopySuccessIcon } from "../Icon";
+import { CopySuccessIcon, LogoIcon } from "../Icon";
 import IconButton from "../Button/IconButton";
 
 type SNoteProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -48,8 +48,8 @@ export const SOpenButton = styled(IconButton)`
   align-items: center;
 `;
 
-export const SLogo = styled.img`
-  ${baseCSS("img")}
+export const SLogo = styled(LogoIcon)`
+  ${baseCSS("svg")}
 
   pointer-events: none;
   width: 24px;
@@ -116,9 +116,9 @@ export const SNoteTitleInput = styled.input`
   ${baseCSS("input")}
 
   ${noteTitleCSS}
-  margin: -0.25em;
-  padding: 0.25em;
-  width: calc(100% + 0.5em);
+  margin: -0.25em !important;
+  padding: 0.25em !important;
+  width: calc(100% + 0.5em) !important;
 
   &[type="text"],
   &[type="text"]:focus,
@@ -225,6 +225,14 @@ export const SIconButton = styled(IconButton)<{ isFocus?: boolean }>`
       background-color: rgba(0, 0, 0, 0.1);
       box-shadow: 0 0 0 0.25em rgba(0, 0, 0, 0.1);
     `}
+
+  & svg {
+    font-size: 16px !important;
+    width: 1.25em;
+    min-width: 1.25em;
+    height: 1.25em;
+    min-height: 1.25em;
+  }
 `;
 
 export const SCopySuccessIcon = styled(CopySuccessIcon)`

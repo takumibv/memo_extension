@@ -130,9 +130,14 @@ export const NoteEditModal: FC<Props> = ({ isOpen, note, onClose, onUpdateNote, 
     }
   }, []);
 
-  const onSaveAndClose = useCallback(() => {
-    onUpdateNote(editedNote);
-    onClose && onClose();
+  const onSaveAndClose = useCallback(async () => {
+    const isUpdated = await onUpdateNote(editedNote);
+    if (isUpdated) {
+      onClose && onClose();
+    } else {
+      const message = (description?.length ?? 0) > 2000 ? msg("save_error_word_maximum_msg") : msg("save_error_msg_2");
+      alert(`${msg("save_error_msg")}${message}`);
+    }
   }, [editedNote]);
 
   const onCloseWithoutSave = useCallback(() => {

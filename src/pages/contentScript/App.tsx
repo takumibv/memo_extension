@@ -12,7 +12,7 @@ import {
 } from "../message/sender/contentScript";
 import { MessageRequest, MessageResponse } from "../message/message";
 
-const Main: React.VFC = () => {
+const App: React.FC = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [isVisible, setIsVisible] = useState(true);
   const [defaultColor, setDefaultColor] = useState<string>();
@@ -120,4 +120,4 @@ const Main: React.VFC = () => {
   );
 };
 
-export default Main;
+export default App;

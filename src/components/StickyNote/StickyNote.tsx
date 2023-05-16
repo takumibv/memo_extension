@@ -144,7 +144,7 @@ const StickyNote: React.FC<Props> = memo(
     const displayPositionY = useMemo(() => editPositionY ?? initialPositionY(), [editPositionY]);
 
     const onEditDone = useCallback(async () => {
-      await onUpdateNote({
+      const isUpdated = await onUpdateNote({
         ...defaultNote,
         title: editTitle,
         description: editDescription,
@@ -153,8 +153,16 @@ const StickyNote: React.FC<Props> = memo(
         width: editWidth,
         height: editHeight,
       });
-      setIsEditing(false);
-      setIsEnableDrag(true);
+      if (isUpdated) {
+        setIsEditing(false);
+        setIsEnableDrag(true);
+      } else {
+        const message =
+          (editDescription?.length ?? 0) > 2000
+            ? msg("save_error_word_maximum_msg")
+            : msg("save_error_msg_2");
+        alert(`${msg("save_error_msg")}${message}`);
+      }
     }, [
       defaultNote,
       editTitle,
@@ -294,10 +302,7 @@ const StickyNote: React.FC<Props> = memo(
           <DraggableCore {...draggableCoreProps} nodeRef={noteRef}>
             <SNoteInner style={{ padding: "0.25rem" }}>
               <SOpenButton onClick={() => onClickOpenButton(true)}>
-                <SLogo
-                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACYAAAAnCAYAAABjYToLAAAACXBIWXMAAAsSAAALEgHS3X78AAAEwUlEQVRYw+2YbUhbVxjH/zc3jXnVkuZqnHUtBtfplrjCykA73Ae1bOsHsRsIESdhurHtwyaFDsbKCmO0DNQPwyl0YlooQ0hWGPh2wU5h/eDqqO0W5oYvsWxibt40ydXca7z7EL1GjTFt7kRYz5dw7rn3nB////M855wQgiDgMDa51BNWV1efNJvNjevr62cDgcBzBEHI5HK5miAIcmFhQRuNRvdbcxJAk1wimKPFxcWfeTye99VqtVqn08lMJhMsFguCwWAIgA4ADAYDKIra9i3LsrDb7dz4+LjA8/ynNE13ZKzYBlCHUqm0UhQlt1qtqKioAAAIggCfz+fPz8/X7/X94OAg+vr6eJIkR3meb6Fpei5jK2022/ns7OxbKpVK19HRAZPJJI5tQsVisaRQbrcbnZ2dHMMwAY7j6mma/kmSGGttbb3s9XovNzU1kXV1ddvG1tbW4Pf7VwVB2AXFsiwcDgdGRkaiPM9fpWn6C8mC32azdfl8vpb29nYiUaUEqBVBEFQ7vxsbG4Pdbl+TyWR3dtqWMVhzc/NFn8/X0tbWljaU2+1Gb2/v6vz8fCgajbbQNH07nbWIdOuYzWY77/V6b7e3t5PpQG3aNjQ0BLVafY1l2as0TQfTFYGoqqpKi0yn06GhoQE7YyoYDCIUCkGhUIjPJiYm0NPTA5ZlwfN80vlomib2tZL+/n5KqBuOU5icsuyCYiMBRKOcCMUwDLq7O8F4ZmGtncLpF5ILdPHLFzOv/OEICWd/Dq5cadz2PBIJIBzmRNsGBwfhdDrxyukA3nxrFsqsGOYebb2v1RAw5spgzJVhaTkrc7C794wwmZ5HWVlZUqiJiQncsF+HThPEu/V/II9ityYnAWNeHEarIaTdKx0Dx3Hh7XNif3npH6yskmAYBjdv9sLleojqs9OwlHjFdwx6GQzH4gr9J5t4OEJiZi6K8vLyeKAH3IhySjidTgz0/whLiQcfNsZtU2YROP5MHEiZRSDTlhJs2q1CUVEhtFotggE37k/OoqvrGyjkS7DW/o4CIwvDMRmMuXIczckcJn2wORWMxkL89eevuP7dLbhcD/HqmTnUVHpgzJXBoD8CueQHpxRgw6N6dNoLEGFJFBY+wseffA59DouvLv2G4iIByqzkNMOjenz97bNiX6OO4YN3/kZNpV8asJpKP2oq/ai1mcEwDDiOQyhCwFwCAHtbNjS6tW8XnVhB97WpJ1YsZdoUFkSRo12OlwiWxPDonkcrLDIKPHBpoVHHNupWLCMrU4Ipjqyj5jW/uNhQCjBHPyWqLUVLq9DUvcEAAB64tFhkFHvGV02lP2OlHgvsXIIKm8rshIqwpGRqpQ2WR3Eof3lJhEgW9EUnVlBWGj5YsEQ7dybBZtBf2Bg/cLCy0jDyDNyuJHD0U9CoY6KiBw62Mwmm51QIR0jJg/6JwBKD2zlA4e69HERYUnIbHxtMq4mJcD//kgNHPwVLaRh5FHewYIseBSZd2u12vr6VBDNuldhPPCol/koKNjyqR63NjEVvPOMaPioVM9F0cgVFJ1biZcTAoeLMkngSee/SKfwwEK9zM24Vam3mlNvYvrek/S4jkv8jVP/SvrckGQ5pewr2FOx/CybfTN/D1v4FPIYdz2gNefIAAAAASUVORK5CYII="
-                  alt=""
-                />
+                <SLogo />
               </SOpenButton>
             </SNoteInner>
           </DraggableCore>
