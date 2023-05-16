@@ -10,6 +10,7 @@ import { Note } from "../../types/Note";
 import { PageInfo } from "../../types/PageInfo";
 import { useNoteDownload } from "../../hooks/useNoteDownload";
 import Button from "../../components/Button/Button";
+import Usage from "../../components/Usage/Usage";
 
 interface Props extends RouteComponentProps<{}> {}
 
@@ -88,20 +89,22 @@ ${note.description ?? ""}`;
                     </SSettingItemContent>
                   </SSettingItem>
                   <SSettingItem>
-                    <SSettingItemTitle>書き出し</SSettingItemTitle>
+                    <SSettingItemTitle>{msg("export_msg")}</SSettingItemTitle>
                     <SSettingItemContent>
-                      <Button onClick={handleDownloadCSV}>CSVダウンロード</Button>
+                      <Button onClick={handleDownloadCSV}>{msg("csv_download_msg")}</Button>
                       <Button onClick={handleDownloadText} style={{ marginLeft: "0.5rem" }}>
-                        txtダウンロード
+                        {msg("text_download_msg")}
                       </Button>
                     </SSettingItemContent>
                   </SSettingItem>
-                  {/* <SSettingItem>
-                    <SSettingItemTitle>{msg("how_to_use_page_link_msg")}</SSettingItemTitle>
-                    <SSettingItemContent>使い方</SSettingItemContent>
-                  </SSettingItem> */}
                   <SSettingItem>
-                    <SSettingItemTitle>製作者</SSettingItemTitle>
+                    <SSettingItemTitle>{msg("how_to_use_page_link_msg")}</SSettingItemTitle>
+                    <SSettingItemContent>
+                      <Usage />
+                    </SSettingItemContent>
+                  </SSettingItem>
+                  <SSettingItem>
+                    <SSettingItemTitle>{msg("maker_msg")}</SSettingItemTitle>
                     <SSettingItemContent>
                       <a href="https://twitter.com/takumi_bv" target="_blank">
                         @takumi_bv

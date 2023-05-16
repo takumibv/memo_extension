@@ -16,9 +16,10 @@ export const ROOT_DOM_ID = "react-container-for-note-extension";
  * Service Worker
  *
  * 1. ローカルストレージのデータを管理する
- *   1-1. ContentScriptからのアクションを受け取り、データを更新する
- *   1-2. ContentScriptへ、データを送信する
- *   1-3. Popupへ、データを送信する
+ *   1-1. ContentScript,Option,Popupからのアクションを受け取り、データを更新する
+ *   1-2. ContentScriptへデータを送信する
+ *
+ * Service Workerでは async/await が使えないので、Promiseを使う
  */
 
 // install or Updateして初めて開いた時に呼ばれる。
@@ -29,9 +30,18 @@ chrome.runtime.onInstalled.addListener((details) => {
     actions.setDefaultColor("#FFF7CC");
   }
 
+  if (previousVersion === "x.x.x") {
+    chrome.tabs.create({
+      url: `${chrome.runtime.getURL("setting.html")}#init`,
+    });
+  }
+
   console.log("previousVersion", previousVersion);
 });
 
+/**
+ * 右クリックメニュー
+ */
 chrome.contextMenus.create({
   id: "note-extension-context-menu-create",
   title: msg("add_note_msg", true),
@@ -57,7 +67,9 @@ chrome.contextMenus.onClicked.addListener((info) => {
                 if (!tab?.id) return;
 
                 injectContentScript(tab.id).then(() =>
-                  setupPage(tab.id!, pageUrl, allNotes, setting)
+                  setupPage(tab.id!, pageUrl, allNotes, setting).catch((e) => {
+                    console.log("error---", e);
+                  })
                 );
               });
             });
@@ -99,9 +111,13 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
           actions.getSetting().then((setting) => {
             currentUrl = "";
 
-            if (notes.length === 0) return setupPage(tabId, url, [], setting);
+            if (notes.length === 0) return actions.setBadgeText(tabId, 0);
 
-            injectContentScript(tabId).then(() => setupPage(tabId, url, notes, setting));
+            injectContentScript(tabId).then(() =>
+              setupPage(tabId, url, notes, setting).catch((e) => {
+                console.log("error--", e);
+              })
+            );
           });
         })
         .catch((e) => {
@@ -113,7 +129,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 /**
  * タブが切り替わるたびに呼ばれる
- * 
+ *
  * 複雑な処理や重いロジックはChromeのパフォーマンスに影響を与える可能性がある
  * */
 chrome.tabs.onActivated.addListener((activeInfo: chrome.tabs.TabActiveInfo) => {

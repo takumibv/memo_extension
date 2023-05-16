@@ -1,10 +1,10 @@
 {
   "appName": {
-    "message": "Memo Anywhere",
+    "message": "Note Everywhere",
     "description": "The name of the application"
   },
   "appShortName": {
-    "message": "Memo Anywhere",
+    "message": "Note Everywhere",
     "description": "The short_name (maximum of 12 characters recommended) is a short version of the app's name."
   },
   "appDescription": {
@@ -12,10 +12,11 @@
     "description": "The description of the application"
   },
   "browserActionTitle": {
-    "message": "Memo Anywhere",
+    "message": "Note Everywhere",
     "description": "The title of the browser action button"
   },
-  "app_name": { "message": "Memo Anywhere" },
+  "app_name": { "message": "Note Everywhere" },
+  "welcome_msg": { "message": "Welcome to Note Everywhere!" },
   "no_note_msg": { "message": "There is no note." },
   "add_note_msg": { "message": "add note" },
   "confirm_remove_note_msg": { "message": "Are you sure you want to delete?" },
@@ -38,17 +39,16 @@
   "show_all_note_msg": { "message": "All Notes" },
   "search_query_msg": { "message": "search" },
   "this_page_note_list_msg": { "message": "Memo list of this page" },
-  "setting_about_this_app": { "message": "About Memo Anywhere" },
+  "setting_about_this_app": { "message": "About Note Everywhere" },
   "setting_about_this_app_created_by": { "message": "Created by" },
-  "usage01": { "message": "You can use on the page where the \"x\" mark is not appeared." },
+  "usage01": { "message": "Fixing Pop-ups is recommended." },
   "usage02": {
-    "message": "Click on the popup in the upper right and click the \"+\" button, and you can create a note."
+    "message": "Open the pop-up and click the \"+\" button to create a Note."
   },
-  "usage02_2": { "message": "(You can also create by right click on the screen.)" },
+  "usage02_2": { "message": "You can also create a Note from the right-click menu on the screen." },
   "usage03": { "message": "Double click to edit title and details." },
   "usage04": { "message": "Move by mouse drag. You can also resize." },
   "usage05": { "message": "From the popup, you can view the notes created on the open page." },
-  "usage05_2": { "message": "You can move to the location of the note with \">\" button." },
   "usage06": { "message": "Memos page" },
   "usage06_2": { "message": " shows notes you made up to now." },
   "usage07": { "message": "The note has various functions." },
@@ -59,12 +59,17 @@
   "save_msg": { "message": "Save" },
   "cancel_msg": { "message": "Cancel" },
   "close_msg": { "message": "Close" },
+  "save_error_msg": { "message": "Failed to save." },
+  "save_error_msg_2": { "message": "Please try again." },
+  "save_error_word_maximum_msg": {
+    "message": "Please reduce the number of characters and try again."
+  },
   "discard_close_msg": { "message": "Discard changes and Close" },
   "updated_at_sort_option": { "message": "Update" },
   "created_at_sort_option": { "message": "Created" },
   "title_sort_option": { "message": "Title" },
   "go_to_this_page": { "message": "Go to this page" },
-  "input_description_placeholder": { "message": "Enter a note" },
+  "input_description_placeholder": { "message": "Enter a Note" },
   "copied_msg": { "message": "Copied" },
   "switch_pin_msg": { "message": "Switch Pin" },
   "minimize_msg": { "message": "Minimize" },
@@ -83,11 +88,21 @@
   "size_width_msg": { "message": "width" },
   "pinned_msg": { "message": "Pin" },
   "remove_pinned_msg": { "message": "remove pin" },
-  "detail_msg": { "message": "details" },
+  "detail_msg": { "message": "Details" },
   "edit_msg": { "message": "Edit" },
   "do_copy_msg": { "message": "Copy to Clipboard" },
   "copy_msg": { "message": "Copy" },
-  "delete_msg": { "message": "delete" },
+  "delete_msg": { "message": "Delete" },
+  "export_msg": { "message": "Export" },
+  "csv_download_msg": { "message": "CSV Download" },
+  "text_download_msg": { "message": "txt Download" },
+  "maker_msg": { "message": "Developer" },
+  "pin_explain_msg": { "message": "Pinning a Note will follow scrolling." },
+  "edit_explain_msg": { "message": "Switch a Note to edit mode. (or double-click to edit)." },
+  "copy_explain_msg": { "message": "Copies a Note text to the clipboard." },
+  "color_explain_msg": { "message": "Edits the color of the Note." },
+  "delete_explain_msg": { "message": "Deletes a Note." },
+  "open_explain_msg": { "message": "Minimize a Note." },
   "new_note_title_msg": { "message": "New Note" },
   "default_color_msg": { "message": "Default Color" },
   "new_note_description_msg": { "message": "Double-click to edit" }

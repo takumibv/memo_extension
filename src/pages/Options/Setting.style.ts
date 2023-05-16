@@ -8,7 +8,7 @@ export const SSettingItemTitle = styled.div`
   margin-bottom: 0.5em;
   font-size: 1rem;
   font-weight: bold;
-  color: #888;
+  color: #000;
 `;
 
 export const SSettingItemContent = styled.div``;
