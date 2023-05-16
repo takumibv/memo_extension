@@ -4,6 +4,7 @@ import { BACKGROUND, SETUP_PAGE, SET_NOTE_VISIBLE } from "../actions";
 import { sendActionToTab } from "./base";
 import * as actions from "../../background/actions";
 import { cache } from "../../background/cache";
+import { MessageResponseData } from "../message";
 
 /**
  * backgroundから送信するメッセージ
@@ -12,7 +13,12 @@ import { cache } from "../../background/cache";
 /**
  * メモ情報をContentScriptにセットする
  */
-export const setupPage = (tabId: number, url: string, notes: Note[], setting: Setting) => {
+export const setupPage = (
+  tabId: number,
+  url: string,
+  notes: Note[],
+  setting: Setting
+): Promise<MessageResponseData> => {
   cache.badge[tabId] = notes.length ?? 0;
   actions.setBadgeText(tabId, notes.length ?? 0);
 
@@ -27,6 +33,10 @@ export const setupPage = (tabId: number, url: string, notes: Note[], setting: Se
 /**
  * メモの表示/非表示をContentScriptにセットする
  */
-export const setupIsVisible = (tabId: number, url: string, isVisible: boolean) => {
+export const setupIsVisible = (
+  tabId: number,
+  url: string,
+  isVisible: boolean
+): Promise<MessageResponseData> => {
   return sendActionToTab(tabId, SET_NOTE_VISIBLE, BACKGROUND, { url, isVisible });
 };

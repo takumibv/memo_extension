@@ -12,6 +12,7 @@ type SNoteProps = React.HTMLAttributes<HTMLDivElement> & {
 export const SNote = styled.div<SNoteProps>`
   ${baseCSS("div")}
 
+  font-size: 16px !important;
   pointer-events: initial;
   background-color: #fff;
   border-radius: 0.25em;
@@ -252,7 +253,7 @@ export const SButton = styled(Button)`
 export const SHeaderFixedPinArea = styled.div`
   ${baseCSS("div")}
 
-  margin-left: 0.25rem;
+  margin-left: 0.25em;
   width: 1.25em;
   height: 1.25em;
 `;

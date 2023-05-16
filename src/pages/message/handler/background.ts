@@ -81,7 +81,7 @@ const _handleMessagesFromContentScript = (
             tabs.forEach((tab) => {
               if (tab.id) actions.setBadgeText(tab.id, notes.length ?? 0);
             });
-          })
+          });
           return sendResponse({ data: { notes } });
         })
         .catch((e) => {
@@ -106,7 +106,7 @@ const _handleMessagesFromContentScript = (
             tabs.forEach((tab) => {
               if (tab.id) actions.setBadgeText(tab.id, notes.length ?? 0);
             });
-          })
+          });
           return sendResponse({ data: { notes } });
         })
         .catch((e) => {
@@ -156,7 +156,9 @@ const _handleMessagesFromPopup = (
   const sendResponseAndSetNotes = (notes: Note[]) => {
     actions.getSetting().then((setting) => {
       sendResponse({ data: { notes } });
-      injectContentScript(tabId).then(() => setupPage(tabId, tabUrl, notes, setting));
+      injectContentScript(tabId).then(() =>
+        setupPage(tabId, tabUrl, notes, setting).catch((e) => {/* error */})
+      );
     });
   };
 

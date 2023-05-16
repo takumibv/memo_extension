@@ -67,9 +67,7 @@ chrome.contextMenus.onClicked.addListener((info) => {
                 if (!tab?.id) return;
 
                 injectContentScript(tab.id).then(() =>
-                  setupPage(tab.id!, pageUrl, allNotes, setting).catch((e) => {
-                    console.log("error---", e);
-                  })
+                  setupPage(tab.id!, pageUrl, allNotes, setting).catch(() => {/* error */})
                 );
               });
             });
@@ -114,9 +112,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
             if (notes.length === 0) return actions.setBadgeText(tabId, 0);
 
             injectContentScript(tabId).then(() =>
-              setupPage(tabId, url, notes, setting).catch((e) => {
-                console.log("error--", e);
-              })
+              setupPage(tabId, url, notes, setting).catch((e) => {/* error */})
             );
           });
         })
