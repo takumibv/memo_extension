@@ -57,6 +57,13 @@ const StickyNoteActions: React.FC<Props> = memo(
 
     return (
       <>
+        <Tooltip title={msg("switch_pin_msg")} enterDelay={300}>
+          <SIconButtonWrap>
+            <SIconButton onClick={onClickFixedButton} isFocus={!is_fixed}>
+              <PinIcon fill={is_fixed ? "rgba(0, 0, 0, 0.3)" : "rgba(0, 0, 0, 1)"} />
+            </SIconButton>
+          </SIconButtonWrap>
+        </Tooltip>
         <Tooltip title={msg("edit_msg")} enterDelay={300}>
           <SIconButtonWrap>
             <SIconButton onClick={() => setIsEditing(true)}>
@@ -73,13 +80,6 @@ const StickyNoteActions: React.FC<Props> = memo(
                 <CopyIcon fill="rgba(0, 0, 0, 0.4)" />
               </SIconButton>
             )}
-          </SIconButtonWrap>
-        </Tooltip>
-        <Tooltip title={msg("switch_pin_msg")} enterDelay={300}>
-          <SIconButtonWrap>
-            <SIconButton onClick={onClickFixedButton} isFocus={!is_fixed}>
-              <PinIcon fill={is_fixed ? "rgba(0, 0, 0, 0.3)" : "rgba(0, 0, 0, 1)"} />
-            </SIconButton>
           </SIconButtonWrap>
         </Tooltip>
         <Tooltip title={msg("color_msg")} enterDelay={300}>

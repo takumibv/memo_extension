@@ -134,3 +134,13 @@ export const getSetting = async (): Promise<Setting> => {
 
   return setting;
 };
+
+export const setBadgeText = (tabId: number, noteLength?: number|string) => {
+  chrome.action.setBadgeText({ tabId, text: `${noteLength ?? ""}` });
+  chrome.action.setBadgeBackgroundColor({ tabId, color: "#000" });
+}
+
+export const setBadgeUnavailable = (tabId: number) => {
+  chrome.action.setBadgeText({ tabId, text: "x" });
+  chrome.action.setBadgeBackgroundColor({ tabId, color: "red" });
+}

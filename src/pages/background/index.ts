@@ -8,6 +8,7 @@ import * as actions from "./actions";
 import { createNote } from "../../storages/noteStorage";
 import { getOrCreatePageInfoByUrl } from "../../storages/pageInfoStorage";
 import { isSystemLink, msg } from "../../utils";
+import { cache } from "./cache";
 
 export const ROOT_DOM_ID = "react-container-for-note-extension";
 
@@ -50,6 +51,8 @@ chrome.contextMenus.onClicked.addListener((info) => {
             if (!pageInfo.id) return;
 
             createNote(pageInfo.id).then(({ allNotes }) => {
+              cache.badge[tab.id!] = allNotes.length;
+
               actions.getSetting().then((setting) => {
                 if (!tab?.id) return;
 
@@ -106,6 +109,26 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         });
     }
   });
+});
+
+/**
+ * タブが切り替わるたびに呼ばれる
+ * 
+ * 複雑な処理や重いロジックはChromeのパフォーマンスに影響を与える可能性がある
+ * */
+chrome.tabs.onActivated.addListener((activeInfo: chrome.tabs.TabActiveInfo) => {
+  if (cache.badge[activeInfo.tabId] !== undefined) {
+    actions.setBadgeText(activeInfo.tabId, cache.badge[activeInfo.tabId]);
+  } else {
+    actions.setBadgeText(activeInfo.tabId, "");
+  }
+});
+
+/**
+ * タブが閉じられた時に呼ばれる
+ */
+chrome.tabs.onRemoved.addListener((tabId) => {
+  delete cache.badge[tabId];
 });
 
 chrome.runtime.onMessage.addListener(handleMessages);

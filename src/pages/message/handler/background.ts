@@ -71,7 +71,14 @@ const _handleMessagesFromContentScript = (
     case CREATE_NOTE:
       actions
         .createNote(url)
-        .then((notes) => sendResponse({ data: { notes } }))
+        .then((notes) => {
+          chrome.tabs.query({ url, currentWindow: true }).then((tabs) => {
+            tabs.forEach((tab) => {
+              if (tab.id) actions.setBadgeText(tab.id, notes.length ?? 0);
+            });
+          })
+          return sendResponse({ data: { notes } });
+        })
         .catch((e) => {
           console.log("error CREATE_NOTE:", e);
           sendResponse({ error: e });
@@ -89,7 +96,14 @@ const _handleMessagesFromContentScript = (
     case DELETE_NOTE:
       actions
         .deleteNote(note!)
-        .then((notes) => sendResponse({ data: { notes } }))
+        .then((notes) => {
+          chrome.tabs.query({ url, currentWindow: true }).then((tabs) => {
+            tabs.forEach((tab) => {
+              if (tab.id) actions.setBadgeText(tab.id, notes.length ?? 0);
+            });
+          })
+          return sendResponse({ data: { notes } });
+        })
         .catch((e) => {
           console.log("error DELETE_NOTE:", e);
           sendResponse({ error: e });
@@ -159,7 +173,10 @@ const _handleMessagesFromPopup = (
       case CREATE_NOTE:
         actions
           .createNote(tabUrl)
-          .then(sendResponseAndSetNotes)
+          .then((notes) => {
+            if (tabId) actions.setBadgeText(tabId, notes.length ?? 0);
+            sendResponseAndSetNotes(notes);
+          })
           .catch((e) => console.log("error CREATE_NOTE:", e));
         return true;
       case SCROLL_TO_TARGET_NOTE:
@@ -176,7 +193,10 @@ const _handleMessagesFromPopup = (
       case DELETE_NOTE:
         actions
           .deleteNote(note!)
-          .then(sendResponseAndSetNotes)
+          .then((notes) => {
+            if (tabId) actions.setBadgeText(tabId, notes.length ?? 0);
+            sendResponseAndSetNotes(notes);
+          })
           .catch((e) => {
             console.log("error DELETE_NOTE:", e);
           });
@@ -206,7 +226,7 @@ const _handleMessagesFromOption = (
   sendResponse: (response?: MessageResponse) => void,
   payload: MessageRequestPayload
 ): boolean => {
-  const { note, pageInfo } = payload;
+  const { tab, note, pageInfo } = payload;
 
   switch (method) {
     case GET_ALL_NOTES:
@@ -238,9 +258,10 @@ const _handleMessagesFromOption = (
       actions
         .deleteNote(note!)
         .then(() => {
-          actions
-            .fetchAllNotesAndPageInfo()
-            .then(({ notes, pageInfos }) => sendResponse({ data: { notes, pageInfos } }));
+          actions.fetchAllNotesAndPageInfo().then(({ notes, pageInfos }) => {
+            if (tab?.id) actions.setBadgeText(tab.id, notes.length ?? 0);
+            sendResponse({ data: { notes, pageInfos } });
+          });
         })
         .catch((e) => console.log("error DELETE_NOTE:", e));
       return true;
