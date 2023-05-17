@@ -363,7 +363,7 @@ const Options: React.FC<Props> = () => {
 
                             return (
                               <CellMeasurer
-                                key={key}
+                                key={note.id}
                                 cache={cache}
                                 parent={parent}
                                 columnIndex={0}

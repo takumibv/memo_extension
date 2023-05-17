@@ -49,12 +49,14 @@ export const SListItem = styled.li`
 `;
 
 export const SListItemLeft = styled.div<{ disabled?: boolean }>`
-  padding: 1em;
+  padding: 1em 0.25rem 1em 1em;
   flex: 1;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
   cursor: pointer;
+  display: flex;
+  align-items: center;
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.05);
@@ -69,6 +71,14 @@ export const SListItemLeft = styled.div<{ disabled?: boolean }>`
         background-color: transparent;
       }
     `}
+
+    & > span {
+      flex: 1;
+    }
+
+    & > svg {
+      width: 1rem;
+    }
 `;
 export const SListItemRight = styled.div`
   padding: 1em;

@@ -5,6 +5,7 @@ import {
   PlusIcon,
   TrashIcon,
   ArrowPathIcon,
+  ChevronRightIcon,
 } from "@heroicons/react/24/solid";
 import FabIconButton from "../../components/Button/FabIconButton";
 import Tooltip from "@mui/material/Tooltip";
@@ -168,7 +169,8 @@ export const Popup = () => {
                     disabled={note.is_fixed}
                     onClick={() => !note.is_fixed && onClickNote(note)}
                   >
-                    {note.title || note.description}
+                    <span>{note.title || note.description || msg("new_note_title_msg")}</span>
+                    {!note.is_fixed && <ChevronRightIcon fill="rgba(0, 0, 0, 0.5)" />}
                   </SListItemLeft>
                   <SListItemRight>
                     <Tooltip title={msg("reset_position_msg")} placement="top">
