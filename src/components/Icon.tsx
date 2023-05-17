@@ -57,7 +57,7 @@ export const LogoIcon: FC<React.SVGProps<SVGSVGElement>> = (props) => (
           transform="translate(-1675.798 -969.307)"
           fill="none"
           stroke="#707070"
-          stroke-width="4"
+          strokeWidth="4"
         />
       </clipPath>
     </defs>
@@ -70,7 +70,7 @@ export const LogoIcon: FC<React.SVGProps<SVGSVGElement>> = (props) => (
         transform="translate(1824 1097)"
         fill="#707070"
       />
-      <g id="m" transform="translate(1853.762 1069)" clip-path="url(#clip-path)">
+      <g id="m" transform="translate(1853.762 1069)" clipPath="url(#clip-path)">
         <g id="g" transform="translate(-6.419 -12.724)">
           <path
             id="p-3"
