@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_appName__",
+  "short_name": "__MSG_appShortName__",
+  "description": "__MSG_appDescription__",
+  "version": "0.4.0",
+  "default_locale": "en",
+  "icons": {
+    "16": "images/icon_16.png",
+    "128": "images/icon_128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "options_page": "memos.html",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": ["tabs", "contextMenus", "storage", "scripting", "webNavigation"],
+  "host_permissions": ["*://*/*"]
+}

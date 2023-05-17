@@ -1,0 +1,115 @@
+{
+  "appName": {
+    "message": "どこでもメモ",
+    "description": "The name of the application"
+  },
+  "appShortName": {
+    "message": "どこでもメモ",
+    "description": "The short_name (maximum of 12 characters recommended) is a short version of the app's name."
+  },
+  "appDescription": {
+    "message": "直感的なメモのアプリです。",
+    "description": "The description of the application"
+  },
+  "browserActionTitle": {
+    "message": "どこでもメモ",
+    "description": "The title of the browser action button"
+  },
+
+  "app_name": { "message": "どこでもメモ" },
+  "welcome_msg": { "message": "ようこそ、どこでもメモへ！" },
+  "no_note_msg": { "message": "メモがありません。" },
+  "add_note_msg": { "message": "メモを追加する" },
+  "confirm_remove_note_msg": { "message": "削除してよろしいですか？" },
+  "confirm_remove_next_note_msg": { "message": "を削除してよろしいですか？" },
+
+  "make_note_button_msg": { "message": "メモを作成する" },
+  "setting_button_msg": { "message": "設定" },
+  "menu_button_msg": { "message": "メモ一覧ページ" },
+  "cannot_show_note_msg": { "message": "このページではメモを表示できません。" },
+  "no_note_created_msg": {
+    "message": "メモを作成する。"
+  },
+  "no_note_created_option_msg": {
+    "message": "もしくは、右クリック「メモを追加する」から作成できます。"
+  },
+  "note_unavailable_msg": {
+    "message": "この画面ではメモの作成はできません"
+  },
+  "how_to_use_page_link_msg": { "message": "使い方" },
+
+  "note_header_msg": { "message": "メモ一覧" },
+  "settings_header_msg": { "message": "設定" },
+  "how_to_use_header_msg": { "message": "使い方" },
+  "show_all_note_msg": { "message": "すべてのメモ" },
+  "search_query_msg": { "message": "検索" },
+  "this_page_note_list_msg": { "message": "このページのメモ一覧" },
+  "setting_about_this_app": { "message": "どこでもメモについて" },
+  "setting_about_this_app_created_by": { "message": "制作者" },
+  "usage01": { "message": "ポップアップを固定することをおすすめします。" },
+  "usage02": {
+    "message": "ポップアップを開き、「+」ボタンをクリックしてメモを作成できます。"
+  },
+  "usage02_2": { "message": "もしくは画面上で右クリックのメニューから作成できます。" },
+  "usage03": { "message": "ダブルクリックでタイトルと詳細を編集できます。" },
+  "usage04": { "message": "マウスドラッグで移動可能です。リサイズをすることもできます。" },
+  "usage05": {
+    "message": "ポップアップから、今開いているページで作成したメモを閲覧することができます。"
+  },
+  "usage06": { "message": "メモ一覧ページ" },
+  "usage06_2": { "message": "で今まで作ったメモを一覧できます。" },
+  "usage07": { "message": "メモには、様々な機能があります。" },
+
+  "note": { "message": "メモ" },
+  "updated_at_msg": { "message": "更新" },
+  "created_at_msg": { "message": "作成" },
+  "save_msg": { "message": "保存" },
+  "cancel_msg": { "message": "キャンセル" },
+  "close_msg": { "message": "閉じる" },
+  "save_error_msg": { "message": "保存に失敗しました。" },
+  "save_error_msg_2": { "message": "再度お試しください。" },
+  "save_error_word_maximum_msg": { "message": "文字数を減らして、再度お試しください。" },
+  "discard_close_msg": { "message": "変更を破棄して閉じる" },
+  "updated_at_sort_option": { "message": "更新日" },
+  "created_at_sort_option": { "message": "作成日" },
+  "title_sort_option": { "message": "タイトル" },
+  "go_to_this_page": { "message": "このページに移動する" },
+  "input_description_placeholder": { "message": "メモを入力" },
+  "do_copy_msg": { "message": "クリップボードにコピーする" },
+  "copied_msg": { "message": "コピーしました" },
+  "pin_msg": { "message": "ピン" },
+  "pin_select_option_unfixed_msg": { "message": "あり" },
+  "pin_select_option_fixed_msg": { "message": "なし" },
+  "color_msg": { "message": "カラー" },
+  "open_msg": { "message": "縮小" },
+  "open_select_option_yes_msg": { "message": "縮小する" },
+  "open_select_option_no_msg": { "message": "縮小しない" },
+  "size_msg": { "message": "サイズ" },
+  "size_height_msg": { "message": "高さ" },
+  "size_width_msg": { "message": "幅" },
+  "position_msg": { "message": "位置" },
+  "reset_position_msg": { "message": "位置をリセット" },
+  "switch_pin_msg": { "message": "ピンを切り替える" },
+  "minimize_msg": { "message": "最小化する" },
+  "maximize_msg": { "message": "最大化" },
+  "pinned_msg": { "message": "画面に固定する" },
+  "remove_pinned_msg": { "message": "ページに固定する" },
+  "detail_msg": { "message": "詳細" },
+  "edit_msg": { "message": "編集" },
+  "copy_msg": { "message": "コピー" },
+  "delete_msg": { "message": "削除する" },
+  "export_msg": { "message": "書き出し" },
+  "csv_download_msg": { "message": "CSVダウンロード" },
+  "text_download_msg": { "message": "txtダウンロード" },
+  "please_reload_msg": { "message": "ページをリロードしてください。" },
+  "maker_msg": { "message": "製作者" },
+  "pin_explain_msg": { "message": "メモをピン留めすると、スクロールに追従します。" },
+  "edit_explain_msg": { "message": "メモを編集モードに切り替えます。（もしくはダブルクリックで編集できます）" },
+  "copy_explain_msg": { "message": "メモのテキストをクリップボードにコピーします。" },
+  "color_explain_msg": { "message": "メモのカラーを編集します。" },
+  "delete_explain_msg": { "message": "メモを削除します。" },
+  "open_explain_msg": { "message": "メモを最小化します。" },
+  "default_color_msg": { "message": "メモの初期カラー" },
+  "new_note_title_msg": { "message": "新しいメモ" },
+  "new_note_description_msg": { "message": "ダブルクリックで編集" }
+}
