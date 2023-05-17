@@ -12,7 +12,6 @@ export function sendAction(
   senderType: SenderType,
   payload?: MessageRequestPayload
 ) {
-  console.log("sendMessage ======", method, senderType, payload);
 
   return new Promise<MessageResponseData>((resolve, reject) => {
     chrome.runtime.sendMessage<MessageRequest, MessageResponse>(
@@ -23,7 +22,6 @@ export function sendAction(
       },
       (response) => {
         const { data, error } = response ?? {};
-        console.log("response ======", data, chrome.runtime.lastError);
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError.message);
         } else if (error) {
@@ -42,7 +40,6 @@ export function sendActionToTab(
   senderType: SenderType,
   payload?: MessageRequestPayload
 ) {
-  console.log("chrome.tabs sendMessage ======", method, senderType, payload);
 
   return new Promise<MessageResponseData>((resolve, reject) => {
     chrome.tabs.sendMessage<MessageRequest, MessageResponse>(
@@ -54,7 +51,6 @@ export function sendActionToTab(
       },
       (response) => {
         const { data, error } = response ?? {};
-        console.log("chrome.tabs response ======", data, chrome.runtime.lastError);
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError.message);
         } else if (error) {

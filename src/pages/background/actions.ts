@@ -27,8 +27,6 @@ import { Setting } from "../../types/Setting";
 export const fetchAllNotes = async (): Promise<Note[]> => {
   const notes = await getAllNotes();
 
-  console.log("GET_ALL_NOTES:", notes);
-
   return notes;
 };
 
@@ -43,8 +41,6 @@ export const fetchAllNotesAndPageInfo = async (): Promise<{
     return notes.some((note) => note.page_info_id === pageInfo.id);
   });
 
-  console.log("GET_ALL_NOTES_AND_PAGE_INFO:", notes, filteredPageInfos);
-
   return { notes, pageInfos: filteredPageInfos };
 };
 
@@ -54,8 +50,6 @@ export const fetchAllNotesByPageUrl = async (page_url: string): Promise<Note[]> 
 
   const notes = await getAllNotesByPageId(pageInfo.id);
 
-  console.log("GET_ALL_NOTES:", notes);
-
   return notes;
 };
 
@@ -63,8 +57,6 @@ export const createNote = async (page_url: string): Promise<Note[]> => {
   const pageInfo = await getOrCreatePageInfoByUrl(page_url);
   const { note, allNotes } = await _createNote(pageInfo.id!);
   setUpdatedAtPageInfo(pageInfo.id!);
-
-  console.log("CREATE_NOTE:", note);
 
   return allNotes;
 };
@@ -74,7 +66,6 @@ export const updateNote = async (note: Note): Promise<Note[]> => {
 
   const { allNotes } = await _updateNote(note.page_info_id, note);
   setUpdatedAtPageInfo(note.page_info_id);
-  console.log("UPDATE_NOTE:", allNotes);
 
   return allNotes;
 };
@@ -83,15 +74,12 @@ export const deleteNote = async (note: Note): Promise<Note[]> => {
   if (!note.page_info_id) return [];
 
   const { allNotes } = await _deleteNote(note.page_info_id, note.id);
-  console.log("DELETE_NOTE:", allNotes);
 
   return allNotes;
 };
 
 export const fetchAllPageInfo = async (): Promise<PageInfo[]> => {
   const pageInfos = await getAllPageInfos();
-
-  console.log("GET_ALL_PAGEINFOS:", pageInfos);
 
   return pageInfos;
 };
@@ -100,7 +88,6 @@ export const updatePageInfo = async (page_info: PageInfo): Promise<PageInfo[]> =
   if (!page_info.id) return [];
 
   const { allPageInfos } = await _updatePageInfo(page_info);
-  console.log("UPDATE_PAGE_INFO`:", allPageInfos);
 
   return allPageInfos;
 };
@@ -142,12 +129,12 @@ export const getSetting = async (): Promise<Setting> => {
   return setting;
 };
 
-export const setBadgeText = (tabId: number, noteLength?: number|string) => {
+export const setBadgeText = (tabId: number, noteLength?: number | string) => {
   chrome.action.setBadgeText({ tabId, text: `${noteLength ?? ""}` });
   chrome.action.setBadgeBackgroundColor({ tabId, color: "#000" });
-}
+};
 
 export const setBadgeUnavailable = (tabId: number) => {
   chrome.action.setBadgeText({ tabId, text: "x" });
   chrome.action.setBadgeBackgroundColor({ tabId, color: "red" });
-}
+};

@@ -175,13 +175,11 @@ const Options: React.FC<Props> = () => {
     const [tab] = await chrome.tabs.query({ url, currentWindow: true });
     if (tab?.id) {
       try {
-        console.log("chrome.tabs.query === ", tab);
         await chrome.tabs.update(tab.id, { active: true });
         // メモが古い場合があるため再読み込みさせる
         await chrome.tabs.reload(tab.id);
       } catch (error) {
         // TODO
-        console.log("error: ", error);
       }
     } else {
       await chrome.tabs.create({ url });

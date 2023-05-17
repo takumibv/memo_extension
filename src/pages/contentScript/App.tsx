@@ -21,7 +21,6 @@ const App: React.FC = () => {
     sender: chrome.runtime.MessageSender,
     sendResponse: (response?: MessageResponse) => void
   ): boolean => {
-    console.log("=== onMessage ===", request, sender);
     const { method, payload } = request;
     const { notes, isVisible, defaultColor } = payload ?? {};
 
