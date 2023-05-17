@@ -1,4 +1,4 @@
-import { Backdrop } from "@mui/material";
+import Backdrop from "@mui/material/Backdrop";
 import TextareaAutosize from "react-textarea-autosize";
 import styled, { css } from "styled-components";
 import Button from "../Button/Button";
@@ -88,6 +88,7 @@ export const SModalDescriptionText = styled(TextareaAutosize)`
   word-break: break-all;
   white-space: pre-line;
   resize: none;
+  overflow-y: hidden;
 
   &::placeholder {
     color: #aaa;

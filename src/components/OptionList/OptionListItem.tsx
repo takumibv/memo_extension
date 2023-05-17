@@ -1,10 +1,11 @@
 import React, { memo, useEffect, useState } from "react";
+import Popover from "@mui/material/Popover";
+import Tooltip from "@mui/material/Tooltip";
+import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { Note } from "../../types/Note";
 import { formatDate } from "../../utils";
-import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { CopyIcon, PalletIcon } from "../Icon";
 import { PageInfo } from "../../types/PageInfo";
-import { Popover, Tooltip } from "@mui/material";
 import { useClipboard } from "../../hooks/useClipboard";
 import { NoteEditModal } from "../NoteEditModal/NoteEditModal";
 import {

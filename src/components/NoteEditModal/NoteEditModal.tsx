@@ -1,4 +1,5 @@
-import { Modal, Popover, styled } from "@mui/material";
+import Modal from "@mui/material/Modal";
+import Popover from "@mui/material/Popover";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { FC } from "react";
 import { MIN_NOTE_HEIGHT, MIN_NOTE_WIDTH, useNoteEdit } from "../../hooks/useNote";

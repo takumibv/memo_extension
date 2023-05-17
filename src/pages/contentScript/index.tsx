@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import { StyleSheetManager } from "styled-components";
-import { ThemeProvider, createTheme } from "@mui/material";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 export const ROOT_DOM_ID = "react-container-for-note-extension";
 

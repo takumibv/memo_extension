@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Note } from "../../types/Note";
-import { PinIcon } from "../../components/Icon";
 import {
-  EyeIcon,
-  EyeSlashIcon,
   Bars3Icon,
   PlusIcon,
   TrashIcon,
   ArrowPathIcon,
 } from "@heroicons/react/24/solid";
 import FabIconButton from "../../components/Button/FabIconButton";
-import { Tooltip } from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
 import {
   GlobalStyle,
   SHeader,
@@ -29,7 +26,7 @@ import {
   SIconButton,
 } from "./Popup.style";
 import * as sender from "../message/sender/popup";
-import {msg} from "../../utils";
+import { msg } from "../../utils";
 
 export const Popup = () => {
   const [isEnabled, setIsEnabled] = useState(false);
