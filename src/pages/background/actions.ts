@@ -16,6 +16,7 @@ import {
 import {
   getAllPageInfos,
   updatePageInfo as _updatePageInfo,
+  setUpdatedAtPageInfo,
   getOrCreatePageInfoByUrl,
   getPageInfoByUrl,
 } from "../../storages/pageInfoStorage";
@@ -38,9 +39,13 @@ export const fetchAllNotesAndPageInfo = async (): Promise<{
   const notes = await getAllNotes();
   const pageInfos = await getAllPageInfos();
 
-  console.log("GET_ALL_NOTES_AND_PAGE_INFO:", notes, pageInfos);
+  const filteredPageInfos = pageInfos.filter((pageInfo) => {
+    return notes.some((note) => note.page_info_id === pageInfo.id);
+  });
 
-  return { notes, pageInfos };
+  console.log("GET_ALL_NOTES_AND_PAGE_INFO:", notes, filteredPageInfos);
+
+  return { notes, pageInfos: filteredPageInfos };
 };
 
 export const fetchAllNotesByPageUrl = async (page_url: string): Promise<Note[]> => {
@@ -57,6 +62,7 @@ export const fetchAllNotesByPageUrl = async (page_url: string): Promise<Note[]> 
 export const createNote = async (page_url: string): Promise<Note[]> => {
   const pageInfo = await getOrCreatePageInfoByUrl(page_url);
   const { note, allNotes } = await _createNote(pageInfo.id!);
+  setUpdatedAtPageInfo(pageInfo.id!);
 
   console.log("CREATE_NOTE:", note);
 
@@ -67,6 +73,7 @@ export const updateNote = async (note: Note): Promise<Note[]> => {
   if (!note.page_info_id) return [];
 
   const { allNotes } = await _updateNote(note.page_info_id, note);
+  setUpdatedAtPageInfo(note.page_info_id);
   console.log("UPDATE_NOTE:", allNotes);
 
   return allNotes;

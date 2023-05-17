@@ -51,6 +51,16 @@ export const updatePageInfo = async (pageInfo: PageInfo): Promise<PageInfoCRUDRe
   throw new Error("updatePageInfo failed: " + chrome.runtime.lastError?.message);
 };
 
+export const setUpdatedAtPageInfo = async (pageInfoId: number): Promise<PageInfoCRUDResponseType> => {
+  const pageInfos = await getAllPageInfos();
+  const allPageInfos: PageInfo[] = pageInfos.map((_pageInfo) =>
+    _pageInfo.id === pageInfoId ? { ..._pageInfo, updated_at: new Date().toISOString() } : _pageInfo
+  );
+  if (await setPageInfoStorage(allPageInfos)) return { allPageInfos };
+
+  throw new Error("updatePageInfo failed: " + chrome.runtime.lastError?.message);
+}
+
 export const getAllPageInfos = async (): Promise<PageInfo[]> => {
   return await getPageInfoStorage();
 };

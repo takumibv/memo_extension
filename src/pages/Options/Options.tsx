@@ -110,8 +110,23 @@ const Options: React.FC<Props> = () => {
             (pageInfo) =>
               pageInfo.page_url?.includes(searchText) || pageInfo.page_title?.includes(searchText)
           );
+
+    if (sortBy === "updated_at") {
+      return [...filteredPageInfos].sort((a, b) =>
+        new Date(a?.updated_at ?? "1900/01/01") < new Date(b?.updated_at ?? "1900/01/01") ? 1 : -1
+      );
+    }
+    if (sortBy === "created_at") {
+      return [...filteredPageInfos].sort((a, b) =>
+        new Date(a?.created_at ?? "1900/01/01") < new Date(b?.created_at ?? "1900/01/01") ? 1 : -1
+      );
+    }
+    if (sortBy === "title") {
+      return [...filteredPageInfos].sort((a, b) => ((a?.page_title ?? "") > (b?.page_title ?? "") ? 1 : -1));
+    }
+
     return filteredPageInfos.reverse();
-  }, [searchText, pageInfos]);
+  }, [searchText, pageInfos, sortBy]);
 
   const onChangeSort = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
     setSortBy(e.target.value);
@@ -218,6 +233,10 @@ const Options: React.FC<Props> = () => {
       setDefaultColor(setting?.default_color ?? "");
     });
   }, []);
+
+  useEffect(() => {
+    setLinkEditMode(false);
+  },[currentPageInfoId]);
 
   return (
     <>
