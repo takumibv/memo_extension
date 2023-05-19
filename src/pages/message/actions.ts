@@ -1,3 +1,7 @@
+/**
+ * メッセージのアクション定義
+ */
+
 // contentScript, Popup, Option → background
 export const GET_ALL_NOTES = "GET_ALL_NOTES";
 export const GET_NOTES_BY_PAGE_ID = "GET_NOTES_BY_PAGE_ID";

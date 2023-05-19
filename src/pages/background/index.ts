@@ -2,6 +2,7 @@ import {
   handleMessages,
   injectContentScript,
   isScriptAllowedPage,
+  hasContentScript,
 } from "../message/handler/background";
 import { setupPage } from "../message/sender/background";
 import * as actions from "./actions";
@@ -76,7 +77,7 @@ chrome.contextMenus.onClicked.addListener((info) => {
       })
       .catch((e) => {
         // TODO: エラー時の処理
-        if (chrome.runtime.openOptionsPage) chrome.runtime.openOptionsPage();
+        chrome.runtime.openOptionsPage?.();
       });
   });
 });
@@ -92,7 +93,7 @@ let currentUrl = "";
  */
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   const { status } = changeInfo;
-  if (status !== "complete") return;
+  if (status !== "loading") return;
 
   const { url } = tab;
   // iframeを読み込まれたタイミングでも走るので、同一URLを読み込んだ際は無視するようにする
@@ -109,7 +110,16 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
           actions.getSetting().then((setting) => {
             currentUrl = "";
 
-            if (notes.length === 0) return actions.setBadgeText(tabId, 0);
+            if (notes.length === 0) {
+              hasContentScript(tabId).then((has) => {
+                if (has) {
+                  // contentScriptが既にあり、メモがない場合は、空のメモをセットする(SPA対策)
+                  setupPage(tabId, url, [], setting).catch((e) => {/* error */})
+                }
+              }).catch((e) => {/* error */});
+
+              return actions.setBadgeText(tabId, 0);
+            }
 
             injectContentScript(tabId).then(() =>
               setupPage(tabId, url, notes, setting).catch((e) => {/* error */})
