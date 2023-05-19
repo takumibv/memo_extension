@@ -184,6 +184,13 @@ export const SPageLinkEditInput = styled.input`
   border: 1px solid rgba(0, 0, 0, 0.1);
   padding: 0.5em 0.75em;
   flex: 1;
+  width: 100%;
+`;
+
+export const SPageLinkEditInputAlert = styled.p`
+  margin-top: 0.25rem;
+  color: #888;
+  font-size: 0.75rem;
 `;
 
 export const SPageLinkEditButton = styled(Button)`

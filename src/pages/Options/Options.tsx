@@ -42,6 +42,7 @@ import {
   SNoNoteText,
   SCurrentPageCloseButton,
   SSkeleton,
+  SPageLinkEditInputAlert,
 } from "./Options.style";
 import {
   GlobalStyle,
@@ -122,7 +123,9 @@ const Options: React.FC<Props> = () => {
       );
     }
     if (sortBy === "title") {
-      return [...filteredPageInfos].sort((a, b) => ((a?.page_title ?? "") > (b?.page_title ?? "") ? 1 : -1));
+      return [...filteredPageInfos].sort((a, b) =>
+        (a?.page_title ?? "") > (b?.page_title ?? "") ? 1 : -1
+      );
     }
 
     return filteredPageInfos.reverse();
@@ -172,17 +175,18 @@ const Options: React.FC<Props> = () => {
   };
 
   const onClickLink = async (url: string) => {
-    const [tab] = await chrome.tabs.query({ url, currentWindow: true });
-    if (tab?.id) {
-      try {
+    try {
+      const [tab] = await chrome.tabs.query({ url, currentWindow: true });
+      if (tab?.id) {
         await chrome.tabs.update(tab.id, { active: true });
         // メモが古い場合があるため再読み込みさせる
         await chrome.tabs.reload(tab.id);
-      } catch (error) {
-        // TODO
+      } else {
+        await chrome.tabs.create({ url });
       }
-    } else {
-      await chrome.tabs.create({ url });
+    } catch (error) {
+      // TODO
+      alert(msg("failed_load_page_msg"));
     }
   };
 
@@ -234,7 +238,7 @@ const Options: React.FC<Props> = () => {
 
   useEffect(() => {
     setLinkEditMode(false);
-  },[currentPageInfoId]);
+  }, [currentPageInfoId]);
 
   return (
     <>
@@ -315,10 +319,13 @@ const Options: React.FC<Props> = () => {
                     <SCurrentPageLinkArea>
                       {linkEditMode ? (
                         <>
-                          <SPageLinkEditInput
-                            value={editLink}
-                            onChange={(e) => setEditLink(e.target.value)}
-                          />
+                          <div style={{flex:1}}>
+                            <SPageLinkEditInput
+                              value={editLink}
+                              onChange={(e) => setEditLink(e.target.value)}
+                            />
+                            <SPageLinkEditInputAlert>{msg("link_edit_note_msg")}</SPageLinkEditInputAlert>
+                          </div>
                           <SPageLinkEditButton onClick={handleSaveLink}>
                             {msg("save_msg")}
                           </SPageLinkEditButton>
