@@ -111,5 +111,7 @@
   "open_explain_msg": { "message": "メモを最小化します。" },
   "default_color_msg": { "message": "メモの初期カラー" },
   "new_note_title_msg": { "message": "新しいメモ" },
+  "failed_load_page_msg": { "message": "ページの読み込みに失敗しました。" },
+  "link_edit_note_msg": { "message": "リンクが正しくないと、正常にメモが表示されない場合があります。" },
   "new_note_description_msg": { "message": "ダブルクリックで編集" }
 }

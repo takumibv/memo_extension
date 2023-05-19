@@ -106,5 +106,7 @@
   "open_explain_msg": { "message": "Minimize a Note." },
   "new_note_title_msg": { "message": "New Note" },
   "default_color_msg": { "message": "Default Color" },
+  "failed_load_page_msg": { "message": "This page failed to load." },
+  "link_edit_note_msg": { "message": "If the link is not correct, Notes may not display properly." },
   "new_note_description_msg": { "message": "Double-click to edit" }
 }
