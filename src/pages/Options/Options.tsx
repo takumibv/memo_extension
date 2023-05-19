@@ -84,7 +84,7 @@ const Options: React.FC<Props> = () => {
       currentPageInfoId === undefined
         ? notes
         : notes.filter((note) => note.page_info_id === currentPageInfoId)
-    ).filter((note) => note.title?.includes(searchText) || note.description?.includes(searchText));
+    ).filter((note) => searchText === "" || note.title?.includes(searchText) || note.description?.includes(searchText));
 
     if (sortBy === "updated_at") {
       return [...targetNotes].sort((a, b) =>

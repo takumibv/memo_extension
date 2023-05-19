@@ -61,6 +61,7 @@ const OptionListItem: React.FC<Props> = memo(
     const { id, title, description, created_at, updated_at } = note;
     const [openModal, setOpenModal] = useState(false);
     const { isSuccessCopy, copyClipboard } = useClipboard();
+    const [initFocus, setInitFocus] = useState<"title" | "description" | undefined>();
 
     useEffect(() => {
       measure && measure();
@@ -88,16 +89,29 @@ const OptionListItem: React.FC<Props> = memo(
     return (
       <>
         <SCard
-          tabIndex={-1}
-          onClick={() => {
+          onDoubleClick={() => {
             setOpenModal(true);
           }}
           style={{ backgroundColor: note.color || defaultColor || "#fff" }}
         >
           <SCardHeader>
-            <SCardTitle>{title}</SCardTitle>
+            <SCardTitle
+              onDoubleClick={(e) => {
+                e.stopPropagation();
+                setInitFocus("title");
+                setOpenModal(true);
+              }}
+            >
+              {title}
+            </SCardTitle>
           </SCardHeader>
-          <SCardDescription>
+          <SCardDescription
+            onDoubleClick={(e) => {
+              e.stopPropagation();
+              setInitFocus("description");
+              setOpenModal(true);
+            }}
+          >
             <SCardDescriptionText>{description}</SCardDescriptionText>
           </SCardDescription>
           {showPageInfo && pageInfo && (
@@ -175,7 +189,10 @@ const OptionListItem: React.FC<Props> = memo(
                   horizontal: "left",
                 }}
               >
-                <div style={{ width: "168px", textAlign: "center" }} onClick={(e) => e.stopPropagation()}>
+                <div
+                  style={{ width: "168px", textAlign: "center" }}
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <ColorPicker hasDefault color={note.color} onChangeColor={onChangeColor} />
                 </div>
               </Popover>
@@ -208,10 +225,14 @@ const OptionListItem: React.FC<Props> = memo(
         </SCard>
         <NoteEditModal
           isOpen={openModal}
-          onClose={() => setOpenModal(false)}
+          onClose={() => {
+            setOpenModal(false);
+            setInitFocus(undefined);
+          }}
           note={note}
           onUpdateNote={onUpdate}
           onDeleteNote={onDelete}
+          initFocus={initFocus}
         />
       </>
     );

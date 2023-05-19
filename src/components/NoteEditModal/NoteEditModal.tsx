@@ -1,6 +1,6 @@
 import Modal from "@mui/material/Modal";
 import Popover from "@mui/material/Popover";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FC } from "react";
 import { MIN_NOTE_HEIGHT, MIN_NOTE_WIDTH, useNoteEdit } from "../../hooks/useNote";
 import { Note } from "../../types/Note";
@@ -44,9 +44,10 @@ type Props = {
   note: Note;
   onUpdateNote: (note: Note) => Promise<boolean>;
   onDeleteNote?: (note: Note) => Promise<boolean>;
+  initFocus?: "title" | "description";
 };
 
-export const NoteEditModal: FC<Props> = ({ isOpen, note, onClose, onUpdateNote, onDeleteNote }) => {
+export const NoteEditModal: FC<Props> = ({ isOpen, note, onClose, onUpdateNote, onDeleteNote, initFocus }) => {
   const {
     title,
     description,
@@ -184,6 +185,7 @@ export const NoteEditModal: FC<Props> = ({ isOpen, note, onClose, onUpdateNote, 
           <SModalScrollContent>
             <SModalHeader>
               <SModalTitle
+                autoFocus={initFocus === "title"}
                 placeholder={msg("title_sort_option")}
                 defaultValue={title}
                 onChange={(e) => setEditTitle(e.target.value)}
@@ -194,6 +196,7 @@ export const NoteEditModal: FC<Props> = ({ isOpen, note, onClose, onUpdateNote, 
               <SModalSection>
                 <SModalDescription>
                   <SModalDescriptionText
+                    autoFocus={initFocus === "description"}
                     minRows={1}
                     placeholder={msg("input_description_placeholder")}
                     defaultValue={description}
