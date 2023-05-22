@@ -20,6 +20,7 @@ import { MessageRequest, MessageResponse, MessageMethod, MessageRequestPayload }
 import { Note } from "../../../types/Note";
 import { isSystemLink, msg } from "../../../utils";
 import { setupIsVisible, setupPage } from "../sender/background";
+import contentScript from '../../contentScript/index?script';
 
 export const ROOT_DOM_ID = "react-container-for-note-extension";
 
@@ -52,7 +53,7 @@ export const injectContentScript = async (tabId: number) => {
 
   return await chrome.scripting.executeScript({
     target: { tabId },
-    files: ["contentScript.js"],
+    files: [contentScript],
   });
 };
 
