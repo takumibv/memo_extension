@@ -16,6 +16,13 @@
   "action": {
     "default_popup": "popup.html"
   },
-  "permissions": ["tabs", "contextMenus", "storage", "scripting", "webNavigation"],
+  "permissions": ["tabs", "contextMenus", "storage", "scripting", "webNavigation", "identity"],
+  "oauth2": {
+    "client_id": "404883714884-8ph74fbrnrasv3q6voi5gc03qldn4vvj.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile"
+    ]
+  },
   "host_permissions": ["*://*/*"]
 }
