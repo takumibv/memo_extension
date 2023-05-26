@@ -150,7 +150,12 @@ const Memos: React.FC<Props> = () => {
     try {
       const page_url = pageInfos.find((p) => p.id === note.page_info_id)?.page_url;
       const { notes, pageInfos: newPageInfos } = await sender.sendUpdateNote(note, page_url);
-      notes && setNotes(notes);
+      notes && setNotes((currentNotes) => {
+        const newNotes = [...currentNotes];
+        const index = newNotes.findIndex((n) => n.id === note.id);
+        newNotes[index] = note;
+        return newNotes;
+      });
       newPageInfos && setPageInfos(newPageInfos);
       return true;
     } catch (error) {

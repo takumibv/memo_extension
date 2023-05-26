@@ -54,19 +54,19 @@ const AccountArea = ({
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
   };
-  const handleCloseColorPicker = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleCloseAccountPopover = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     setAnchorEl(null);
   };
-  const isOpenColorPickerPopover = Boolean(anchorEl);
-  const popoverId = isOpenColorPickerPopover ? "color-picker-popover" : undefined;
+  const isOpenAccountPopover = Boolean(anchorEl);
+  const popoverId = isOpenAccountPopover ? "color-picker-popover" : undefined;
 
   // TODO
   const isLoading = false;
 
   return user ? (
     <>
-      <SAccountButton onClick={onClickPopoverOpen} $isActive={isOpenColorPickerPopover}>
+      <SAccountButton onClick={onClickPopoverOpen} $isActive={isOpenAccountPopover}>
         <SAccountButtonName>{user.name}</SAccountButtonName>
         <SAccountButtonNameImage>
           <img src={user.photoURL} width={36} height={36} />
@@ -74,9 +74,9 @@ const AccountArea = ({
       </SAccountButton>
       <Popover
         id={popoverId}
-        open={isOpenColorPickerPopover}
+        open={isOpenAccountPopover}
         anchorEl={anchorEl}
-        onClose={handleCloseColorPicker}
+        onClose={handleCloseAccountPopover}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "right",
@@ -98,8 +98,9 @@ const AccountArea = ({
           <div className="">
             <SAccountPopoverAction
               onClick={(e) => {
+                // TODO syncNotes
                 logout?.();
-                handleCloseColorPicker(e);
+                handleCloseAccountPopover(e);
               }}
             >
               ログアウト

@@ -54,14 +54,14 @@ const initAuth = () => onAuthStateChanged(auth, async (firebaseUser) => {
         cache.user = appUser;
       });
     }
+
+    syncNotes();
   } else {
     // ログインしていない場合、ユーザー情報を空にする
     console.log("ログインしていない");
 
     cache.user = undefined;
   }
-
-  syncNotes();
 });
 
 /**
