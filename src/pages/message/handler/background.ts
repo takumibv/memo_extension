@@ -253,10 +253,8 @@ const _handleMessagesFromOption = (
     case UPDATE_NOTE:
       actions
         .updateNote(note!)
-        .then(() => {
-          actions
-            .fetchAllNotesAndPageInfo()
-            .then(({ notes, pageInfos }) => sendResponse({ data: { notes, pageInfos } }));
+        .then((notes) => {
+          sendResponse({ data: { notes } });
         })
         .catch((e) => {
           console.log("error UPDATE_NOTE:", e);

@@ -14,5 +14,6 @@ export type Note = {
   is_fixed?: boolean;
   created_at?: string;
   updated_at?: string;
+  deleted_at?: string;
   color?: string;
 };

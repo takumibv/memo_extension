@@ -1,5 +1,6 @@
 import {
   GoogleAuthProvider,
+  FacebookAuthProvider,
   signInWithCredential,
   onAuthStateChanged,
   signOut,
@@ -23,23 +24,57 @@ const AuthContext = createContext<{
 export default function useFirebaseAuth() {
 
   const [user, setUser] = useState<UserContextType>();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   /**
    * ログイン処理
    * @returns ログインしたユーザー情報
    */
-  const handleLogin = async () => {
-    const interactive = true;
+  const handleFacebookLogin = async () => {
+    // TODO Facebookログイン処理
+    var clientId = process.env.REACT_APP_FB_CLIENT_ID;
+    var clientSecret = process.env.REACT_APP_FB_CLIENT_SECRET;
+    const redirectURL = chrome.identity.getRedirectURL();
 
     setIsLoading(true);
-    chrome.identity.getAuthToken({ interactive: !!interactive }, (token: string) => {
+
+    const options = {
+      interactive: true,
+      // url:'https://graph.facebook.com/oauth/access_token?client_id=' + clientId +
+      url:'https://www.facebook.com/dialog/oauth?client_id=' + clientId +
+          '&reponse_type=token' +
+          '&access_type=online' +
+          '&redirect_uri=' + encodeURIComponent(redirectURL)
+    }
+    chrome.identity.launchWebAuthFlow(options, function(redirectUri) {
+      if (chrome.runtime.lastError) {
+        console.error("lastError:", chrome.runtime.lastError);
+        setIsLoading(false);
+      } else {
+        console.log("redirectUri", redirectUri);
+      }
+    });
+  };
+
+  /**
+   * Facebookログイン処理
+   * @returns ログインしたユーザー情報
+   */
+  const handleGoogleLogin = async () => {
+
+    setIsLoading(true);
+    chrome.identity.getAuthToken({ interactive: true }, (token: string) => {
       if (chrome.runtime.lastError) {
         console.error("lastError:", chrome.runtime.lastError);
         setIsLoading(false);
       } else if (token) {
+        console.log("token", token);
+        
         const credential = GoogleAuthProvider.credential(null, token);
+        // const credential = FacebookAuthProvider.credential(token);
+        const provider = new GoogleAuthProvider();
         signInWithCredential(auth, credential)
+        // signInWithRedirect(auth, provider)
           .then(function (result: any) {
             console.log("userinfo: " + JSON.stringify(result.user));
           })
@@ -66,6 +101,8 @@ export default function useFirebaseAuth() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setIsLoading(true);
+
       if (firebaseUser) {
         // ログインしていた場合、ユーザーコレクションからユーザーデータを参照
         const ref = doc(db, `users/${firebaseUser.uid}`);
@@ -95,6 +132,8 @@ export default function useFirebaseAuth() {
         // ログインしていない場合、ユーザー情報を空にする
         setUser(null);
       }
+
+      setIsLoading(false);
     });
 
     return unsubscribe;
@@ -104,7 +143,7 @@ export default function useFirebaseAuth() {
     user,
     isLoading,
     // error,
-    login: handleLogin,
+    login: handleGoogleLogin,
     logout: handleLogout,
   };
 }

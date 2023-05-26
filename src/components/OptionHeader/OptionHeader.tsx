@@ -1,13 +1,20 @@
-import React, { VFC } from "react";
+import React, { FC } from "react";
 import styled, { css } from "styled-components";
 import { Link } from "react-router-dom";
 import { msg } from "../../utils";
+import { User } from "../../types/User";
+import { useAuth } from "../../hooks/useFirebaseAuth";
+import { Popover } from "@mui/material";
+import { ArrowPathIcon } from "@heroicons/react/24/solid";
+import IconButton from "../Button/IconButton";
 
 type Props = {
   current: "memos" | "setting";
 };
 
-export const OptionHeader: VFC<Props> = ({ current }) => {
+export const OptionHeader: FC<Props> = ({ current }) => {
+  const { isLoading, user, login, logout } = useAuth();
+
   return (
     <SHeader>
       <SHeaderLeft>
@@ -24,7 +31,85 @@ export const OptionHeader: VFC<Props> = ({ current }) => {
           {msg("settings_header_msg")}
         </SHeaderContentLink>
       </SHeaderContent>
+      {!isLoading && (
+        <SHeaderRight>
+          <AccountArea user={user} logout={logout} login={login} />
+        </SHeaderRight>
+      )}
     </SHeader>
+  );
+};
+
+const AccountArea = ({
+  user,
+  logout,
+  login,
+}: {
+  user?: User | null;
+  logout?: () => void;
+  login?: () => void;
+}) => {
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+  const onClickPopoverOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+  };
+  const handleCloseColorPicker = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setAnchorEl(null);
+  };
+  const isOpenColorPickerPopover = Boolean(anchorEl);
+  const popoverId = isOpenColorPickerPopover ? "color-picker-popover" : undefined;
+
+  // TODO
+  const isLoading = false;
+
+  return user ? (
+    <>
+      <SAccountButton onClick={onClickPopoverOpen} $isActive={isOpenColorPickerPopover}>
+        <SAccountButtonName>{user.name}</SAccountButtonName>
+        <SAccountButtonNameImage>
+          <img src={user.photoURL} width={36} height={36} />
+        </SAccountButtonNameImage>
+      </SAccountButton>
+      <Popover
+        id={popoverId}
+        open={isOpenColorPickerPopover}
+        anchorEl={anchorEl}
+        onClose={handleCloseColorPicker}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+      >
+        <SAccountPopover style={{ width: "240px" }} onClick={(e) => e.stopPropagation()}>
+          <SAccountPopoverHeader>
+            <h2>{user.name}</h2>
+            <p>{user.email}</p>
+            <SAccountPopoverLastUpdated $isLoading={isLoading}>
+              <span>
+              最終更新日: 2023/5/24 18:20
+              </span>
+              <SIconButton disabled={isLoading}>
+                <ArrowPathIcon fill="rgba(0, 0, 0, 0.4)" />
+              </SIconButton>
+            </SAccountPopoverLastUpdated>
+          </SAccountPopoverHeader>
+          <div className="">
+            <SAccountPopoverAction
+              onClick={(e) => {
+                logout?.();
+                handleCloseColorPicker(e);
+              }}
+            >
+              ログアウト
+            </SAccountPopoverAction>
+          </div>
+        </SAccountPopover>
+      </Popover>
+    </>
+  ) : (
+    <SAccountButton onClick={login}>ログイン</SAccountButton>
   );
 };
 
@@ -49,6 +134,12 @@ export const SHeaderLeft = styled.div`
   align-items: center;
   position: relative;
 `;
+export const SHeaderRight = styled.div`
+  display: flex;
+  align-items: center;
+  position: relative;
+  align-self: stretch;
+`;
 
 export const SLogo = styled.img`
   width: 1.5em;
@@ -70,6 +161,7 @@ export const STopLink = styled(Link)`
 `;
 
 export const SHeaderContent = styled.div`
+  flex: 1;
   display: flex;
   align-items: center;
   position: relative;
@@ -101,5 +193,96 @@ export const SHeaderContentLink = styled(Link)<{ $isActive?: boolean }>`
         height: 2px;
         background-color: #4c4722;
       }
+    `}
+`;
+
+const SAccountButton = styled.button<{ $isActive?: boolean }>`
+  display: flex;
+  align-items: center;
+  padding: 0.25em 0.5rem;
+  position: relative;
+  height: 100%;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  ${({ $isActive }) =>
+    $isActive &&
+    css`
+      background-color: rgba(0, 0, 0, 0.05);
+    `}
+`;
+
+const SAccountButtonName = styled.span`
+  margin-right: 0.5rem;
+  font-size: 0.875rem;
+  color: #555;
+`;
+
+const SAccountButtonNameImage = styled.span`
+  display: inline-block;
+  border-radius: 999px;
+  width: 2.25rem;
+  height: 2.25rem;
+  overflow: hidden;
+`;
+
+const SAccountPopover = styled.div`
+  background-color: #fff;
+`;
+const SAccountPopoverHeader = styled.div`
+  padding: 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: center;
+
+  h2 {
+    font-size: 0.875rem;
+    color: #555;
+    word-break: break-all;
+  }
+
+  p {
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
+    color: #888;
+    word-break: break-all;
+  }
+`;
+
+const SAccountPopoverAction = styled.button`
+  font-size: 0.875rem;
+  color: #555;
+  width: 100%;
+  padding: 0.5rem 1rem;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+`;
+
+const SIconButton = styled(IconButton)``;
+
+const SAccountPopoverLastUpdated = styled.p<{ $isLoading?: boolean }>`
+  margin-top: 1rem;
+
+  ${({ $isLoading }) =>
+    $isLoading &&
+    css`
+      /* くるくるアニメーションさせる */
+      ${SIconButton} {
+        display: inline-block;
+        animation: rotateAnimation 1s linear infinite;
+      }
+
+      @keyframes rotateAnimation {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
     `}
 `;

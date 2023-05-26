@@ -6,12 +6,63 @@ import {
 } from "../message/handler/background";
 import { setupPage } from "../message/sender/background";
 import * as actions from "./actions";
-import { createNote } from "../../storages/noteStorage";
+import { createNote, syncNotes } from "../../storages/noteStorage";
 import { getOrCreatePageInfoByUrl } from "../../storages/pageInfoStorage";
 import { isSystemLink, msg } from "../../utils";
 import { cache } from "./cache";
 
+import {
+  GoogleAuthProvider,
+  signInWithCredential,
+  onAuthStateChanged,
+  signOut,
+} from "@firebase/auth";
+import { doc, getDoc, setDoc } from "@firebase/firestore";
+import { auth, db } from "../../lib/firebase/client";
+import { User } from "../../types/User";
+
 export const ROOT_DOM_ID = "react-container-for-note-extension";
+
+const initAuth = () => onAuthStateChanged(auth, async (firebaseUser) => {
+  if (firebaseUser) {
+    // ログインしていた場合、ユーザーコレクションからユーザーデータを参照
+    const ref = doc(db, `users/${firebaseUser.uid}`);
+    const snap = await getDoc(ref);
+
+    if (snap.exists()) {
+      console.log("snap", snap.data());
+
+      // ユーザーデータを取得して格納
+      const appUser = (await getDoc(ref)).data() as User;
+      console.log("ユーザーデータを取得", appUser);
+
+      cache.user = appUser;
+    } else {
+      // ユーザーが未作成の場合、新規作成して格納
+      const appUser: User = {
+        id: firebaseUser.uid,
+        name: firebaseUser.displayName!,
+        photoURL: firebaseUser.photoURL!,
+        email: firebaseUser.email!,
+        createdAt: Date.now(),
+      };
+
+      // Firestoreにユーザーデータを保存
+      setDoc(ref, appUser).then(() => {
+        // 保存に成功したらコンテクストにユーザーデータを格納
+        console.log("ユーザーデータを保存しました。", appUser);
+        cache.user = appUser;
+      });
+    }
+  } else {
+    // ログインしていない場合、ユーザー情報を空にする
+    console.log("ログインしていない");
+
+    cache.user = undefined;
+  }
+
+  syncNotes();
+});
 
 /**
  * Service Worker
@@ -38,6 +89,19 @@ chrome.runtime.onInstalled.addListener((details) => {
   }
 
   console.log("previousVersion", previousVersion);
+  if (!unsubscribe) unsubscribe = initAuth();
+});
+
+let unsubscribe: () => void | undefined;
+chrome.runtime.onStartup.addListener(() => {
+  console.log("chrome.runtime.onStartup");
+
+  if (!unsubscribe) unsubscribe = initAuth();
+});
+
+chrome.runtime.onSuspend.addListener(() => {
+  console.log("chrome.runtime.onSuspend");
+  unsubscribe?.();
 });
 
 /**
@@ -68,7 +132,9 @@ chrome.contextMenus.onClicked.addListener((info) => {
                 if (!tab?.id) return;
 
                 injectContentScript(tab.id).then(() =>
-                  setupPage(tab.id!, pageUrl, allNotes, setting).catch(() => {/* error */})
+                  setupPage(tab.id!, pageUrl, allNotes, setting).catch(() => {
+                    /* error */
+                  })
                 );
               });
             });
@@ -111,18 +177,26 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
             currentUrl = "";
 
             if (notes.length === 0) {
-              hasContentScript(tabId).then((has) => {
-                if (has) {
-                  // contentScriptが既にあり、メモがない場合は、空のメモをセットする(SPA対策)
-                  setupPage(tabId, url, [], setting).catch((e) => {/* error */})
-                }
-              }).catch((e) => {/* error */});
+              hasContentScript(tabId)
+                .then((has) => {
+                  if (has) {
+                    // contentScriptが既にあり、メモがない場合は、空のメモをセットする(SPA対策)
+                    setupPage(tabId, url, [], setting).catch((e) => {
+                      /* error */
+                    });
+                  }
+                })
+                .catch((e) => {
+                  /* error */
+                });
 
               return actions.setBadgeText(tabId, 0);
             }
 
             injectContentScript(tabId).then(() =>
-              setupPage(tabId, url, notes, setting).catch((e) => {/* error */})
+              setupPage(tabId, url, notes, setting).catch((e) => {
+                /* error */
+              })
             );
           });
         })

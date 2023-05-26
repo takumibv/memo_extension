@@ -5,4 +5,5 @@ export type PageInfo = {
   fav_icon_url?: string;
   created_at?: string;
   updated_at?: string;
+  deleted_at?: string;
 };
