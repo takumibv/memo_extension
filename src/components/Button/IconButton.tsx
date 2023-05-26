@@ -6,7 +6,7 @@ type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   disabled?: boolean;
 };
 
-const IconButton: React.VFC<Props> = memo(({ children, ...props }) => {
+const IconButton: React.FC<Props> = memo(({ children, ...props }) => {
   return <SIconButton {...props}>{children}</SIconButton>;
 });
 
