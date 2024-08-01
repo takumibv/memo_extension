@@ -31,7 +31,7 @@ chrome.runtime.onInstalled.addListener((details) => {
     actions.setDefaultColor("#FFF7CC");
   }
 
-  if (previousVersion === "x.x.x") {
+  if (details.reason === chrome.runtime.OnInstalledReason.INSTALL && previousVersion === "x.x.x") {
     chrome.tabs.create({
       url: `${chrome.runtime.getURL("setting.html")}#init`,
     });
