@@ -81,7 +81,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener(handleMessages);
-    fetchAllNotes();
+    fetchAllNotes(); // TODO setting情報も合わせて取得する
 
     return () => {
       chrome.runtime.onMessage.removeListener(handleMessages);
