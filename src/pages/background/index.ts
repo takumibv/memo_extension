@@ -121,9 +121,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
               return actions.setBadgeText(tabId, 0);
             }
 
-            injectContentScript(tabId).then(() =>
-              setupPage(tabId, url, notes, setting).catch((e) => {/* error */})
-            );
+            injectContentScript(tabId).catch((e) => {/* error */});
           });
         })
         .catch((e) => {

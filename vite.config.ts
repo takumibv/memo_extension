@@ -1,12 +1,11 @@
 import { defineConfig } from "vite";
-import type { Plugin, PluginOption } from "vite";
+import type { Plugin } from "vite";
 // import preact from '@preact/preset-vite'
 import path from "node:path";
-import url from "node:url";
 import fs from "fs";
 import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
 import react from "@vitejs/plugin-react";
-// import react from "@vitejs/plugin-react-swc";
 import { crx, defineManifest } from "@crxjs/vite-plugin";
 
 const manifest = defineManifest({
@@ -24,9 +23,9 @@ const manifest = defineManifest({
     service_worker: "src/pages/background/index.ts",
     type: "module",
   },
-  options_page: "src/memos.html",
+  options_page: "memos.html",
   action: {
-    default_popup: "src/popup.html",
+    default_popup: "popup.html",
   },
   permissions: ["tabs", "contextMenus", "storage", "scripting"],
   host_permissions: ["*://*/*"],
@@ -49,46 +48,7 @@ export default defineConfig({
     },
     extensions: [".ts", ".tsx", ".js"],
   },
-  server: {
-    port: 5173,
-    strictPort: true,
-    hmr: {
-      port: 5173,
-    },
-  }
 });
-
-// defineConfig({
-//   build: {
-//     rollupOptions: {
-//       input: {
-//         popup: path.join(srcDir, "pages/Popup/index.tsx"),
-//         options: path.join(srcDir, "pages/Options/index.tsx"),
-//         background: path.join(srcDir, "pages/background/index.ts"),
-//         contentScript: path.join(srcDir, "pages/contentScript/index.tsx"),
-//       },
-//       output: {
-//         dir: path.join(__dirname, "./dist"),
-//         entryFileNames: "[name].js",
-//       },
-//       manualChunks(id) {
-//         if (id.includes("node_modules")) {
-//           return "vendor";
-//         }
-//       },
-//       plugins: [
-//         copy({
-//           targets: [{ src: "public/**/*", dest: "dist" }],
-//         }),
-//       ],
-//     },
-//   },
-//   resolve: {
-//     alias: {
-//       "@mui/styled-engine": "@mui/styled-engine-sc",
-//     },
-//   },
-// });
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`;
 function reactVirtualized(): Plugin {

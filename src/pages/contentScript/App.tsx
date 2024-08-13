@@ -81,6 +81,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener(handleMessages);
+    fetchAllNotes();
 
     return () => {
       chrome.runtime.onMessage.removeListener(handleMessages);

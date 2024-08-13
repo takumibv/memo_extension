@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import App from "./App";
 import { StyleSheetManager } from "styled-components";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
@@ -49,13 +49,16 @@ const injectDomElements = () => {
     },
   });
 
-  ReactDOM.render(
-    <StyleSheetManager target={shadowRoot}>
-      <ThemeProvider theme={theme}>
-        <App />
-      </ThemeProvider>
-    </StyleSheetManager>,
-    shadowWrapper
+  const root = ReactDOM.createRoot(shadowWrapper);
+
+  root.render(
+    <React.StrictMode>
+      <StyleSheetManager target={shadowRoot}>
+        <ThemeProvider theme={theme}>
+          <App />
+        </ThemeProvider>
+      </StyleSheetManager>
+    </React.StrictMode>
   );
 };
 
