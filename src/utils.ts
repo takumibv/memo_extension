@@ -1,6 +1,6 @@
 import equal from "fast-deep-equal";
-import ja from "../public/_locales/ja/messages.json";
-import en from "../public/_locales/en/messages.json";
+import ja from "../_locales/ja/messages.json";
+import en from "../_locales/en/messages.json";
 
 const i18n: { [key: string]: typeof ja } = {
   ja,
