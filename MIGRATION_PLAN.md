@@ -69,6 +69,23 @@
 - [x] pnpm build で成功確認 (841 modules, 2.2MB bundle)
 - コミット: a6333a0
 
+### Step 3-4: Manifest & Background修正 ✅
+- [x] manifest.ts修正
+  - contextMenusパーミッション追加
+  - 不要なページ削除（new-tab, devtools, side-panel）
+  - content_scriptsはコメントアウト（動的インジェクション方式を使用）
+- [x] contextMenusエラー修正
+  - msg('add_note_msg') → 'Add Note' (一時的対処)
+  - i18n移行はPhase 6で実施予定
+- [x] injectContentScript修正
+  - files: ['contentScript.js'] → ['content/all.iife.js']
+  - 動的インジェクション方式で正常動作確認
+- [x] Chrome拡張機能として動作確認
+  - Service Worker正常起動
+  - 右クリックメニュー表示
+  - Popupからのメモ作成とContent Script注入
+- コミット: ecb0419, 4646cbb, 792d6db
+
 ## Phase 4: Options移行 (Phase 3から延期)
 
 ### Step 4-1: Optionsページの移行
