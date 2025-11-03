@@ -5,48 +5,68 @@
 - 旧プロジェクト: old/ ディレクトリに保存している
 - 各ステップでpnpm buildを実行し、成功することを確認してから次に進む
 
-## Phase 1: Background Script移行
+## Phase 1: Background Script移行 ✅
 
 ### Step 1-1: Backgroundスクリプトの移行
-- [ ] old/src/pages/background/ の内容を確認
-- [ ] chrome-extension/src/background/ に移行
-- [ ] pnpm build で成功確認
+- [x] old/src/pages/background/ の内容を確認
+- [x] chrome-extension/src/background/ に移行
+- [x] pnpm build で成功確認
+- コミット: 386afc7
 
-## Phase 2: Popup移行
+## Phase 2: Popup移行 ✅
 
 ### Step 2-1: 必要な依存関係のインストール
-- [ ] @mui/material, @emotion/react, @emotion/styled のインストール
-- [ ] styled-components (v5系) の確認
-- [ ] @heroicons/react のインストール
-- [ ] 依存関係のバージョン互換性確認
+- [x] @mui/material, @emotion/react, @emotion/styled のインストール
+- [x] styled-components (v5系) の確認
+- [x] @heroicons/react のインストール
+- [x] 依存関係のバージョン互換性確認
 
 ### Step 2-2: 共通コンポーネントの移行 (Popup用)
-- [ ] old/src/components/Button/ の内容を確認
-- [ ] old/src/components/Icon.tsx の内容を確認
-- [ ] packages/shared/lib/components/ に移行
-- [ ] import pathを@extension/*形式に統一
-- [ ] pnpm build で成功確認
+- [x] old/src/components/Button/ の内容を確認
+- [x] old/src/components/Icon.tsx の内容を確認
+- [x] packages/shared/lib/components/ に移行
+- [x] import pathを@extension/*形式に統一
+- [x] pnpm build で成功確認
 
 ### Step 2-3: Popupページの移行
-- [ ] old/src/pages/Popup/ の内容を確認
-- [ ] pages/popup/src/ に移行 (Popup.tsx, Popup.style.ts)
+- [x] old/src/pages/Popup/ の内容を確認
+- [x] pages/popup/src/ に移行 (Popup.tsx, Popup.style.ts)
+- [x] import pathを@extension/*形式に統一
+- [x] pnpm build で成功確認
+- コミット: c80d68a
+
+## Phase 3: Content Script移行 (優先順位変更)
+
+### Step 3-1: 依存関係とフックの準備
+- [ ] react-draggable のインストール
+- [ ] old/src/hooks/useNote.ts の内容を確認
+- [ ] packages/shared/lib/hooks/ に useNoteEdit フックを移行
+- [ ] import pathを@extension/*形式に統一
+
+### Step 3-2: StickyNoteコンポーネントの移行
+- [ ] old/src/components/StickyNote/ の内容を確認
+- [ ] packages/shared/lib/components/StickyNote/ に移行
+  - StickyNote.tsx
+  - StickyNote.style.ts
+  - StickyNoteActions.tsx
+- [ ] import pathを@extension/*形式に統一
+- [ ] styled-components の型エラーを修正
+
+### Step 3-3: Content Script本体の移行
+- [ ] old/src/pages/contentScript/ の内容を確認
+- [ ] pages/content/src/ に移行
+  - index.tsx (Shadow DOM setup)
+  - App.tsx
+  - App.style.ts
 - [ ] import pathを@extension/*形式に統一
 - [ ] pnpm build で成功確認
 
-## Phase 3: Options移行
+## Phase 4: Options移行 (Phase 3から延期)
 
-### Step 3-1: Optionsページの移行
+### Step 4-1: Optionsページの移行
 - [ ] old/src/pages/Options/ の内容を確認
 - [ ] pages/options/src/ に移行
-- [ ] 必要な依存関係を確認・追加
-- [ ] pnpm build で成功確認
-
-## Phase 4: Content Script移行
-
-### Step 4-1: Content Scriptの移行
-- [ ] old/src/pages/contentScript/ の内容を確認
-- [ ] pages/content/src/ に移行
-- [ ] 必要な依存関係を確認・追加
+- [ ] 必要な依存関係を確認・追加 (react-router-dom, react-virtualized等)
 - [ ] pnpm build で成功確認
 
 ## Phase 5: 共通コンポーネント・ユーティリティ移行
