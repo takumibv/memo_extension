@@ -1,12 +1,11 @@
 import { baseCSS } from '../../utils/resetCSS.js';
 import styled, { css } from 'styled-components';
 import type { Props } from './Button.js';
-// @ts-expect-error styled-components v5 type compatibility issue
-const styledButton = styled.button;
 
 const buttonBaseCSS = baseCSS('button');
 
-export const SButton = styledButton<Props>`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SButton = (styled as any).button<Props>`
   ${buttonBaseCSS}
 
   cursor: pointer;
@@ -50,7 +49,8 @@ export const SButton = styledButton<Props>`
   }
 `;
 
-export const SIconButton = styledButton`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SIconButton = (styled as any).button`
   ${buttonBaseCSS}
 
   cursor: pointer;
@@ -79,7 +79,8 @@ export const SIconButton = styledButton`
   }
 `;
 
-export const SFabIconButton = styledButton`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SFabIconButton = (styled as any).button`
   ${buttonBaseCSS}
 
   cursor: pointer;

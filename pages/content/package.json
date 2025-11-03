@@ -21,9 +21,10 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@extension/env": "workspace:*",
     "@extension/shared": "workspace:*",
     "@extension/storage": "workspace:*",
-    "@extension/env": "workspace:*"
+    "react-draggable": "^4.5.0"
   },
   "devDependencies": {
     "@extension/hmr": "workspace:*",
