@@ -50,14 +50,20 @@ export const hasContentScript = async (tabId: number): Promise<boolean> => {
 // コンテンツスクリプトを挿入する
 // eslint-disable-next-line import-x/exports-last
 export const injectContentScript = async (tabId: number) => {
+  console.log('[injectContentScript] Checking tab:', tabId);
   const hasScript = await hasContentScript(tabId);
+  console.log('[injectContentScript] Already has script:', hasScript);
+
   // 既に挿入されている場合は何もしない
   if (hasScript) return false;
 
-  return await chrome.scripting.executeScript({
+  console.log('[injectContentScript] Injecting content/all.iife.js into tab:', tabId);
+  const result = await chrome.scripting.executeScript({
     target: { tabId },
     files: ['content/all.iife.js'],
   });
+  console.log('[injectContentScript] Injection result:', result);
+  return result;
 };
 
 // コンテンツスクリプトからのメッセージハンドラ

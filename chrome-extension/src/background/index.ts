@@ -130,11 +130,14 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
               return actions.setBadgeText(tabId, 0);
             }
 
-            injectContentScript(tabId).then(() =>
-              setupPage(tabId, url, notes, setting).catch(() => {
-                /* error */
-              }),
-            );
+            injectContentScript(tabId)
+              .then(result => {
+                console.log('[Background] Content script injected:', result);
+                return setupPage(tabId, url, notes, setting);
+              })
+              .catch(error => {
+                console.error('[Background] Failed to inject content script:', error);
+              });
           });
         })
         .catch(() => {
