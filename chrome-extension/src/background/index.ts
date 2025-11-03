@@ -9,7 +9,7 @@ import {
 import { setupPage } from '../message/sender/background';
 import { createNote } from '@extension/shared/lib/storages/noteStorage';
 import { getOrCreatePageInfoByUrl } from '@extension/shared/lib/storages/pageInfoStorage';
-import { isSystemLink, msg } from '@extension/shared/lib/utils/utils';
+import { isSystemLink } from '@extension/shared/lib/utils/utils';
 
 // eslint-disable-next-line import-x/exports-last
 export const ROOT_DOM_ID = 'react-container-for-note-extension';
@@ -46,7 +46,7 @@ chrome.runtime.onInstalled.addListener(details => {
  */
 chrome.contextMenus.create({
   id: 'note-extension-context-menu-create',
-  title: msg('add_note_msg'),
+  title: 'Add Note', // TODO: msg('add_note_msg') when i18n is migrated
   contexts: ['page', 'frame', 'editable', 'image', 'video', 'audio', 'link', 'selection'],
 });
 
