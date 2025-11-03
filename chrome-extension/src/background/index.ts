@@ -133,8 +133,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
             injectContentScript(tabId)
               .then(result => {
                 console.log('[Background] Content script injected:', result);
-                return setupPage(tabId, url, notes, setting);
+                // Wait for content script to initialize before sending message
+                return new Promise(resolve => setTimeout(resolve, 100));
               })
+              .then(() => setupPage(tabId, url, notes, setting))
               .catch(error => {
                 console.error('[Background] Failed to inject content script:', error);
               });
