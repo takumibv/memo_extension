@@ -56,7 +56,7 @@ export const injectContentScript = async (tabId: number) => {
 
   return await chrome.scripting.executeScript({
     target: { tabId },
-    files: ['contentScript.js'],
+    files: ['content/all.iife.js'],
   });
 };
 
