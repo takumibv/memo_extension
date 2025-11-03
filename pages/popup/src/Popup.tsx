@@ -1,63 +1,182 @@
-import '@src/Popup.css';
-import { t } from '@extension/i18n';
-import { PROJECT_URL_OBJECT, useStorage, withErrorBoundary, withSuspense } from '@extension/shared';
-import { exampleThemeStorage } from '@extension/storage';
-import { cn, ErrorDisplay, LoadingSpinner, ToggleButton } from '@extension/ui';
+import {
+  GlobalStyle,
+  SHeader,
+  SHeaderIconButton,
+  SHeaderLeft,
+  SHeaderRight,
+  SContent,
+  SMessageText,
+  SActionMessageText,
+  SSubdirectoryArrowLeftIcon,
+  SActionMessageSpan,
+  SListItem,
+  SListItemLeft,
+  SListItemRight,
+  SIconButton,
+} from './Popup.style';
+import * as sender from '../../../chrome-extension/src/message/sender/popup';
+import { FabIconButton } from '@extension/shared/lib/components/Button';
+import { msg } from '@extension/shared/lib/utils/utils';
+import { Bars3Icon, PlusIcon, TrashIcon, ArrowPathIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+import Tooltip from '@mui/material/Tooltip';
+import { useEffect, useState } from 'react';
+import type { Note } from '@extension/shared/lib/types/Note';
 
-const notificationOptions = {
-  type: 'basic',
-  iconUrl: chrome.runtime.getURL('icon-34.png'),
-  title: 'Injecting content script error',
-  message: 'You cannot inject script here!',
-} as const;
+export const Popup = () => {
+  const [isEnabled, setIsEnabled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true); // eslint-disable-line @typescript-eslint/no-unused-vars
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [currentTab, setCurrentTab] = useState<chrome.tabs.Tab>();
 
-const Popup = () => {
-  const { isLight } = useStorage(exampleThemeStorage);
-  const logo = isLight ? 'popup/logo_vertical.svg' : 'popup/logo_vertical_dark.svg';
-
-  const goGithubSite = () => chrome.tabs.create(PROJECT_URL_OBJECT);
-
-  const injectContentScript = async () => {
-    const [tab] = await chrome.tabs.query({ currentWindow: true, active: true });
-
-    if (tab.url!.startsWith('about:') || tab.url!.startsWith('chrome:')) {
-      chrome.notifications.create('inject-error', notificationOptions);
+  const onClickAddNote = () => {
+    if (currentTab) {
+      sender
+        .sendCreateNote(currentTab)
+        .then(({ notes }) => {
+          if (notes) setNotes(notes);
+          setIsEnabled(true);
+        })
+        .catch(() => {
+          setIsEnabled(false);
+        })
+        .finally(() => {
+          window.close();
+        });
     }
-
-    await chrome.scripting
-      .executeScript({
-        target: { tabId: tab.id! },
-        files: ['/content-runtime/example.iife.js', '/content-runtime/all.iife.js'],
-      })
-      .catch(err => {
-        // Handling errors related to other paths
-        if (err.message.includes('Cannot access a chrome:// URL')) {
-          chrome.notifications.create('inject-error', notificationOptions);
-        }
-      });
   };
 
+  const onClickNotesButton = () => {
+    if (chrome.runtime.openOptionsPage) chrome.runtime.openOptionsPage();
+  };
+
+  const onClickDelete = (note: Note) => {
+    const { title } = note;
+    if (currentTab && confirm(`"${title ?? msg('note')}" ${msg('confirm_remove_next_note_msg')}`)) {
+      sender
+        .sendDeleteNote(currentTab, note)
+        .then(({ notes }) => {
+          if (notes) setNotes(notes);
+          setIsEnabled(true);
+        })
+        .catch(() => {
+          setIsEnabled(false);
+        });
+    }
+  };
+
+  const onClickNote = (note: Note) => {
+    if (currentTab) {
+      sender
+        .sendScrollToTargetNote(currentTab, note)
+        .then(() => {
+          setIsEnabled(true);
+        })
+        .catch(() => {
+          setIsEnabled(false);
+        })
+        .finally(() => {
+          // window.close();
+        });
+    }
+  };
+
+  const onClickResetPosition = (note: Note) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { position_x, position_y, ..._note } = note;
+    if (currentTab) {
+      sender
+        .sendUpdateNote(currentTab, {
+          ..._note,
+          is_fixed: true,
+          is_open: true,
+        })
+        .then(({ notes }) => {
+          if (notes) setNotes(notes);
+          setIsEnabled(true);
+        })
+        .catch(() => {
+          setIsEnabled(false);
+        });
+    }
+  };
+
+  useEffect(() => {
+    chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+      if (tab && tab.url) {
+        setCurrentTab(tab);
+        sender
+          .fetchAllNotes(tab)
+          .then(data => {
+            const { notes, isVisible } = data;
+            if (notes) setNotes(notes);
+            if (isVisible !== undefined) setIsVisible(isVisible);
+            setIsEnabled(true);
+          })
+          .catch(() => {
+            setIsEnabled(false);
+          });
+      } else {
+        setIsEnabled(false);
+      }
+    });
+  }, []);
+
   return (
-    <div className={cn('App', isLight ? 'bg-slate-50' : 'bg-gray-800')}>
-      <header className={cn('App-header', isLight ? 'text-gray-900' : 'text-gray-100')}>
-        <button onClick={goGithubSite}>
-          <img src={chrome.runtime.getURL(logo)} className="App-logo" alt="logo" />
-        </button>
-        <p>
-          Edit <code>pages/popup/src/Popup.tsx</code>
-        </p>
-        <button
-          className={cn(
-            'mt-4 rounded px-4 py-1 font-bold shadow hover:scale-105',
-            isLight ? 'bg-blue-200 text-black' : 'bg-gray-700 text-white',
+    <>
+      <GlobalStyle />
+      <div style={{ width: '320px' }}>
+        <SHeader>
+          <SHeaderLeft>
+            <FabIconButton onClick={onClickAddNote} disabled={!isEnabled}>
+              <PlusIcon fill="#fff" />
+            </FabIconButton>
+          </SHeaderLeft>
+          <SHeaderRight>
+            <SHeaderIconButton onClick={onClickNotesButton}>
+              <Bars3Icon fill="rgba(0, 0, 0, 0.4)" />
+            </SHeaderIconButton>
+          </SHeaderRight>
+        </SHeader>
+        <SContent>
+          {!isEnabled && <SMessageText>{msg('note_unavailable_msg')}</SMessageText>}
+          {isEnabled && notes.length === 0 && (
+            <>
+              <SActionMessageText>
+                <SSubdirectoryArrowLeftIcon />
+                <SActionMessageSpan>{msg('no_note_created_msg')}</SActionMessageSpan>
+              </SActionMessageText>
+              <SMessageText>{msg('no_note_created_option_msg')}</SMessageText>
+            </>
           )}
-          onClick={injectContentScript}>
-          {t('injectButton')}
-        </button>
-        <ToggleButton>{t('toggleTheme')}</ToggleButton>
-      </header>
-    </div>
+          {isEnabled && notes.length !== 0 && (
+            <ul>
+              {notes.map(note => (
+                <SListItem key={note.id}>
+                  <SListItemLeft disabled={note.is_fixed} onClick={() => !note.is_fixed && onClickNote(note)}>
+                    <span>{note.title || note.description || msg('new_note_title_msg')}</span>
+                    {!note.is_fixed && <ChevronRightIcon fill="rgba(0, 0, 0, 0.5)" />}
+                  </SListItemLeft>
+                  <SListItemRight>
+                    <Tooltip title={msg('reset_position_msg')} placement="top">
+                      <span>
+                        <SIconButton onClick={() => onClickResetPosition(note)}>
+                          <ArrowPathIcon fill="rgba(0, 0, 0, 0.5)" />
+                        </SIconButton>
+                      </span>
+                    </Tooltip>
+
+                    <SIconButton onClick={() => onClickDelete(note)}>
+                      <TrashIcon fill="rgba(0, 0, 0, 0.5)" />
+                    </SIconButton>
+                  </SListItemRight>
+                </SListItem>
+              ))}
+            </ul>
+          )}
+        </SContent>
+      </div>
+    </>
   );
 };
 
-export default withErrorBoundary(withSuspense(Popup, <LoadingSpinner />), ErrorDisplay);
+export default Popup;

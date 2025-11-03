@@ -14,10 +14,23 @@
 
 ## Phase 2: Popup移行
 
-### Step 2-1: Popupページの移行
+### Step 2-1: 必要な依存関係のインストール
+- [ ] @mui/material, @emotion/react, @emotion/styled のインストール
+- [ ] styled-components (v5系) の確認
+- [ ] @heroicons/react のインストール
+- [ ] 依存関係のバージョン互換性確認
+
+### Step 2-2: 共通コンポーネントの移行 (Popup用)
+- [ ] old/src/components/Button/ の内容を確認
+- [ ] old/src/components/Icon.tsx の内容を確認
+- [ ] packages/shared/lib/components/ に移行
+- [ ] import pathを@extension/*形式に統一
+- [ ] pnpm build で成功確認
+
+### Step 2-3: Popupページの移行
 - [ ] old/src/pages/Popup/ の内容を確認
-- [ ] pages/popup/src/ に移行
-- [ ] 必要な依存関係を確認・追加
+- [ ] pages/popup/src/ に移行 (Popup.tsx, Popup.style.ts)
+- [ ] import pathを@extension/*形式に統一
 - [ ] pnpm build で成功確認
 
 ## Phase 3: Options移行
@@ -39,8 +52,10 @@
 ## Phase 5: 共通コンポーネント・ユーティリティ移行
 
 ### Step 5-1: 共通コンポーネントの移行
-- [ ] old/src/components/ の内容を確認
+- [ ] old/src/components/ の残りコンポーネントを確認
 - [ ] packages/shared/lib/components/ に移行
+- [ ] MUI v7 + Emotion への対応確認
+- [ ] styled-components との共存確認
 - [ ] pnpm build で成功確認
 
 ### Step 5-2: ユーティリティの移行

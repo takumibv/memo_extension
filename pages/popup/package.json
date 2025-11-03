@@ -20,15 +20,21 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@extension/i18n": "workspace:*",
     "@extension/shared": "workspace:*",
     "@extension/storage": "workspace:*",
-    "@extension/i18n": "workspace:*",
-    "@extension/ui": "workspace:*"
+    "@extension/ui": "workspace:*",
+    "@heroicons/react": "^2.2.0",
+    "@mui/material": "^7.3.4",
+    "styled-components": "^5.3.3"
   },
   "devDependencies": {
     "@extension/tailwindcss-config": "workspace:*",
     "@extension/tsconfig": "workspace:*",
-    "@extension/vite-config": "workspace:*"
+    "@extension/vite-config": "workspace:*",
+    "@types/styled-components": "^5.1.19"
   },
   "postcss": {
     "plugins": {
