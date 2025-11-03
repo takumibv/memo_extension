@@ -72,7 +72,14 @@ const App: React.FC = () => {
   // }, []);
 
   useEffect(() => {
+    console.log('どこでもメモ Extension is Running.');
     chrome.runtime.onMessage.addListener(handleMessages);
+
+    // Notify background that content script is ready to receive messages
+    // This is important for React 19's async rendering
+    chrome.runtime.sendMessage({ type: 'CONTENT_SCRIPT_READY' }).catch(() => {
+      // Background might not be listening, ignore error
+    });
 
     return () => {
       chrome.runtime.onMessage.removeListener(handleMessages);

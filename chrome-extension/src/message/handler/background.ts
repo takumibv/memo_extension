@@ -58,12 +58,43 @@ export const injectContentScript = async (tabId: number) => {
   if (hasScript) return false;
 
   console.log('[injectContentScript] Injecting content/all.iife.js into tab:', tabId);
-  const result = await chrome.scripting.executeScript({
-    target: { tabId },
-    files: ['content/all.iife.js'],
+
+  // Wait for content script to send ready message (React 19 async rendering)
+  return new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      cleanup();
+      reject(new Error('Content script ready timeout'));
+    }, 3000);
+
+    const messageListener = (message: { type?: string }, sender: chrome.runtime.MessageSender) => {
+      if (message.type === 'CONTENT_SCRIPT_READY' && sender.tab?.id === tabId) {
+        console.log('[injectContentScript] Content script ready signal received from tab:', tabId);
+        cleanup();
+        resolve(true);
+      }
+    };
+
+    const cleanup = () => {
+      clearTimeout(timeoutId);
+      chrome.runtime.onMessage.removeListener(messageListener);
+    };
+
+    chrome.runtime.onMessage.addListener(messageListener);
+
+    chrome.scripting
+      .executeScript({
+        target: { tabId },
+        files: ['content/all.iife.js'],
+      })
+      .then(result => {
+        console.log('[injectContentScript] Script injected, waiting for ready signal:', result);
+      })
+      .catch(error => {
+        console.error('[injectContentScript] Failed to inject script:', error);
+        cleanup();
+        reject(error);
+      });
   });
-  console.log('[injectContentScript] Injection result:', result);
-  return result;
 };
 
 // コンテンツスクリプトからのメッセージハンドラ
