@@ -35,31 +35,39 @@
 - [x] pnpm build で成功確認
 - コミット: c80d68a
 
-## Phase 3: Content Script移行 (優先順位変更)
+## Phase 3: Content Script移行 (優先順位変更) ✅
 
-### Step 3-1: 依存関係とフックの準備
-- [ ] react-draggable のインストール
-- [ ] old/src/hooks/useNote.ts の内容を確認
-- [ ] packages/shared/lib/hooks/ に useNoteEdit フックを移行
-- [ ] import pathを@extension/*形式に統一
+### Step 3-1: 依存関係とフックの準備 ✅
+- [x] react-draggable のインストール
+- [x] old/src/hooks/useNote.ts の内容を確認
+- [x] packages/shared/lib/hooks/ に useNoteEdit フックを移行
+- [x] import pathを@extension/*形式に統一
+- [x] useClipboard フックの移行
+- [x] ColorPicker コンポーネントの移行
+- コミット: 3443c05
 
-### Step 3-2: StickyNoteコンポーネントの移行
-- [ ] old/src/components/StickyNote/ の内容を確認
-- [ ] packages/shared/lib/components/StickyNote/ に移行
-  - StickyNote.tsx
-  - StickyNote.style.ts
-  - StickyNoteActions.tsx
-- [ ] import pathを@extension/*形式に統一
-- [ ] styled-components の型エラーを修正
-
-### Step 3-3: Content Script本体の移行
-- [ ] old/src/pages/contentScript/ の内容を確認
-- [ ] pages/content/src/ に移行
-  - index.tsx (Shadow DOM setup)
-  - App.tsx
-  - App.style.ts
-- [ ] import pathを@extension/*形式に統一
-- [ ] pnpm build で成功確認
+### Step 3-2 & 3-3: StickyNote & Content Script移行 ✅
+- [x] old/src/components/StickyNote/ の内容を確認
+- [x] pages/content/src/components/StickyNote/ に移行
+  - StickyNote.tsx (drag, resize, edit機能)
+  - StickyNote.style.ts (styled-components定義)
+  - StickyNoteActions.tsx (アクションボタン)
+- [x] old/src/pages/contentScript/ の内容を確認
+- [x] pages/content/src/ に移行
+  - src/matches/all/index.tsx (Shadow DOM setup, React 19 createRoot)
+  - App.tsx (メッセージハンドリング、CRUD操作)
+  - App.style.ts (GlobalStyle, SContainer)
+- [x] 依存関係のインストール
+  - styled-components, @mui/material, @emotion/react, @emotion/styled
+  - react-dom, @heroicons/react, @types/styled-components
+- [x] import pathを@extension/*形式に統一
+- [x] Lint・型エラー修正
+  - styled-components workaround: `(styled as any)`
+  - React 19対応: ReactDOM.render → createRoot
+  - DraggableCore return type修正
+  - useCallback with exhaustive-deps
+- [x] pnpm build で成功確認 (841 modules, 2.2MB bundle)
+- コミット: a6333a0
 
 ## Phase 4: Options移行 (Phase 3から延期)
 
