@@ -21,14 +21,21 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@extension/env": "workspace:*",
     "@extension/shared": "workspace:*",
     "@extension/storage": "workspace:*",
-    "react-draggable": "^4.5.0"
+    "@heroicons/react": "^2.2.0",
+    "@mui/material": "^7.3.4",
+    "react-dom": "^19.1.0",
+    "react-draggable": "^4.5.0",
+    "styled-components": "^5.3.3"
   },
   "devDependencies": {
     "@extension/hmr": "workspace:*",
     "@extension/tsconfig": "workspace:*",
-    "@extension/vite-config": "workspace:*"
+    "@extension/vite-config": "workspace:*",
+    "@types/styled-components": "^5.1.19"
   }
 }

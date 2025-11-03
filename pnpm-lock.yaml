@@ -362,6 +362,12 @@ importers:
 
   pages/content:
     dependencies:
+      '@emotion/react':
+        specifier: ^11.14.0
+        version: 11.14.0(@types/react@19.2.2)(react@19.2.0)
+      '@emotion/styled':
+        specifier: ^11.14.1
+        version: 11.14.1(@emotion/react@11.14.0)(@types/react@19.2.2)(react@19.2.0)
       '@extension/env':
         specifier: workspace:*
         version: link:../../packages/env
@@ -371,9 +377,21 @@ importers:
       '@extension/storage':
         specifier: workspace:*
         version: link:../../packages/storage
+      '@heroicons/react':
+        specifier: ^2.2.0
+        version: 2.2.0(react@19.2.0)
+      '@mui/material':
+        specifier: ^7.3.4
+        version: 7.3.4(@emotion/react@11.14.0)(@emotion/styled@11.14.1)(@types/react@19.2.2)(react-dom@19.2.0)(react@19.2.0)
+      react-dom:
+        specifier: ^19.1.0
+        version: 19.2.0(react@19.2.0)
       react-draggable:
         specifier: ^4.5.0
         version: 4.5.0(react-dom@19.2.0)(react@19.2.0)
+      styled-components:
+        specifier: ^5.3.3
+        version: 5.3.11(@babel/core@7.28.5)(react-dom@19.2.0)(react-is@19.2.0)(react@19.2.0)
     devDependencies:
       '@extension/hmr':
         specifier: workspace:*
@@ -384,6 +402,9 @@ importers:
       '@extension/vite-config':
         specifier: workspace:*
         version: link:../../packages/vite-config
+      '@types/styled-components':
+        specifier: ^5.1.19
+        version: 5.1.35
 
   pages/content-runtime:
     dependencies:
