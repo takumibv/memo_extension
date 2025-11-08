@@ -1,6 +1,8 @@
 packages:
   - chrome-extension
-  - pages/*
+  - pages/content
+  - pages/options
+  - pages/popup
   - packages/*
   - tests/*
 
