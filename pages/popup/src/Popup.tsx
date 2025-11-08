@@ -9,6 +9,7 @@ import {
   SActionMessageText,
   SSubdirectoryArrowLeftIcon,
   SActionMessageSpan,
+  SList,
   SListItem,
   SListItemLeft,
   SListItemRight,
@@ -150,7 +151,7 @@ export const Popup = () => {
             </>
           )}
           {isEnabled && notes.length !== 0 && (
-            <ul>
+            <SList>
               {notes.map(note => (
                 <SListItem key={note.id}>
                   <SListItemLeft disabled={note.is_fixed} onClick={() => !note.is_fixed && onClickNote(note)}>
@@ -172,7 +173,7 @@ export const Popup = () => {
                   </SListItemRight>
                 </SListItem>
               ))}
-            </ul>
+            </SList>
           )}
         </SContent>
       </div>

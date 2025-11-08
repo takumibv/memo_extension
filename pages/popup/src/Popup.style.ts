@@ -8,9 +8,13 @@ export const GlobalStyle = createGlobalStyle`
 `;
 
 export const SHeader = styled.header`
+  position: sticky;
+  top: 0;
+  background: white;
   padding: 1em;
   display: flex;
   align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 `;
 
 export const SHeaderLeft = styled.div`
@@ -28,6 +32,8 @@ export const SMessageText = styled.p`
 
 export const SActionMessageText = styled.p`
   padding: 1em;
+  display: flex;
+  align-items: baseline;
 `;
 
 export const SActionMessageSpan = styled.span`
@@ -38,14 +44,18 @@ export const SSubdirectoryArrowLeftIcon = styled(SubdirectoryArrowLeftIcon)`
   width: 2em;
   height: 2em;
   transform: rotate(90deg);
-  margin-left: 0.75em;
-  margin-right: 0.5em;
+  margin: 0 0.5em;
+`;
+
+export const SList = styled.ul`
+  list-style: none;
+  padding-bottom: 1em;
 `;
 
 export const SListItem = styled.li`
   display: flex;
   justify-content: space-between;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 `;
 
 export const SListItemLeft = styled.div<{ disabled?: boolean }>`
