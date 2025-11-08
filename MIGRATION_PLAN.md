@@ -75,8 +75,8 @@
   - 不要なページ削除（new-tab, devtools, side-panel）
   - content_scriptsはコメントアウト（動的インジェクション方式を使用）
 - [x] contextMenusエラー修正
-  - msg('add_note_msg') → 'Add Note' (一時的対処)
-  - i18n移行はPhase 6で実施予定
+  - ~~msg('add_note_msg') → 'Add Note' (一時的対処)~~ → t(I18N.ADD_NOTE)に修正済み
+  - ~~i18n移行はPhase 6で実施予定~~ → Phase 3-5で完了
 - [x] injectContentScript修正
   - files: ['contentScript.js'] → ['content/all.iife.js']
   - 動的インジェクション方式で正常動作確認
@@ -85,6 +85,22 @@
   - 右クリックメニュー表示
   - Popupからのメモ作成とContent Script注入
 - コミット: ecb0419, 4646cbb, 792d6db
+
+### Step 3-5: i18n対応 ✅
+- [x] pnpm generate:i18n-keysでI18Nキー生成
+- [x] msg()関数をt(I18N.*)形式に置き換え
+  - StickyNoteActions.tsx (9箇所)
+  - Popup.tsx (7箇所)
+  - background/index.ts (1箇所)
+- [x] 依存関係の追加
+  - chrome-extension/package.json
+  - pages/content/package.json
+  - packages/shared/package.json
+- [x] msg()関数を削除 (packages/shared/lib/utils/utils.ts)
+- [x] ドキュメント更新
+  - I18N_GUIDE.md: 移行ガイドを使用例に変更
+  - CLAUDE.md: インポート例をt()に更新
+- [x] pnpm build で成功確認
 
 ## Phase 4: Options移行 (Phase 3から延期)
 

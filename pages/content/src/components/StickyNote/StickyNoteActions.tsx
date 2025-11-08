@@ -1,8 +1,9 @@
-import { SIconButtonWrap, SIconButton, SCopySuccessIcon } from './StickyNote.style.js';
-import { ColorPicker } from '@extension/shared/lib/components/ColorPicker/index.js';
-import { PinIcon, CopyIcon, PalletIcon } from '@extension/shared/lib/components/Icon.js';
-import { useClipboard } from '@extension/shared/lib/hooks/useClipboard.js';
-import { msg } from '@extension/shared/lib/utils/utils.js';
+import { SIconButtonWrap, SIconButton, SCopySuccessIcon } from './StickyNote.style';
+import { t } from '@extension/i18n';
+import { ColorPicker } from '@extension/shared/lib/components/ColorPicker';
+import { PinIcon, CopyIcon, PalletIcon } from '@extension/shared/lib/components/Icon';
+import { useClipboard } from '@extension/shared/lib/hooks/useClipboard';
+import { I18N } from '@extension/shared/lib/i18n/keys';
 import { MinusIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
 import Popover from '@mui/material/Popover';
 import Tooltip from '@mui/material/Tooltip';
@@ -39,7 +40,7 @@ const StickyNoteActions: React.FC<Props> = memo(
     const { isSuccessCopy, copyClipboard } = useClipboard();
 
     const onClickDeleteButton = () => {
-      if (confirm(`"${title || msg('note')}" ${msg('confirm_remove_next_note_msg')}`)) {
+      if (confirm(`"${title || t(I18N.NOTE)}" ${t(I18N.CONFIRM_REMOVE_NEXT_NOTE)}`)) {
         onDeleteNote();
       }
     };
@@ -57,21 +58,21 @@ const StickyNoteActions: React.FC<Props> = memo(
 
     return (
       <>
-        <Tooltip title={msg('switch_pin_msg')} enterDelay={300}>
+        <Tooltip title={t(I18N.SWITCH_PIN)} enterDelay={300}>
           <SIconButtonWrap>
             <SIconButton onClick={onClickFixedButton} isFocus={!is_fixed}>
               <PinIcon fill={is_fixed ? 'rgba(0, 0, 0, 0.3)' : 'rgba(0, 0, 0, 1)'} />
             </SIconButton>
           </SIconButtonWrap>
         </Tooltip>
-        <Tooltip title={msg('edit_msg')} enterDelay={300}>
+        <Tooltip title={t(I18N.EDIT)} enterDelay={300}>
           <SIconButtonWrap>
             <SIconButton onClick={() => setIsEditing(true)}>
               <PencilSquareIcon fill="rgba(0, 0, 0, 0.4)" />
             </SIconButton>
           </SIconButtonWrap>
         </Tooltip>
-        <Tooltip title={isSuccessCopy ? msg('copied_msg') : msg('copy_msg')} enterDelay={300}>
+        <Tooltip title={isSuccessCopy ? t(I18N.COPIED) : t(I18N.COPY)} enterDelay={300}>
           <SIconButtonWrap>
             {isSuccessCopy ? (
               <SCopySuccessIcon fill="#22c55e" />
@@ -82,7 +83,7 @@ const StickyNoteActions: React.FC<Props> = memo(
             )}
           </SIconButtonWrap>
         </Tooltip>
-        <Tooltip title={msg('color_msg')} enterDelay={300}>
+        <Tooltip title={t(I18N.COLOR)} enterDelay={300}>
           <SIconButtonWrap>
             <SIconButton onClick={onClickColorPickerButton}>
               <PalletIcon fill="rgba(0, 0, 0, 0.4)" />
@@ -102,7 +103,7 @@ const StickyNoteActions: React.FC<Props> = memo(
             <ColorPicker hasDefault color={color} onChangeColor={onChangeColor} />
           </div>
         </Popover>
-        <Tooltip title={msg('delete_msg')} enterDelay={300}>
+        <Tooltip title={t(I18N.DELETE)} enterDelay={300}>
           <SIconButtonWrap>
             <SIconButton onClick={onClickDeleteButton}>
               <TrashIcon fill="rgba(0, 0, 0, 0.4)" />
@@ -110,7 +111,7 @@ const StickyNoteActions: React.FC<Props> = memo(
           </SIconButtonWrap>
         </Tooltip>
         {!title && (
-          <Tooltip title={msg('minimize_msg')} enterDelay={300}>
+          <Tooltip title={t(I18N.MINIMIZE)} enterDelay={300}>
             <SIconButtonWrap>
               <SIconButton onClick={onCloseNote}>
                 <MinusIcon fill="rgba(0, 0, 0, 0.4)" />

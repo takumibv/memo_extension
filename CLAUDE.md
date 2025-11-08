@@ -221,7 +221,7 @@ When installing dependencies with `pnpm i <package> -F <module>`, use the `name`
 ### Import Paths
 - Use `@extension/*` for cross-package imports
 - Each module defines its own aliases (e.g., `@src`, `@root`, `@assets`)
-- Example: `import { msg } from '@extension/shared/lib/utils/utils'`
+- Example: `import { t } from '@extension/i18n'`
 
 ### Environment Variables
 - Environment variables are managed in the `packages/env/` package

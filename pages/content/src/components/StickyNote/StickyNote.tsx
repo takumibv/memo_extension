@@ -17,9 +17,10 @@ import {
   SLogo,
 } from './StickyNote.style.js';
 import StickyNoteActions from './StickyNoteActions.js';
+import { t } from '@extension/i18n';
 import { IconButton } from '@extension/shared/lib/components/Button/index.js';
 import { initialPositionX, initialPositionY, useNoteEdit } from '@extension/shared/lib/hooks/useNote.js';
-import { msg } from '@extension/shared/lib/utils/utils.js';
+import { I18N } from '@extension/shared/lib/i18n/keys.js';
 import { ArrowDownRightIcon, MinusIcon } from '@heroicons/react/24/solid';
 import Tooltip from '@mui/material/Tooltip';
 import { useCallback, useEffect, useMemo, useRef, useState, memo } from 'react';
@@ -159,8 +160,8 @@ const StickyNote: React.FC<Props> = memo(
         setIsEnableDrag(true);
       } else {
         const message =
-          (editDescription?.length ?? 0) > 2000 ? msg('save_error_word_maximum_msg') : msg('save_error_msg_2');
-        alert(`${msg('save_error_msg')}${message}`);
+          (editDescription?.length ?? 0) > 2000 ? t(I18N.SAVE_ERROR_WORD_MAXIMUM) : t(I18N.SAVE_ERROR_MSG_2);
+        alert(`${t(I18N.SAVE_ERROR)}${message}`);
       }
     }, [defaultNote, editTitle, editDescription, editPositionX, editPositionY, editWidth, editHeight, onUpdateNote]);
 
@@ -326,7 +327,7 @@ const StickyNote: React.FC<Props> = memo(
               <SNoteHeader>
                 <SNoteTitleInput
                   ref={titleInputRef}
-                  placeholder={msg('title_sort_option')}
+                  placeholder={t(I18N.TITLE_SORT_OPTION)}
                   type="text"
                   value={editTitle}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditTitle(e.target.value)}
@@ -343,10 +344,10 @@ const StickyNote: React.FC<Props> = memo(
                       titleInputRef?.current?.focus();
                     }, 10);
                   }}>
-                  {title || <SNoteSpan>{msg('title_sort_option')}</SNoteSpan>}
+                  {title || <SNoteSpan>{t(I18N.TITLE_SORT_OPTION)}</SNoteSpan>}
                 </SNoteTitle>
                 <SHeaderFixedPinArea>
-                  <Tooltip title={msg('minimize_msg')} enterDelay={300} placement="top">
+                  <Tooltip title={t(I18N.MINIMIZE)} enterDelay={300} placement="top">
                     <div>
                       <IconButton onClick={() => onClickOpenButton(false)}>
                         <MinusIcon fill="rgba(0, 0, 0, 0.4)" />
@@ -362,7 +363,7 @@ const StickyNote: React.FC<Props> = memo(
                   ref={descriptionTextareaRef}
                   name=""
                   id=""
-                  placeholder={msg('input_description_placeholder')}
+                  placeholder={t(I18N.INPUT_DESCRIPTION_PLACEHOLDER)}
                   value={editDescription}
                   onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setEditDescription(e.target.value)}
                   onFocus={() => setIsEnableDrag(false)}
@@ -377,7 +378,7 @@ const StickyNote: React.FC<Props> = memo(
                     }, 10);
                   }}>
                   <SNoteDescription>
-                    {description || <SNoteSpan>{msg('new_note_description_msg')}</SNoteSpan>}
+                    {description || <SNoteSpan>{t(I18N.NEW_NOTE_DESCRIPTION)}</SNoteSpan>}
                   </SNoteDescription>
                 </SNoteContentScroll>
               )}
@@ -387,9 +388,9 @@ const StickyNote: React.FC<Props> = memo(
         <SNoteFooter>
           {isEditing ? (
             <>
-              <SButton onClick={onEditDone}>{msg('save_msg')}</SButton>
+              <SButton onClick={onEditDone}>{t(I18N.SAVE)}</SButton>
               <SButton secondary onClick={onEditCancel}>
-                {msg('cancel_msg')}
+                {t(I18N.CANCEL)}
               </SButton>
             </>
           ) : (

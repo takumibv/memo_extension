@@ -15,8 +15,9 @@ import {
   SIconButton,
 } from './Popup.style';
 import * as sender from '../../../chrome-extension/src/message/sender/popup';
+import { t } from '@extension/i18n';
 import { FabIconButton } from '@extension/shared/lib/components/Button';
-import { msg } from '@extension/shared/lib/utils/utils';
+import { I18N } from '@extension/shared/lib/i18n/keys';
 import { Bars3Icon, PlusIcon, TrashIcon, ArrowPathIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import Tooltip from '@mui/material/Tooltip';
 import { useEffect, useState } from 'react';
@@ -51,7 +52,7 @@ export const Popup = () => {
 
   const onClickDelete = (note: Note) => {
     const { title } = note;
-    if (currentTab && confirm(`"${title ?? msg('note')}" ${msg('confirm_remove_next_note_msg')}`)) {
+    if (currentTab && confirm(`"${title ?? t(I18N.NOTE)}" ${t(I18N.CONFIRM_REMOVE_NEXT_NOTE)}`)) {
       sender
         .sendDeleteNote(currentTab, note)
         .then(({ notes }) => {
@@ -138,14 +139,14 @@ export const Popup = () => {
           </SHeaderRight>
         </SHeader>
         <SContent>
-          {!isEnabled && <SMessageText>{msg('note_unavailable_msg')}</SMessageText>}
+          {!isEnabled && <SMessageText>{t(I18N.NOTE_UNAVAILABLE)}</SMessageText>}
           {isEnabled && notes.length === 0 && (
             <>
               <SActionMessageText>
                 <SSubdirectoryArrowLeftIcon />
-                <SActionMessageSpan>{msg('no_note_created_msg')}</SActionMessageSpan>
+                <SActionMessageSpan>{t(I18N.NO_NOTE_CREATED)}</SActionMessageSpan>
               </SActionMessageText>
-              <SMessageText>{msg('no_note_created_option_msg')}</SMessageText>
+              <SMessageText>{t(I18N.NO_NOTE_CREATED_OPTION)}</SMessageText>
             </>
           )}
           {isEnabled && notes.length !== 0 && (
@@ -153,11 +154,11 @@ export const Popup = () => {
               {notes.map(note => (
                 <SListItem key={note.id}>
                   <SListItemLeft disabled={note.is_fixed} onClick={() => !note.is_fixed && onClickNote(note)}>
-                    <span>{note.title || note.description || msg('new_note_title_msg')}</span>
+                    <span>{note.title || note.description || t(I18N.NEW_NOTE_TITLE)}</span>
                     {!note.is_fixed && <ChevronRightIcon fill="rgba(0, 0, 0, 0.5)" />}
                   </SListItemLeft>
                   <SListItemRight>
-                    <Tooltip title={msg('reset_position_msg')} placement="top">
+                    <Tooltip title={t(I18N.RESET_POSITION)} placement="top">
                       <span>
                         <SIconButton onClick={() => onClickResetPosition(note)}>
                           <ArrowPathIcon fill="rgba(0, 0, 0, 0.5)" />

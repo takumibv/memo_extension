@@ -7,6 +7,8 @@ import {
   hasContentScript,
 } from '../message/handler/background';
 import { setupPage } from '../message/sender/background';
+import { t } from '@extension/i18n';
+import { I18N } from '@extension/shared/lib/i18n/keys';
 import { createNote } from '@extension/shared/lib/storages/noteStorage';
 import { getOrCreatePageInfoByUrl } from '@extension/shared/lib/storages/pageInfoStorage';
 import { isSystemLink } from '@extension/shared/lib/utils/utils';
@@ -46,7 +48,7 @@ chrome.runtime.onInstalled.addListener(details => {
  */
 chrome.contextMenus.create({
   id: 'note-extension-context-menu-create',
-  title: 'Add Note', // TODO: msg('add_note_msg') when i18n is migrated
+  title: t(I18N.ADD_NOTE),
   contexts: ['page', 'frame', 'editable', 'image', 'video', 'audio', 'link', 'selection'],
 });
 

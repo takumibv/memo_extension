@@ -173,27 +173,16 @@ const greeting = t(I18N.GREETING, 'Alice');
 
 ---
 
-## 移行ガイド
+## 使用例
 
-### Before (従来の方式)
-
-```tsx
-import { msg } from '@extension/shared/lib/utils/utils';
-
-export const Component = () => {
-  // ❌ 何が表示されるか不明確
-  return <h1>{msg('welcome_msg')}</h1>;
-};
-```
-
-### After (推奨方式)
+### 標準的な使い方
 
 ```tsx
 import { t } from '@extension/i18n';
 import { I18N } from '@extension/shared/lib/i18n/keys';
 
 export const Component = () => {
-  // ✅ hoverで内容確認可能
+  // ✅ 型安全 + hoverで内容確認可能
   return <h1>{t(I18N.WELCOME)}</h1>;
 };
 ```
