@@ -296,7 +296,7 @@ const StickyNote: React.FC<Props> = memo(
           $isFixed={is_fixed}>
           <DraggableCore {...draggableCoreProps} nodeRef={noteRef}>
             <SNoteInner style={{ padding: '0.25rem' }}>
-              <SOpenButton onClick={() => onClickOpenButton(true)}>
+              <SOpenButton onClick={() => onClickOpenButton(true)} title={title}>
                 <SLogo />
               </SOpenButton>
             </SNoteInner>

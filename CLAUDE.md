@@ -175,6 +175,20 @@ Dynamic content script injection is handled in `background/index.ts`:
    - Allows creating notes via right-click menu
    - Follows same injection pattern
 
+#### i18n (Internationalization)
+Uses Chrome Extension i18n API with type-safe TypeScript constants:
+
+- **Languages**: en, ja, ko, de, es, fr, it, zh_CN
+- **Usage**:
+  ```typescript
+  import { t } from '@extension/i18n';
+  import { I18N } from '@extension/shared/lib/i18n/keys';
+
+  const message = t(I18N.WELCOME); // Type-safe, IDE autocomplete
+  ```
+- **Update**: Run `pnpm generate:i18n-keys` after editing `messages.json`
+- **Documentation**: See [docs/I18N_GUIDE.md](docs/I18N_GUIDE.md)
+
 ### Vite Configuration
 
 #### Page Configuration (`packages/vite-config/`)

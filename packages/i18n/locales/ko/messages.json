@@ -23,9 +23,6 @@
     "message": "어디서나 노트",
     "description": "The title of the browser action button"
   },
-  "app_name": {
-    "message": "어디서나 노트"
-  },
   "welcome_msg": {
     "message": "노트 에브리웨어에 오신 것을 환영합니다!"
   },

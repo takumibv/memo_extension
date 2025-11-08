@@ -23,9 +23,6 @@
     "message": "どこでもメモ",
     "description": "The title of the browser action button"
   },
-  "app_name": {
-    "message": "どこでもメモ"
-  },
   "welcome_msg": {
     "message": "ようこそ、どこでもメモへ！"
   },

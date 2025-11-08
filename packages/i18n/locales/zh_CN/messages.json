@@ -23,9 +23,6 @@
     "message": "无处不在的笔记",
     "description": "The title of the browser action button"
   },
-  "app_name": {
-    "message": "笔记无处不在"
-  },
   "welcome_msg": {
     "message": "欢迎来到Note Everywhere!"
   },
