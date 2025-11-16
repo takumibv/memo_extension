@@ -239,6 +239,43 @@ When installing dependencies with `pnpm i <package> -F <module>`, use the `name`
 - Firefox-specific manifest adjustments handled automatically
 - sidePanel permission removed for Firefox (not supported)
 
+### Testing
+
+The project uses Vitest for unit and component testing:
+
+```bash
+# Run tests
+pnpm test
+
+# Watch mode
+pnpm test:watch
+
+# Coverage report
+pnpm test:coverage
+
+# UI mode
+pnpm test:ui
+```
+
+**Important: Adding vitest config files**
+
+When creating new `vitest.config.ts` or `vitest.setup.ts` files, **you must add them to eslint ignores** to avoid pre-commit hook failures:
+
+1. Edit `eslint.config.ts`
+2. Add the files to the `ignores` array (already includes `**/vitest.config.ts` and `**/vitest.setup.ts`)
+3. If you add vitest files in new locations not covered by wildcards, add them explicitly
+
+**Test file locations:**
+- Place test files in `__tests__/` directories or co-locate with source files using `.test.ts` or `.spec.ts` suffix
+- Setup files: `vitest.setup.ts` in each package root
+- Config files: `vitest.config.ts` in each package root
+- Shared config: `vitest.config.shared.ts` in project root
+
+**Chrome API Mocking:**
+- Background scripts use custom Chrome API mocks (see `chrome-extension/vitest.setup.ts`)
+- React components use jsdom environment
+- All mocks are automatically cleared between tests
+
 ### Working with the Migration
 This codebase is actively migrating from Webpack to Vite. The `old/` directory contains the original Webpack-based code for reference. When implementing new features or migrating components:
 
