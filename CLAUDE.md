@@ -276,6 +276,31 @@ When creating new `vitest.config.ts` or `vitest.setup.ts` files, **you must add 
 - React components use jsdom environment
 - All mocks are automatically cleared between tests
 
+### Git Commit Workflow
+
+**IMPORTANT: Always run lint-staged before committing**
+
+Before committing any changes, you **must** run the following command to ensure code quality:
+
+```bash
+pnpm dlx lint-staged --allow-empty
+```
+
+This command will:
+- Run Prettier to format code
+- Run ESLint to check and fix linting issues
+- Ensure all staged files pass quality checks
+
+**Commit Workflow:**
+1. Make your changes
+2. Stage files with `git add`
+3. **Run `pnpm dlx lint-staged --allow-empty`** ← **REQUIRED**
+4. Fix any errors reported by lint-staged
+5. Re-stage fixed files if needed
+6. Commit with descriptive message
+
+The husky pre-commit hook will also run lint-staged automatically, but running it manually before commit helps catch issues early.
+
 ### Working with the Migration
 This codebase is actively migrating from Webpack to Vite. The `old/` directory contains the original Webpack-based code for reference. When implementing new features or migrating components:
 
