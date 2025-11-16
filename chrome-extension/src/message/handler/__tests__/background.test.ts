@@ -17,12 +17,12 @@ describe('message/handler/background utilities', () => {
       // chrome.runtime.lastError is undefined (success case)
       delete (chrome.runtime as { lastError?: chrome.runtime.LastError }).lastError;
 
-      vi.mocked(chrome.scripting.executeScript).mockResolvedValue([
+      vi.mocked(chrome.scripting.executeScript<unknown[], void>).mockResolvedValue([
         {
           result: undefined,
           frameId: 0,
         },
-      ]);
+      ] as chrome.scripting.InjectionResult<void>[]);
 
       const result = await isScriptAllowedPage(1);
 
@@ -39,12 +39,12 @@ describe('message/handler/background utilities', () => {
         message: 'Cannot access chrome:// URLs',
       };
 
-      vi.mocked(chrome.scripting.executeScript).mockResolvedValue([
+      vi.mocked(chrome.scripting.executeScript<unknown[], void>).mockResolvedValue([
         {
           result: undefined,
           frameId: 0,
         },
-      ]);
+      ] as chrome.scripting.InjectionResult<void>[]);
 
       const result = await isScriptAllowedPage(1);
 
@@ -58,12 +58,12 @@ describe('message/handler/background utilities', () => {
     it('should handle different tab IDs', async () => {
       delete (chrome.runtime as { lastError?: chrome.runtime.LastError }).lastError;
 
-      vi.mocked(chrome.scripting.executeScript).mockResolvedValue([
+      vi.mocked(chrome.scripting.executeScript<unknown[], void>).mockResolvedValue([
         {
           result: undefined,
           frameId: 0,
         },
-      ]);
+      ] as chrome.scripting.InjectionResult<void>[]);
 
       const tabIds = [1, 2, 999, 12345];
 
@@ -81,12 +81,12 @@ describe('message/handler/background utilities', () => {
 
   describe('hasContentScript', () => {
     it('should return true when content script is already injected', async () => {
-      vi.mocked(chrome.scripting.executeScript).mockResolvedValue([
+      vi.mocked(chrome.scripting.executeScript<unknown[], boolean>).mockResolvedValue([
         {
           result: true,
           frameId: 0,
         },
-      ]);
+      ] as chrome.scripting.InjectionResult<boolean>[]);
 
       const result = await hasContentScript(1);
 
@@ -98,12 +98,12 @@ describe('message/handler/background utilities', () => {
     });
 
     it('should return false when content script is not injected', async () => {
-      vi.mocked(chrome.scripting.executeScript).mockResolvedValue([
+      vi.mocked(chrome.scripting.executeScript<unknown[], boolean>).mockResolvedValue([
         {
           result: false,
           frameId: 0,
         },
-      ]);
+      ] as chrome.scripting.InjectionResult<boolean>[]);
 
       const result = await hasContentScript(1);
 
@@ -118,7 +118,7 @@ describe('message/handler/background utilities', () => {
       let executedFunc: (() => boolean) | undefined;
 
       vi.mocked(chrome.scripting.executeScript).mockImplementation(
-        async (details: chrome.scripting.ScriptInjection) => {
+        async (details: chrome.scripting.ScriptInjection<unknown[], boolean>) => {
           executedFunc = details.func as (() => boolean) | undefined;
           return [
             {
@@ -142,12 +142,12 @@ describe('message/handler/background utilities', () => {
     });
 
     it('should handle different tab IDs', async () => {
-      vi.mocked(chrome.scripting.executeScript).mockResolvedValue([
+      vi.mocked(chrome.scripting.executeScript<unknown[], boolean>).mockResolvedValue([
         {
           result: true,
           frameId: 0,
         },
-      ]);
+      ] as chrome.scripting.InjectionResult<boolean>[]);
 
       const tabIds = [1, 2, 999, 12345];
 
@@ -163,12 +163,12 @@ describe('message/handler/background utilities', () => {
     });
 
     it('should handle executeScript returning null result', async () => {
-      vi.mocked(chrome.scripting.executeScript).mockResolvedValue([
+      vi.mocked(chrome.scripting.executeScript<unknown[], boolean | null>).mockResolvedValue([
         {
           result: null,
           frameId: 0,
         },
-      ]);
+      ] as chrome.scripting.InjectionResult<boolean | null>[]);
 
       const result = await hasContentScript(1);
 
@@ -177,12 +177,12 @@ describe('message/handler/background utilities', () => {
     });
 
     it('should handle executeScript returning undefined result', async () => {
-      vi.mocked(chrome.scripting.executeScript).mockResolvedValue([
+      vi.mocked(chrome.scripting.executeScript<unknown[], void>).mockResolvedValue([
         {
           result: undefined,
           frameId: 0,
         },
-      ]);
+      ] as chrome.scripting.InjectionResult<void>[]);
 
       const result = await hasContentScript(1);
 

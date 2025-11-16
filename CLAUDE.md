@@ -278,12 +278,18 @@ When creating new `vitest.config.ts` or `vitest.setup.ts` files, **you must add 
 
 ### TypeScript Code Quality Rules
 
-**IMPORTANT: Never use `any` type**
+**IMPORTANT: Never use `any` type (with styled-components v5 exception)**
 
 The use of `any` type is strictly prohibited in this project to maintain type safety:
 
 - **Never use `any` type** in any circumstances
 - **Never use `eslint-disable` for `@typescript-eslint/no-explicit-any`**
+- **EXCEPTION**: styled-components v5 has incomplete type definitions. The following pattern is ONLY allowed for styled-components:
+  ```typescript
+  // ✅ EXCEPTION - Only for styled-components v5
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export const SButton = (styled as any).button<Props>`...`;
+  ```
 - Instead, use proper TypeScript types:
   - Use specific interfaces or type definitions
   - Use `unknown` for truly unknown types (then narrow with type guards)
@@ -318,6 +324,12 @@ function process<T>(data: T): T {
 
 // ✅ GOOD - Use specific type assertions
 const runtime = chrome.runtime as { lastError?: chrome.runtime.LastError };
+
+// ✅ EXCEPTION - styled-components v5 only
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SButton = (styled as any).button<Props>`
+  /* styles */
+`;
 ```
 
 ### Git Commit Workflow

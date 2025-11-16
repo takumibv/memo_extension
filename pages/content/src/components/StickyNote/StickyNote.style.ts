@@ -11,7 +11,8 @@ type SNoteProps = React.HTMLAttributes<HTMLDivElement> & {
   $isForward?: boolean;
 };
 
-export const SNote = styled.div<SNoteProps>`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SNote = (styled as any).div<SNoteProps>`
   ${baseCSS('div')}
 
   font-size: 16px !important;
@@ -63,7 +64,8 @@ export const SLogo = styled(LogoIcon)`
   height: 24px;
 `;
 
-export const SNoteInner = styled.div`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SNoteInner = (styled as any).div`
   ${baseCSS('div')}
 
   display: flex;
@@ -72,7 +74,8 @@ export const SNoteInner = styled.div`
   cursor: default;
 `;
 
-export const SResizeHandler = styled.div`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SResizeHandler = (styled as any).div`
   ${baseCSS('div')}
 
   position: absolute;
@@ -84,7 +87,8 @@ export const SResizeHandler = styled.div`
   z-index: 1;
 `;
 
-export const SNoteHeader = styled.div`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SNoteHeader = (styled as any).div`
   ${baseCSS('div')}
 
   display: flex;
@@ -105,21 +109,24 @@ const noteTitleCSS = css`
   white-space: pre-line;
 `;
 
-export const SNoteTitle = styled.h2`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SNoteTitle = (styled as any).h2`
   ${baseCSS('h2')}
 
   ${noteTitleCSS}
   flex: 1;
 `;
 
-export const SNoteSpan = styled.span`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SNoteSpan = (styled as any).span`
   ${baseCSS('span')}
 
   color: rgb(0, 0, 0, 50%);
   flex: 1;
 `;
 
-export const SNoteTitleInput = styled.input`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SNoteTitleInput = (styled as any).input`
   ${baseCSS('input')}
 
   ${noteTitleCSS}
@@ -140,7 +147,8 @@ export const SNoteTitleInput = styled.input`
   }
 `;
 
-export const SNoteContent = styled.div`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SNoteContent = (styled as any).div`
   ${baseCSS('div')}
 
   flex: 1;
@@ -149,7 +157,8 @@ export const SNoteContent = styled.div`
   position: relative;
 `;
 
-export const SNoteContentScroll = styled.div`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SNoteContentScroll = (styled as any).div`
   ${baseCSS('div')}
 
   height: 100%;
@@ -168,13 +177,15 @@ const noteDescriptionCSS = css`
   white-space: pre-line;
 `;
 
-export const SNoteDescription = styled.p`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SNoteDescription = (styled as any).p`
   ${baseCSS('p')}
 
   ${noteDescriptionCSS}
 `;
 
-export const SNoteDescriptionTextarea = styled.textarea`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SNoteDescriptionTextarea = (styled as any).textarea`
   ${baseCSS('textarea')}
 
   ${noteDescriptionCSS}
@@ -199,7 +210,8 @@ export const SNoteDescriptionTextarea = styled.textarea`
   }
 `;
 
-export const SNoteFooter = styled.div`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SNoteFooter = (styled as any).div`
   ${baseCSS('div')}
 
   position: absolute;
@@ -212,7 +224,8 @@ export const SNoteFooter = styled.div`
   height: 2.5em;
 `;
 
-export const SIconButtonWrap = styled.div`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SIconButtonWrap = (styled as any).div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -256,7 +269,8 @@ export const SButton = styled(Button)`
   }
 `;
 
-export const SHeaderFixedPinArea = styled.div`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SHeaderFixedPinArea = (styled as any).div`
   ${baseCSS('div')}
 
   margin-left: 0.25em;

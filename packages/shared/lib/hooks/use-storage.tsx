@@ -2,7 +2,7 @@ import { useRef, useSyncExternalStore } from 'react';
 import type { BaseStorageType } from '@extension/storage';
 
 type WrappedPromise = ReturnType<typeof wrapPromise>;
-const storageMap: Map<BaseStorageType<unknown>, WrappedPromise> = new Map();
+const storageMap: WeakMap<object, WrappedPromise> = new WeakMap();
 
 const wrapPromise = <R,>(promise: Promise<R>) => {
   let status = 'pending';

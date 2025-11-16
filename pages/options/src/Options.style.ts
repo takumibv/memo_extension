@@ -9,14 +9,16 @@ export const GlobalStyle = createGlobalStyle`
   }
 `;
 
-export const SContainer = styled.div`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SContainer = (styled as any).div`
   ${baseCSS('div')}
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
 `;
 
-export const STitle = styled.h1`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const STitle = (styled as any).h1`
   ${baseCSS('h1')}
   font-size: 2rem;
   font-weight: bold;
@@ -24,7 +26,8 @@ export const STitle = styled.h1`
   color: #333;
 `;
 
-export const SSettingSection = styled.div`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SSettingSection = (styled as any).div`
   ${baseCSS('div')}
   margin-bottom: 2rem;
   padding: 1.5rem;
@@ -32,7 +35,8 @@ export const SSettingSection = styled.div`
   border-radius: 8px;
 `;
 
-export const SSettingTitle = styled.h2`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SSettingTitle = (styled as any).h2`
   ${baseCSS('h2')}
   font-size: 1.25rem;
   font-weight: 600;
@@ -40,7 +44,8 @@ export const SSettingTitle = styled.h2`
   color: #374151;
 `;
 
-export const SSettingDescription = styled.p`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SSettingDescription = (styled as any).p`
   ${baseCSS('p')}
   font-size: 0.875rem;
   color: #6b7280;

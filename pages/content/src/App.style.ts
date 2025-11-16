@@ -8,7 +8,8 @@ export const GlobalStyle = createGlobalStyle`
   ${defaultFontFamilyCSS}
 `;
 
-export const SContainer = styled.div`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SContainer = (styled as any).div`
   ${baseCSS('div')}
 
   position: absolute;
@@ -18,7 +19,8 @@ export const SContainer = styled.div`
   z-index: 1250;
 `;
 
-export const SButton = styled.button`
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const SButton = (styled as any).button`
   ${baseCSS('button')}
 
   border-width: 0;

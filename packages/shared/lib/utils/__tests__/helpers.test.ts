@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 describe('helpers', () => {
   describe('excludeValuesFromBaseArray', () => {
     it('should exclude specified values from base array', () => {
-      const baseArray = ['a', 'b', 'c', 'd', 'e'] as const;
+      const baseArray = ['a', 'b', 'c', 'd', 'e'];
       const excludeArray = ['b', 'd'];
 
       const result = excludeValuesFromBaseArray(baseArray, excludeArray);
@@ -13,7 +13,7 @@ describe('helpers', () => {
     });
 
     it('should return original array when exclude array is empty', () => {
-      const baseArray = ['a', 'b', 'c'] as const;
+      const baseArray = ['a', 'b', 'c'];
       const excludeArray: string[] = [];
 
       const result = excludeValuesFromBaseArray(baseArray, excludeArray);
@@ -22,7 +22,7 @@ describe('helpers', () => {
     });
 
     it('should return empty array when all values are excluded', () => {
-      const baseArray = ['a', 'b', 'c'] as const;
+      const baseArray = ['a', 'b', 'c'];
       const excludeArray = ['a', 'b', 'c'];
 
       const result = excludeValuesFromBaseArray(baseArray, excludeArray);
@@ -31,7 +31,7 @@ describe('helpers', () => {
     });
 
     it('should handle exclude values not in base array', () => {
-      const baseArray = ['a', 'b', 'c'] as const;
+      const baseArray = ['a', 'b', 'c'];
       const excludeArray = ['d', 'e', 'f'];
 
       const result = excludeValuesFromBaseArray(baseArray, excludeArray);
@@ -40,7 +40,7 @@ describe('helpers', () => {
     });
 
     it('should handle mixed string and number exclude values', () => {
-      const baseArray = ['a', 'b', 'c', 'd'] as const;
+      const baseArray = ['a', 'b', 'c', 'd'];
       const excludeArray = ['b', 1, 'd', 2];
 
       const result = excludeValuesFromBaseArray(baseArray, excludeArray);
@@ -49,7 +49,7 @@ describe('helpers', () => {
     });
 
     it('should handle duplicate values in exclude array', () => {
-      const baseArray = ['a', 'b', 'c', 'd'] as const;
+      const baseArray = ['a', 'b', 'c', 'd'];
       const excludeArray = ['b', 'b', 'd', 'd'];
 
       const result = excludeValuesFromBaseArray(baseArray, excludeArray);
@@ -58,7 +58,7 @@ describe('helpers', () => {
     });
 
     it('should return empty array when base array is empty', () => {
-      const baseArray = [] as const;
+      const baseArray: string[] = [];
       const excludeArray = ['a', 'b'];
 
       const result = excludeValuesFromBaseArray(baseArray, excludeArray);
