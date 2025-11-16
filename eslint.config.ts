@@ -35,6 +35,7 @@ export default config(
       'vitest.config.shared.ts',
       '**/vitest.config.ts',
       '**/vitest.setup.ts',
+      '**/vitest-setup-*.ts',
     ],
   },
   {
