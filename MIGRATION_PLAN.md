@@ -102,13 +102,18 @@
   - CLAUDE.md: インポート例をt()に更新
 - [x] pnpm build で成功確認
 
-## Phase 4: Options移行 (Phase 3から延期)
+## Phase 4: Options移行 ✅
 
-### Step 4-1: Optionsページの移行
-- [ ] old/src/pages/Options/ の内容を確認
-- [ ] pages/options/src/ に移行
-- [ ] 必要な依存関係を確認・追加 (react-router-dom, react-virtualized等)
-- [ ] pnpm build で成功確認
+### Step 4-1: シンプル版Optionsのi18n対応 ✅
+- [x] 現在のシンプル版Options実装を確認（デフォルトカラー設定のみ）
+- [x] i18n対応を追加
+  - t(I18N.SETTINGS_HEADER)
+  - t(I18N.DEFAULT_COLOR)
+- [x] default_color_description キーを追加（en/ja）
+- [x] pnpm generate:i18n-keysで新しいキー生成
+- [x] pnpm build で成功確認
+
+**備考**: フル機能版Options（メモ一覧・検索・フィルタリング）への移行は将来的な拡張として保留。現在のシンプル版で基本的な設定機能は提供できている。
 
 ## Phase 5: 共通コンポーネント・ユーティリティ移行
 

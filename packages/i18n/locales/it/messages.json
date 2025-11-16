@@ -266,6 +266,9 @@
   "default_color_msg": {
     "message": "Colore predefinito"
   },
+  "default_color_description": {
+    "message": "Imposta il colore predefinito per le note appena create."
+  },
   "failed_load_page_msg": {
     "message": "Questa pagina non è stata caricata."
   },

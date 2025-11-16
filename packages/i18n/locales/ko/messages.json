@@ -266,6 +266,9 @@
   "default_color_msg": {
     "message": "기본 색상"
   },
+  "default_color_description": {
+    "message": "새로 생성된 노트의 기본 색상을 설정할 수 있습니다."
+  },
   "failed_load_page_msg": {
     "message": "이 페이지를 로드하지 못했습니다."
   },

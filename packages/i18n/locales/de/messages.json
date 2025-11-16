@@ -266,6 +266,9 @@
   "default_color_msg": {
     "message": "Colore predefinito"
   },
+  "default_color_description": {
+    "message": "Legen Sie die Standardfarbe für neu erstellte Notizen fest."
+  },
   "failed_load_page_msg": {
     "message": "Diese Seite konnte nicht geladen werden."
   },

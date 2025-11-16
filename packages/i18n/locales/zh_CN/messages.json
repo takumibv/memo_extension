@@ -266,6 +266,9 @@
   "default_color_msg": {
     "message": "默认颜色"
   },
+  "default_color_description": {
+    "message": "设置新创建笔记的默认颜色。"
+  },
   "failed_load_page_msg": {
     "message": "本页未能加载。"
   },

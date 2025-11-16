@@ -211,6 +211,10 @@ export const I18N = {
    */
   DEFAULT_COLOR: 'default_color_msg' as const,
   /**
+   * "新しく作成するメモのデフォルトカラーを設定できます。"
+   */
+  DEFAULT_COLOR_DESCRIPTION: 'default_color_description' as const,
+  /**
    * "新しいメモ"
    */
   NEW_NOTE_TITLE: 'new_note_title_msg' as const,

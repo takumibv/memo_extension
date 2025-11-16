@@ -266,6 +266,9 @@
   "default_color_msg": {
     "message": "Default Color"
   },
+  "default_color_description": {
+    "message": "Set the default color for newly created notes."
+  },
   "failed_load_page_msg": {
     "message": "This page failed to load."
   },

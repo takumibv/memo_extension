@@ -263,6 +263,9 @@
   "default_color_msg": {
     "message": "メモの初期カラー"
   },
+  "default_color_description": {
+    "message": "新しく作成するメモのデフォルトカラーを設定できます。"
+  },
   "new_note_title_msg": {
     "message": "新しいメモ"
   },

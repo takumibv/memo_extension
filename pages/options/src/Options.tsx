@@ -1,6 +1,8 @@
-import { GlobalStyle, SContainer, STitle, SSettingSection, SSettingTitle, SSettingDescription } from './Options.style';
+import { GlobalStyle, SContainer, STitle, SSettingSection, SSettingTitle } from './Options.style';
 import { sendUpdateDefaultColor, sendFetchSetting } from '../../../chrome-extension/src/message/sender/options';
+import { t } from '@extension/i18n';
 import { ColorPicker } from '@extension/shared/lib/components';
+import { I18N } from '@extension/shared/lib/i18n/keys';
 import { useEffect, useState } from 'react';
 import type React from 'react';
 
@@ -29,11 +31,10 @@ const Options: React.FC = () => {
     <>
       <GlobalStyle />
       <SContainer>
-        <STitle>設定</STitle>
+        <STitle>{t(I18N.SETTINGS_HEADER)}</STitle>
         {!isLoading && (
           <SSettingSection>
-            <SSettingTitle>デフォルトカラー</SSettingTitle>
-            <SSettingDescription>新しく作成するメモのデフォルトカラーを設定できます。</SSettingDescription>
+            <SSettingTitle>{t(I18N.DEFAULT_COLOR)}</SSettingTitle>
             <ColorPicker color={defaultColor} onChangeColor={onClickDefaultColor} />
           </SSettingSection>
         )}
