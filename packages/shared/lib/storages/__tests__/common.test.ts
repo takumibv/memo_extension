@@ -61,8 +61,7 @@ describe('common storage functions', () => {
       const data = [{ id: 1, title: 'Note 1' }];
 
       (chrome.storage.local.set as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (chrome.runtime.lastError as any) = undefined;
+      delete (chrome.runtime as { lastError?: chrome.runtime.LastError }).lastError;
 
       const result = await setStorage(storageName, data);
 
@@ -75,8 +74,9 @@ describe('common storage functions', () => {
       const data = [{ id: 1, title: 'Note 1' }];
 
       (chrome.storage.local.set as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (chrome.runtime as any).lastError = { message: 'Storage quota exceeded' };
+      (chrome.runtime as { lastError?: chrome.runtime.LastError }).lastError = {
+        message: 'Storage quota exceeded',
+      };
 
       const result = await setStorage(storageName, data);
 
@@ -85,8 +85,7 @@ describe('common storage functions', () => {
 
     it('should handle various data types', async () => {
       (chrome.storage.local.set as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (chrome.runtime.lastError as any) = undefined;
+      delete (chrome.runtime as { lastError?: chrome.runtime.LastError }).lastError;
 
       // Array
       await setStorage('array_key', [1, 2, 3]);
@@ -115,8 +114,7 @@ describe('common storage functions', () => {
       const storageName = 'notes_1';
 
       (chrome.storage.local.remove as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (chrome.runtime.lastError as any) = undefined;
+      delete (chrome.runtime as { lastError?: chrome.runtime.LastError }).lastError;
 
       const result = await removeStorage(storageName);
 
@@ -237,8 +235,7 @@ describe('common storage functions', () => {
       expect(result1).toBe(false);
 
       // lastErrorがない場合
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (chrome.runtime.lastError as any) = undefined;
+      delete (chrome.runtime as { lastError?: chrome.runtime.LastError }).lastError;
       const result2 = await setStorage(storageName, data);
       expect(result2).toBe(true);
     });
@@ -255,8 +252,7 @@ describe('common storage functions', () => {
       expect(result1).toBe(false);
 
       // lastErrorがない場合
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (chrome.runtime.lastError as any) = undefined;
+      delete (chrome.runtime as { lastError?: chrome.runtime.LastError }).lastError;
       const result2 = await removeStorage(storageName);
       expect(result2).toBe(true);
     });

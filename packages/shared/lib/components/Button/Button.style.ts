@@ -4,8 +4,7 @@ import type { Props } from './Button.js';
 
 const buttonBaseCSS = baseCSS('button');
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const SButton = (styled as any).button<Props>`
+export const SButton = styled.button<Props>`
   ${buttonBaseCSS}
 
   cursor: pointer;
@@ -49,8 +48,7 @@ export const SButton = (styled as any).button<Props>`
   }
 `;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const SIconButton = (styled as any).button`
+export const SIconButton = styled.button`
   ${buttonBaseCSS}
 
   cursor: pointer;
@@ -79,8 +77,7 @@ export const SIconButton = (styled as any).button`
   }
 `;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const SFabIconButton = (styled as any).button`
+export const SFabIconButton = styled.button`
   ${buttonBaseCSS}
 
   cursor: pointer;

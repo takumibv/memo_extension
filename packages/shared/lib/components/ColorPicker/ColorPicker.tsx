@@ -43,15 +43,13 @@ ColorPicker.displayName = 'ColorPicker';
 
 export default ColorPicker;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const SColors = (styled as any).div`
+export const SColors = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
 `;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const SColor = (styled as any).button<{ $isActive?: boolean }>`
+export const SColor = styled.button<{ $isActive?: boolean }>`
   border: 1px solid #ddd;
   border-radius: 8px;
   margin: 4px;
@@ -68,15 +66,13 @@ export const SColor = (styled as any).button<{ $isActive?: boolean }>`
     `}
 `;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const SColorCheckIcon = (styled as any)(CheckIcon)`
+export const SColorCheckIcon = styled(CheckIcon)`
   width: 20px;
   height: 20px;
   margin: auto;
 `;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const SColorDefault = (styled as any)(SColor)`
+export const SColorDefault = styled(SColor)`
   position: relative;
   border-color: #aaa;
   overflow: hidden;

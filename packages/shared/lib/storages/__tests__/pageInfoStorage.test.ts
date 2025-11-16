@@ -15,8 +15,7 @@ describe('pageInfoStorage', () => {
     vi.clearAllMocks();
     (chrome.storage.local.get as ReturnType<typeof vi.fn>).mockResolvedValue({});
     (chrome.storage.local.set as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (chrome.runtime.lastError as any) = undefined;
+    delete (chrome.runtime as { lastError?: chrome.runtime.LastError }).lastError;
   });
 
   describe('createPageInfo', () => {
