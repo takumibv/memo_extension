@@ -276,6 +276,50 @@ When creating new `vitest.config.ts` or `vitest.setup.ts` files, **you must add 
 - React components use jsdom environment
 - All mocks are automatically cleared between tests
 
+### TypeScript Code Quality Rules
+
+**IMPORTANT: Never use `any` type**
+
+The use of `any` type is strictly prohibited in this project to maintain type safety:
+
+- **Never use `any` type** in any circumstances
+- **Never use `eslint-disable` for `@typescript-eslint/no-explicit-any`**
+- Instead, use proper TypeScript types:
+  - Use specific interfaces or type definitions
+  - Use `unknown` for truly unknown types (then narrow with type guards)
+  - Use generic types `<T>` for reusable code
+  - Use union types for multiple possible types
+  - Use type assertions with specific types when necessary
+
+**Examples:**
+
+```typescript
+// ❌ BAD - Never do this
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const data: any = getData();
+
+// ✅ GOOD - Use proper types
+interface Data {
+  id: string;
+  value: number;
+}
+const data: Data = getData();
+
+// ✅ GOOD - Use unknown and type guards
+const data: unknown = getData();
+if (isData(data)) {
+  // data is now typed as Data
+}
+
+// ✅ GOOD - Use generics
+function process<T>(data: T): T {
+  return data;
+}
+
+// ✅ GOOD - Use specific type assertions
+const runtime = chrome.runtime as { lastError?: chrome.runtime.LastError };
+```
+
 ### Git Commit Workflow
 
 **IMPORTANT: Always run lint-staged before committing**
