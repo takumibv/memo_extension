@@ -41,7 +41,8 @@
     "@extension/vite-config": "workspace:*",
     "@types/react": "^19.1.5",
     "@types/react-dom": "^19.1.5",
-    "@types/styled-components": "^5.1.19"
+    "@types/styled-components": "^5.1.19",
+    "@vitejs/plugin-react": "^5.1.1"
   },
   "postcss": {
     "plugins": {

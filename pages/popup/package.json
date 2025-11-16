@@ -38,7 +38,8 @@
     "@extension/tailwindcss-config": "workspace:*",
     "@extension/tsconfig": "workspace:*",
     "@extension/vite-config": "workspace:*",
-    "@types/styled-components": "^5.1.19"
+    "@types/styled-components": "^5.1.19",
+    "@vitejs/plugin-react": "^5.1.1"
   },
   "postcss": {
     "plugins": {

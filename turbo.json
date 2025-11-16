@@ -52,6 +52,20 @@
     "clean": {
       "dependsOn": ["^clean"],
       "cache": false
+    },
+    "test": {
+      "cache": false
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "test:coverage": {
+      "cache": false
+    },
+    "test:ui": {
+      "cache": false,
+      "persistent": true
     }
   }
 }

@@ -19,13 +19,10 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@src': path.resolve(__dirname, './src'),
-      '@extension/shared': path.resolve(__dirname, '../../packages/shared'),
-      '@extension/storage': path.resolve(__dirname, '../../packages/storage'),
-      '@extension/i18n': path.resolve(__dirname, '../../packages/i18n'),
-      '@extension/ui': path.resolve(__dirname, '../../packages/ui'),
-      '@extension/test-utils': path.resolve(__dirname, '../../packages/test-utils'),
+      '@extension/shared': path.resolve(__dirname, './'),
+      '@extension/storage': path.resolve(__dirname, '../storage'),
+      '@extension/i18n': path.resolve(__dirname, '../i18n'),
+      '@extension/test-utils': path.resolve(__dirname, '../test-utils'),
     },
   },
 });

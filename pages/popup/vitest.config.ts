@@ -10,6 +10,7 @@ export default defineConfig({
     setupFiles: ['./vitest.setup.ts'],
     include: ['**/__tests__/**/*.{test,spec}.{ts,tsx}', '**/*.{test,spec}.{ts,tsx}'],
     exclude: ['node_modules', 'dist', 'build', '.turbo'],
+    passWithNoTests: true,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
@@ -24,6 +25,7 @@ export default defineConfig({
       '@extension/storage': path.resolve(__dirname, '../../packages/storage'),
       '@extension/i18n': path.resolve(__dirname, '../../packages/i18n'),
       '@extension/ui': path.resolve(__dirname, '../../packages/ui'),
+      '@extension/test-utils': path.resolve(__dirname, '../../packages/test-utils'),
     },
   },
 });
