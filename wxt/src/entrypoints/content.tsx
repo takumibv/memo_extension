@@ -22,6 +22,6 @@ export default defineContentScript({
     root.render(<ContentApp />);
 
     // Notify background that content script is ready
-    chrome.runtime.sendMessage({ type: 'CONTENT_SCRIPT_READY' }).catch(() => {});
+    chrome.runtime.sendMessage({ type: 'content:ready' }).catch(() => {});
   },
 });

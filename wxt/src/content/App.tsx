@@ -1,8 +1,8 @@
 import StickyNote from '@/content/components/StickyNote/StickyNote';
-import { SETUP_PAGE, SET_NOTE_VISIBLE } from '@/message/actions';
 import { sendUpdateNote, sendDeleteNote } from '@/message/sender/contentScript';
+import { isToContentMessage } from '@/message/types';
 import { useCallback, useEffect, useState } from 'react';
-import type { MessageRequest, MessageResponse } from '@/message/message';
+import type { ToContentMessage } from '@/message/types';
 import type { Note } from '@/shared/types/Note';
 
 const ContentApp: React.FC = () => {
@@ -10,20 +10,20 @@ const ContentApp: React.FC = () => {
   const [defaultColor, setDefaultColor] = useState<string>();
 
   const handleMessages = (
-    request: MessageRequest,
+    message: unknown,
     _sender: chrome.runtime.MessageSender,
-    sendResponse: (response?: MessageResponse) => void,
+    sendResponse: (response?: unknown) => void,
   ): boolean => {
-    const { method, payload } = request;
-    const { notes, defaultColor } = payload ?? {};
+    if (!isToContentMessage(message)) return false;
 
-    switch (method) {
-      case SETUP_PAGE:
-        if (notes) setNotes(notes);
-        if (defaultColor) setDefaultColor(defaultColor);
+    const msg = message as ToContentMessage;
+    switch (msg.type) {
+      case 'bg:setupPage':
+        if (msg.payload.notes) setNotes(msg.payload.notes);
+        if (msg.payload.defaultColor) setDefaultColor(msg.payload.defaultColor);
         break;
-      case SET_NOTE_VISIBLE:
-        if (defaultColor) setDefaultColor(defaultColor);
+      case 'bg:setVisibility':
+        // TODO: handle visibility toggle
         break;
       default:
         break;
@@ -58,7 +58,7 @@ const ContentApp: React.FC = () => {
     console.log('どこでもメモ Extension is Running.');
     chrome.runtime.onMessage.addListener(handleMessages);
 
-    chrome.runtime.sendMessage({ type: 'CONTENT_SCRIPT_READY' }).catch(() => {});
+    chrome.runtime.sendMessage({ type: 'content:ready' }).catch(() => {});
 
     return () => {
       chrome.runtime.onMessage.removeListener(handleMessages);

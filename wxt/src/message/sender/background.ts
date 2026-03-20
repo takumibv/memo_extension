@@ -1,27 +1,33 @@
-import { sendActionToTab } from './base';
-import { BACKGROUND, SETUP_PAGE, SET_NOTE_VISIBLE } from '../actions';
+import { sendToTab } from './base';
 import * as actions from '@/background/actions';
 import { cache } from '@/background/cache';
-import type { MessageResponseData } from '../message';
 import type { Note } from '@/shared/types/Note';
 import type { Setting } from '@/shared/types/Setting';
 
-export const setupPage = (
-  tabId: number,
-  url: string,
-  notes: Note[],
-  setting: Setting,
-): Promise<MessageResponseData> => {
+/**
+ * メモ情報をContentScriptにセットする
+ */
+export const setupPage = async (tabId: number, url: string, notes: Note[], setting: Setting): Promise<void> => {
   cache.badge[tabId] = notes.length ?? 0;
   actions.setBadgeText(tabId, notes.length ?? 0);
 
-  return sendActionToTab(tabId, SETUP_PAGE, BACKGROUND, {
-    url,
-    notes,
-    isVisible: setting?.is_visible,
-    defaultColor: setting?.default_color,
+  await sendToTab(tabId, {
+    type: 'bg:setupPage',
+    payload: {
+      url,
+      notes,
+      isVisible: setting?.is_visible,
+      defaultColor: setting?.default_color,
+    },
   });
 };
 
-export const setupIsVisible = (tabId: number, url: string, isVisible: boolean): Promise<MessageResponseData> =>
-  sendActionToTab(tabId, SET_NOTE_VISIBLE, BACKGROUND, { url, isVisible });
+/**
+ * メモの表示/非表示をContentScriptにセットする
+ */
+export const setupIsVisible = async (tabId: number, url: string, isVisible: boolean): Promise<void> => {
+  await sendToTab(tabId, {
+    type: 'bg:setVisibility',
+    payload: { url, isVisible },
+  });
+};

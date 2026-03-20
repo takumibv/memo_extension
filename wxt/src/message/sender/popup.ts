@@ -1,27 +1,20 @@
-import { sendAction } from './base';
-import {
-  CREATE_NOTE,
-  UPDATE_NOTE,
-  DELETE_NOTE,
-  POPUP,
-  SCROLL_TO_TARGET_NOTE,
-  GET_ALL_NOTES,
-  UPDATE_NOTE_VISIBLE,
-} from '../actions';
+import { sendToBackground } from './base';
 import type { Note } from '@/shared/types/Note';
 
-export const fetchAllNotes = async (tab: chrome.tabs.Tab): Promise<{ notes?: Note[]; isVisible?: boolean }> =>
-  await sendAction(GET_ALL_NOTES, POPUP, { tab });
-export const sendCreateNote = async (tab: chrome.tabs.Tab): Promise<{ notes?: Note[] }> =>
-  await sendAction(CREATE_NOTE, POPUP, { tab });
-export const sendUpdateNote = async (tab: chrome.tabs.Tab, note: Note): Promise<{ notes?: Note[] }> =>
-  await sendAction(UPDATE_NOTE, POPUP, { tab, note });
-export const sendDeleteNote = async (tab: chrome.tabs.Tab, note: Note): Promise<{ notes?: Note[] }> =>
-  await sendAction(DELETE_NOTE, POPUP, { tab, note });
-export const sendScrollToTargetNote = async (tab: chrome.tabs.Tab, note: Note): Promise<Record<string, unknown>> =>
-  await sendAction(SCROLL_TO_TARGET_NOTE, POPUP, { tab, note });
+export const fetchAllNotes = (tab: chrome.tabs.Tab) =>
+  sendToBackground({ type: 'popup:getAllNotes', payload: { tab } });
 
-export const sendUpdateNoteVisible = async (
-  tab: chrome.tabs.Tab,
-  isVisible: boolean,
-): Promise<{ isVisible?: boolean }> => await sendAction(UPDATE_NOTE_VISIBLE, POPUP, { tab, isVisible });
+export const sendCreateNote = (tab: chrome.tabs.Tab) =>
+  sendToBackground({ type: 'popup:createNote', payload: { tab } });
+
+export const sendUpdateNote = (tab: chrome.tabs.Tab, note: Note) =>
+  sendToBackground({ type: 'popup:updateNote', payload: { tab, note } });
+
+export const sendDeleteNote = (tab: chrome.tabs.Tab, note: Note) =>
+  sendToBackground({ type: 'popup:deleteNote', payload: { tab, note } });
+
+export const sendScrollToTargetNote = (tab: chrome.tabs.Tab, note: Note) =>
+  sendToBackground({ type: 'popup:scrollToNote', payload: { tab, note } });
+
+export const sendUpdateNoteVisible = (tab: chrome.tabs.Tab, isVisible: boolean) =>
+  sendToBackground({ type: 'popup:updateVisibility', payload: { tab, isVisible } });
