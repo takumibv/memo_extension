@@ -2,7 +2,6 @@ import { defineConfig } from 'wxt';
 
 export default defineConfig({
   srcDir: 'src',
-  publicDir: 'public',
   modules: ['@wxt-dev/module-react'],
   manifest: {
     name: '__MSG_extensionName__',
