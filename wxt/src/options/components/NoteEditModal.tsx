@@ -89,7 +89,7 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
 
   const handleClose = useCallback(() => {
     if (hasChanges()) {
-      if (!confirm(t(I18N.CONFIRM_REMOVE_NOTE))) return;
+      if (!confirm(t('discard_close_msg'))) return;
     }
     onClose();
   }, [hasChanges, onClose]);
