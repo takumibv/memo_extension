@@ -1,36 +1,32 @@
 import StickyNote from '@/content/components/StickyNote/StickyNote';
 import { sendUpdateNote, sendDeleteNote } from '@/message/sender/contentScript';
-import { isToContentMessage } from '@/message/types';
 import { useCallback, useEffect, useState } from 'react';
-import type { ToContentMessage } from '@/message/types';
 import type { Note } from '@/shared/types/Note';
 
-const ContentApp: React.FC = () => {
+type StateRef = {
+  setNotes: ((notes: Note[]) => void) | null;
+  setDefaultColor: ((color: string) => void) | null;
+};
+
+type Props = {
+  stateRef: StateRef;
+};
+
+const ContentApp: React.FC<Props> = ({ stateRef }) => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [defaultColor, setDefaultColor] = useState<string>();
 
-  const handleMessages = (
-    message: unknown,
-    _sender: chrome.runtime.MessageSender,
-    sendResponse: (response?: unknown) => void,
-  ): boolean => {
-    if (!isToContentMessage(message)) return false;
+  // Bind React state setters to the external state ref
+  // so the message handler (registered before React) can update state
+  useEffect(() => {
+    stateRef.setNotes = setNotes;
+    stateRef.setDefaultColor = setDefaultColor;
 
-    const msg = message as ToContentMessage;
-    switch (msg.type) {
-      case 'bg:setupPage':
-        if (msg.payload.notes) setNotes(msg.payload.notes);
-        if (msg.payload.defaultColor) setDefaultColor(msg.payload.defaultColor);
-        break;
-      case 'bg:setVisibility':
-        // TODO: handle visibility toggle
-        break;
-      default:
-        break;
-    }
-    sendResponse();
-    return true;
-  };
+    return () => {
+      stateRef.setNotes = null;
+      stateRef.setDefaultColor = null;
+    };
+  }, [stateRef]);
 
   const updateNote = useCallback(async (note: Note) => {
     try {
@@ -56,13 +52,6 @@ const ContentApp: React.FC = () => {
 
   useEffect(() => {
     console.log('どこでもメモ Extension is Running.');
-    chrome.runtime.onMessage.addListener(handleMessages);
-
-    chrome.runtime.sendMessage({ type: 'content:ready' }).catch(() => {});
-
-    return () => {
-      chrome.runtime.onMessage.removeListener(handleMessages);
-    };
   }, []);
 
   return (
