@@ -1,3 +1,4 @@
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/shared/components/ui/Dialog';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { formatDate, isEqualsObject } from '@/shared/utils/utils';
@@ -66,13 +67,17 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
     return !isEqualsObject(edited, original);
   }, [editTitle, editDescription, editIsFixed, editIsOpen, editPositionX, editPositionY, editWidth, editHeight, note]);
 
-  useEffect(() => {
-    if (initialFocus === 'description') {
-      descRef.current?.focus();
-    } else {
-      titleRef.current?.focus();
-    }
-  }, [initialFocus]);
+  const handleOpenAutoFocus = useCallback(
+    (e: Event) => {
+      e.preventDefault();
+      if (initialFocus === 'description') {
+        descRef.current?.focus();
+      } else {
+        titleRef.current?.focus();
+      }
+    },
+    [initialFocus],
+  );
 
   const handleSave = useCallback(async () => {
     await onSave({
@@ -109,40 +114,45 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
     }
   };
 
-  // Keyboard shortcut: Ctrl+Enter to save, Escape to close (no-op if changed)
+  // Keyboard shortcut: Ctrl+Enter to save
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         handleSave();
-      } else if (e.key === 'Escape') {
-        if (!hasChanges()) onClose();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleSave, hasChanges, onClose]);
+  }, [handleSave]);
 
   const changed = hasChanges();
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      if (!changed) onClose();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop - not clickable when editing (changed) */}
-      {changed ? (
-        <div className="absolute inset-0 cursor-default bg-black/50" />
-      ) : (
-        <button
-          type="button"
-          className="absolute inset-0 cursor-default bg-black/50"
-          onClick={onClose}
-          aria-label="Close modal"
-        />
-      )}
-      {/* Modal content */}
-      <div
-        className="relative w-full max-w-lg rounded-xl shadow-2xl"
-        style={{ backgroundColor: bgColor, color: textColor }}>
-        {/* Header */}
-        <div className="flex items-center justify-between p-4" style={{ borderBottom: `1px solid ${borderColor}` }}>
+    <Dialog open onOpenChange={handleOpenChange}>
+      <DialogContent
+        className="flex max-h-[90vh] flex-col"
+        style={{ backgroundColor: bgColor, color: textColor }}
+        onPointerDownOutside={e => {
+          if (changed) e.preventDefault();
+        }}
+        onEscapeKeyDown={e => {
+          if (changed) e.preventDefault();
+        }}
+        onOpenAutoFocus={handleOpenAutoFocus}>
+        {/* Accessible title (visually used as input) */}
+        <DialogTitle className="sr-only">{t(I18N.EDIT)}</DialogTitle>
+        <DialogDescription className="sr-only">{t(I18N.INPUT_DESCRIPTION_PLACEHOLDER)}</DialogDescription>
+
+        {/* Header (sticky) */}
+        <div
+          className="flex shrink-0 items-center justify-between rounded-t-xl p-5"
+          style={{ borderBottom: `1px solid ${borderColor}` }}>
           <input
             ref={titleRef}
             type="text"
@@ -154,108 +164,113 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
           />
         </div>
 
-        {/* Description */}
-        <div className="p-4">
-          <textarea
-            ref={descRef}
-            value={editDescription}
-            onChange={e => setEditDescription(e.target.value)}
-            placeholder={t(I18N.INPUT_DESCRIPTION_PLACEHOLDER)}
-            rows={8}
-            className="w-full resize-none bg-transparent text-sm focus:outline-none"
-            style={{ color: textColor }}
-          />
+        {/* Scrollable body */}
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          {/* Description */}
+          <div className="p-5">
+            <textarea
+              ref={descRef}
+              value={editDescription}
+              onChange={e => setEditDescription(e.target.value)}
+              placeholder={t(I18N.INPUT_DESCRIPTION_PLACEHOLDER)}
+              rows={12}
+              className="w-full resize-none bg-transparent text-sm focus:outline-none"
+              style={{ color: textColor }}
+            />
+          </div>
+
+          {/* Details accordion */}
+          <div style={{ borderTop: `1px solid ${borderColor}` }}>
+            <button
+              type="button"
+              onClick={() => setShowDetails(!showDetails)}
+              className="flex w-full items-center justify-between px-5 py-2.5 text-xs hover:bg-black/5"
+              style={{ color: subTextColor }}>
+              <span>{t(I18N.DETAIL)}</span>
+              <HiChevronDown className={`h-4 w-4 transition-transform ${showDetails ? 'rotate-180' : ''}`} />
+            </button>
+
+            {showDetails && (
+              <div className="grid grid-cols-2 gap-3 px-5 pb-4 text-xs">
+                <label className="flex flex-col gap-1">
+                  <span style={{ color: subTextColor }}>{t(I18N.PIN)}</span>
+                  <select
+                    value={editIsFixed ? 'fixed' : 'unfixed'}
+                    onChange={e => setEditIsFixed(e.target.value === 'fixed')}
+                    className="rounded border px-2 py-1"
+                    style={{ borderColor, backgroundColor: inputBg, color: textColor }}>
+                    <option value="fixed">{t(I18N.PIN_SELECT_OPTION_FIXED)}</option>
+                    <option value="unfixed">{t(I18N.PIN_SELECT_OPTION_UNFIXED)}</option>
+                  </select>
+                </label>
+                <label className="flex flex-col gap-1">
+                  <span style={{ color: subTextColor }}>{t(I18N.OPEN)}</span>
+                  <select
+                    value={editIsOpen ? 'open' : 'closed'}
+                    onChange={e => setEditIsOpen(e.target.value === 'open')}
+                    className="rounded border px-2 py-1"
+                    style={{ borderColor, backgroundColor: inputBg, color: textColor }}>
+                    <option value="open">{t(I18N.OPEN_SELECT_OPTION_NO)}</option>
+                    <option value="closed">{t(I18N.OPEN_SELECT_OPTION_YES)}</option>
+                  </select>
+                </label>
+                <label className="flex flex-col gap-1">
+                  <span style={{ color: subTextColor }}>X</span>
+                  <input
+                    type="number"
+                    value={editPositionX}
+                    onChange={e => setEditPositionX(Number(e.target.value))}
+                    className="rounded border px-2 py-1"
+                    style={{ borderColor, backgroundColor: inputBg, color: textColor }}
+                  />
+                </label>
+                <label className="flex flex-col gap-1">
+                  <span style={{ color: subTextColor }}>Y</span>
+                  <input
+                    type="number"
+                    value={editPositionY}
+                    onChange={e => setEditPositionY(Number(e.target.value))}
+                    className="rounded border px-2 py-1"
+                    style={{ borderColor, backgroundColor: inputBg, color: textColor }}
+                  />
+                </label>
+                <label className="flex flex-col gap-1">
+                  <span style={{ color: subTextColor }}>{t(I18N.SIZE_WIDTH)}</span>
+                  <input
+                    type="number"
+                    value={editWidth}
+                    onChange={e => setEditWidth(Number(e.target.value))}
+                    className="rounded border px-2 py-1"
+                    style={{ borderColor, backgroundColor: inputBg, color: textColor }}
+                  />
+                </label>
+                <label className="flex flex-col gap-1">
+                  <span style={{ color: subTextColor }}>{t(I18N.SIZE_HEIGHT)}</span>
+                  <input
+                    type="number"
+                    value={editHeight}
+                    onChange={e => setEditHeight(Number(e.target.value))}
+                    className="rounded border px-2 py-1"
+                    style={{ borderColor, backgroundColor: inputBg, color: textColor }}
+                  />
+                </label>
+                <div className="flex flex-col gap-1">
+                  <span style={{ color: subTextColor }}>{t(I18N.CREATED_AT)}</span>
+                  <span>{note.created_at ? formatDate(new Date(note.created_at)) : '-'}</span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span style={{ color: subTextColor }}>{t(I18N.UPDATED_AT)}</span>
+                  <span>{note.updated_at ? formatDate(new Date(note.updated_at)) : '-'}</span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Details accordion */}
-        <div style={{ borderTop: `1px solid ${borderColor}` }}>
-          <button
-            type="button"
-            onClick={() => setShowDetails(!showDetails)}
-            className="flex w-full items-center justify-between px-4 py-2 text-xs hover:bg-black/5"
-            style={{ color: subTextColor }}>
-            <span>{t(I18N.DETAIL)}</span>
-            <HiChevronDown className={`h-4 w-4 transition-transform ${showDetails ? 'rotate-180' : ''}`} />
-          </button>
-
-          {showDetails && (
-            <div className="grid grid-cols-2 gap-3 px-4 pb-4 text-xs">
-              <label className="flex flex-col gap-1">
-                <span style={{ color: subTextColor }}>{t(I18N.PIN)}</span>
-                <select
-                  value={editIsFixed ? 'fixed' : 'unfixed'}
-                  onChange={e => setEditIsFixed(e.target.value === 'fixed')}
-                  className="rounded border px-2 py-1"
-                  style={{ borderColor, backgroundColor: inputBg, color: textColor }}>
-                  <option value="fixed">{t(I18N.PIN_SELECT_OPTION_FIXED)}</option>
-                  <option value="unfixed">{t(I18N.PIN_SELECT_OPTION_UNFIXED)}</option>
-                </select>
-              </label>
-              <label className="flex flex-col gap-1">
-                <span style={{ color: subTextColor }}>{t(I18N.OPEN)}</span>
-                <select
-                  value={editIsOpen ? 'open' : 'closed'}
-                  onChange={e => setEditIsOpen(e.target.value === 'open')}
-                  className="rounded border px-2 py-1"
-                  style={{ borderColor, backgroundColor: inputBg, color: textColor }}>
-                  <option value="open">{t(I18N.OPEN_SELECT_OPTION_NO)}</option>
-                  <option value="closed">{t(I18N.OPEN_SELECT_OPTION_YES)}</option>
-                </select>
-              </label>
-              <label className="flex flex-col gap-1">
-                <span style={{ color: subTextColor }}>X</span>
-                <input
-                  type="number"
-                  value={editPositionX}
-                  onChange={e => setEditPositionX(Number(e.target.value))}
-                  className="rounded border px-2 py-1"
-                  style={{ borderColor, backgroundColor: inputBg, color: textColor }}
-                />
-              </label>
-              <label className="flex flex-col gap-1">
-                <span style={{ color: subTextColor }}>Y</span>
-                <input
-                  type="number"
-                  value={editPositionY}
-                  onChange={e => setEditPositionY(Number(e.target.value))}
-                  className="rounded border px-2 py-1"
-                  style={{ borderColor, backgroundColor: inputBg, color: textColor }}
-                />
-              </label>
-              <label className="flex flex-col gap-1">
-                <span style={{ color: subTextColor }}>{t(I18N.SIZE_WIDTH)}</span>
-                <input
-                  type="number"
-                  value={editWidth}
-                  onChange={e => setEditWidth(Number(e.target.value))}
-                  className="rounded border px-2 py-1"
-                  style={{ borderColor, backgroundColor: inputBg, color: textColor }}
-                />
-              </label>
-              <label className="flex flex-col gap-1">
-                <span style={{ color: subTextColor }}>{t(I18N.SIZE_HEIGHT)}</span>
-                <input
-                  type="number"
-                  value={editHeight}
-                  onChange={e => setEditHeight(Number(e.target.value))}
-                  className="rounded border px-2 py-1"
-                  style={{ borderColor, backgroundColor: inputBg, color: textColor }}
-                />
-              </label>
-              <div className="flex flex-col gap-1">
-                <span style={{ color: subTextColor }}>{t(I18N.CREATED_AT)}</span>
-                <span>{note.created_at ? formatDate(new Date(note.created_at)) : '-'}</span>
-              </div>
-              <div className="flex flex-col gap-1">
-                <span style={{ color: subTextColor }}>{t(I18N.UPDATED_AT)}</span>
-                <span>{note.updated_at ? formatDate(new Date(note.updated_at)) : '-'}</span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Footer: buttons */}
-        <div className="flex items-center justify-between p-4" style={{ borderTop: `1px solid ${borderColor}` }}>
+        {/* Footer (sticky) */}
+        <div
+          className="flex shrink-0 items-center justify-between rounded-b-xl p-5"
+          style={{ borderTop: `1px solid ${borderColor}` }}>
           <button type="button" onClick={handleDelete} className="text-xs text-red-500 hover:text-red-700">
             {t(I18N.DELETE)}
           </button>
@@ -276,8 +291,8 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
             </button>
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
