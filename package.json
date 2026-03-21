@@ -59,6 +59,7 @@
       "eslint --fix"
     ]
   },
+  "packageManager": "pnpm@10.20.0",
   "pnpm": {
     "overrides": {
       "@vitejs/plugin-react": "^5.2.0"

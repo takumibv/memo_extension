@@ -1,43 +1,28 @@
-name: CI (WXT)
+name: CI
 
 on:
   pull_request:
     paths:
-      - 'wxt/**'
+      - 'src/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'wxt.config.ts'
+      - 'tsconfig.json'
       - '.github/workflows/ci-wxt.yml'
   push:
     branches: [main]
     paths:
-      - 'wxt/**'
+      - 'src/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'wxt.config.ts'
+      - 'tsconfig.json'
       - '.github/workflows/ci-wxt.yml'
 
-# 将来 wxt/ がルートに移動する際はここだけ変更する（例: '.' に変更）
-env:
-  WXT_DIR: wxt
-
 jobs:
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ${{ env.WXT_DIR }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile --prefer-offline
-      - run: pnpm lint
-
   type-check:
     name: Type Check
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ${{ env.WXT_DIR }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -51,9 +36,6 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ${{ env.WXT_DIR }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -63,3 +45,16 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile --prefer-offline
       - run: pnpm test
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile --prefer-offline
+      - run: pnpm build
