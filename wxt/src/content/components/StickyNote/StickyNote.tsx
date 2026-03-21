@@ -369,7 +369,12 @@ const StickyNote: React.FC<Props> = memo(
               </button>
               <button
                 onClick={onEditCancel}
-                className="pointer-events-auto rounded border border-gray-300 bg-white px-3 py-1 text-sm text-gray-700 hover:bg-gray-50">
+                className="pointer-events-auto rounded border px-3 py-1 text-sm"
+                style={{
+                  borderColor: borderColor,
+                  backgroundColor: dark ? 'rgba(255,255,255,0.1)' : 'white',
+                  color: textColor,
+                }}>
                 {t(I18N.CANCEL)}
               </button>
             </>
@@ -379,6 +384,8 @@ const StickyNote: React.FC<Props> = memo(
               description={description}
               is_fixed={is_fixed}
               color={color}
+              iconColor={iconColor}
+              activeIconColor={dark ? 'rgba(255,255,255,1)' : 'rgba(0,0,0,1)'}
               setIsEditing={setIsEditing}
               onClickFixedButton={onClickFixedButton}
               onChangeColor={onChangeColor}
@@ -402,7 +409,10 @@ const StickyNote: React.FC<Props> = memo(
           }}
           nodeRef={noteRef}>
           <div ref={resizeHandlerRef} className="absolute bottom-0 right-0 z-10 h-4 w-4 cursor-nwse-resize">
-            <HiArrowDownRight className="h-4 w-4 text-black/15" />
+            <HiArrowDownRight
+              className="h-4 w-4"
+              style={{ color: dark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' }}
+            />
           </div>
         </DraggableCore>
       </div>

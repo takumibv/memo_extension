@@ -11,6 +11,8 @@ type Props = {
   description?: string;
   is_fixed?: boolean;
   color?: string;
+  iconColor?: string;
+  activeIconColor?: string;
   setIsEditing: (isEditing: boolean) => void;
   onClickFixedButton: () => void;
   onChangeColor: (color: string) => void;
@@ -24,6 +26,8 @@ const StickyNoteActions: React.FC<Props> = memo(
     description = '',
     is_fixed,
     color,
+    iconColor = 'rgba(0,0,0,0.4)',
+    activeIconColor = 'rgba(0,0,0,1)',
     setIsEditing,
     onClickFixedButton,
     onChangeColor,
@@ -45,13 +49,11 @@ const StickyNoteActions: React.FC<Props> = memo(
       if (!showColorPicker) return;
 
       const handleClickOutside = (e: Event) => {
-        // composedPath() works across Shadow DOM boundaries
         const path = e.composedPath();
         if (colorPickerRef.current && !path.includes(colorPickerRef.current)) {
           setShowColorPicker(false);
         }
       };
-      // Use pointerdown on window — it has composed:true so it crosses Shadow DOM
       window.addEventListener('pointerdown', handleClickOutside, true);
       return () => window.removeEventListener('pointerdown', handleClickOutside, true);
     }, [showColorPicker]);
@@ -65,12 +67,12 @@ const StickyNoteActions: React.FC<Props> = memo(
           <button
             onClick={onClickFixedButton}
             className={`${iconBtnClass} ${!is_fixed ? 'bg-black/10 shadow-[0_0_0_4px_rgba(0,0,0,0.1)]' : ''}`}>
-            <PinIcon className={iconClass} fill={is_fixed ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,1)'} />
+            <PinIcon className={iconClass} fill={is_fixed ? iconColor : activeIconColor} />
           </button>
         </div>
         <div className="ml-3 flex items-center justify-center" title={t(I18N.EDIT)}>
           <button onClick={() => setIsEditing(true)} className={iconBtnClass}>
-            <HiPencilSquare className={iconClass} style={{ color: 'rgba(0,0,0,0.4)' }} />
+            <HiPencilSquare className={iconClass} style={{ color: iconColor }} />
           </button>
         </div>
         <div className="ml-3 flex items-center justify-center" title={isSuccessCopy ? t(I18N.COPIED) : t(I18N.COPY)}>
@@ -78,13 +80,13 @@ const StickyNoteActions: React.FC<Props> = memo(
             <CopySuccessIcon className={iconClass} fill="#22c55e" />
           ) : (
             <button onClick={() => copyClipboard(`${title}\n${description}`)} className={iconBtnClass}>
-              <CopyIcon className={iconClass} fill="rgba(0,0,0,0.4)" />
+              <CopyIcon className={iconClass} fill={iconColor} />
             </button>
           )}
         </div>
         <div className="relative ml-3 flex items-center justify-center" ref={colorPickerRef} title={t(I18N.COLOR)}>
           <button onClick={() => setShowColorPicker(!showColorPicker)} className={iconBtnClass}>
-            <PalletIcon className={iconClass} fill="rgba(0,0,0,0.4)" />
+            <PalletIcon className={iconClass} fill={iconColor} />
           </button>
           {showColorPicker && (
             <div className="pointer-events-auto absolute bottom-full left-0 z-50 mb-2 w-44 rounded-lg border border-gray-200 bg-white p-2 text-center shadow-lg">
@@ -101,13 +103,13 @@ const StickyNoteActions: React.FC<Props> = memo(
         </div>
         <div className="ml-3 flex items-center justify-center" title={t(I18N.DELETE)}>
           <button onClick={onClickDeleteButton} className={iconBtnClass}>
-            <HiTrash className={iconClass} style={{ color: 'rgba(0,0,0,0.4)' }} />
+            <HiTrash className={iconClass} style={{ color: iconColor }} />
           </button>
         </div>
         {!title && (
           <div className="ml-3 flex items-center justify-center" title={t(I18N.MINIMIZE)}>
             <button onClick={onCloseNote} className={iconBtnClass}>
-              <HiMinus className={iconClass} style={{ color: 'rgba(0,0,0,0.4)' }} />
+              <HiMinus className={iconClass} style={{ color: iconColor }} />
             </button>
           </div>
         )}
