@@ -8,6 +8,7 @@ export default defineContentScript({
   matches: ['<all_urls>'],
   runAt: 'document_idle',
   cssInjectionMode: 'manual',
+  registration: 'runtime',
 
   main() {
     if (window.top !== window) return;
