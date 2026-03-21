@@ -85,6 +85,9 @@ const Options = () => {
           pageInfos={pageInfos}
           setting={setting}
           onUpdateDefaultColor={handleUpdateDefaultColor}
+          onNavigateToMemos={() => {
+            setTab('memos');
+          }}
         />
       )}
     </div>

@@ -14,11 +14,12 @@ type Props = {
   pageInfos: PageInfo[];
   setting: Setting;
   onUpdateDefaultColor: (color: string) => Promise<void>;
+  onNavigateToMemos?: () => void;
 };
 
 type ImportMode = 'overwrite' | 'merge';
 
-const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor }: Props) => {
+const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavigateToMemos }: Props) => {
   const [showImportDialog, setShowImportDialog] = useState(false);
   const pendingFileRef = useRef<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -283,7 +284,7 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor }: Props
 
       {/* Usage */}
       <section className="mb-8">
-        <Usage isInit={isInit} />
+        <Usage isInit={isInit} onNavigateToMemos={onNavigateToMemos} />
       </section>
 
       {/* Maker */}

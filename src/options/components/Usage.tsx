@@ -3,6 +3,7 @@ import { I18N } from '@/shared/i18n/keys';
 
 type Props = {
   isInit?: boolean;
+  onNavigateToMemos?: () => void;
 };
 
 const UsageStep = ({ text, image }: { text: string; image?: string }) => (
@@ -12,7 +13,7 @@ const UsageStep = ({ text, image }: { text: string; image?: string }) => (
   </div>
 );
 
-const Usage = ({ isInit = false }: Props) => (
+const Usage = ({ isInit = false, onNavigateToMemos }: Props) => (
   <div
     className={`rounded-lg border border-gray-200 bg-white p-6 ${isInit ? 'ring-2 ring-gray-900 ring-offset-2' : ''}`}>
     <h2 className="mb-4 text-lg font-semibold text-gray-800">{t(I18N.HOW_TO_USE_HEADER)}</h2>
@@ -31,7 +32,7 @@ const Usage = ({ isInit = false }: Props) => (
           <button
             type="button"
             onClick={() => {
-              chrome.runtime.openOptionsPage?.();
+              onNavigateToMemos?.();
             }}
             className="text-blue-500 hover:underline">
             {t(I18N.USAGE06)}
