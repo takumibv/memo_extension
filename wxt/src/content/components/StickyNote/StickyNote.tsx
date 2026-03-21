@@ -35,6 +35,7 @@ type Props = {
   onUpdateNote: (note: Note) => Promise<boolean>;
   onDeleteNote: (note: Note) => Promise<boolean>;
   defaultColor?: string;
+  portalContainer?: HTMLElement;
 };
 
 const StickyNote: React.FC<Props> = memo(
@@ -55,6 +56,7 @@ const StickyNote: React.FC<Props> = memo(
     updated_at,
     color,
     defaultColor,
+    portalContainer,
   }) => {
     const defaultNote: Note = useMemo(
       () => ({
@@ -391,6 +393,7 @@ const StickyNote: React.FC<Props> = memo(
               onChangeColor={onChangeColor}
               onDeleteNote={() => onDeleteNote(defaultNote)}
               onCloseNote={() => onClickOpenButton(false)}
+              portalContainer={portalContainer}
             />
           )}
         </div>

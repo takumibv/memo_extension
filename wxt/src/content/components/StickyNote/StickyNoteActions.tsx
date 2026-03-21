@@ -19,6 +19,7 @@ type Props = {
   onChangeColor: (color: string) => void;
   onDeleteNote: () => void;
   onCloseNote: () => void;
+  portalContainer?: HTMLElement;
 };
 
 const StickyNoteActions: React.FC<Props> = memo(
@@ -34,6 +35,7 @@ const StickyNoteActions: React.FC<Props> = memo(
     onChangeColor,
     onDeleteNote,
     onCloseNote,
+    portalContainer,
   }) => {
     const { isSuccessCopy, copyClipboard } = useClipboard();
     const [colorPickerOpen, setColorPickerOpen] = useState(false);
@@ -77,7 +79,7 @@ const StickyNoteActions: React.FC<Props> = memo(
                 <PalletIcon className={iconClass} fill={iconColor} />
               </button>
             </PopoverTrigger>
-            <PopoverContent side="bottom" className="pointer-events-auto">
+            <PopoverContent side="bottom" className="pointer-events-auto" container={portalContainer}>
               <ColorPicker
                 hasDefault
                 color={color}

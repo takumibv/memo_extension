@@ -5,7 +5,11 @@ import { useCallback, useEffect, useState } from 'react';
 import type { ToContentMessage } from '@/message/types';
 import type { Note } from '@/shared/types/Note';
 
-const ContentApp: React.FC = () => {
+type Props = {
+  portalContainer?: HTMLElement;
+};
+
+const ContentApp: React.FC<Props> = ({ portalContainer }) => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [defaultColor, setDefaultColor] = useState<string>();
 
@@ -75,6 +79,7 @@ const ContentApp: React.FC = () => {
           onUpdateNote={updateNote}
           onDeleteNote={deleteNote}
           defaultColor={defaultColor}
+          portalContainer={portalContainer}
         />
       ))}
     </div>
