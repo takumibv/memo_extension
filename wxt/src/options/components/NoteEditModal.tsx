@@ -2,7 +2,7 @@ import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { formatDate, isEqualsObject } from '@/shared/utils/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { HiChevronDown, HiXMark } from 'react-icons/hi2';
+import { HiChevronDown } from 'react-icons/hi2';
 import type { Note } from '@/shared/types/Note';
 
 type Props = {
@@ -152,11 +152,6 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
             className="flex-1 bg-transparent text-lg font-semibold focus:outline-none"
             style={{ color: textColor }}
           />
-          {!changed && (
-            <button type="button" onClick={onClose} className="rounded p-1 hover:bg-black/10">
-              <HiXMark className="h-5 w-5" style={{ color: subTextColor }} />
-            </button>
-          )}
         </div>
 
         {/* Description */}
@@ -265,15 +260,13 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
             {t(I18N.DELETE)}
           </button>
           <div className="flex gap-2">
-            {changed ? (
-              <button
-                type="button"
-                onClick={handleDiscard}
-                className="px-4 py-1.5 text-sm hover:opacity-70"
-                style={{ color: subTextColor }}>
-                {t(I18N.DISCARD_CLOSE)}
-              </button>
-            ) : null}
+            <button
+              type="button"
+              onClick={changed ? handleDiscard : onClose}
+              className="px-4 py-1.5 text-sm hover:opacity-70"
+              style={{ color: subTextColor }}>
+              {changed ? t(I18N.DISCARD_CLOSE) : t(I18N.CLOSE)}
+            </button>
             <button
               type="button"
               onClick={handleSave}
