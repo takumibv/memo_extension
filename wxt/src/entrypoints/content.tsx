@@ -71,6 +71,15 @@ export default defineContentScript({
     const shadowWrapper = document.createElement('div');
     shadowRoot.appendChild(shadowWrapper);
 
+    // Prevent keyboard events from leaking to host page
+    // Fixes: YouTube space=pause, f=fullscreen, Notion backspace, etc.
+    const stopKeyboardPropagation = (e: Event) => {
+      e.stopPropagation();
+    };
+    shadowWrapper.addEventListener('keydown', stopKeyboardPropagation);
+    shadowWrapper.addEventListener('keyup', stopKeyboardPropagation);
+    shadowWrapper.addEventListener('keypress', stopKeyboardPropagation);
+
     // 3. Render React
     const root = createRoot(shadowWrapper);
     root.render(<ContentApp />);

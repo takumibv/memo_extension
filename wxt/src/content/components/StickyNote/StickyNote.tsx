@@ -11,6 +11,13 @@ import type React from 'react';
 
 const ROOT_DOM_ID = 'react-container-for-note-extension';
 
+const isDarkColor = (hex: string): boolean => {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return r * 0.299 + g * 0.587 + b * 0.114 < 128;
+};
+
 type Props = {
   id?: number;
   page_info_id?: number;
@@ -228,7 +235,14 @@ const StickyNote: React.FC<Props> = memo(
       },
     };
 
-    const noteBaseStyle = 'pointer-events-auto rounded bg-white left-0 top-0 transition-shadow duration-300';
+    const bgColor = color || defaultColor || '#fff';
+    const dark = isDarkColor(bgColor);
+    const textColor = dark ? '#f3f4f6' : '#1f2937';
+    const placeholderColor = dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.5)';
+    const borderColor = dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)';
+    const iconColor = dark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)';
+
+    const noteBaseStyle = 'pointer-events-auto rounded left-0 top-0 transition-shadow duration-300';
     const noteFixedStyle = is_fixed ? 'fixed shadow-lg' : 'absolute shadow-md';
     const noteForwardStyle = isDragging || isEditing ? 'z-[1252]' : is_fixed ? 'z-[1251]' : 'z-[1250]';
 
@@ -240,16 +254,22 @@ const StickyNote: React.FC<Props> = memo(
           className={`${noteBaseStyle} ${noteFixedStyle} ${noteForwardStyle}`}
           style={{
             transform: `translate(${displayPositionX}px, ${displayPositionY}px)`,
-            backgroundColor: color || defaultColor || '#fff',
+            backgroundColor: bgColor,
+            color: textColor,
           }}>
           <DraggableCore {...draggableCoreProps} nodeRef={noteRef}>
-            <div className="flex cursor-default flex-col p-1">
+            <div className="flex cursor-default items-center gap-1 p-1">
               <button
                 onClick={() => onClickOpenButton(true)}
                 title={title}
-                className="pointer-events-auto flex h-6 w-6 items-center justify-center rounded hover:bg-black/10">
+                className="pointer-events-auto flex h-6 w-6 shrink-0 items-center justify-center rounded hover:bg-black/10">
                 <LogoIcon className="pointer-events-none h-6 w-6" />
               </button>
+              {title && (
+                <span className="max-w-32 truncate text-xs" style={{ color: textColor }}>
+                  {title}
+                </span>
+              )}
             </div>
           </DraggableCore>
         </div>
@@ -265,13 +285,16 @@ const StickyNote: React.FC<Props> = memo(
           width: editWidth,
           height: editHeight,
           transform: `translate(${displayPositionX}px, ${displayPositionY}px)`,
-          backgroundColor: color || defaultColor || '#fff',
+          backgroundColor: bgColor,
+          color: textColor,
         }}>
         <DraggableCore {...draggableCoreProps} nodeRef={noteRef}>
           <div className="flex h-full cursor-default flex-col" onDoubleClick={() => setIsEditing(true)}>
             {/* Header with title input (editing) */}
             {isEditing && (
-              <div className="flex justify-between overflow-y-auto border-b border-black/10 p-2">
+              <div
+                className="flex justify-between overflow-y-auto p-2"
+                style={{ borderBottom: `1px solid ${borderColor}` }}>
                 <input
                   ref={titleInputRef}
                   placeholder={t(I18N.TITLE_SORT_OPTION)}
@@ -280,26 +303,29 @@ const StickyNote: React.FC<Props> = memo(
                   onChange={e => setEditTitle(e.target.value)}
                   onFocus={() => setIsEnableDrag(false)}
                   onBlur={() => setIsEnableDrag(true)}
-                  className="w-full break-all rounded border border-transparent bg-white text-base leading-tight text-gray-800 focus:border-black/10 focus:shadow-none focus:outline-none"
+                  className="w-full break-all rounded border border-transparent text-base leading-tight focus:shadow-none focus:outline-none"
+                  style={{ backgroundColor: 'transparent', color: textColor }}
                 />
               </div>
             )}
             {/* Header with title display (not editing) */}
             {!isEditing && title && (
-              <div className="flex justify-between overflow-y-auto border-b border-black/10 p-2">
+              <div
+                className="flex justify-between overflow-y-auto p-2"
+                style={{ borderBottom: `1px solid ${borderColor}` }}>
                 <h2
-                  className="flex-1 whitespace-pre-line break-all text-base leading-tight text-gray-800"
+                  className="flex-1 whitespace-pre-line break-all text-base leading-tight"
                   onDoubleClick={() => {
                     setTimeout(() => titleInputRef?.current?.focus(), 10);
                   }}>
-                  {title || <span className="text-black/50">{t(I18N.TITLE_SORT_OPTION)}</span>}
+                  {title || <span style={{ color: placeholderColor }}>{t(I18N.TITLE_SORT_OPTION)}</span>}
                 </h2>
                 <div className="ml-1 h-5 w-5">
                   <button
                     onClick={() => onClickOpenButton(false)}
                     title={t(I18N.MINIMIZE)}
                     className="flex h-5 w-5 items-center justify-center rounded hover:bg-black/10">
-                    <HiMinus className="h-4 w-4 text-black/40" />
+                    <HiMinus className="h-4 w-4" style={{ color: iconColor }} />
                   </button>
                 </div>
               </div>
@@ -314,7 +340,8 @@ const StickyNote: React.FC<Props> = memo(
                   onChange={e => setEditDescription(e.target.value)}
                   onFocus={() => setIsEnableDrag(false)}
                   onBlur={() => setIsEnableDrag(true)}
-                  className="mt-1 h-full w-full resize-none whitespace-pre-line break-all rounded border border-black/10 bg-white p-1 text-sm leading-tight text-gray-800 focus:shadow-none focus:outline-none"
+                  className="mt-1 h-full w-full resize-none whitespace-pre-line break-all rounded p-1 text-sm leading-tight focus:shadow-none focus:outline-none"
+                  style={{ backgroundColor: 'transparent', color: textColor, border: `1px solid ${borderColor}` }}
                 />
               ) : (
                 <div
@@ -322,8 +349,8 @@ const StickyNote: React.FC<Props> = memo(
                   onDoubleClick={() => {
                     setTimeout(() => descriptionTextareaRef?.current?.focus(), 10);
                   }}>
-                  <p className="whitespace-pre-line break-all pt-2 text-sm leading-tight text-gray-800">
-                    {description || <span className="text-black/50">{t(I18N.NEW_NOTE_DESCRIPTION)}</span>}
+                  <p className="whitespace-pre-line break-all pt-2 text-sm leading-tight">
+                    {description || <span style={{ color: placeholderColor }}>{t(I18N.NEW_NOTE_DESCRIPTION)}</span>}
                   </p>
                 </div>
               )}
