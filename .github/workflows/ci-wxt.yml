@@ -19,6 +19,9 @@ on:
       - 'tsconfig.json'
       - '.github/workflows/ci-wxt.yml'
 
+permissions:
+  contents: read
+
 jobs:
   type-check:
     name: Type Check
