@@ -190,15 +190,17 @@ describe('noteStorage', () => {
     it('マイグレーション済みの場合はスキップする', async () => {
       mockStorage['note_storage_v2_migrated'] = true;
 
-      await migrateStorageIfNeeded();
+      const result = await migrateStorageIfNeeded();
 
+      expect(result).toEqual({ status: 'already_done' });
       // set が呼ばれるのはマイグレーションフラグの読み取りのみ
       expect(chrome.storage.local.set).not.toHaveBeenCalled();
     });
 
     it('旧形式データがない場合はフラグだけ設定する', async () => {
-      await migrateStorageIfNeeded();
+      const result = await migrateStorageIfNeeded();
 
+      expect(result).toEqual({ status: 'no_legacy_data' });
       expect(mockStorage['note_storage_v2_migrated']).toBe(true);
     });
 
@@ -209,7 +211,9 @@ describe('noteStorage', () => {
       ];
       mockStorage['notes_1'] = legacyNotes;
 
-      await migrateStorageIfNeeded();
+      const result = await migrateStorageIfNeeded();
+
+      expect(result).toEqual({ status: 'success', noteCount: 2, pageCount: 1 });
 
       // 個別ノートキーで保存されている
       expect(mockStorage['note_100']).toEqual(legacyNotes[0]);
@@ -219,8 +223,8 @@ describe('noteStorage', () => {
       const index = mockStorage['note_page_index'] as Record<string, number[]>;
       expect(index['1']).toEqual([100, 200]);
 
-      // 旧キーが削除されている
-      expect(mockStorage['notes_1']).toBeUndefined();
+      // Phase 1: 旧キーは削除しない（ロールバック安全性のため）
+      expect(mockStorage['notes_1']).toEqual(legacyNotes);
 
       // マイグレーションフラグが設定されている
       expect(mockStorage['note_storage_v2_migrated']).toBe(true);

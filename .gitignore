@@ -15,6 +15,7 @@ tsconfig.tsbuildinfo
 # env
 **/.env.*
 **/.env
+!**/.env.example
 
 # etc
 .DS_Store

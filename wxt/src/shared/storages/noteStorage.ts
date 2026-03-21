@@ -154,12 +154,26 @@ export const deleteNote = async (pageId: number, noteId?: number): Promise<NoteC
 // ===== マイグレーション =====
 
 /**
+ * 移行結果を返す型（アナリティクス連携用）
+ */
+export type MigrationResult =
+  | { status: 'already_done' }
+  | { status: 'no_legacy_data' }
+  | { status: 'success'; noteCount: number; pageCount: number }
+  | { status: 'error'; error: string };
+
+/**
  * 旧形式 (notes_{pageId}: Note[]) → 新形式 (note_{id}: Note + note_page_index) へマイグレーション
  * background script の起動時に1回だけ呼ぶ
+ *
+ * Phase 1 安全戦略:
+ * - 旧データは削除しない（Copy, not Move）
+ * - 新形式への書き込みのみ行う
+ * - 万が一バグがあれば旧バージョンに戻せばデータは無傷
  */
-export const migrateStorageIfNeeded = async (): Promise<void> => {
+export const migrateStorageIfNeeded = async (): Promise<MigrationResult> => {
   const migrationCheck = await getStorage(MIGRATION_KEY);
-  if (migrationCheck[MIGRATION_KEY]) return;
+  if (migrationCheck[MIGRATION_KEY]) return { status: 'already_done' };
 
   console.log('[Storage Migration] Checking for legacy storage format...');
 
@@ -169,7 +183,7 @@ export const migrateStorageIfNeeded = async (): Promise<void> => {
   if (legacyKeys.length === 0) {
     await setStorage(MIGRATION_KEY, true);
     console.log('[Storage Migration] No legacy data found. Skipping.');
-    return;
+    return { status: 'no_legacy_data' };
   }
 
   console.log(`[Storage Migration] Found ${legacyKeys.length} legacy page(s). Migrating...`);
@@ -198,8 +212,8 @@ export const migrateStorageIfNeeded = async (): Promise<void> => {
       newIndex[String(pageId)] = noteIds;
     }
 
-    // 旧キーを削除
-    await removeStorage(key);
+    // Phase 1: 旧キーは削除しない（ロールバック安全性のため）
+    // Phase 2（将来バージョン）で旧キーをクリーンアップする
   }
 
   // インデックスを保存
@@ -207,7 +221,8 @@ export const migrateStorageIfNeeded = async (): Promise<void> => {
   await setStorage(MIGRATION_KEY, true);
 
   const totalNotes = Object.values(newIndex).flat().length;
-  console.log(
-    `[Storage Migration] Complete. Migrated ${totalNotes} notes across ${Object.keys(newIndex).length} pages.`,
-  );
+  const pageCount = Object.keys(newIndex).length;
+  console.log(`[Storage Migration] Complete. Migrated ${totalNotes} notes across ${pageCount} pages.`);
+
+  return { status: 'success', noteCount: totalNotes, pageCount };
 };

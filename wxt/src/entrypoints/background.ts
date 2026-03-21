@@ -7,6 +7,7 @@ import {
   hasContentScript,
 } from '@/message/handler/background';
 import { setupPage } from '@/message/sender/background';
+import { analytics } from '@/shared/analytics/ga4';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { createNote, migrateStorageIfNeeded } from '@/shared/storages/noteStorage';
@@ -17,9 +18,25 @@ export const ROOT_DOM_ID = 'react-container-for-note-extension';
 
 export default defineBackground(() => {
   // ストレージマイグレーション（旧形式→インデックス方式）
-  migrateStorageIfNeeded().catch(err => {
-    console.error('[Background] Storage migration failed:', err);
-  });
+  migrateStorageIfNeeded()
+    .then(result => {
+      switch (result.status) {
+        case 'already_done':
+          analytics.trackMigrationSkip('already_done');
+          break;
+        case 'no_legacy_data':
+          analytics.trackMigrationSkip('no_legacy_data');
+          break;
+        case 'success':
+          analytics.trackMigrationSuccess(result.noteCount, result.pageCount);
+          break;
+      }
+    })
+    .catch(err => {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error('[Background] Storage migration failed:', message);
+      analytics.trackMigrationError(message);
+    });
 
   // install or Updateして初めて開いた時に呼ばれる
   chrome.runtime.onInstalled.addListener(details => {
@@ -36,6 +53,7 @@ export default defineBackground(() => {
     }
 
     console.log('previousVersion', previousVersion);
+    analytics.trackInstall(details.reason, previousVersion);
   });
 
   // 右クリックメニュー
