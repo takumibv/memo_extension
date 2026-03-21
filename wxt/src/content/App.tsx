@@ -1,32 +1,36 @@
 import StickyNote from '@/content/components/StickyNote/StickyNote';
+import { registerContentHandler, unregisterContentHandler } from '@/entrypoints/content';
 import { sendUpdateNote, sendDeleteNote } from '@/message/sender/contentScript';
 import { useCallback, useEffect, useState } from 'react';
+import type { ToContentMessage } from '@/message/types';
 import type { Note } from '@/shared/types/Note';
 
-type StateRef = {
-  setNotes: ((notes: Note[]) => void) | null;
-  setDefaultColor: ((color: string) => void) | null;
-};
-
-type Props = {
-  stateRef: StateRef;
-};
-
-const ContentApp: React.FC<Props> = ({ stateRef }) => {
+const ContentApp: React.FC = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [defaultColor, setDefaultColor] = useState<string>();
 
-  // Bind React state setters to the external state ref
-  // so the message handler (registered before React) can update state
   useEffect(() => {
-    stateRef.setNotes = setNotes;
-    stateRef.setDefaultColor = setDefaultColor;
+    console.log('どこでもメモ Extension is Running.');
+
+    const handleMessage = (msg: ToContentMessage) => {
+      switch (msg.type) {
+        case 'bg:setupPage':
+          if (msg.payload.notes) setNotes(msg.payload.notes);
+          if (msg.payload.defaultColor) setDefaultColor(msg.payload.defaultColor);
+          break;
+        case 'bg:setVisibility':
+          // TODO: handle visibility toggle
+          break;
+      }
+    };
+
+    // Register handler and replay any queued messages
+    registerContentHandler(handleMessage);
 
     return () => {
-      stateRef.setNotes = null;
-      stateRef.setDefaultColor = null;
+      unregisterContentHandler();
     };
-  }, [stateRef]);
+  }, []);
 
   const updateNote = useCallback(async (note: Note) => {
     try {
@@ -48,10 +52,6 @@ const ContentApp: React.FC<Props> = ({ stateRef }) => {
       // TODO: Error handling
     }
     return false;
-  }, []);
-
-  useEffect(() => {
-    console.log('どこでもメモ Extension is Running.');
   }, []);
 
   return (

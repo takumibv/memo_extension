@@ -3,22 +3,13 @@ import contentStyles from '@/content/content.css?inline';
 import { isToContentMessage } from '@/message/types';
 import { createRoot } from 'react-dom/client';
 import type { ToContentMessage } from '@/message/types';
-import type { Note } from '@/shared/types/Note';
 
 const ROOT_DOM_ID = 'react-container-for-note-extension';
 
-// Content script state (shared between React and message handler)
-type ContentState = {
-  setNotes: ((notes: Note[]) => void) | null;
-  setDefaultColor: ((color: string) => void) | null;
-};
+// Queue messages received before React mounts
+const pendingMessages: ToContentMessage[] = [];
+let onMessageCallback: ((msg: ToContentMessage) => void) | null = null;
 
-const state: ContentState = {
-  setNotes: null,
-  setDefaultColor: null,
-};
-
-// Message listener registered BEFORE React renders
 const handleMessages = (
   message: unknown,
   _sender: chrome.runtime.MessageSender,
@@ -27,17 +18,32 @@ const handleMessages = (
   if (!isToContentMessage(message)) return false;
 
   const msg = message as ToContentMessage;
-  switch (msg.type) {
-    case 'bg:setupPage':
-      if (msg.payload.notes) state.setNotes?.(msg.payload.notes);
-      if (msg.payload.defaultColor) state.setDefaultColor?.(msg.payload.defaultColor);
-      break;
-    case 'bg:setVisibility':
-      // TODO: handle visibility toggle
-      break;
+  if (onMessageCallback) {
+    // React is mounted, dispatch directly
+    onMessageCallback(msg);
+  } else {
+    // React not yet mounted, queue
+    pendingMessages.push(msg);
   }
   sendResponse();
   return true;
+};
+
+/**
+ * Called by ContentApp on mount to register its handler
+ * and replay any queued messages.
+ */
+export const registerContentHandler = (handler: (msg: ToContentMessage) => void) => {
+  onMessageCallback = handler;
+  // Replay queued messages
+  while (pendingMessages.length > 0) {
+    const msg = pendingMessages.shift();
+    if (msg) handler(msg);
+  }
+};
+
+export const unregisterContentHandler = () => {
+  onMessageCallback = null;
 };
 
 export default defineContentScript({
@@ -65,9 +71,9 @@ export default defineContentScript({
     const shadowWrapper = document.createElement('div');
     shadowRoot.appendChild(shadowWrapper);
 
-    // 3. Render React (passes state binding to ContentApp)
+    // 3. Render React
     const root = createRoot(shadowWrapper);
-    root.render(<ContentApp stateRef={state} />);
+    root.render(<ContentApp />);
 
     // 4. Notify background AFTER listener is registered
     chrome.runtime.sendMessage({ type: 'content:ready' }).catch(() => {});
