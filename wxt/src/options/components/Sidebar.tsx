@@ -35,15 +35,7 @@ const Sidebar = ({ pageInfos, filterPageId, noteCountByPage, totalNoteCount, onF
         {pi.fav_icon_url && <img src={pi.fav_icon_url} alt="" className="h-4 w-4 shrink-0" />}
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm">{pi.page_title || pi.page_url}</p>
-          <a
-            href={pi.page_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block max-w-full truncate text-xs text-gray-400 hover:underline"
-            onClick={e => e.stopPropagation()}
-            title={pi.page_url}>
-            {pi.page_url}
-          </a>
+          <p className="truncate text-xs text-gray-400">{pi.page_url}</p>
         </div>
         <span className="text-xs text-gray-400">{noteCountByPage[pi.id ?? 0] || 0}</span>
       </button>
