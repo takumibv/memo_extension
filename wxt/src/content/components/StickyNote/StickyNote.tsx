@@ -228,8 +228,8 @@ const StickyNote: React.FC<Props> = memo(
       },
     };
 
-    const noteBaseStyle = `pointer-events-auto rounded bg-white absolute left-0 top-0 transition-shadow duration-300`;
-    const noteFixedStyle = is_fixed ? 'fixed shadow-lg' : 'shadow-md';
+    const noteBaseStyle = 'pointer-events-auto rounded bg-white left-0 top-0 transition-shadow duration-300';
+    const noteFixedStyle = is_fixed ? 'fixed shadow-lg' : 'absolute shadow-md';
     const noteForwardStyle = isDragging || isEditing ? 'z-[1252]' : is_fixed ? 'z-[1251]' : 'z-[1250]';
 
     if (!is_open) {

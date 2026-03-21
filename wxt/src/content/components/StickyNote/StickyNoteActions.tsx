@@ -42,15 +42,18 @@ const StickyNoteActions: React.FC<Props> = memo(
     const colorPickerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-      const handleClickOutside = (e: MouseEvent) => {
-        if (colorPickerRef.current && !colorPickerRef.current.contains(e.target as Node)) {
+      if (!showColorPicker) return;
+
+      const handleClickOutside = (e: Event) => {
+        // composedPath() works across Shadow DOM boundaries
+        const path = e.composedPath();
+        if (colorPickerRef.current && !path.includes(colorPickerRef.current)) {
           setShowColorPicker(false);
         }
       };
-      if (showColorPicker) {
-        document.addEventListener('mousedown', handleClickOutside);
-      }
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+      // Use pointerdown on window — it has composed:true so it crosses Shadow DOM
+      window.addEventListener('pointerdown', handleClickOutside, true);
+      return () => window.removeEventListener('pointerdown', handleClickOutside, true);
     }, [showColorPicker]);
 
     const iconBtnClass = 'pointer-events-auto flex h-5 w-5 items-center justify-center rounded hover:bg-black/10';
@@ -84,7 +87,7 @@ const StickyNoteActions: React.FC<Props> = memo(
             <PalletIcon className={iconClass} fill="rgba(0,0,0,0.4)" />
           </button>
           {showColorPicker && (
-            <div className="absolute bottom-full left-0 z-50 mb-2 w-44 rounded-lg border border-gray-200 bg-white p-2 text-center shadow-lg">
+            <div className="pointer-events-auto absolute bottom-full left-0 z-50 mb-2 w-44 rounded-lg border border-gray-200 bg-white p-2 text-center shadow-lg">
               <ColorPicker
                 hasDefault
                 color={color}
