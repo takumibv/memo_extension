@@ -3,6 +3,9 @@ import { defineConfig } from 'wxt';
 export default defineConfig({
   srcDir: 'src',
   modules: ['@wxt-dev/module-react'],
+  runner: {
+    disabled: true,
+  },
   manifest: {
     name: '__MSG_extensionName__',
     description: '__MSG_extensionDescription__',
@@ -13,7 +16,10 @@ export default defineConfig({
       default_popup: 'popup.html',
       default_icon: { '34': 'icon-34.png' },
     },
-    options_page: 'options.html',
+    options_ui: {
+      page: 'options.html',
+      open_in_tab: true,
+    },
     icons: {
       '16': 'icon-16.png',
       '128': 'icon-128.png',
