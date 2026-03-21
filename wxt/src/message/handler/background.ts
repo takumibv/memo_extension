@@ -233,7 +233,10 @@ const handleMessages = (
     .then(data => sendResponse({ data }))
     .catch((err: unknown) => {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      console.error('[handleMessages] Error:', errorMessage);
+      // 「このページでは使用できません」は正常系なのでログ不要
+      if (errorMessage !== 'このページでは使用できません') {
+        console.error('[handleMessages] Error:', errorMessage);
+      }
       sendResponse({ error: errorMessage });
     });
 
