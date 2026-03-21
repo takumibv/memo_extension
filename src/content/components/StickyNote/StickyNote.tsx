@@ -219,11 +219,13 @@ const StickyNote: React.FC<Props> = memo(
 
     const draggableCoreProps = {
       scale: 1,
+      enableUserSelectHack: false,
       onStart: (_: unknown, data: { x: number; y: number }) => {
         setEnableOpenButtonThreshold(0);
         setIsDragging(true);
         setDragStartPositionX(displayPositionX - data.x);
         setDragStartPositionY(displayPositionY - data.y);
+        document.body.style.userSelect = 'none';
       },
       onDrag: (_: unknown, data: { x: number; y: number }) => {
         if (!isEnableDrag) return;
@@ -232,6 +234,7 @@ const StickyNote: React.FC<Props> = memo(
       },
       onStop: () => {
         setIsDragging(false);
+        document.body.style.userSelect = '';
         if (position_x !== editPositionX || position_y !== editPositionY) {
           onUpdateNote({ ...defaultNote, position_x: editPositionX, position_y: editPositionY });
         }
@@ -395,12 +398,15 @@ const StickyNote: React.FC<Props> = memo(
 
         {/* Resize handler */}
         <DraggableCore
+          enableUserSelectHack={false}
           onStart={(_, data) => {
             setDragStartPositionX(editWidth - data.x);
             setDragStartPositionY(editHeight - data.y);
+            document.body.style.userSelect = 'none';
           }}
           onDrag={(_, data) => setEditSize(dragStartPositionX + data.x, dragStartPositionY + data.y)}
           onStop={() => {
+            document.body.style.userSelect = '';
             if (width !== editWidth || height !== editHeight) {
               onUpdateNote({ ...defaultNote, width: editWidth, height: editHeight });
             }
