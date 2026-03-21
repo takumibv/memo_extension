@@ -160,16 +160,16 @@ const NoteCard = ({
             <HiTrash className="h-4 w-4" style={{ color: iconColor }} />
           </button>
         </div>
-        <div className="text-right text-xs" style={{ color: subTextColor }}>
+        <div className="flex gap-3 text-xs" style={{ color: subTextColor }}>
           {note.created_at && (
-            <div>
+            <span>
               {t(I18N.CREATED_AT)} {formatDate(new Date(note.created_at))}
-            </div>
+            </span>
           )}
           {note.updated_at && (
-            <div>
+            <span>
               {t(I18N.UPDATED_AT)} {formatDate(new Date(note.updated_at))}
-            </div>
+            </span>
           )}
         </div>
       </div>
