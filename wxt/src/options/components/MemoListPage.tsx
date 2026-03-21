@@ -174,7 +174,7 @@ const MemoListPage = ({ notes, pageInfos, defaultColor, isLoading, onUpdateNote,
                 href={filterPageInfo.page_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block truncate text-xs text-gray-400 hover:underline"
+                className="inline-block max-w-full truncate text-xs text-gray-400 hover:underline"
                 title={filterPageInfo.page_url}>
                 {filterPageInfo.page_url}
               </a>

@@ -39,7 +39,7 @@ const Sidebar = ({ pageInfos, filterPageId, noteCountByPage, totalNoteCount, onF
             href={pi.page_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="block truncate text-xs text-gray-400 hover:underline"
+            className="inline-block max-w-full truncate text-xs text-gray-400 hover:underline"
             onClick={e => e.stopPropagation()}
             title={pi.page_url}>
             {pi.page_url}
