@@ -1,9 +1,10 @@
 import { ColorPicker } from '@/shared/components/ColorPicker';
 import { PinIcon, CopyIcon, PalletIcon, CopySuccessIcon } from '@/shared/components/Icon';
+import { Popover, PopoverTrigger, PopoverContent } from '@/shared/components/ui/Popover';
 import { useClipboard } from '@/shared/hooks/useClipboard';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
-import { memo, useState, useRef, useEffect } from 'react';
+import { memo, useState } from 'react';
 import { HiMinus, HiPencilSquare, HiTrash } from 'react-icons/hi2';
 
 type Props = {
@@ -35,28 +36,13 @@ const StickyNoteActions: React.FC<Props> = memo(
     onCloseNote,
   }) => {
     const { isSuccessCopy, copyClipboard } = useClipboard();
+    const [colorPickerOpen, setColorPickerOpen] = useState(false);
 
     const onClickDeleteButton = () => {
       if (confirm(`"${title || t(I18N.NOTE)}" ${t(I18N.CONFIRM_REMOVE_NEXT_NOTE)}`)) {
         onDeleteNote();
       }
     };
-
-    const [showColorPicker, setShowColorPicker] = useState(false);
-    const colorPickerRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-      if (!showColorPicker) return;
-
-      const handleClickOutside = (e: Event) => {
-        const path = e.composedPath();
-        if (colorPickerRef.current && !path.includes(colorPickerRef.current)) {
-          setShowColorPicker(false);
-        }
-      };
-      window.addEventListener('pointerdown', handleClickOutside, true);
-      return () => window.removeEventListener('pointerdown', handleClickOutside, true);
-    }, [showColorPicker]);
 
     const iconBtnClass = 'pointer-events-auto flex h-5 w-5 items-center justify-center rounded hover:bg-black/10';
     const iconClass = 'h-5 w-5';
@@ -84,22 +70,24 @@ const StickyNoteActions: React.FC<Props> = memo(
             </button>
           )}
         </div>
-        <div className="relative ml-3 flex items-center justify-center" ref={colorPickerRef} title={t(I18N.COLOR)}>
-          <button onClick={() => setShowColorPicker(!showColorPicker)} className={iconBtnClass}>
-            <PalletIcon className={iconClass} fill={iconColor} />
-          </button>
-          {showColorPicker && (
-            <div className="pointer-events-auto absolute left-0 top-full z-50 mt-2 w-44 rounded-lg border border-gray-200 bg-white text-center shadow-lg">
+        <div className="ml-3 flex items-center justify-center" title={t(I18N.COLOR)}>
+          <Popover open={colorPickerOpen} onOpenChange={setColorPickerOpen}>
+            <PopoverTrigger asChild>
+              <button className={iconBtnClass}>
+                <PalletIcon className={iconClass} fill={iconColor} />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent side="bottom" className="pointer-events-auto">
               <ColorPicker
                 hasDefault
                 color={color}
                 onChangeColor={c => {
                   onChangeColor(c);
-                  setShowColorPicker(false);
+                  setColorPickerOpen(false);
                 }}
               />
-            </div>
-          )}
+            </PopoverContent>
+          </Popover>
         </div>
         <div className="ml-3 flex items-center justify-center" title={t(I18N.DELETE)}>
           <button onClick={onClickDeleteButton} className={iconBtnClass}>

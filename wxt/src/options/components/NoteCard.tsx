@@ -1,5 +1,6 @@
 import { ColorPicker } from '@/shared/components/ColorPicker';
 import { PalletIcon } from '@/shared/components/Icon';
+import { Popover, PopoverTrigger, PopoverContent } from '@/shared/components/ui/Popover';
 import { useClipboard } from '@/shared/hooks/useClipboard';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
@@ -125,20 +126,16 @@ const NoteCard = ({
               <HiClipboard className="h-4 w-4 text-gray-500" />
             )}
           </button>
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setShowColorPicker(!showColorPicker)}
-              className="rounded p-1 hover:bg-black/10"
-              title={t(I18N.COLOR)}>
-              <PalletIcon className="h-4 w-4" fill="rgb(107 114 128)" />
-            </button>
-            {showColorPicker && (
-              <div className="absolute bottom-full left-0 z-50 mb-2 w-44 rounded-lg border border-gray-200 bg-white p-2 shadow-lg">
-                <ColorPicker hasDefault color={note.color} onChangeColor={handleColorChange} />
-              </div>
-            )}
-          </div>
+          <Popover open={showColorPicker} onOpenChange={setShowColorPicker}>
+            <PopoverTrigger asChild>
+              <button type="button" className="rounded p-1 hover:bg-black/10" title={t(I18N.COLOR)}>
+                <PalletIcon className="h-4 w-4" fill="rgb(107 114 128)" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent side="bottom">
+              <ColorPicker hasDefault color={note.color} onChangeColor={handleColorChange} />
+            </PopoverContent>
+          </Popover>
           <button type="button" onClick={handleDelete} className="rounded p-1 hover:bg-black/10" title={t(I18N.DELETE)}>
             <HiTrash className="h-4 w-4 text-gray-500" />
           </button>
