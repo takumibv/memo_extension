@@ -141,7 +141,7 @@ const MemoListPage = ({ notes, pageInfos, defaultColor, isLoading, onUpdateNote,
       />
 
       {/* Main area */}
-      <main className="ml-64 flex-1">
+      <main className="ml-64 flex h-[calc(100vh-2.75rem)] flex-1 flex-col">
         {/* Search + Sort bar */}
         <div className="mb-4 flex items-center gap-4 px-6 pt-6">
           <div className="relative flex-1">
@@ -189,7 +189,7 @@ const MemoListPage = ({ notes, pageInfos, defaultColor, isLoading, onUpdateNote,
         {filteredNotes.length === 0 ? (
           <p className="px-6 py-8 text-center text-gray-400">{t(I18N.NO_NOTE)}</p>
         ) : (
-          <div ref={parentRef} className="h-[calc(100vh-10rem)] overflow-y-auto px-6 pb-6">
+          <div ref={parentRef} className="min-h-0 flex-1 overflow-y-auto px-6 pb-6">
             <div style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
               {virtualizer.getVirtualItems().map(virtualItem => {
                 const note = filteredNotes[virtualItem.index];
