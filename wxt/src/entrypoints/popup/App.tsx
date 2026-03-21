@@ -104,7 +104,7 @@ const Popup = () => {
   }, []);
 
   return (
-    <div style={{ width: '320px' }}>
+    <div style={{ width: '320px', minHeight: '200px' }}>
       {/* Header */}
       <header className="sticky top-0 flex items-center border-b border-black/10 bg-white p-4">
         <div className="flex-1">
