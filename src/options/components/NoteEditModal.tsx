@@ -150,16 +150,14 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
         <DialogDescription className="sr-only">{t(I18N.INPUT_DESCRIPTION_PLACEHOLDER)}</DialogDescription>
 
         {/* Header (sticky) */}
-        <div
-          className="flex shrink-0 items-center justify-between rounded-t-xl p-5"
-          style={{ borderBottom: `1px solid ${borderColor}` }}>
+        <div className="shrink-0 rounded-t-xl p-2" style={{ borderBottom: `1px solid ${borderColor}` }}>
           <input
             ref={titleRef}
             type="text"
             value={editTitle}
             onChange={e => setEditTitle(e.target.value)}
             placeholder={t(I18N.TITLE_SORT_OPTION)}
-            className="flex-1 bg-transparent text-lg font-semibold focus:outline-none"
+            className="w-full rounded-lg bg-transparent px-3 py-1 text-lg font-semibold"
             style={{ color: textColor }}
           />
         </div>
@@ -167,14 +165,14 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
         {/* Scrollable body */}
         <div className="min-h-0 flex-1 overflow-y-auto">
           {/* Description */}
-          <div className="p-5">
+          <div className="p-2">
             <textarea
               ref={descRef}
               value={editDescription}
               onChange={e => setEditDescription(e.target.value)}
               placeholder={t(I18N.INPUT_DESCRIPTION_PLACEHOLDER)}
               rows={12}
-              className="w-full resize-none bg-transparent text-sm focus:outline-none"
+              className="w-full resize-none rounded-lg bg-transparent px-3 py-1 text-sm"
               style={{ color: textColor }}
             />
           </div>

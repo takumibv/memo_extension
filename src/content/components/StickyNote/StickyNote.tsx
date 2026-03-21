@@ -8,6 +8,7 @@ import { DraggableCore } from 'react-draggable';
 import { HiArrowDownRight, HiMinus } from 'react-icons/hi2';
 import type { Note } from '@/shared/types/Note';
 import type React from 'react';
+import { cn } from '@/lib/utils';
 
 const ROOT_DOM_ID = 'react-container-for-note-extension';
 
@@ -294,9 +295,7 @@ const StickyNote: React.FC<Props> = memo(
           <div className="flex h-full cursor-default flex-col" onDoubleClick={() => setIsEditing(true)}>
             {/* Header with title input (editing) */}
             {isEditing && (
-              <div
-                className="flex justify-between overflow-y-auto p-2"
-                style={{ borderBottom: `1px solid ${borderColor}` }}>
+              <div className="overflow-y-auto p-1" style={{ borderBottom: `1px solid ${borderColor}` }}>
                 <input
                   ref={titleInputRef}
                   placeholder={t(I18N.TITLE_SORT_OPTION)}
@@ -305,7 +304,7 @@ const StickyNote: React.FC<Props> = memo(
                   onChange={e => setEditTitle(e.target.value)}
                   onFocus={() => setIsEnableDrag(false)}
                   onBlur={() => setIsEnableDrag(true)}
-                  className="w-full break-all rounded border border-transparent text-base leading-tight focus:shadow-none focus:outline-none"
+                  className="w-full break-all rounded p-1 text-base leading-tight"
                   style={{ backgroundColor: 'transparent', color: textColor }}
                 />
               </div>
@@ -333,7 +332,7 @@ const StickyNote: React.FC<Props> = memo(
               </div>
             )}
             {/* Content */}
-            <div className="relative min-h-[5em] flex-1 px-2 pb-10">
+            <div className={cn('relative min-h-[5em] flex-1 pb-10', isEditing ? 'px-1' : 'px-2')}>
               {isEditing ? (
                 <textarea
                   ref={descriptionTextareaRef}
@@ -342,8 +341,8 @@ const StickyNote: React.FC<Props> = memo(
                   onChange={e => setEditDescription(e.target.value)}
                   onFocus={() => setIsEnableDrag(false)}
                   onBlur={() => setIsEnableDrag(true)}
-                  className="mt-1 h-full w-full resize-none whitespace-pre-line break-all rounded p-1 text-sm leading-tight focus:shadow-none focus:outline-none"
-                  style={{ backgroundColor: 'transparent', color: textColor, border: `1px solid ${borderColor}` }}
+                  className="mt-1 h-full w-full resize-none whitespace-pre-line break-all rounded p-1 text-sm leading-tight"
+                  style={{ backgroundColor: 'transparent', color: textColor }}
                 />
               ) : (
                 <div
