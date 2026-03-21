@@ -11,7 +11,7 @@ type Props = {
 };
 
 const Sidebar = ({ pageInfos, filterPageId, noteCountByPage, totalNoteCount, onFilter }: Props) => (
-  <aside className="fixed left-0 top-11 flex h-[calc(100vh-2.75rem)] w-64 flex-col overflow-y-auto border-r border-gray-200 bg-white">
+  <aside className="fixed left-0 top-11 flex h-[calc(100vh-2.75rem)] w-64 flex-col overflow-y-auto border-r border-gray-200 bg-white p-4">
     <button
       type="button"
       onClick={() => onFilter(null)}

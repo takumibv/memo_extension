@@ -66,7 +66,7 @@ const NoteCard = ({
       style={{ backgroundColor: bgColor, color: textColor, borderWidth: 1, borderColor }}
       onDoubleClick={() => onEdit(note, 'title')}>
       {/* Title */}
-      <h3 className="mb-1 truncate text-sm font-semibold">{note.title || t(I18N.NEW_NOTE_TITLE)}</h3>
+      {note.title && <h3 className="mb-1 truncate text-sm font-semibold">{note.title}</h3>}
 
       {/* Description (collapsible) */}
       {note.description && (
@@ -82,7 +82,7 @@ const NoteCard = ({
               onClick={() => setIsExpanded(!isExpanded)}
               className="mt-1 flex items-center gap-0.5 text-xs opacity-60 hover:opacity-100">
               <HiChevronDown className={`h-3 w-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-              {isExpanded ? t(I18N.CLOSE) : '...'}
+              {isExpanded ? t(I18N.CLOSE) : t(I18N.DETAIL)}
             </button>
           )}
         </div>
@@ -160,9 +160,18 @@ const NoteCard = ({
             <HiTrash className="h-4 w-4" style={{ color: iconColor }} />
           </button>
         </div>
-        <span className="text-xs" style={{ color: subTextColor }}>
-          {note.updated_at ? formatDate(new Date(note.updated_at)) : ''}
-        </span>
+        <div className="text-right text-xs" style={{ color: subTextColor }}>
+          {note.created_at && (
+            <div>
+              {t(I18N.CREATED_AT)} {formatDate(new Date(note.created_at))}
+            </div>
+          )}
+          {note.updated_at && (
+            <div>
+              {t(I18N.UPDATED_AT)} {formatDate(new Date(note.updated_at))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
