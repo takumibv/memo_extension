@@ -81,6 +81,38 @@ src/
   styles/            # Global CSS
 ```
 
+## Release
+
+### 1. バージョン更新
+
+```bash
+npm version patch  # 0.5.0 → 0.5.1
+npm version minor  # 0.5.0 → 0.6.0
+npm version major  # 0.5.0 → 1.0.0
+```
+
+### 2. ビルド & ZIP作成
+
+```bash
+pnpm build       # .output/chrome-mv3/ にビルド
+pnpm zip         # .output/ に zip ファイルを生成
+```
+
+### 3. Chrome Web Store にアップロード
+
+1. [Developer Dashboard](https://chrome.google.com/webstore/devconsole) を開く
+2. 対象の拡張機能 →「パッケージ」→「新しいパッケージをアップロード」
+3. `.output/memo-extension-X.X.X-chrome.zip` をアップロード
+4. 変更内容を確認して「審査に提出」
+
+### リリース前チェックリスト
+
+- [ ] `pnpm test` — テスト全パス
+- [ ] `pnpm type-check` — 型エラーなし
+- [ ] `pnpm build` — ビルド成功
+- [ ] `.env` に `VITE_GA4_*` が設定されている
+- [ ] 旧バージョンからのアップデート動作確認済み
+
 ## License
 
 [MIT](LICENSE)
