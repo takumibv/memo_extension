@@ -366,17 +366,13 @@ const StickyNote: React.FC<Props> = memo(
             <>
               <button
                 onClick={onEditDone}
-                className="pointer-events-auto mr-1 rounded bg-orange-500 px-3 py-1 text-sm text-white hover:bg-orange-600">
+                className="pointer-events-auto mr-1 rounded bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600">
                 {t(I18N.SAVE)}
               </button>
               <button
                 onClick={onEditCancel}
-                className="pointer-events-auto rounded border px-3 py-1 text-sm"
-                style={{
-                  borderColor: borderColor,
-                  backgroundColor: dark ? 'rgba(255,255,255,0.1)' : 'white',
-                  color: textColor,
-                }}>
+                className="pointer-events-auto px-3 py-1 text-sm"
+                style={{ color: textColor }}>
                 {t(I18N.CANCEL)}
               </button>
             </>

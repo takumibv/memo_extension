@@ -111,7 +111,7 @@ const Popup = () => {
           <button
             onClick={onClickAddNote}
             disabled={!isEnabled}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500 text-white shadow-md hover:bg-orange-600 disabled:opacity-50">
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500 text-white shadow-md hover:bg-blue-600 disabled:opacity-50">
             <HiPlus className="h-5 w-5" />
           </button>
         </div>
