@@ -1,3 +1,4 @@
+import { sendUpdatePageInfo } from '@/message/sender/options';
 import NoteCard from '@/options/components/NoteCard';
 import NoteEditModal from '@/options/components/NoteEditModal';
 import Sidebar from '@/options/components/Sidebar';
@@ -5,7 +6,7 @@ import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useMemo, useRef, useState } from 'react';
-import { HiMagnifyingGlass, HiXMark } from 'react-icons/hi2';
+import { HiMagnifyingGlass, HiPencilSquare, HiXMark } from 'react-icons/hi2';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
 
@@ -18,9 +19,18 @@ type Props = {
   isLoading: boolean;
   onUpdateNote: (note: Note) => Promise<void>;
   onDeleteNote: (note: Note) => Promise<void>;
+  onPageInfosChange: (pageInfos: PageInfo[]) => void;
 };
 
-const MemoListPage = ({ notes, pageInfos, defaultColor, isLoading, onUpdateNote, onDeleteNote }: Props) => {
+const MemoListPage = ({
+  notes,
+  pageInfos,
+  defaultColor,
+  isLoading,
+  onUpdateNote,
+  onDeleteNote,
+  onPageInfosChange,
+}: Props) => {
   const [filterPageId, setFilterPageId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortKey, setSortKey] = useState<SortKey>(() => {
@@ -29,6 +39,8 @@ const MemoListPage = ({ notes, pageInfos, defaultColor, isLoading, onUpdateNote,
   });
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [editFocus, setEditFocus] = useState<'title' | 'description'>('title');
+  const [linkEditMode, setLinkEditMode] = useState(false);
+  const [editLink, setEditLink] = useState('');
   const parentRef = useRef<HTMLDivElement>(null);
 
   const handleSortChange = (key: SortKey) => {
@@ -75,11 +87,38 @@ const MemoListPage = ({ notes, pageInfos, defaultColor, isLoading, onUpdateNote,
     return result;
   }, [notes, filterPageId, searchQuery, sortKey, pageInfos]);
 
-  // Pages that have notes (for sidebar)
-  const activePageInfos = useMemo(
-    () => pageInfos.filter(pi => notes.some(n => n.page_info_id === pi.id)),
-    [pageInfos, notes],
-  );
+  // Pages that have notes (for sidebar), filtered by search and sorted
+  const activePageInfos = useMemo(() => {
+    let result = pageInfos.filter(pi => notes.some(n => n.page_info_id === pi.id));
+
+    // Search filter
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(
+        pi =>
+          (pi.page_title || '').toLowerCase().includes(q) ||
+          (pi.page_url || '').toLowerCase().includes(q) ||
+          // Also keep pages that have matching notes
+          notes.some(
+            n =>
+              n.page_info_id === pi.id &&
+              ((n.title || '').toLowerCase().includes(q) || (n.description || '').toLowerCase().includes(q)),
+          ),
+      );
+    }
+
+    // Sort
+    result.sort((a, b) => {
+      if (sortKey === 'title') {
+        return (a.page_title || '').localeCompare(b.page_title || '');
+      }
+      const dateA = sortKey === 'updated_at' ? a.updated_at : a.created_at;
+      const dateB = sortKey === 'updated_at' ? b.updated_at : b.created_at;
+      return (dateB || '').localeCompare(dateA || '');
+    });
+
+    return result;
+  }, [pageInfos, notes, searchQuery, sortKey]);
 
   const virtualizer = useVirtualizer({
     count: filteredNotes.length,
@@ -104,14 +143,38 @@ const MemoListPage = ({ notes, pageInfos, defaultColor, isLoading, onUpdateNote,
   };
 
   // Navigate to page URL
-  const handleGoToPage = (url: string) => {
-    chrome.tabs.query({ url, currentWindow: true }, tabs => {
-      if (tabs.length > 0 && tabs[0]?.id) {
-        chrome.tabs.update(tabs[0].id, { active: true });
+  const handleGoToPage = async (url: string) => {
+    try {
+      const [tab] = await chrome.tabs.query({ url, currentWindow: true });
+      if (tab?.id) {
+        await chrome.tabs.update(tab.id, { active: true });
+        // メモが古い場合があるため再読み込みさせる
+        await chrome.tabs.reload(tab.id);
       } else {
-        chrome.tabs.create({ url });
+        await chrome.tabs.create({ url });
       }
-    });
+    } catch {
+      alert(t('failed_load_page_msg'));
+    }
+  };
+
+  // Edit page URL
+  const handleEditLink = () => {
+    setEditLink(filterPageInfo?.page_url ?? '');
+    setLinkEditMode(true);
+  };
+
+  const handleSaveLink = async () => {
+    if (filterPageInfo && editLink !== filterPageInfo.page_url) {
+      const result = await sendUpdatePageInfo({
+        ...filterPageInfo,
+        page_url: editLink,
+      });
+      if (result.pageInfos) {
+        onPageInfosChange(result.pageInfos);
+      }
+    }
+    setLinkEditMode(false);
   };
 
   if (isLoading) {
@@ -166,22 +229,59 @@ const MemoListPage = ({ notes, pageInfos, defaultColor, isLoading, onUpdateNote,
 
         {/* Current filter page info */}
         {filterPageInfo && (
-          <div className="mx-6 mb-4 flex items-center gap-3 rounded-lg border bg-gray-200 p-3">
-            {filterPageInfo.fav_icon_url && <img src={filterPageInfo.fav_icon_url} alt="" className="h-4 w-4" />}
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-gray-800">{filterPageInfo.page_title}</p>
-              <a
-                href={filterPageInfo.page_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block max-w-full truncate text-xs text-gray-500 hover:underline"
-                title={filterPageInfo.page_url}>
-                {filterPageInfo.page_url}
-              </a>
+          <div className="mx-6 mb-4 rounded-lg border bg-gray-200 p-3">
+            <div className="flex items-center gap-3">
+              {filterPageInfo.fav_icon_url && <img src={filterPageInfo.fav_icon_url} alt="" className="h-4 w-4" />}
+              <p className="min-w-0 flex-1 truncate text-sm font-medium text-gray-800">{filterPageInfo.page_title}</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setFilterPageId(null);
+                  setLinkEditMode(false);
+                }}
+                className="rounded p-1 hover:bg-gray-300">
+                <HiXMark className="h-4 w-4 text-gray-500" />
+              </button>
             </div>
-            <button type="button" onClick={() => setFilterPageId(null)} className="rounded p-1 hover:bg-gray-300">
-              <HiXMark className="h-4 w-4 text-gray-500" />
-            </button>
+            <div className="mt-1 flex items-center gap-2">
+              {linkEditMode ? (
+                <>
+                  <input
+                    type="text"
+                    value={editLink}
+                    onChange={e => setEditLink(e.target.value)}
+                    className="min-w-0 flex-1 rounded border border-gray-300 px-2 py-1 text-xs focus:border-gray-500 focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSaveLink}
+                    className="rounded bg-gray-700 px-2 py-1 text-xs text-white hover:bg-gray-800">
+                    {t('save_msg')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLinkEditMode(false)}
+                    className="rounded border border-gray-400 px-2 py-1 text-xs text-gray-600 hover:bg-gray-300">
+                    {t('cancel_msg')}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <a
+                    href={filterPageInfo.page_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="min-w-0 flex-1 truncate text-xs text-gray-500 hover:underline"
+                    title={filterPageInfo.page_url}>
+                    {filterPageInfo.page_url}
+                  </a>
+                  <button type="button" onClick={handleEditLink} className="rounded p-0.5 hover:bg-gray-300">
+                    <HiPencilSquare className="h-3.5 w-3.5 text-gray-400" />
+                  </button>
+                </>
+              )}
+            </div>
+            {linkEditMode && <p className="mt-1 text-xs text-amber-600">{t('link_edit_note_msg')}</p>}
           </div>
         )}
 

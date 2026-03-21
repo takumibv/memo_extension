@@ -69,6 +69,7 @@ const Options = () => {
           isLoading={isLoading}
           onUpdateNote={handleUpdateNote}
           onDeleteNote={handleDeleteNote}
+          onPageInfosChange={setPageInfos}
         />
       ) : (
         <SettingsPage
