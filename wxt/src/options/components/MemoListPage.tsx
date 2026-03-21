@@ -23,10 +23,18 @@ type Props = {
 const MemoListPage = ({ notes, pageInfos, defaultColor, isLoading, onUpdateNote, onDeleteNote }: Props) => {
   const [filterPageId, setFilterPageId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortKey, setSortKey] = useState<SortKey>('updated_at');
+  const [sortKey, setSortKey] = useState<SortKey>(() => {
+    const saved = localStorage.getItem('memo_ext_sort_key');
+    return saved === 'created_at' || saved === 'title' ? saved : 'updated_at';
+  });
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [editFocus, setEditFocus] = useState<'title' | 'description'>('title');
   const parentRef = useRef<HTMLDivElement>(null);
+
+  const handleSortChange = (key: SortKey) => {
+    setSortKey(key);
+    localStorage.setItem('memo_ext_sort_key', key);
+  };
 
   // Find current filter page info
   const filterPageInfo = useMemo(
@@ -148,7 +156,7 @@ const MemoListPage = ({ notes, pageInfos, defaultColor, isLoading, onUpdateNote,
           </div>
           <select
             value={sortKey}
-            onChange={e => setSortKey(e.target.value as SortKey)}
+            onChange={e => handleSortChange(e.target.value as SortKey)}
             className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none">
             <option value="updated_at">{t(I18N.UPDATED_AT_SORT_OPTION)}</option>
             <option value="created_at">{t(I18N.CREATED_AT_SORT_OPTION)}</option>

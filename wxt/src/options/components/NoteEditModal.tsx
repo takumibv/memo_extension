@@ -24,7 +24,6 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
   const [editWidth, setEditWidth] = useState(note.width ?? 300);
   const [editHeight, setEditHeight] = useState(note.height ?? 180);
   const [showDetails, setShowDetails] = useState(false);
-  const [shake, setShake] = useState(false);
 
   const titleRef = useRef<HTMLInputElement>(null);
   const descRef = useRef<HTMLTextAreaElement>(null);
@@ -90,16 +89,10 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
 
   const handleClose = useCallback(() => {
     if (hasChanges()) {
-      setShake(true);
-      setTimeout(() => setShake(false), 500);
-      return;
+      if (!confirm(t(I18N.CONFIRM_REMOVE_NOTE))) return;
     }
     onClose();
   }, [hasChanges, onClose]);
-
-  const handleDiscard = () => {
-    onClose();
-  };
 
   const handleDelete = () => {
     if (confirm(`"${note.title || t(I18N.NOTE)}" ${t(I18N.CONFIRM_REMOVE_NEXT_NOTE)}`)) {
@@ -120,14 +113,19 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleSave, handleClose]);
 
+  const changed = hasChanges();
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <button type="button" className="absolute inset-0 bg-black/50" onClick={handleClose} aria-label="Close modal" />
+      {/* Backdrop - cursor default */}
+      <button
+        type="button"
+        className="absolute inset-0 cursor-default bg-black/50"
+        onClick={handleClose}
+        aria-label="Close modal"
+      />
       {/* Modal content */}
-      <div
-        className={`relative w-full max-w-lg rounded-xl shadow-2xl ${shake ? 'animate-shake' : ''}`}
-        style={{ backgroundColor: bgColor }}>
+      <div className="relative w-full max-w-lg rounded-xl shadow-2xl" style={{ backgroundColor: bgColor }}>
         {/* Header */}
         <div className="flex items-center justify-between border-b border-black/10 p-4">
           <input
@@ -241,14 +239,6 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
             {t(I18N.DELETE)}
           </button>
           <div className="flex gap-2">
-            {hasChanges() && (
-              <button
-                type="button"
-                onClick={handleDiscard}
-                className="rounded border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50">
-                {t(I18N.DISCARD_CLOSE)}
-              </button>
-            )}
             <button
               type="button"
               onClick={handleClose}
@@ -258,7 +248,8 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
             <button
               type="button"
               onClick={handleSave}
-              className="rounded bg-orange-500 px-4 py-1.5 text-sm text-white hover:bg-orange-600">
+              disabled={!changed}
+              className="rounded bg-orange-500 px-4 py-1.5 text-sm text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50">
               {t(I18N.SAVE)}
             </button>
           </div>

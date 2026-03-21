@@ -5,7 +5,7 @@ import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { formatDate } from '@/shared/utils/utils';
 import { useState } from 'react';
-import { HiPencilSquare, HiTrash, HiClipboard, HiCheck, HiFunnel } from 'react-icons/hi2';
+import { HiPencilSquare, HiTrash, HiClipboard, HiCheck, HiFunnel, HiChevronDown } from 'react-icons/hi2';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
 
@@ -32,6 +32,7 @@ const NoteCard = ({
 }: Props) => {
   const { isSuccessCopy, copyClipboard } = useClipboard();
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const bgColor = note.color || defaultColor || '#FFFFFF';
 
@@ -52,10 +53,25 @@ const NoteCard = ({
       style={{ backgroundColor: bgColor }}
       onDoubleClick={() => onEdit(note, 'title')}>
       {/* Title */}
-      <h3 className="mb-1 line-clamp-1 text-sm font-semibold text-gray-800">{note.title || t(I18N.NEW_NOTE_TITLE)}</h3>
+      <h3 className="mb-1 truncate text-sm font-semibold text-gray-800">{note.title || t(I18N.NEW_NOTE_TITLE)}</h3>
 
-      {/* Description */}
-      <p className="mb-3 line-clamp-3 whitespace-pre-line text-xs text-gray-600">{note.description || ''}</p>
+      {/* Description (collapsible) */}
+      {note.description && (
+        <div className="mb-3">
+          <p className={`whitespace-pre-line text-xs text-gray-600 ${isExpanded ? '' : 'max-h-16 overflow-hidden'}`}>
+            {note.description}
+          </p>
+          {(note.description.length > 100 || note.description.split('\n').length > 3) && (
+            <button
+              type="button"
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="mt-1 flex items-center gap-0.5 text-xs text-gray-400 hover:text-gray-600">
+              <HiChevronDown className={`h-3 w-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+              {isExpanded ? t(I18N.CLOSE) : '...'}
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Page info (shown when not filtered) */}
       {pageInfo && (
