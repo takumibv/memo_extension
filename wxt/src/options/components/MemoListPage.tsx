@@ -141,9 +141,9 @@ const MemoListPage = ({ notes, pageInfos, defaultColor, isLoading, onUpdateNote,
       />
 
       {/* Main area */}
-      <main className="ml-64 flex-1 p-6">
+      <main className="ml-64 flex-1">
         {/* Search + Sort bar */}
-        <div className="mb-4 flex items-center gap-4">
+        <div className="mb-4 flex items-center gap-4 px-6 pt-6">
           <div className="relative flex-1">
             <HiMagnifyingGlass className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <input
@@ -166,11 +166,18 @@ const MemoListPage = ({ notes, pageInfos, defaultColor, isLoading, onUpdateNote,
 
         {/* Current filter page info */}
         {filterPageInfo && (
-          <div className="mb-4 flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3">
+          <div className="mx-6 mb-4 flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3">
             {filterPageInfo.fav_icon_url && <img src={filterPageInfo.fav_icon_url} alt="" className="h-4 w-4" />}
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium text-gray-800">{filterPageInfo.page_title}</p>
-              <p className="truncate text-xs text-gray-400">{filterPageInfo.page_url}</p>
+              <a
+                href={filterPageInfo.page_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block truncate text-xs text-gray-400 hover:underline"
+                title={filterPageInfo.page_url}>
+                {filterPageInfo.page_url}
+              </a>
             </div>
             <button type="button" onClick={() => setFilterPageId(null)} className="rounded p-1 hover:bg-gray-100">
               <HiXMark className="h-4 w-4 text-gray-400" />
@@ -180,9 +187,9 @@ const MemoListPage = ({ notes, pageInfos, defaultColor, isLoading, onUpdateNote,
 
         {/* Note list */}
         {filteredNotes.length === 0 ? (
-          <p className="py-8 text-center text-gray-400">{t(I18N.NO_NOTE)}</p>
+          <p className="px-6 py-8 text-center text-gray-400">{t(I18N.NO_NOTE)}</p>
         ) : (
-          <div ref={parentRef} className="h-[calc(100vh-10rem)] overflow-y-auto">
+          <div ref={parentRef} className="h-[calc(100vh-10rem)] overflow-y-auto px-6 pb-6">
             <div style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
               {virtualizer.getVirtualItems().map(virtualItem => {
                 const note = filteredNotes[virtualItem.index];

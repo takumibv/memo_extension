@@ -77,7 +77,14 @@ const NoteCard = ({
       {pageInfo && (
         <div className="mb-3 flex items-center gap-2 rounded border border-gray-200/50 bg-white/50 px-2 py-1 text-xs text-gray-500">
           {pageInfo.fav_icon_url && <img src={pageInfo.fav_icon_url} alt="" className="h-3 w-3" />}
-          <span className="min-w-0 flex-1 truncate">{pageInfo.page_title || pageInfo.page_url}</span>
+          <a
+            href={pageInfo.page_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="min-w-0 flex-1 truncate hover:underline"
+            title={pageInfo.page_url}>
+            {pageInfo.page_title || pageInfo.page_url}
+          </a>
           <button
             type="button"
             onClick={() => onFilterByPage(pageInfo.id ?? null)}

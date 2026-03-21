@@ -28,7 +28,7 @@ const hasContentScript = async (tabId: number): Promise<boolean> => {
         return !!noteDOM;
       },
     });
-    return res.result as boolean;
+    return res?.result === true;
   } catch {
     return false;
   }
