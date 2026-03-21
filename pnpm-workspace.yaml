@@ -1,15 +1,1 @@
-packages:
-  - chrome-extension
-  - pages/content
-  - pages/options
-  - pages/popup
-  - packages/*
-  - tests/*
-
-onlyBuiltDependencies:
-  - '@parcel/watcher'
-  - '@swc/core'
-  - edgedriver
-  - esbuild
-  - geckodriver
-  - unrs-resolver
+packages: []

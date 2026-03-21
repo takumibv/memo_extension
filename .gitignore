@@ -8,9 +8,10 @@
 **/dist
 **/build
 **/dist-zip
-chrome-extension/manifest.js
-chrome-extension/pre-build.tsconfig.tsbuildinfo
-tsconfig.tsbuildinfo
+.output/
+
+# wxt generated
+.wxt/
 
 # env
 **/.env.*
@@ -20,9 +21,19 @@ tsconfig.tsbuildinfo
 # etc
 .DS_Store
 .idea
+tsconfig.tsbuildinfo
 **/.turbo
 
 # compiled
 **/tailwind-output.css
 
+# old implementation reference
 old/
+
+# legacy monorepo (removed, may have untracked residual files)
+chrome-extension/
+pages/
+packages/
+scripts/
+bash-scripts/
+tests/
