@@ -202,7 +202,6 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor }: Props
       {/* Export */}
       <section className="mb-8">
         <h2 className="mb-2 text-lg font-semibold text-gray-800">{t(I18N.EXPORT)}</h2>
-        <p className="mb-3 text-xs text-gray-400">{t('export_not_importable_msg')}</p>
         <div className="flex gap-3">
           <button
             type="button"
@@ -226,6 +225,7 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor }: Props
       {/* Data Transfer */}
       <section className="mb-8">
         <h2 className="mb-2 text-lg font-semibold text-gray-800">{t('data_transfer_msg')}</h2>
+        <p className="mb-3 text-xs text-gray-400">{t('export_not_importable_msg')}</p>
         <div className="flex gap-3">
           <button
             type="button"
