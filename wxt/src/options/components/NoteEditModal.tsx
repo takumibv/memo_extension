@@ -242,14 +242,14 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
             <button
               type="button"
               onClick={handleClose}
-              className="rounded border border-gray-300 bg-white px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50">
+              className="px-4 py-1.5 text-sm text-gray-500 hover:text-gray-800">
               {t(I18N.CLOSE)}
             </button>
             <button
               type="button"
               onClick={handleSave}
               disabled={!changed}
-              className="rounded bg-orange-500 px-4 py-1.5 text-sm text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50">
+              className="rounded bg-gray-900 px-4 py-1.5 text-sm text-white hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50">
               {t(I18N.SAVE)}
             </button>
           </div>

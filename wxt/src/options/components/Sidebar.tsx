@@ -16,7 +16,7 @@ const Sidebar = ({ pageInfos, filterPageId, noteCountByPage, totalNoteCount, onF
       type="button"
       onClick={() => onFilter(null)}
       className={`flex items-center gap-2 px-4 py-3 text-left text-sm transition-colors ${
-        filterPageId === null ? 'bg-orange-50 font-semibold text-orange-600' : 'text-gray-700 hover:bg-gray-50'
+        filterPageId === null ? 'bg-gray-100 font-semibold text-gray-900' : 'text-gray-700 hover:bg-gray-50'
       }`}>
       <span className="flex-1">{t(I18N.SHOW_ALL_NOTE)}</span>
       <span className="text-xs text-gray-400">{totalNoteCount}</span>
@@ -30,7 +30,7 @@ const Sidebar = ({ pageInfos, filterPageId, noteCountByPage, totalNoteCount, onF
         type="button"
         onClick={() => onFilter(pi.id ?? null)}
         className={`flex items-center gap-2 px-4 py-3 text-left text-sm transition-colors ${
-          filterPageId === pi.id ? 'bg-orange-50 font-semibold text-orange-600' : 'text-gray-700 hover:bg-gray-50'
+          filterPageId === pi.id ? 'bg-gray-100 font-semibold text-gray-900' : 'text-gray-700 hover:bg-gray-50'
         }`}>
         {pi.fav_icon_url && <img src={pi.fav_icon_url} alt="" className="h-4 w-4 shrink-0" />}
         <div className="min-w-0 flex-1">

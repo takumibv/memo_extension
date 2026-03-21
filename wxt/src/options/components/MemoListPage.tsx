@@ -117,7 +117,7 @@ const MemoListPage = ({ notes, pageInfos, defaultColor, isLoading, onUpdateNote,
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-16">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-orange-500" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-gray-900" />
       </div>
     );
   }
@@ -151,13 +151,13 @@ const MemoListPage = ({ notes, pageInfos, defaultColor, isLoading, onUpdateNote,
               placeholder={t(I18N.SEARCH_QUERY)}
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-orange-400 focus:outline-none"
+              className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-gray-500 focus:outline-none"
             />
           </div>
           <select
             value={sortKey}
             onChange={e => handleSortChange(e.target.value as SortKey)}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none">
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none">
             <option value="updated_at">{t(I18N.UPDATED_AT_SORT_OPTION)}</option>
             <option value="created_at">{t(I18N.CREATED_AT_SORT_OPTION)}</option>
             <option value="title">{t(I18N.TITLE_SORT_OPTION)}</option>

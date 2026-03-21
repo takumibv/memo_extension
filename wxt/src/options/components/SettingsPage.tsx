@@ -104,7 +104,7 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor }: Props
             href="https://x.com/takumi_bv"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-orange-500 hover:underline">
+            className="text-blue-500 hover:underline">
             @takumi_bv
           </a>
         </p>

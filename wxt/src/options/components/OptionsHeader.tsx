@@ -27,7 +27,7 @@ const OptionsHeader = ({ currentTab, onTabChange }: Props) => (
           onClick={() => onTabChange(key as Tab)}
           className={`px-4 py-2 text-sm transition-colors ${
             currentTab === key
-              ? 'border-b-2 border-orange-500 font-semibold text-orange-600'
+              ? 'border-b-2 border-gray-900 font-semibold text-gray-900'
               : 'text-gray-500 hover:text-gray-800'
           }`}>
           {t(label)}

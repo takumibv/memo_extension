@@ -46,7 +46,7 @@ const NoteCard = ({
   const dark = isDarkColor(bgColor);
   const textColor = dark ? '#f3f4f6' : '#1f2937';
   const subTextColor = dark ? 'rgba(255,255,255,0.6)' : 'rgba(107,114,128,1)';
-  const iconColor = dark ? 'rgba(255,255,255,0.5)' : 'rgba(107,114,128,1)';
+  const iconColor = dark ? 'rgba(147,197,253,0.8)' : 'rgba(59,130,246,1)';
   const borderColor = dark ? 'rgba(255,255,255,0.15)' : 'rgba(229,231,235,1)';
 
   const handleDelete = () => {

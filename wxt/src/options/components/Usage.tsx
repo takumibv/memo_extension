@@ -14,10 +14,10 @@ const UsageStep = ({ text, image }: { text: string; image?: string }) => (
 
 const Usage = ({ isInit = false }: Props) => (
   <div
-    className={`rounded-lg border border-gray-200 bg-white p-6 ${isInit ? 'ring-2 ring-orange-400 ring-offset-2' : ''}`}>
+    className={`rounded-lg border border-gray-200 bg-white p-6 ${isInit ? 'ring-2 ring-gray-900 ring-offset-2' : ''}`}>
     <h2 className="mb-4 text-lg font-semibold text-gray-800">{t(I18N.HOW_TO_USE_HEADER)}</h2>
 
-    {isInit && <p className="mb-6 text-sm font-medium text-orange-600">{t(I18N.WELCOME)}</p>}
+    {isInit && <p className="mb-6 text-sm font-medium text-gray-900">{t(I18N.WELCOME)}</p>}
 
     <div className="space-y-6">
       <UsageStep text={t(I18N.USAGE01)} image="/images/usage/usage01.png" />
@@ -33,7 +33,7 @@ const Usage = ({ isInit = false }: Props) => (
             onClick={() => {
               chrome.runtime.openOptionsPage?.();
             }}
-            className="text-orange-500 hover:underline">
+            className="text-blue-500 hover:underline">
             {t(I18N.USAGE06)}
           </button>
           {t(I18N.USAGE06_2)}
