@@ -236,6 +236,39 @@
   "text_download_msg": {
     "message": "txtダウンロード"
   },
+  "export_not_importable_msg": {
+    "message": ".csv, .txt 形式で書き出したメモはインポートできません"
+  },
+  "data_transfer_msg": {
+    "message": "データ引き継ぎ"
+  },
+  "data_export_msg": {
+    "message": "データのエクスポート"
+  },
+  "data_import_msg": {
+    "message": "データのインポート"
+  },
+  "import_confirm_title_msg": {
+    "message": "既存のメモが存在しています。"
+  },
+  "import_mode_overwrite_msg": {
+    "message": "既存データを削除して上書きする"
+  },
+  "import_mode_merge_msg": {
+    "message": "既存データを残してマージする"
+  },
+  "import_overwrite_note_msg": {
+    "message": "既存データを削除してもよろしいですか？"
+  },
+  "import_merge_note_msg": {
+    "message": "同じ id のデータは、更新日が新しい方に上書きされます"
+  },
+  "import_success_msg": {
+    "message": "データのインポートが完了しました"
+  },
+  "import_error_msg": {
+    "message": "インポートに失敗しました。ファイルの形式を確認してください。"
+  },
   "please_reload_msg": {
     "message": "ページをリロードしてください。"
   },

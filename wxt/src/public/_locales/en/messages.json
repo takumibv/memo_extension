@@ -236,6 +236,39 @@
   "text_download_msg": {
     "message": "txt Download"
   },
+  "export_not_importable_msg": {
+    "message": "Notes exported as .csv or .txt cannot be imported"
+  },
+  "data_transfer_msg": {
+    "message": "Data Transfer"
+  },
+  "data_export_msg": {
+    "message": "Export Data"
+  },
+  "data_import_msg": {
+    "message": "Import Data"
+  },
+  "import_confirm_title_msg": {
+    "message": "Existing notes found."
+  },
+  "import_mode_overwrite_msg": {
+    "message": "Delete existing data and overwrite"
+  },
+  "import_mode_merge_msg": {
+    "message": "Keep existing data and merge"
+  },
+  "import_overwrite_note_msg": {
+    "message": "Are you sure you want to delete existing data?"
+  },
+  "import_merge_note_msg": {
+    "message": "Data with the same ID will be overwritten by the one with the newer update date"
+  },
+  "import_success_msg": {
+    "message": "Data import completed successfully"
+  },
+  "import_error_msg": {
+    "message": "Import failed. Please check the file format."
+  },
   "please_reload_msg": {
     "message": "Reload the page."
   },
