@@ -89,7 +89,7 @@ const StickyNoteActions: React.FC<Props> = memo(
             <PalletIcon className={iconClass} fill={iconColor} />
           </button>
           {showColorPicker && (
-            <div className="pointer-events-auto absolute bottom-full left-0 z-50 mb-2 w-44 rounded-lg border border-gray-200 bg-white p-2 text-center shadow-lg">
+            <div className="pointer-events-auto absolute left-0 top-full z-50 mt-2 w-44 rounded-lg border border-gray-200 bg-white text-center shadow-lg">
               <ColorPicker
                 hasDefault
                 color={color}
