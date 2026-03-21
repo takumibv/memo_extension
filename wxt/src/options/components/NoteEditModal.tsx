@@ -14,6 +14,13 @@ type Props = {
   onClose: () => void;
 };
 
+const isDarkColor = (hex: string): boolean => {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return r * 0.299 + g * 0.587 + b * 0.114 < 128;
+};
+
 const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onDelete, onClose }: Props) => {
   const [editTitle, setEditTitle] = useState(note.title || '');
   const [editDescription, setEditDescription] = useState(note.description || '');
@@ -29,6 +36,11 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
   const descRef = useRef<HTMLTextAreaElement>(null);
 
   const bgColor = note.color || defaultColor || '#FFFFFF';
+  const dark = isDarkColor(bgColor);
+  const textColor = dark ? '#f3f4f6' : '#1f2937';
+  const subTextColor = dark ? 'rgba(255,255,255,0.5)' : 'rgba(107,114,128,1)';
+  const borderColor = dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)';
+  const inputBg = dark ? 'rgba(255,255,255,0.1)' : 'white';
 
   const hasChanges = useCallback(() => {
     const edited: Partial<Note> = {
@@ -87,12 +99,9 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
     editHeight,
   ]);
 
-  const handleClose = useCallback(() => {
-    if (hasChanges()) {
-      if (!confirm(t('discard_close_msg'))) return;
-    }
+  const handleDiscard = useCallback(() => {
     onClose();
-  }, [hasChanges, onClose]);
+  }, [onClose]);
 
   const handleDelete = () => {
     if (confirm(`"${note.title || t(I18N.NOTE)}" ${t(I18N.CONFIRM_REMOVE_NEXT_NOTE)}`)) {
@@ -100,45 +109,54 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
     }
   };
 
-  // Keyboard shortcut: Ctrl+Enter to save, Escape to close
+  // Keyboard shortcut: Ctrl+Enter to save, Escape to close (no-op if changed)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         handleSave();
       } else if (e.key === 'Escape') {
-        handleClose();
+        if (!hasChanges()) onClose();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleSave, handleClose]);
+  }, [handleSave, hasChanges, onClose]);
 
   const changed = hasChanges();
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop - cursor default */}
-      <button
-        type="button"
-        className="absolute inset-0 cursor-default bg-black/50"
-        onClick={handleClose}
-        aria-label="Close modal"
-      />
+      {/* Backdrop - not clickable when editing (changed) */}
+      {changed ? (
+        <div className="absolute inset-0 cursor-default bg-black/50" />
+      ) : (
+        <button
+          type="button"
+          className="absolute inset-0 cursor-default bg-black/50"
+          onClick={onClose}
+          aria-label="Close modal"
+        />
+      )}
       {/* Modal content */}
-      <div className="relative w-full max-w-lg rounded-xl shadow-2xl" style={{ backgroundColor: bgColor }}>
+      <div
+        className="relative w-full max-w-lg rounded-xl shadow-2xl"
+        style={{ backgroundColor: bgColor, color: textColor }}>
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-black/10 p-4">
+        <div className="flex items-center justify-between p-4" style={{ borderBottom: `1px solid ${borderColor}` }}>
           <input
             ref={titleRef}
             type="text"
             value={editTitle}
             onChange={e => setEditTitle(e.target.value)}
             placeholder={t(I18N.TITLE_SORT_OPTION)}
-            className="flex-1 bg-transparent text-lg font-semibold text-gray-800 placeholder:text-gray-400 focus:outline-none"
+            className="flex-1 bg-transparent text-lg font-semibold focus:outline-none"
+            style={{ color: textColor }}
           />
-          <button type="button" onClick={handleClose} className="rounded p-1 hover:bg-black/10">
-            <HiXMark className="h-5 w-5 text-gray-500" />
-          </button>
+          {!changed && (
+            <button type="button" onClick={onClose} className="rounded p-1 hover:bg-black/10">
+              <HiXMark className="h-5 w-5" style={{ color: subTextColor }} />
+            </button>
+          )}
         </div>
 
         {/* Description */}
@@ -149,16 +167,18 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
             onChange={e => setEditDescription(e.target.value)}
             placeholder={t(I18N.INPUT_DESCRIPTION_PLACEHOLDER)}
             rows={8}
-            className="w-full resize-none bg-transparent text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none"
+            className="w-full resize-none bg-transparent text-sm focus:outline-none"
+            style={{ color: textColor }}
           />
         </div>
 
         {/* Details accordion */}
-        <div className="border-t border-black/10">
+        <div style={{ borderTop: `1px solid ${borderColor}` }}>
           <button
             type="button"
             onClick={() => setShowDetails(!showDetails)}
-            className="flex w-full items-center justify-between px-4 py-2 text-xs text-gray-500 hover:bg-black/5">
+            className="flex w-full items-center justify-between px-4 py-2 text-xs hover:bg-black/5"
+            style={{ color: subTextColor }}>
             <span>{t(I18N.DETAIL)}</span>
             <HiChevronDown className={`h-4 w-4 transition-transform ${showDetails ? 'rotate-180' : ''}`} />
           </button>
@@ -166,85 +186,94 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
           {showDetails && (
             <div className="grid grid-cols-2 gap-3 px-4 pb-4 text-xs">
               <label className="flex flex-col gap-1">
-                <span className="text-gray-500">{t(I18N.PIN)}</span>
+                <span style={{ color: subTextColor }}>{t(I18N.PIN)}</span>
                 <select
                   value={editIsFixed ? 'fixed' : 'unfixed'}
                   onChange={e => setEditIsFixed(e.target.value === 'fixed')}
-                  className="rounded border border-gray-300 bg-white px-2 py-1">
+                  className="rounded border px-2 py-1"
+                  style={{ borderColor, backgroundColor: inputBg, color: textColor }}>
                   <option value="fixed">{t(I18N.PIN_SELECT_OPTION_FIXED)}</option>
                   <option value="unfixed">{t(I18N.PIN_SELECT_OPTION_UNFIXED)}</option>
                 </select>
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-gray-500">{t(I18N.OPEN)}</span>
+                <span style={{ color: subTextColor }}>{t(I18N.OPEN)}</span>
                 <select
                   value={editIsOpen ? 'open' : 'closed'}
                   onChange={e => setEditIsOpen(e.target.value === 'open')}
-                  className="rounded border border-gray-300 bg-white px-2 py-1">
+                  className="rounded border px-2 py-1"
+                  style={{ borderColor, backgroundColor: inputBg, color: textColor }}>
                   <option value="open">{t(I18N.OPEN_SELECT_OPTION_NO)}</option>
                   <option value="closed">{t(I18N.OPEN_SELECT_OPTION_YES)}</option>
                 </select>
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-gray-500">X</span>
+                <span style={{ color: subTextColor }}>X</span>
                 <input
                   type="number"
                   value={editPositionX}
                   onChange={e => setEditPositionX(Number(e.target.value))}
-                  className="rounded border border-gray-300 bg-white px-2 py-1"
+                  className="rounded border px-2 py-1"
+                  style={{ borderColor, backgroundColor: inputBg, color: textColor }}
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-gray-500">Y</span>
+                <span style={{ color: subTextColor }}>Y</span>
                 <input
                   type="number"
                   value={editPositionY}
                   onChange={e => setEditPositionY(Number(e.target.value))}
-                  className="rounded border border-gray-300 bg-white px-2 py-1"
+                  className="rounded border px-2 py-1"
+                  style={{ borderColor, backgroundColor: inputBg, color: textColor }}
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-gray-500">{t(I18N.SIZE_WIDTH)}</span>
+                <span style={{ color: subTextColor }}>{t(I18N.SIZE_WIDTH)}</span>
                 <input
                   type="number"
                   value={editWidth}
                   onChange={e => setEditWidth(Number(e.target.value))}
-                  className="rounded border border-gray-300 bg-white px-2 py-1"
+                  className="rounded border px-2 py-1"
+                  style={{ borderColor, backgroundColor: inputBg, color: textColor }}
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-gray-500">{t(I18N.SIZE_HEIGHT)}</span>
+                <span style={{ color: subTextColor }}>{t(I18N.SIZE_HEIGHT)}</span>
                 <input
                   type="number"
                   value={editHeight}
                   onChange={e => setEditHeight(Number(e.target.value))}
-                  className="rounded border border-gray-300 bg-white px-2 py-1"
+                  className="rounded border px-2 py-1"
+                  style={{ borderColor, backgroundColor: inputBg, color: textColor }}
                 />
               </label>
               <div className="flex flex-col gap-1">
-                <span className="text-gray-500">{t(I18N.CREATED_AT)}</span>
-                <span className="text-gray-700">{note.created_at ? formatDate(new Date(note.created_at)) : '-'}</span>
+                <span style={{ color: subTextColor }}>{t(I18N.CREATED_AT)}</span>
+                <span>{note.created_at ? formatDate(new Date(note.created_at)) : '-'}</span>
               </div>
               <div className="flex flex-col gap-1">
-                <span className="text-gray-500">{t(I18N.UPDATED_AT)}</span>
-                <span className="text-gray-700">{note.updated_at ? formatDate(new Date(note.updated_at)) : '-'}</span>
+                <span style={{ color: subTextColor }}>{t(I18N.UPDATED_AT)}</span>
+                <span>{note.updated_at ? formatDate(new Date(note.updated_at)) : '-'}</span>
               </div>
             </div>
           )}
         </div>
 
         {/* Footer: buttons */}
-        <div className="flex items-center justify-between border-t border-black/10 p-4">
+        <div className="flex items-center justify-between p-4" style={{ borderTop: `1px solid ${borderColor}` }}>
           <button type="button" onClick={handleDelete} className="text-xs text-red-500 hover:text-red-700">
             {t(I18N.DELETE)}
           </button>
           <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={handleClose}
-              className="px-4 py-1.5 text-sm text-gray-500 hover:text-gray-800">
-              {t(I18N.CLOSE)}
-            </button>
+            {changed ? (
+              <button
+                type="button"
+                onClick={handleDiscard}
+                className="px-4 py-1.5 text-sm hover:opacity-70"
+                style={{ color: subTextColor }}>
+                {t(I18N.DISCARD_CLOSE)}
+              </button>
+            ) : null}
             <button
               type="button"
               onClick={handleSave}

@@ -46,12 +46,43 @@ export const PalletIcon: FC<React.SVGProps<SVGSVGElement>> = props => (
 );
 
 export const LogoIcon: FC<React.SVGProps<SVGSVGElement>> = props => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
-    <path
-      fillRule="evenodd"
-      d="M4.125 3C3.089 3 2.25 3.84 2.25 4.875V18a3 3 0 003 3h15a3 3 0 01-3-3V4.875C17.25 3.839 16.411 3 15.375 3H4.125zM12 9.75a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5H12zm-.75-2.25a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5H12a.75.75 0 01-.75-.75zM6 12.75a.75.75 0 000 1.5h7.5a.75.75 0 000-1.5H6zm-.75 3.75a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5H6a.75.75 0 01-.75-.75zM6 6.75a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h3a.75.75 0 00.75-.75v-3A.75.75 0 009 6.75H6z"
-      clipRule="evenodd"
-    />
-    <path d="M18.75 6.75h1.875c.621 0 1.125.504 1.125 1.125V18a1.5 1.5 0 01-3 0V6.75z" />
+  <svg xmlns="http://www.w3.org/2000/svg" width="133" height="129" viewBox="0 0 132.649 129" {...props}>
+    <defs>
+      <clipPath id="clip-path">
+        <path
+          d="M1675.8,1023.732l96.238-53.745s-43.868-3.863-65.718,6.83-24.936,24.437-27.324,31.264A77.673,77.673,0,0,0,1675.8,1023.732Z"
+          transform="translate(-1675.798 -969.307)"
+          fill="none"
+          stroke="#707070"
+          strokeWidth="4"
+        />
+      </clipPath>
+    </defs>
+    <g transform="translate(-1824 -1067)">
+      <rect width="99" height="99" transform="translate(1824 1097)" fill="#ffec14" />
+      <path d="M4,4V95H95V4H4M0,0H99V99H0Z" transform="translate(1824 1097)" fill="#707070" />
+      <g transform="translate(1853.762 1069)" clipPath="url(#clip-path)">
+        <g transform="translate(-6.419 -12.724)">
+          <path
+            d="M1760.536,974.185l-89.734,54.477s-4.352-39.18,14.238-51.117,64.614-18.706,64.614-18.706Z"
+            transform="translate(-1669.343 -955.276)"
+            fill="#fff"
+          />
+          <path
+            d="M1669.343,1029.055A238.335,238.335,0,0,1,1711.631,989c25.725-18.894,58.507-33.723,58.507-33.723l28.8,23.105Z"
+            transform="translate(-1669.343 -955.276)"
+            fill="#e8e8e8"
+          />
+        </g>
+      </g>
+      <path
+        d="M1673.46,1027.328l.346-3.779a78.836,78.836,0,0,1,3.3-16.13c.174-.5.354-1.04.545-1.615a48.174,48.174,0,0,1,6.99-14.361,46.383,46.383,0,0,1,8.037-8.389,65.839,65.839,0,0,1,12.761-8.035c5.9-2.886,13.838-5,23.6-6.27a193,193,0,0,1,24.7-1.444c10.539,0,18.392.681,18.47.688l6.473.57Zm80.281-56.021c-26.13,0-39.733,3.973-46.544,7.306-19.46,9.524-23.4,21.373-25.75,28.453-.2.591-.382,1.149-.566,1.675a65.671,65.671,0,0,0-2.6,11.316l86.83-48.491C1762.051,971.427,1758.135,971.307,1753.741,971.307Z"
+        transform="translate(177.964 99.693)"
+        fill="#707070"
+      />
+      <rect width="63" height="5" transform="translate(1842 1132.89)" fill="#dfce11" />
+      <rect width="63" height="5" transform="translate(1842 1150.323)" fill="#dfce11" />
+      <rect width="63" height="5" transform="translate(1842 1167.756)" fill="#dfce11" />
+    </g>
   </svg>
 );
