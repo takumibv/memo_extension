@@ -34,9 +34,9 @@ type ContentGetAllNotes = { type: 'content:getAllNotes'; payload: { url: string 
 type ContentUpdateNote = { type: 'content:updateNote'; payload: { url: string; note: Note } };
 type ContentDeleteNote = { type: 'content:deleteNote'; payload: { url: string; note: Note } };
 type ContentGetVisibility = { type: 'content:getVisibility' };
-type ContentReady = { type: 'content:ready' };
 
-type ContentMessage = ContentGetAllNotes | ContentUpdateNote | ContentDeleteNote | ContentGetVisibility | ContentReady;
+// content:ready はライフサイクル信号。通常のメッセージフローとは別扱い（injectContentScript内で処理）
+type ContentMessage = ContentGetAllNotes | ContentUpdateNote | ContentDeleteNote | ContentGetVisibility;
 
 // ===== Background 向けメッセージ (Options → Background) =====
 type OptionsGetAllData = { type: 'options:getAllData' };
@@ -79,7 +79,6 @@ type ResponseMap = {
   'content:updateNote': { notes: Note[] };
   'content:deleteNote': { notes: Note[] };
   'content:getVisibility': { isVisible: boolean };
-  'content:ready': Record<string, never>;
   'options:getAllData': { notes: Note[]; pageInfos: PageInfo[] };
   'options:updateNote': { notes: Note[]; pageInfos: PageInfo[] };
   'options:deleteNote': { notes: Note[]; pageInfos: PageInfo[] };
@@ -94,12 +93,18 @@ type MessageResponse<T extends ToBackgroundMessage['type'] = ToBackgroundMessage
   error?: string;
 };
 
-// メッセージがvalidかどうかの型ガード
-const isToBackgroundMessage = (msg: unknown): msg is ToBackgroundMessage =>
+const BACKGROUND_MESSAGE_PREFIXES = ['popup:', 'content:', 'options:'] as const;
+const CONTENT_MESSAGE_PREFIXES = ['bg:'] as const;
+
+const hasStringType = (msg: unknown): msg is { type: string } =>
   typeof msg === 'object' && msg !== null && 'type' in msg && typeof (msg as { type: unknown }).type === 'string';
 
+// メッセージがvalidかどうかの型ガード
+const isToBackgroundMessage = (msg: unknown): msg is ToBackgroundMessage =>
+  hasStringType(msg) && BACKGROUND_MESSAGE_PREFIXES.some(p => msg.type.startsWith(p));
+
 const isToContentMessage = (msg: unknown): msg is ToContentMessage =>
-  typeof msg === 'object' && msg !== null && 'type' in msg && typeof (msg as { type: unknown }).type === 'string';
+  hasStringType(msg) && CONTENT_MESSAGE_PREFIXES.some(p => msg.type.startsWith(p));
 
 export type {
   PopupMessage,

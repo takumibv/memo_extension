@@ -135,7 +135,6 @@ const handlePopupMessage = async (
 
 const handleContentMessage = async (
   message: Extract<ToBackgroundMessage, { type: `content:${string}` }>,
-  sender: chrome.runtime.MessageSender,
 ): Promise<unknown> => {
   switch (message.type) {
     case 'content:getAllNotes': {
@@ -144,9 +143,12 @@ const handleContentMessage = async (
     }
     case 'content:updateNote': {
       const notes = await actions.updateNote(message.payload.note);
-      if (sender.tab?.id) {
-        actions.setBadgeText(sender.tab.id, notes.length);
-      }
+      const { url } = message.payload;
+      chrome.tabs.query({ url, currentWindow: true }).then(tabs => {
+        tabs.forEach(tab => {
+          if (tab.id) actions.setBadgeText(tab.id, notes.length);
+        });
+      });
       return { notes };
     }
     case 'content:deleteNote': {
@@ -162,9 +164,6 @@ const handleContentMessage = async (
     case 'content:getVisibility': {
       const isVisible = await actions.getIsVisibleNote();
       return { isVisible };
-    }
-    case 'content:ready': {
-      return {};
     }
   }
 };
@@ -202,14 +201,14 @@ const handleOptionsMessage = async (
   }
 };
 
-const handleMessage = async (message: ToBackgroundMessage, sender: chrome.runtime.MessageSender): Promise<unknown> => {
+const handleMessage = async (message: ToBackgroundMessage): Promise<unknown> => {
   const { type } = message;
 
   if (type.startsWith('popup:')) {
     return handlePopupMessage(message as Extract<ToBackgroundMessage, { type: `popup:${string}` }>);
   }
   if (type.startsWith('content:')) {
-    return handleContentMessage(message as Extract<ToBackgroundMessage, { type: `content:${string}` }>, sender);
+    return handleContentMessage(message as Extract<ToBackgroundMessage, { type: `content:${string}` }>);
   }
   if (type.startsWith('options:')) {
     return handleOptionsMessage(message as Extract<ToBackgroundMessage, { type: `options:${string}` }>);
@@ -223,14 +222,14 @@ const handleMessage = async (message: ToBackgroundMessage, sender: chrome.runtim
  */
 const handleMessages = (
   message: unknown,
-  sender: chrome.runtime.MessageSender,
+  _sender: chrome.runtime.MessageSender,
   sendResponse: (response: unknown) => void,
 ): boolean => {
   if (!isToBackgroundMessage(message)) {
     return false;
   }
 
-  handleMessage(message, sender)
+  handleMessage(message)
     .then(data => sendResponse({ data }))
     .catch((err: unknown) => {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
