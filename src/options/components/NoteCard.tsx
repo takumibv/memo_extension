@@ -6,7 +6,7 @@ import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { formatDate } from '@/shared/utils/utils';
 import { useState } from 'react';
-import { HiPencilSquare, HiTrash, HiClipboard, HiCheck, HiFunnel, HiChevronDown } from 'react-icons/hi2';
+import { HiPencilSquare, HiTrash, HiClipboard, HiCheck, HiFunnel } from 'react-icons/hi2';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
 
@@ -28,19 +28,9 @@ const isDarkColor = (hex: string): boolean => {
   return r * 0.299 + g * 0.587 + b * 0.114 < 128;
 };
 
-const NoteCard = ({
-  note,
-  pageInfo,
-  defaultColor,
-  onEdit,
-  onDelete,
-  onUpdateNote,
-  onFilterByPage,
-  onGoToPage,
-}: Props) => {
+const NoteCard = ({ note, pageInfo, defaultColor, onEdit, onDelete, onUpdateNote, onFilterByPage }: Props) => {
   const { isSuccessCopy, copyClipboard } = useClipboard();
   const [showColorPicker, setShowColorPicker] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
 
   const bgColor = note.color || defaultColor || '#FFFFFF';
   const dark = isDarkColor(bgColor);
@@ -66,32 +56,19 @@ const NoteCard = ({
       style={{ backgroundColor: bgColor, color: textColor, borderWidth: 1, borderColor }}
       onDoubleClick={() => onEdit(note, 'title')}>
       {/* Title */}
-      {note.title && <h3 className="mb-1 truncate text-sm font-semibold">{note.title}</h3>}
+      {note.title && <h3 className="mb-1 text-sm font-semibold">{note.title}</h3>}
 
-      {/* Description (collapsible) */}
+      {/* Description */}
       {note.description && (
-        <div className="mb-3">
-          <p
-            className={`whitespace-pre-line text-xs ${isExpanded ? '' : 'max-h-16 overflow-hidden'}`}
-            style={{ color: subTextColor }}>
-            {note.description}
-          </p>
-          {(note.description.length > 100 || note.description.split('\n').length > 3) && (
-            <button
-              type="button"
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="mt-1 flex items-center gap-0.5 text-xs opacity-60 hover:opacity-100">
-              <HiChevronDown className={`h-3 w-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-              {isExpanded ? t(I18N.CLOSE) : t(I18N.DETAIL)}
-            </button>
-          )}
-        </div>
+        <p className="mb-3 whitespace-pre-line break-all text-xs" style={{ color: subTextColor }}>
+          {note.description}
+        </p>
       )}
 
       {/* Page info (shown when not filtered) */}
       {pageInfo && (
         <div
-          className="mb-3 flex items-center gap-2 rounded px-2 py-1 text-xs"
+          className="mb-3 inline-flex items-center gap-2 rounded px-2 py-1 text-xs"
           style={{
             backgroundColor: dark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.5)',
             borderWidth: 1,
@@ -111,16 +88,9 @@ const NoteCard = ({
           <button
             type="button"
             onClick={() => onFilterByPage(pageInfo.id ?? null)}
-            className="shrink-0 rounded p-0.5 hover:opacity-70"
-            title={t(I18N.SHOW_ALL_NOTE)}>
+            className="shrink-0 rounded px-1 py-0.5 hover:opacity-70"
+            title={t(I18N.THIS_PAGE_NOTE_LIST)}>
             <HiFunnel className="h-3 w-3" style={{ color: iconColor }} />
-          </button>
-          <button
-            type="button"
-            onClick={() => pageInfo.page_url && onGoToPage(pageInfo.page_url)}
-            className="shrink-0 rounded p-0.5 hover:opacity-70"
-            title={t(I18N.GO_TO_THIS_PAGE)}>
-            <span style={{ color: iconColor }}>↗</span>
           </button>
         </div>
       )}
