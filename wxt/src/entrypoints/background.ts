@@ -9,13 +9,18 @@ import {
 import { setupPage } from '@/message/sender/background';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
-import { createNote } from '@/shared/storages/noteStorage';
+import { createNote, migrateStorageIfNeeded } from '@/shared/storages/noteStorage';
 import { getOrCreatePageInfoByUrl } from '@/shared/storages/pageInfoStorage';
 import { isSystemLink } from '@/shared/utils/utils';
 
 export const ROOT_DOM_ID = 'react-container-for-note-extension';
 
 export default defineBackground(() => {
+  // ストレージマイグレーション（旧形式→インデックス方式）
+  migrateStorageIfNeeded().catch(err => {
+    console.error('[Background] Storage migration failed:', err);
+  });
+
   // install or Updateして初めて開いた時に呼ばれる
   chrome.runtime.onInstalled.addListener(details => {
     const previousVersion = details.previousVersion || 'x.x.x';
