@@ -5,6 +5,7 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "baseUrl": ".",
+    "types": ["vitest/globals", "chrome"],
     "paths": {
       "@/*": ["./src/*"]
     }
