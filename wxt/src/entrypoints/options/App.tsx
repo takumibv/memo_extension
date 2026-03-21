@@ -60,7 +60,15 @@ const Options = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <OptionsHeader currentTab={tab} onTabChange={setTab} />
+      <OptionsHeader
+        currentTab={tab}
+        onTabChange={newTab => {
+          setTab(newTab);
+          if (window.location.hash) {
+            history.replaceState(null, '', window.location.pathname + window.location.search);
+          }
+        }}
+      />
       {tab === 'memos' ? (
         <MemoListPage
           notes={notes}

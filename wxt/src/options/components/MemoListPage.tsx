@@ -200,7 +200,11 @@ const MemoListPage = ({
           {} as Record<number, number>,
         )}
         totalNoteCount={notes.length}
-        onFilter={setFilterPageId}
+        onFilter={(pageId: number | null) => {
+          setFilterPageId(pageId);
+          setSearchQuery('');
+          setLinkEditMode(false);
+        }}
       />
 
       {/* Main area */}
@@ -237,6 +241,7 @@ const MemoListPage = ({
                 type="button"
                 onClick={() => {
                   setFilterPageId(null);
+                  setSearchQuery('');
                   setLinkEditMode(false);
                 }}
                 className="rounded p-1 hover:bg-gray-300">
