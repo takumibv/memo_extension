@@ -62,7 +62,7 @@ const NoteCard = ({
 
   return (
     <div
-      className="mb-3 rounded-lg p-4 shadow-sm transition-shadow hover:shadow-md"
+      className="mb-3 rounded-lg p-4"
       style={{ backgroundColor: bgColor, color: textColor, borderWidth: 1, borderColor }}
       onDoubleClick={() => onEdit(note, 'title')}>
       {/* Title */}

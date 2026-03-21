@@ -14,7 +14,7 @@ const OptionsHeader = ({ currentTab, onTabChange }: Props) => (
       <img src="/icon-34.png" alt="logo" className="h-6 w-6" />
       <span className="text-sm font-semibold text-gray-800">{t(I18N.APP_NAME)}</span>
     </div>
-    <nav className="ml-8 flex gap-1">
+    <nav className="ml-8 flex gap-1 self-stretch">
       {(
         [
           ['memos', I18N.NOTE_HEADER],

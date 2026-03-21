@@ -166,7 +166,7 @@ const MemoListPage = ({ notes, pageInfos, defaultColor, isLoading, onUpdateNote,
 
         {/* Current filter page info */}
         {filterPageInfo && (
-          <div className="mx-6 mb-4 flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3">
+          <div className="mx-6 mb-4 flex items-center gap-3 rounded-lg border bg-gray-200 p-3">
             {filterPageInfo.fav_icon_url && <img src={filterPageInfo.fav_icon_url} alt="" className="h-4 w-4" />}
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium text-gray-800">{filterPageInfo.page_title}</p>
@@ -174,13 +174,13 @@ const MemoListPage = ({ notes, pageInfos, defaultColor, isLoading, onUpdateNote,
                 href={filterPageInfo.page_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block max-w-full truncate text-xs text-gray-400 hover:underline"
+                className="inline-block max-w-full truncate text-xs text-gray-500 hover:underline"
                 title={filterPageInfo.page_url}>
                 {filterPageInfo.page_url}
               </a>
             </div>
-            <button type="button" onClick={() => setFilterPageId(null)} className="rounded p-1 hover:bg-gray-100">
-              <HiXMark className="h-4 w-4 text-gray-400" />
+            <button type="button" onClick={() => setFilterPageId(null)} className="rounded p-1 hover:bg-gray-300">
+              <HiXMark className="h-4 w-4 text-gray-500" />
             </button>
           </div>
         )}
