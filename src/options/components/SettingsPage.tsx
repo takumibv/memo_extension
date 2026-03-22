@@ -5,6 +5,7 @@ import { I18N } from '@/shared/i18n/keys';
 import { getAllStorage, setStorage, removeStorage } from '@/shared/storages/common';
 import { useRef, useState } from 'react';
 import { HiArrowDownTray, HiArrowUpTray } from 'react-icons/hi2';
+import { BiCoffeeTogo } from 'react-icons/bi';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
 import type { Setting } from '@/shared/types/Setting';
@@ -200,6 +201,11 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
         <ColorPicker color={setting.default_color} onChangeColor={onUpdateDefaultColor} />
       </section>
 
+      {/* Usage */}
+      <section className="mb-8">
+        <Usage isInit={isInit} onNavigateToMemos={onNavigateToMemos} />
+      </section>
+
       {/* Export */}
       <section className="mb-8">
         <h2 className="mb-2 text-lg font-semibold text-gray-800">{t(I18N.EXPORT)}</h2>
@@ -282,15 +288,19 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
         </div>
       )}
 
-      {/* Usage */}
+      {/* Support */}
       <section className="mb-8">
-        <Usage isInit={isInit} onNavigateToMemos={onNavigateToMemos} />
-      </section>
-
-      {/* Maker */}
-      <section className="mb-8">
-        <h2 className="mb-2 text-lg font-semibold text-gray-800">{t(I18N.SETTING_ABOUT_THIS_APP)}</h2>
-        <p className="text-sm text-gray-600">
+        <h2 className="mb-2 text-lg font-semibold text-gray-800">{t('support_this_extension')}</h2>
+        <p className="mb-3 text-sm text-gray-500">{t('support_description')}</p>
+        <a
+          href="https://buymeacoffee.com/takumibv"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 rounded-lg bg-[#FFDD00] px-5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm transition-colors hover:bg-[#FFCA00]">
+          <BiCoffeeTogo className="h-5 w-5" />
+          <span>Buy me a coffee</span>
+        </a>
+        <p className="mt-6 text-sm text-gray-600">
           {t(I18N.SETTING_ABOUT_THIS_APP_CREATED_BY)}:{' '}
           <a
             href="https://x.com/takumi_bv"
