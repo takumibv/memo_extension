@@ -1,4 +1,5 @@
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/shared/components/ui/Dialog';
+import { Textarea } from '@/shared/components/ui/Textarea';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { formatDate, isEqualsObject } from '@/shared/utils/utils';
@@ -166,14 +167,14 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
         <div className="min-h-0 flex-1 overflow-y-auto">
           {/* Description */}
           <div className="p-2">
-            <textarea
+            <Textarea
               ref={descRef}
               value={editDescription}
               onChange={e => setEditDescription(e.target.value)}
               placeholder={t(I18N.INPUT_DESCRIPTION_PLACEHOLDER)}
-              rows={12}
-              className="w-full resize-none rounded-lg bg-transparent px-3 py-1 text-sm"
-              style={{ color: textColor }}
+              rows={5}
+              className="w-full resize-none rounded-lg border-none bg-transparent px-3 py-1 text-sm shadow-none focus-visible:ring-0"
+              style={{ color: textColor, fieldSizing: 'content' } as React.CSSProperties}
             />
           </div>
 
