@@ -15,23 +15,17 @@ import type { Setting } from '@/shared/types/Setting';
 
 type Tab = 'memos' | 'settings';
 
+const getInitialTab = (): Tab => (window.location.hash === '#init' ? 'settings' : 'memos');
+
 const Options = () => {
-  const [tab, setTab] = useState<Tab>('memos');
+  const [tab, setTab] = useState<Tab>(getInitialTab);
   const [notes, setNotes] = useState<Note[]>([]);
   const [pageInfos, setPageInfos] = useState<PageInfo[]>([]);
   const [setting, setSetting] = useState<Setting>({});
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check hash for init (first install opens settings)
-  useEffect(() => {
-    if (window.location.hash === '#init') {
-      setTab('settings');
-    }
-  }, []);
-
   // Load all data
   useEffect(() => {
-    setIsLoading(true);
     Promise.all([sendFetchAllNotes(), sendFetchSetting()])
       .then(([notesData, settingData]) => {
         setNotes(notesData.notes || []);

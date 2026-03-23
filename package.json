@@ -44,6 +44,8 @@
     "@wxt-dev/module-react": "^1.1.0",
     "autoprefixer": "^10.4.21",
     "eslint": "^10.1.0",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
     "jsdom": "^29.0.1",
     "lint-staged": "^16.4.0",
     "postcss": "^8.5.3",

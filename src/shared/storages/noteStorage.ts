@@ -58,9 +58,9 @@ const removePageFromIndex = async (pageId: number): Promise<void> => {
 const generateId = async (): Promise<number> => {
   const index = await getIndex();
   const allIds = new Set(Object.values(index).flat());
-  let id = Math.floor(Math.random() * 1000000);
+  let id = Math.floor(Math.random() * 999999) + 1;
   while (allIds.has(id)) {
-    id = Math.floor(Math.random() * 1000000);
+    id = Math.floor(Math.random() * 999999) + 1;
   }
   return id;
 };

@@ -92,7 +92,7 @@ const StickyNote: React.FC<Props> = memo(
       ],
     );
 
-    const noteRef = useRef(null);
+    const noteRef = useRef<HTMLDivElement>(null);
     const resizeHandlerRef = useRef(null);
     const titleInputRef = useRef<HTMLInputElement>(null);
     const descriptionTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -112,7 +112,7 @@ const StickyNote: React.FC<Props> = memo(
     } = useNoteEdit(defaultNote);
 
     const [isEditing, setIsEditing] = useState(false);
-    const [isEnableDrag, setIsEnableDrag] = useState(true);
+    const [isInputFocused, setIsInputFocused] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
     const [dragStartPositionX, setDragStartPositionX] = useState(0);
     const [dragStartPositionY, setDragStartPositionY] = useState(0);
@@ -132,7 +132,7 @@ const StickyNote: React.FC<Props> = memo(
       });
       if (isUpdated) {
         setIsEditing(false);
-        setIsEnableDrag(true);
+        setIsInputFocused(false);
       } else {
         const message =
           (editDescription?.length ?? 0) > 2000 ? t(I18N.SAVE_ERROR_WORD_MAXIMUM) : t(I18N.SAVE_ERROR_MSG_2);
@@ -144,7 +144,7 @@ const StickyNote: React.FC<Props> = memo(
       setEditTitle(title);
       setEditDescription(description);
       setIsEditing(false);
-      setIsEnableDrag(true);
+      setIsInputFocused(false);
     }, [title, description, setEditTitle, setEditDescription]);
 
     const onClickFixedButton = useCallback(() => {
@@ -175,11 +175,10 @@ const StickyNote: React.FC<Props> = memo(
 
     const onKeyDownEditing = useCallback(
       (e: KeyboardEvent) => {
-        if (isEnableDrag) return;
-        if (e.key === 'Escape' || e.key === 'Esc') onEditDone();
+        if (e.key === 'Escape' || e.key === 'Esc') onEditCancel();
         else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') onEditDone();
       },
-      [isEnableDrag, onEditDone],
+      [onEditCancel, onEditDone],
     );
 
     const onBeforeUnload = useCallback(
@@ -193,29 +192,16 @@ const StickyNote: React.FC<Props> = memo(
     );
 
     useEffect(() => {
+      const node = noteRef.current;
       if (isEditing) {
         window.addEventListener('beforeunload', onBeforeUnload, false);
-        window.addEventListener('keydown', onKeyDownEditing, false);
-      } else {
-        window.removeEventListener('beforeunload', onBeforeUnload, false);
-        window.removeEventListener('keydown', onKeyDownEditing, false);
+        node?.addEventListener('keydown', onKeyDownEditing as EventListener, false);
       }
       return () => {
         window.removeEventListener('beforeunload', onBeforeUnload, false);
-        window.removeEventListener('keydown', onKeyDownEditing, false);
+        node?.removeEventListener('keydown', onKeyDownEditing as EventListener, false);
       };
-    }, [
-      isEditing,
-      isEnableDrag,
-      editTitle,
-      editDescription,
-      editPositionX,
-      editPositionY,
-      editWidth,
-      editHeight,
-      onBeforeUnload,
-      onKeyDownEditing,
-    ]);
+    }, [isEditing, onBeforeUnload, onKeyDownEditing]);
 
     const draggableCoreProps = {
       scale: 1,
@@ -228,7 +214,7 @@ const StickyNote: React.FC<Props> = memo(
         document.body.style.userSelect = 'none';
       },
       onDrag: (_: unknown, data: { x: number; y: number }) => {
-        if (!isEnableDrag) return;
+        if (isInputFocused) return;
         setEnableOpenButtonThreshold(prev => prev + 1);
         setEditPosition(dragStartPositionX + data.x, dragStartPositionY + data.y);
       },
@@ -305,8 +291,8 @@ const StickyNote: React.FC<Props> = memo(
                   type="text"
                   value={editTitle}
                   onChange={e => setEditTitle(e.target.value)}
-                  onFocus={() => setIsEnableDrag(false)}
-                  onBlur={() => setIsEnableDrag(true)}
+                  onFocus={() => setIsInputFocused(true)}
+                  onBlur={() => setIsInputFocused(false)}
                   className="w-full break-all rounded p-1 text-base leading-tight"
                   style={{ backgroundColor: 'transparent', color: textColor }}
                 />
@@ -342,8 +328,8 @@ const StickyNote: React.FC<Props> = memo(
                   placeholder={t(I18N.INPUT_DESCRIPTION_PLACEHOLDER)}
                   value={editDescription}
                   onChange={e => setEditDescription(e.target.value)}
-                  onFocus={() => setIsEnableDrag(false)}
-                  onBlur={() => setIsEnableDrag(true)}
+                  onFocus={() => setIsInputFocused(true)}
+                  onBlur={() => setIsInputFocused(false)}
                   className="mt-1 h-full w-full resize-none whitespace-pre-line break-all rounded p-1 text-sm leading-tight"
                   style={{ backgroundColor: 'transparent', color: textColor }}
                 />
