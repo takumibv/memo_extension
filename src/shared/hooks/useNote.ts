@@ -70,22 +70,19 @@ export const useNoteEdit = ({
 export const initialPositionX = () => (window.innerWidth - DEAULT_NOTE_WIDTH) / 2;
 export const initialPositionY = () => (window.innerHeight - DEAULT_NOTE_HEIGHT) / 2;
 
+const clampPosition = (x?: number, min: number = 0) => (x === undefined ? undefined : Math.max(x, min));
+
 export const useNotePosition = (defaultPositionX?: number, defaultPositionY?: number) => {
-  const [positionX, setPositionX] = useState<number | undefined>(defaultPositionX);
-  const [positionY, setPositionY] = useState<number | undefined>(defaultPositionY);
+  const [positionX, setPositionX] = useState<number | undefined>(() =>
+    clampPosition(defaultPositionX, NOTE_LEFT_POSITION),
+  );
+  const [positionY, setPositionY] = useState<number | undefined>(() =>
+    clampPosition(defaultPositionY, NOTE_TOP_POSITION),
+  );
 
-  const setPosition = useCallback((positionX?: number, positionY?: number) => {
-    if (positionX === undefined) {
-      setPositionX(undefined);
-    } else {
-      setPositionX(positionX >= NOTE_LEFT_POSITION ? positionX : NOTE_LEFT_POSITION);
-    }
-
-    if (positionY === undefined) {
-      setPositionY(undefined);
-    } else {
-      setPositionY(positionY >= NOTE_TOP_POSITION ? positionY : NOTE_TOP_POSITION);
-    }
+  const setPosition = useCallback((x?: number, y?: number) => {
+    setPositionX(clampPosition(x, NOTE_LEFT_POSITION));
+    setPositionY(clampPosition(y, NOTE_TOP_POSITION));
   }, []);
 
   useEffect(() => {
