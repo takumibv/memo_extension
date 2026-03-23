@@ -175,11 +175,10 @@ const StickyNote: React.FC<Props> = memo(
 
     const onKeyDownEditing = useCallback(
       (e: KeyboardEvent) => {
-        if (!isInputFocused) return;
-        if (e.key === 'Escape' || e.key === 'Esc') onEditDone();
+        if (e.key === 'Escape' || e.key === 'Esc') onEditCancel();
         else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') onEditDone();
       },
-      [isInputFocused, onEditDone],
+      [onEditCancel, onEditDone],
     );
 
     const onBeforeUnload = useCallback(
