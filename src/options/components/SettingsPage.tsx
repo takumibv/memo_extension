@@ -200,6 +200,11 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
         <ColorPicker color={setting.default_color} onChangeColor={onUpdateDefaultColor} />
       </section>
 
+      {/* Usage */}
+      <section className="mb-8">
+        <Usage isInit={isInit} onNavigateToMemos={onNavigateToMemos} />
+      </section>
+
       {/* Export */}
       <section className="mb-8">
         <h2 className="mb-2 text-lg font-semibold text-gray-800">{t(I18N.EXPORT)}</h2>
@@ -281,11 +286,6 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
           </div>
         </div>
       )}
-
-      {/* Usage */}
-      <section className="mb-8">
-        <Usage isInit={isInit} onNavigateToMemos={onNavigateToMemos} />
-      </section>
 
       {/* Maker */}
       <section className="mb-8">
