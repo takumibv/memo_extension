@@ -6,5 +6,4 @@ const cache: {
   badge: {},
 };
 
-Object.freeze(cache);
 export { cache };
