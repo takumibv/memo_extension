@@ -1,0 +1,6 @@
+/// <reference types="../.wxt/types/globals" />
+
+interface ImportMetaEnv {
+  readonly VITE_GA4_MEASUREMENT_ID?: string;
+  readonly VITE_GA4_API_SECRET?: string;
+}

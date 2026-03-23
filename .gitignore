@@ -1,11 +1,39 @@
-.env
+# dependencies
+**/node_modules
 
+# testing
+**/coverage
+
+# build
+**/dist
+**/build
+**/dist-zip
+.output/
+
+# wxt generated
+.wxt/
+
+# env
+**/.env.*
+**/.env
+!**/.env.example
+
+# etc
 .DS_Store
+.idea
+tsconfig.tsbuildinfo
+**/.turbo
 
-node_modules/
-npm-debug.log
-dist/
-packages/
-tmp/
+# compiled
+**/tailwind-output.css
 
+# old implementation reference
 old/
+
+# legacy monorepo (removed, may have untracked residual files)
+chrome-extension/
+pages/
+packages/
+scripts/
+bash-scripts/
+tests/
