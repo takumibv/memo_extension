@@ -276,7 +276,7 @@ const MemoListPage = ({
                     href={filterPageInfo.page_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="min-w-0 flex-1 break-all text-xs text-gray-500 hover:underline"
+                    className="min-w-0 break-all text-xs text-gray-500 hover:underline"
                     title={filterPageInfo.page_url}>
                     {filterPageInfo.page_url}
                   </a>
