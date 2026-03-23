@@ -311,6 +311,14 @@
   "new_note_description_msg": {
     "message": "Double-click to edit"
   },
+  "page_not_available_msg": {
+    "message": "Cannot be used on this page.",
+    "description": "Error message when the page does not support the extension"
+  },
+  "content_script_timeout_msg": {
+    "message": "Content script ready timeout",
+    "description": "Error message when content script injection times out"
+  },
   "displayErrorInfo": {
     "message": "Error occur"
   },

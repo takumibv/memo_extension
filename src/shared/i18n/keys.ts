@@ -401,6 +401,15 @@ export const I18N = {
    * "メモを最小化します。"
    */
   OPEN_EXPLAIN: 'open_explain_msg' as const,
+  // Error Messages
+  /**
+   * "このページでは使用できません"
+   */
+  PAGE_NOT_AVAILABLE: 'page_not_available_msg' as const,
+  /**
+   * "コンテンツスクリプトの読み込みがタイムアウトしました"
+   */
+  CONTENT_SCRIPT_TIMEOUT: 'content_script_timeout_msg' as const,
   // Error Display
   /**
    * "エラーが発生しました"

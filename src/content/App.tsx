@@ -1,6 +1,8 @@
 import StickyNote from '@/content/components/StickyNote/StickyNote';
 import { registerContentHandler, unregisterContentHandler, getLastContextMenuPosition } from '@/entrypoints/content';
 import { sendUpdateNote, sendDeleteNote } from '@/message/sender/contentScript';
+import { t } from '@/shared/i18n/i18n';
+import { I18N } from '@/shared/i18n/keys';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ToContentMessage } from '@/message/types';
 import type { Note } from '@/shared/types/Note';
@@ -15,7 +17,7 @@ const ContentApp: React.FC<Props> = ({ portalContainer }) => {
   const prevNoteIdsRef = useRef<Set<number>>(new Set());
 
   useEffect(() => {
-    console.log('どこでもメモ Extension is Running.');
+    console.log(`${t(I18N.APP_NAME)} Extension is Running.`);
 
     const handleMessage = (msg: ToContentMessage) => {
       switch (msg.type) {

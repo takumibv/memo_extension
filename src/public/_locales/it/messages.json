@@ -278,6 +278,14 @@
   "new_note_description_msg": {
     "message": "Fare doppio clic per modificare"
   },
+  "page_not_available_msg": {
+    "message": "Non può essere utilizzato in questa pagina.",
+    "description": "Error message when the page does not support the extension"
+  },
+  "content_script_timeout_msg": {
+    "message": "Timeout del caricamento dello script di contenuto",
+    "description": "Error message when content script injection times out"
+  },
   "displayErrorInfo": {
     "message": "Error occur"
   },

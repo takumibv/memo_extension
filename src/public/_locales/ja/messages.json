@@ -311,6 +311,14 @@
   "new_note_description_msg": {
     "message": "ダブルクリックで編集"
   },
+  "page_not_available_msg": {
+    "message": "このページでは使用できません",
+    "description": "Error message when the page does not support the extension"
+  },
+  "content_script_timeout_msg": {
+    "message": "コンテンツスクリプトの読み込みがタイムアウトしました",
+    "description": "Error message when content script injection times out"
+  },
   "displayErrorInfo": {
     "message": "エラーが発生しました"
   },

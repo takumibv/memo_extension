@@ -1,6 +1,8 @@
 import * as actions from '@/background/actions';
 import { setupIsVisible, setupPage } from '@/message/sender/background';
 import { isToBackgroundMessage } from '@/message/types';
+import { t } from '@/shared/i18n/i18n';
+import { I18N } from '@/shared/i18n/keys';
 import { isSystemLink } from '@/shared/utils/utils';
 import type { ToBackgroundMessage } from '@/message/types';
 import type { Note } from '@/shared/types/Note';
@@ -41,7 +43,7 @@ const injectContentScript = async (tabId: number): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     const timeoutId = setTimeout(() => {
       cleanup();
-      reject(new Error('Content script ready timeout'));
+      reject(new Error(t(I18N.CONTENT_SCRIPT_TIMEOUT)));
     }, 3000);
 
     const messageListener = (message: { type?: string }, sender: chrome.runtime.MessageSender) => {
@@ -79,11 +81,11 @@ const handlePopupMessage = async (
   const tabId = tab?.id;
   const tabUrl = tab?.url;
 
-  if (!tabId || !tabUrl) throw new Error('このページでは使用できません');
-  if (isSystemLink(tabUrl)) throw new Error('このページでは使用できません');
+  if (!tabId || !tabUrl) throw new Error(t(I18N.PAGE_NOT_AVAILABLE));
+  if (isSystemLink(tabUrl)) throw new Error(t(I18N.PAGE_NOT_AVAILABLE));
 
   const isAllowed = await isScriptAllowedPage(tabId);
-  if (!isAllowed) throw new Error('このページでは使用できません');
+  if (!isAllowed) throw new Error(t(I18N.PAGE_NOT_AVAILABLE));
 
   const injectAndSetup = async (notes: Note[]) => {
     const setting = await actions.getSetting();
@@ -233,8 +235,8 @@ const handleMessages = (
     .then(data => sendResponse({ data }))
     .catch((err: unknown) => {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      // 「このページでは使用できません」は正常系なのでログ不要
-      if (errorMessage !== 'このページでは使用できません') {
+      // PAGE_NOT_AVAILABLE は正常系なのでログ不要
+      if (errorMessage !== t(I18N.PAGE_NOT_AVAILABLE)) {
         console.error('[handleMessages] Error:', errorMessage);
       }
       sendResponse({ error: errorMessage });
