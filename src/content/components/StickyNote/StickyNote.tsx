@@ -92,7 +92,7 @@ const StickyNote: React.FC<Props> = memo(
       ],
     );
 
-    const noteRef = useRef(null);
+    const noteRef = useRef<HTMLDivElement>(null);
     const resizeHandlerRef = useRef(null);
     const titleInputRef = useRef<HTMLInputElement>(null);
     const descriptionTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -193,29 +193,16 @@ const StickyNote: React.FC<Props> = memo(
     );
 
     useEffect(() => {
+      const node = noteRef.current;
       if (isEditing) {
         window.addEventListener('beforeunload', onBeforeUnload, false);
-        window.addEventListener('keydown', onKeyDownEditing, false);
-      } else {
-        window.removeEventListener('beforeunload', onBeforeUnload, false);
-        window.removeEventListener('keydown', onKeyDownEditing, false);
+        node?.addEventListener('keydown', onKeyDownEditing as EventListener, false);
       }
       return () => {
         window.removeEventListener('beforeunload', onBeforeUnload, false);
-        window.removeEventListener('keydown', onKeyDownEditing, false);
+        node?.removeEventListener('keydown', onKeyDownEditing as EventListener, false);
       };
-    }, [
-      isEditing,
-      isInputFocused,
-      editTitle,
-      editDescription,
-      editPositionX,
-      editPositionY,
-      editWidth,
-      editHeight,
-      onBeforeUnload,
-      onKeyDownEditing,
-    ]);
+    }, [isEditing, onBeforeUnload, onKeyDownEditing]);
 
     const draggableCoreProps = {
       scale: 1,
