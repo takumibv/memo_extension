@@ -1,7 +1,7 @@
 import StickyNote from '@/content/components/StickyNote/StickyNote';
-import { registerContentHandler, unregisterContentHandler } from '@/entrypoints/content';
+import { registerContentHandler, unregisterContentHandler, getLastContextMenuPosition } from '@/entrypoints/content';
 import { sendUpdateNote, sendDeleteNote } from '@/message/sender/contentScript';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ToContentMessage } from '@/message/types';
 import type { Note } from '@/shared/types/Note';
 
@@ -12,6 +12,7 @@ type Props = {
 const ContentApp: React.FC<Props> = ({ portalContainer }) => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [defaultColor, setDefaultColor] = useState<string>();
+  const prevNoteIdsRef = useRef<Set<number>>(new Set());
 
   useEffect(() => {
     console.log('どこでもメモ Extension is Running.');
@@ -19,7 +20,31 @@ const ContentApp: React.FC<Props> = ({ portalContainer }) => {
     const handleMessage = (msg: ToContentMessage) => {
       switch (msg.type) {
         case 'bg:setupPage':
-          if (msg.payload.notes) setNotes(msg.payload.notes);
+          if (msg.payload.notes) {
+            const incomingNotes = msg.payload.notes;
+            const prevIds = prevNoteIdsRef.current;
+            const contextMenuPos = getLastContextMenuPosition();
+
+            // Apply right-click position to newly created notes and persist
+            const notesWithPosition = contextMenuPos
+              ? incomingNotes.map(note => {
+                  if (
+                    note.id !== undefined &&
+                    !prevIds.has(note.id) &&
+                    note.position_x === undefined &&
+                    note.position_y === undefined
+                  ) {
+                    const positioned = { ...note, position_x: contextMenuPos.x, position_y: contextMenuPos.y };
+                    sendUpdateNote(positioned).catch(() => {});
+                    return positioned;
+                  }
+                  return note;
+                })
+              : incomingNotes;
+
+            prevNoteIdsRef.current = new Set(notesWithPosition.flatMap(n => (n.id !== undefined ? [n.id] : [])));
+            setNotes(notesWithPosition);
+          }
           if (msg.payload.defaultColor) setDefaultColor(msg.payload.defaultColor);
           break;
         case 'bg:setVisibility':
