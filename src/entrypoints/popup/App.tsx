@@ -3,7 +3,7 @@ import { SubdirectoryArrowLeftIcon } from '@/shared/components/Icon';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { useEffect, useState } from 'react';
-import { HiPlus, HiBars3, HiTrash, HiArrowPath, HiChevronRight } from 'react-icons/hi2';
+import { HiPlus, HiBars3, HiTrash, HiArrowPath, HiChevronRight, HiCursorArrowRays } from 'react-icons/hi2';
 import type { Note } from '@/shared/types/Note';
 
 const Popup = () => {
@@ -26,6 +26,19 @@ const Popup = () => {
         })
         .finally(() => {
           window.close();
+        });
+    }
+  };
+
+  const onClickAddPinnedNote = () => {
+    if (currentTab) {
+      sender
+        .sendActivateInspector(currentTab)
+        .then(() => {
+          window.close();
+        })
+        .catch(() => {
+          setIsEnabled(false);
         });
     }
   };
@@ -107,12 +120,19 @@ const Popup = () => {
     <div style={{ width: '320px', minHeight: '200px' }}>
       {/* Header */}
       <header className="sticky top-0 flex items-center border-b border-black/10 bg-white p-4">
-        <div className="flex-1">
+        <div className="flex flex-1 gap-2">
           <button
             onClick={onClickAddNote}
             disabled={!isEnabled}
             className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500 text-white shadow-md hover:bg-blue-600 disabled:opacity-50">
             <HiPlus className="h-5 w-5" />
+          </button>
+          <button
+            onClick={onClickAddPinnedNote}
+            disabled={!isEnabled}
+            title={t(I18N.ADD_NOTE_FROM_ELEMENT)}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white shadow-md hover:bg-emerald-600 disabled:opacity-50">
+            <HiCursorArrowRays className="h-5 w-5" />
           </button>
         </div>
         <div>

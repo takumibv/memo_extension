@@ -1,4 +1,6 @@
 import StickyNoteActions from './StickyNoteActions';
+import { useElementTracker } from '@/content/hooks/useElementTracker';
+import { useSelectionHighlight } from '@/content/hooks/useSelectionMarker';
 import { LogoIcon } from '@/shared/components/Icon';
 import { initialPositionX, initialPositionY, useNoteEdit } from '@/shared/hooks/useNote';
 import { t } from '@/shared/i18n/i18n';
@@ -7,6 +9,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, memo } from 'react';
 import { DraggableCore } from 'react-draggable';
 import { HiArrowDownRight, HiMinus } from 'react-icons/hi2';
 import type { Note } from '@/shared/types/Note';
+import type { Selection } from '@/shared/types/Selection';
 import type React from 'react';
 import { cn } from '@/lib/utils';
 
@@ -33,6 +36,8 @@ type Props = {
   created_at?: string;
   updated_at?: string;
   color?: string;
+  selection_id?: string;
+  selection?: Selection;
   onUpdateNote: (note: Note) => Promise<boolean>;
   onDeleteNote: (note: Note) => Promise<boolean>;
   defaultColor?: string;
@@ -56,6 +61,8 @@ const StickyNote: React.FC<Props> = memo(
     created_at,
     updated_at,
     color,
+    selection_id,
+    selection,
     defaultColor,
     portalContainer,
   }) => {
@@ -74,6 +81,7 @@ const StickyNote: React.FC<Props> = memo(
         created_at,
         updated_at,
         color,
+        selection_id,
       }),
       [
         id,
@@ -89,6 +97,7 @@ const StickyNote: React.FC<Props> = memo(
         created_at,
         updated_at,
         color,
+        selection_id,
       ],
     );
 
@@ -111,22 +120,55 @@ const StickyNote: React.FC<Props> = memo(
       getFixedPosition,
     } = useNoteEdit(defaultNote);
 
+    // Element tracking for pinned notes
+    const { rect: trackedRect, elementFound } = useElementTracker(selection);
+    const isPinned = !!selection;
+
+    const [isHovered, setIsHovered] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [isInputFocused, setIsInputFocused] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
     const [dragStartPositionX, setDragStartPositionX] = useState(0);
     const [dragStartPositionY, setDragStartPositionY] = useState(0);
 
-    const displayPositionX = useMemo(() => editPositionX ?? initialPositionX(), [editPositionX]);
-    const displayPositionY = useMemo(() => editPositionY ?? initialPositionY(), [editPositionY]);
+    // When pinned to an element and element is found, use tracked position (fixed/viewport coords)
+    // Otherwise fall back to stored position
+    const displayPositionX = useMemo(() => {
+      if (isPinned && elementFound && trackedRect) {
+        return trackedRect.left;
+      }
+      return editPositionX ?? initialPositionX();
+    }, [isPinned, elementFound, trackedRect, editPositionX]);
+
+    const displayPositionY = useMemo(() => {
+      if (isPinned && elementFound && trackedRect) {
+        const noteHeight = is_open ? (editHeight ?? 180) : 32;
+        const belowElement = trackedRect.bottom + 8;
+        // If note would go off-screen, position it above the element or at the top of the viewport
+        if (belowElement + noteHeight > window.innerHeight) {
+          const aboveElement = trackedRect.top - noteHeight - 8;
+          return aboveElement >= 0 ? aboveElement : Math.max(0, trackedRect.top);
+        }
+        return belowElement;
+      }
+      return editPositionY ?? initialPositionY();
+    }, [isPinned, elementFound, trackedRect, editPositionY, editHeight, is_open]);
+
+    // Pinned notes use fixed positioning when element is tracked (viewport coords)
+    const effectiveIsFixed = isPinned && elementFound ? true : is_fixed;
+    const isPinnedAndTracking = isPinned && elementFound;
+
+    // Highlight the pinned element only on hover or while editing
+    useSelectionHighlight(trackedRect, isPinnedAndTracking && (isHovered || isEditing || isDragging));
 
     const onEditDone = useCallback(async () => {
+      // When pinned and tracking element, don't overwrite position (it's managed by the tracker)
+      const positionUpdate = isPinnedAndTracking ? {} : { position_x: editPositionX, position_y: editPositionY };
       const isUpdated = await onUpdateNote({
         ...defaultNote,
         title: editTitle,
         description: editDescription,
-        position_x: editPositionX,
-        position_y: editPositionY,
+        ...positionUpdate,
         width: editWidth,
         height: editHeight,
       });
@@ -138,7 +180,17 @@ const StickyNote: React.FC<Props> = memo(
           (editDescription?.length ?? 0) > 2000 ? t(I18N.SAVE_ERROR_WORD_MAXIMUM) : t(I18N.SAVE_ERROR_MSG_2);
         alert(`${t(I18N.SAVE_ERROR)}${message}`);
       }
-    }, [defaultNote, editTitle, editDescription, editPositionX, editPositionY, editWidth, editHeight, onUpdateNote]);
+    }, [
+      defaultNote,
+      editTitle,
+      editDescription,
+      editPositionX,
+      editPositionY,
+      editWidth,
+      editHeight,
+      onUpdateNote,
+      isPinnedAndTracking,
+    ]);
 
     const onEditCancel = useCallback(() => {
       setEditTitle(title);
@@ -150,11 +202,13 @@ const StickyNote: React.FC<Props> = memo(
     const onClickFixedButton = useCallback(() => {
       const { positionX, positionY } = getFixedPosition(!is_fixed);
       setEditPosition(positionX, positionY);
+      // Detach from element when toggling fixed mode
       onUpdateNote({
         ...defaultNote,
         is_fixed: !is_fixed,
         position_x: positionX,
         position_y: positionY,
+        selection_id: undefined,
       });
     }, [getFixedPosition, is_fixed, setEditPosition, onUpdateNote, defaultNote]);
 
@@ -221,8 +275,15 @@ const StickyNote: React.FC<Props> = memo(
       onStop: () => {
         setIsDragging(false);
         document.body.style.userSelect = '';
-        if (position_x !== editPositionX || position_y !== editPositionY) {
-          onUpdateNote({ ...defaultNote, position_x: editPositionX, position_y: editPositionY });
+        const positionChanged = position_x !== editPositionX || position_y !== editPositionY;
+        if (positionChanged) {
+          // Detach from element tracking when dragged to a new position
+          onUpdateNote({
+            ...defaultNote,
+            position_x: editPositionX,
+            position_y: editPositionY,
+            ...(isPinnedAndTracking ? { selection_id: undefined, is_fixed: effectiveIsFixed } : {}),
+          });
         }
       },
     };
@@ -235,8 +296,13 @@ const StickyNote: React.FC<Props> = memo(
     const iconColor = dark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)';
 
     const noteBaseStyle = 'pointer-events-auto rounded left-0 top-0 transition-shadow duration-300';
-    const noteFixedStyle = is_fixed ? 'fixed shadow-lg' : 'absolute shadow-md';
-    const noteForwardStyle = isDragging || isEditing ? 'z-[1252]' : is_fixed ? 'z-[1251]' : 'z-[1250]';
+    const noteFixedStyle = effectiveIsFixed ? 'fixed shadow-lg' : 'absolute shadow-md';
+    const noteForwardStyle = isDragging || isEditing ? 'z-[1252]' : effectiveIsFixed ? 'z-[1251]' : 'z-[1250]';
+
+    const hoverHandlers = {
+      onMouseEnter: () => setIsHovered(true),
+      onMouseLeave: () => setIsHovered(false),
+    };
 
     if (!is_open) {
       return (
@@ -248,7 +314,8 @@ const StickyNote: React.FC<Props> = memo(
             transform: `translate(${displayPositionX}px, ${displayPositionY}px)`,
             backgroundColor: bgColor,
             color: textColor,
-          }}>
+          }}
+          {...hoverHandlers}>
           <DraggableCore {...draggableCoreProps} nodeRef={noteRef}>
             <div className="flex cursor-default items-center gap-1 p-1">
               <button
@@ -279,7 +346,8 @@ const StickyNote: React.FC<Props> = memo(
           transform: `translate(${displayPositionX}px, ${displayPositionY}px)`,
           backgroundColor: bgColor,
           color: textColor,
-        }}>
+        }}
+        {...hoverHandlers}>
         <DraggableCore {...draggableCoreProps} nodeRef={noteRef}>
           <div className="flex h-full cursor-default flex-col" onDoubleClick={() => setIsEditing(true)}>
             {/* Header with title input (editing) */}
