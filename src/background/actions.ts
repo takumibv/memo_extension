@@ -87,12 +87,22 @@ export const attachSelectionToNote = async (
   const pageInfo = await getPageInfoByUrl(page_url);
   if (!pageInfo?.id) return [];
 
+  // Delete old selection if the note was already pinned
+  const existingNotes = await getAllNotesByPageId(pageInfo.id);
+  const existingNote = existingNotes.find(n => n.id === noteId);
+  if (!existingNote) return existingNotes;
+  if (existingNote.selection_id) {
+    await _deleteSelection(existingNote.selection_id);
+  }
+
   const selection = await _createSelection(target, text);
   const { allNotes } = await _updateNote(pageInfo.id, {
-    id: noteId,
-    page_info_id: pageInfo.id,
+    ...existingNote,
     selection_id: selection.id,
     is_fixed: false,
+    // Clear position so the tracker takes over immediately
+    position_x: undefined,
+    position_y: undefined,
   });
   setUpdatedAtPageInfo(pageInfo.id);
   return allNotes;
