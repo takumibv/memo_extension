@@ -18,3 +18,6 @@ export const sendScrollToTargetNote = (tab: chrome.tabs.Tab, note: Note) =>
 
 export const sendUpdateNoteVisible = (tab: chrome.tabs.Tab, isVisible: boolean) =>
   sendToBackground({ type: 'popup:updateVisibility', payload: { tab, isVisible } });
+
+export const sendActivateInspector = (tab: chrome.tabs.Tab) =>
+  sendToBackground({ type: 'popup:activateInspector', payload: { tab } });

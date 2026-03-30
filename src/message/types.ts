@@ -6,6 +6,7 @@
  */
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
+import type { Selection } from '@/shared/types/Selection';
 import type { Setting } from '@/shared/types/Setting';
 
 // ===== Background 向けメッセージ (Popup → Background) =====
@@ -19,6 +20,10 @@ type PopupUpdateVisibility = {
   type: 'popup:updateVisibility';
   payload: { tab: chrome.tabs.Tab; isVisible: boolean };
 };
+type PopupActivateInspector = {
+  type: 'popup:activateInspector';
+  payload: { tab: chrome.tabs.Tab };
+};
 
 type PopupMessage =
   | PopupGetAllNotes
@@ -27,16 +32,26 @@ type PopupMessage =
   | PopupDeleteNote
   | PopupScrollToNote
   | PopupGetVisibility
-  | PopupUpdateVisibility;
+  | PopupUpdateVisibility
+  | PopupActivateInspector;
 
 // ===== Background 向けメッセージ (Content → Background) =====
 type ContentGetAllNotes = { type: 'content:getAllNotes'; payload: { url: string } };
 type ContentUpdateNote = { type: 'content:updateNote'; payload: { url: string; note: Note } };
 type ContentDeleteNote = { type: 'content:deleteNote'; payload: { url: string; note: Note } };
 type ContentGetVisibility = { type: 'content:getVisibility' };
+type ContentCreatePinnedNote = {
+  type: 'content:createPinnedNote';
+  payload: { url: string; xpath: string; text: string; fallbackX: number; fallbackY: number };
+};
 
 // content:ready はライフサイクル信号。通常のメッセージフローとは別扱い（injectContentScript内で処理）
-type ContentMessage = ContentGetAllNotes | ContentUpdateNote | ContentDeleteNote | ContentGetVisibility;
+type ContentMessage =
+  | ContentGetAllNotes
+  | ContentUpdateNote
+  | ContentDeleteNote
+  | ContentGetVisibility
+  | ContentCreatePinnedNote;
 
 // ===== Background 向けメッセージ (Options → Background) =====
 type OptionsGetAllData = { type: 'options:getAllData' };
@@ -60,11 +75,18 @@ type ToBackgroundMessage = PopupMessage | ContentMessage | OptionsMessage;
 // ===== Content Script 向けメッセージ (Background → Content) =====
 type SetupPage = {
   type: 'bg:setupPage';
-  payload: { url: string; notes: Note[]; isVisible?: boolean; defaultColor?: string };
+  payload: {
+    url: string;
+    notes: Note[];
+    selections?: Selection[];
+    isVisible?: boolean;
+    defaultColor?: string;
+  };
 };
 type SetVisibility = { type: 'bg:setVisibility'; payload: { url: string; isVisible: boolean } };
+type ActivateInspector = { type: 'bg:activateInspector' };
 
-type ToContentMessage = SetupPage | SetVisibility;
+type ToContentMessage = SetupPage | SetVisibility | ActivateInspector;
 
 // ===== レスポンス型マッピング =====
 type ResponseMap = {
@@ -75,10 +97,12 @@ type ResponseMap = {
   'popup:scrollToNote': Record<string, never>;
   'popup:getVisibility': { isVisible: boolean };
   'popup:updateVisibility': { isVisible: boolean };
+  'popup:activateInspector': Record<string, never>;
   'content:getAllNotes': { notes: Note[] };
   'content:updateNote': { notes: Note[] };
   'content:deleteNote': { notes: Note[] };
   'content:getVisibility': { isVisible: boolean };
+  'content:createPinnedNote': { notes: Note[] };
   'options:getAllData': { notes: Note[]; pageInfos: PageInfo[] };
   'options:updateNote': { notes: Note[]; pageInfos: PageInfo[] };
   'options:deleteNote': { notes: Note[]; pageInfos: PageInfo[] };

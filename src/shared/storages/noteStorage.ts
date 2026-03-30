@@ -84,7 +84,10 @@ const removeNote = async (id: number): Promise<boolean> => removeStorage(noteKey
 
 export type NoteCRUDResponseType = { note?: Note; allNotes: Note[] };
 
-export const createNote = async (pageId: number): Promise<NoteCRUDResponseType> => {
+export const createNote = async (
+  pageId: number,
+  overrides?: Partial<Omit<Note, 'id' | 'page_info_id' | 'created_at' | 'updated_at'>>,
+): Promise<NoteCRUDResponseType> => {
   const id = await generateId();
   const newNote: Note = {
     id,
@@ -95,6 +98,7 @@ export const createNote = async (pageId: number): Promise<NoteCRUDResponseType> 
     is_open: true,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
+    ...overrides,
   };
 
   await setNote(newNote);
