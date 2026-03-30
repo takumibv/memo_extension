@@ -7,7 +7,7 @@ import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { useCallback, useEffect, useMemo, useRef, useState, memo } from 'react';
 import { DraggableCore } from 'react-draggable';
-import { HiArrowDownRight, HiMinus } from 'react-icons/hi2';
+import { HiArrowDownRight, HiExclamationTriangle, HiMinus } from 'react-icons/hi2';
 import type { Note } from '@/shared/types/Note';
 import type { Selection } from '@/shared/types/Selection';
 import type React from 'react';
@@ -121,8 +121,9 @@ const StickyNote: React.FC<Props> = memo(
     } = useNoteEdit(defaultNote);
 
     // Element tracking for pinned notes
-    const { rect: trackedRect, elementFound } = useElementTracker(selection);
+    const { rect: trackedRect, elementFound, resolveFailed } = useElementTracker(selection);
     const isPinned = !!selection;
+    const showElementLostWarning = isPinned && resolveFailed;
 
     const [isHovered, setIsHovered] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -324,6 +325,9 @@ const StickyNote: React.FC<Props> = memo(
                 className="pointer-events-auto flex h-6 w-6 shrink-0 items-center justify-center rounded hover:bg-black/10">
                 <LogoIcon className="pointer-events-none h-6 w-6" />
               </button>
+              {showElementLostWarning && (
+                <HiExclamationTriangle className="h-4 w-4 shrink-0 text-amber-500" title="Element not found" />
+              )}
               {title && (
                 <span className="max-w-32 truncate text-xs" style={{ color: textColor }}>
                   {title}
@@ -371,6 +375,12 @@ const StickyNote: React.FC<Props> = memo(
               <div
                 className="flex justify-between overflow-y-auto p-2"
                 style={{ borderBottom: `1px solid ${borderColor}` }}>
+                {showElementLostWarning && (
+                  <HiExclamationTriangle
+                    className="mr-1 mt-0.5 h-4 w-4 shrink-0 text-amber-500"
+                    title="Element not found"
+                  />
+                )}
                 <h2
                   className="flex-1 whitespace-pre-line break-all text-base leading-tight"
                   onDoubleClick={() => {
@@ -386,6 +396,13 @@ const StickyNote: React.FC<Props> = memo(
                     <HiMinus className="h-4 w-4" style={{ color: iconColor }} />
                   </button>
                 </div>
+              </div>
+            )}
+            {/* Element lost warning banner */}
+            {showElementLostWarning && !title && (
+              <div className="flex items-center gap-1 px-2 pt-1.5 text-xs text-amber-600">
+                <HiExclamationTriangle className="h-3.5 w-3.5 shrink-0" />
+                <span>Element not found</span>
               </div>
             )}
             {/* Content */}

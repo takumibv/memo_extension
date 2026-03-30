@@ -9,15 +9,18 @@ type ElementTrackResult = {
   element: Element | null;
   /** Whether the element was found in the DOM */
   elementFound: boolean;
+  /** Whether XPath resolution failed after all retries */
+  resolveFailed: boolean;
 };
 
 type TrackerState = {
   rect: DOMRect | null;
   element: Element | null;
   elementFound: boolean;
+  resolveFailed: boolean;
 };
 
-const EMPTY_STATE: TrackerState = { rect: null, element: null, elementFound: false };
+const EMPTY_STATE: TrackerState = { rect: null, element: null, elementFound: false, resolveFailed: false };
 
 const MAX_RETRY_ATTEMPTS = 10;
 const RETRY_INTERVAL_MS = 500;
@@ -63,7 +66,7 @@ export const useElementTracker = (selection: Selection | undefined): ElementTrac
         prev.width !== newRect.width ||
         prev.height !== newRect.height
       ) {
-        stateRef.current = { rect: newRect, element: elementRef.current, elementFound: true };
+        stateRef.current = { rect: newRect, element: elementRef.current, elementFound: true, resolveFailed: false };
         notify();
       }
     } else if (stateRef.current !== EMPTY_STATE) {
@@ -93,7 +96,7 @@ export const useElementTracker = (selection: Selection | undefined): ElementTrac
 
     const startTracking = (element: Element) => {
       elementRef.current = element;
-      stateRef.current = { rect: element.getBoundingClientRect(), element, elementFound: true };
+      stateRef.current = { rect: element.getBoundingClientRect(), element, elementFound: true, resolveFailed: false };
       notify();
 
       // Observe resize
@@ -138,7 +141,7 @@ export const useElementTracker = (selection: Selection | undefined): ElementTrac
         retryTimerId = setTimeout(attemptResolve, RETRY_INTERVAL_MS);
       } else {
         // Give up — element not found after all retries
-        stateRef.current = EMPTY_STATE;
+        stateRef.current = { rect: null, element: null, elementFound: false, resolveFailed: true };
         notify();
       }
     };
