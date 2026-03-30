@@ -44,6 +44,10 @@ type ContentCreatePinnedNote = {
   type: 'content:createPinnedNote';
   payload: { url: string; xpath: string; text: string; fallbackX: number; fallbackY: number };
 };
+type ContentAttachSelection = {
+  type: 'content:attachSelection';
+  payload: { url: string; noteId: number; xpath: string; text: string };
+};
 
 // content:ready はライフサイクル信号。通常のメッセージフローとは別扱い（injectContentScript内で処理）
 type ContentMessage =
@@ -51,7 +55,8 @@ type ContentMessage =
   | ContentUpdateNote
   | ContentDeleteNote
   | ContentGetVisibility
-  | ContentCreatePinnedNote;
+  | ContentCreatePinnedNote
+  | ContentAttachSelection;
 
 // ===== Background 向けメッセージ (Options → Background) =====
 type OptionsGetAllData = { type: 'options:getAllData' };
@@ -103,6 +108,7 @@ type ResponseMap = {
   'content:deleteNote': { notes: Note[] };
   'content:getVisibility': { isVisible: boolean };
   'content:createPinnedNote': { notes: Note[] };
+  'content:attachSelection': { notes: Note[] };
   'options:getAllData': { notes: Note[]; pageInfos: PageInfo[] };
   'options:updateNote': { notes: Note[]; pageInfos: PageInfo[] };
   'options:deleteNote': { notes: Note[]; pageInfos: PageInfo[] };

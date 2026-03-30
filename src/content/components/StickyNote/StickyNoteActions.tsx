@@ -5,7 +5,7 @@ import { useClipboard } from '@/shared/hooks/useClipboard';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { memo, useState } from 'react';
-import { HiMinus, HiPencilSquare, HiTrash } from 'react-icons/hi2';
+import { HiCursorArrowRays, HiMinus, HiPencilSquare, HiTrash } from 'react-icons/hi2';
 
 type Props = {
   title?: string;
@@ -19,6 +19,8 @@ type Props = {
   onChangeColor: (color: string) => void;
   onDeleteNote: () => void;
   onCloseNote: () => void;
+  onStartInspector?: () => void;
+  isPinnedAndTracking?: boolean;
   portalContainer?: HTMLElement;
 };
 
@@ -35,6 +37,8 @@ const StickyNoteActions: React.FC<Props> = memo(
     onChangeColor,
     onDeleteNote,
     onCloseNote,
+    onStartInspector,
+    isPinnedAndTracking,
     portalContainer,
   }) => {
     const { isSuccessCopy, copyClipboard } = useClipboard();
@@ -58,6 +62,13 @@ const StickyNoteActions: React.FC<Props> = memo(
             <PinIcon className={iconClass} fill={is_fixed ? iconColor : activeIconColor} />
           </button>
         </div>
+        {!isPinnedAndTracking && onStartInspector && (
+          <div className="ml-3 flex items-center justify-center" title={t(I18N.ADD_NOTE_FROM_ELEMENT)}>
+            <button onClick={onStartInspector} className={iconBtnClass}>
+              <HiCursorArrowRays className={iconClass} style={{ color: iconColor }} />
+            </button>
+          </div>
+        )}
         <div className="ml-3 flex items-center justify-center" title={t(I18N.EDIT)}>
           <button onClick={() => setIsEditing(true)} className={iconBtnClass}>
             <HiPencilSquare className={iconClass} style={{ color: iconColor }} />

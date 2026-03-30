@@ -78,6 +78,26 @@ export const createPinnedNote = async (
   return allNotes;
 };
 
+export const attachSelectionToNote = async (
+  page_url: string,
+  noteId: number,
+  target: SelectionTarget,
+  text: string,
+): Promise<Note[]> => {
+  const pageInfo = await getPageInfoByUrl(page_url);
+  if (!pageInfo?.id) return [];
+
+  const selection = await _createSelection(target, text);
+  const { allNotes } = await _updateNote(pageInfo.id, {
+    id: noteId,
+    page_info_id: pageInfo.id,
+    selection_id: selection.id,
+    is_fixed: false,
+  });
+  setUpdatedAtPageInfo(pageInfo.id);
+  return allNotes;
+};
+
 export const updateNote = async (note: Note): Promise<Note[]> => {
   if (!note.page_info_id) return [];
   const { allNotes } = await _updateNote(note.page_info_id, note);

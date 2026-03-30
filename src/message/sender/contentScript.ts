@@ -17,3 +17,9 @@ export const sendCreatePinnedNote = (xpath: string, text: string, fallbackX: num
     type: 'content:createPinnedNote',
     payload: { url: window.location.href, xpath, text, fallbackX, fallbackY },
   });
+
+export const sendAttachSelection = (noteId: number, xpath: string, text: string) =>
+  sendToBackground({
+    type: 'content:attachSelection',
+    payload: { url: window.location.href, noteId, xpath, text },
+  });

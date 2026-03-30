@@ -2,7 +2,12 @@ import StickyNote from '@/content/components/StickyNote/StickyNote';
 import { useElementPicker } from '@/content/hooks/useElementPicker';
 import { getXPathForElement } from '@/content/utils/xpath';
 import { registerContentHandler, unregisterContentHandler, getLastContextMenuPosition } from '@/entrypoints/content';
-import { sendUpdateNote, sendDeleteNote, sendCreatePinnedNote } from '@/message/sender/contentScript';
+import {
+  sendUpdateNote,
+  sendDeleteNote,
+  sendCreatePinnedNote,
+  sendAttachSelection,
+} from '@/message/sender/contentScript';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -19,6 +24,8 @@ const ContentApp: React.FC<Props> = ({ portalContainer }) => {
   const [defaultColor, setDefaultColor] = useState<string>();
   const [selections, setSelections] = useState<Map<string, Selection>>(new Map());
   const [isPickerActive, setIsPickerActive] = useState(false);
+  // null = create new note, number = attach to existing note
+  const pickerTargetNoteIdRef = useRef<number | null>(null);
   const prevNoteIdsRef = useRef<Set<number>>(new Set());
 
   useEffect(() => {
@@ -61,6 +68,7 @@ const ContentApp: React.FC<Props> = ({ portalContainer }) => {
           // TODO: handle visibility toggle
           break;
         case 'bg:activateInspector':
+          pickerTargetNoteIdRef.current = null;
           setIsPickerActive(true);
           break;
       }
@@ -80,16 +88,32 @@ const ContentApp: React.FC<Props> = ({ portalContainer }) => {
 
     const xpath = getXPathForElement(element);
     const text = (element as HTMLElement).innerText?.slice(0, 100) ?? element.tagName;
-    const fallbackX = rect.left + window.scrollX;
-    const fallbackY = rect.bottom + window.scrollY + 8; // 8px below element
+    const targetNoteId = pickerTargetNoteIdRef.current;
+    pickerTargetNoteIdRef.current = null;
 
-    sendCreatePinnedNote(xpath, text, fallbackX, fallbackY).catch(err => {
-      console.error('[ContentApp] Failed to create pinned note:', err);
-    });
+    if (targetNoteId !== null) {
+      // Attach selection to existing note
+      sendAttachSelection(targetNoteId, xpath, text).catch(err => {
+        console.error('[ContentApp] Failed to attach selection:', err);
+      });
+    } else {
+      // Create new pinned note
+      const fallbackX = rect.left + window.scrollX;
+      const fallbackY = rect.bottom + window.scrollY + 8;
+      sendCreatePinnedNote(xpath, text, fallbackX, fallbackY).catch(err => {
+        console.error('[ContentApp] Failed to create pinned note:', err);
+      });
+    }
   }, []);
 
   const handlePickerCancel = useCallback(() => {
     setIsPickerActive(false);
+    pickerTargetNoteIdRef.current = null;
+  }, []);
+
+  const startPickerForNote = useCallback((noteId: number) => {
+    pickerTargetNoteIdRef.current = noteId;
+    setIsPickerActive(true);
   }, []);
 
   useElementPicker(isPickerActive, handleElementPicked, handlePickerCancel);
@@ -138,6 +162,7 @@ const ContentApp: React.FC<Props> = ({ portalContainer }) => {
           selection={note.selection_id ? selections.get(note.selection_id) : undefined}
           onUpdateNote={updateNote}
           onDeleteNote={deleteNote}
+          onStartInspector={startPickerForNote}
           defaultColor={defaultColor}
           portalContainer={portalContainer}
         />

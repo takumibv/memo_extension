@@ -40,6 +40,7 @@ type Props = {
   selection?: Selection;
   onUpdateNote: (note: Note) => Promise<boolean>;
   onDeleteNote: (note: Note) => Promise<boolean>;
+  onStartInspector: (noteId: number) => void;
   defaultColor?: string;
   portalContainer?: HTMLElement;
 };
@@ -48,6 +49,7 @@ const StickyNote: React.FC<Props> = memo(
   ({
     onUpdateNote,
     onDeleteNote,
+    onStartInspector,
     id,
     page_info_id,
     title = '',
@@ -462,6 +464,8 @@ const StickyNote: React.FC<Props> = memo(
               onChangeColor={onChangeColor}
               onDeleteNote={() => onDeleteNote(defaultNote)}
               onCloseNote={() => onClickOpenButton(false)}
+              onStartInspector={id !== undefined ? () => onStartInspector(id) : undefined}
+              isPinnedAndTracking={isPinnedAndTracking}
               portalContainer={portalContainer}
             />
           )}
