@@ -1,11 +1,14 @@
 import StickyNote from '@/content/components/StickyNote/StickyNote';
+import { useElementPicker } from '@/content/hooks/useElementPicker';
+import { getXPathForElement } from '@/content/utils/xpath';
 import { registerContentHandler, unregisterContentHandler, getLastContextMenuPosition } from '@/entrypoints/content';
-import { sendUpdateNote, sendDeleteNote } from '@/message/sender/contentScript';
+import { sendUpdateNote, sendDeleteNote, sendCreatePinnedNote } from '@/message/sender/contentScript';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ToContentMessage } from '@/message/types';
 import type { Note } from '@/shared/types/Note';
+import type { Selection } from '@/shared/types/Selection';
 
 type Props = {
   portalContainer?: HTMLElement;
@@ -14,6 +17,8 @@ type Props = {
 const ContentApp: React.FC<Props> = ({ portalContainer }) => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [defaultColor, setDefaultColor] = useState<string>();
+  const [selections, setSelections] = useState<Map<string, Selection>>(new Map());
+  const [isPickerActive, setIsPickerActive] = useState(false);
   const prevNoteIdsRef = useRef<Set<number>>(new Set());
 
   useEffect(() => {
@@ -47,10 +52,16 @@ const ContentApp: React.FC<Props> = ({ portalContainer }) => {
             prevNoteIdsRef.current = new Set(notesWithPosition.flatMap(n => (n.id !== undefined ? [n.id] : [])));
             setNotes(notesWithPosition);
           }
+          if (msg.payload.selections) {
+            setSelections(new Map(msg.payload.selections.map(s => [s.id, s])));
+          }
           if (msg.payload.defaultColor) setDefaultColor(msg.payload.defaultColor);
           break;
         case 'bg:setVisibility':
           // TODO: handle visibility toggle
+          break;
+        case 'bg:activateInspector':
+          setIsPickerActive(true);
           break;
       }
     };
@@ -62,6 +73,26 @@ const ContentApp: React.FC<Props> = ({ portalContainer }) => {
       unregisterContentHandler();
     };
   }, []);
+
+  // Element picker callbacks
+  const handleElementPicked = useCallback(({ element, rect }: { element: Element; rect: DOMRect }) => {
+    setIsPickerActive(false);
+
+    const xpath = getXPathForElement(element);
+    const text = (element as HTMLElement).innerText?.slice(0, 100) ?? element.tagName;
+    const fallbackX = rect.left + window.scrollX;
+    const fallbackY = rect.bottom + window.scrollY + 8; // 8px below element
+
+    sendCreatePinnedNote(xpath, text, fallbackX, fallbackY).catch(err => {
+      console.error('[ContentApp] Failed to create pinned note:', err);
+    });
+  }, []);
+
+  const handlePickerCancel = useCallback(() => {
+    setIsPickerActive(false);
+  }, []);
+
+  useElementPicker(isPickerActive, handleElementPicked, handlePickerCancel);
 
   const updateNote = useCallback(async (note: Note) => {
     try {
@@ -103,6 +134,8 @@ const ContentApp: React.FC<Props> = ({ portalContainer }) => {
           created_at={note.created_at}
           updated_at={note.updated_at}
           color={note.color}
+          selection_id={note.selection_id}
+          selection={note.selection_id ? selections.get(note.selection_id) : undefined}
           onUpdateNote={updateNote}
           onDeleteNote={deleteNote}
           defaultColor={defaultColor}
