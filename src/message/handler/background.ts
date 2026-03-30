@@ -1,5 +1,5 @@
 import * as actions from '@/background/actions';
-import { setupIsVisible, setupPage } from '@/message/sender/background';
+import { activateInspector, setupIsVisible, setupPage } from '@/message/sender/background';
 import { isToBackgroundMessage } from '@/message/types';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
@@ -132,6 +132,11 @@ const handlePopupMessage = async (
       await setupIsVisible(tabId, tabUrl, isVisible);
       return { isVisible };
     }
+    case 'popup:activateInspector': {
+      await injectContentScript(tabId);
+      await activateInspector(tabId);
+      return {};
+    }
   }
 };
 
@@ -166,6 +171,24 @@ const handleContentMessage = async (
     case 'content:getVisibility': {
       const isVisible = await actions.getIsVisibleNote();
       return { isVisible };
+    }
+    case 'content:createPinnedNote': {
+      const { url, xpath, text, fallbackX, fallbackY } = message.payload;
+      const notes = await actions.createPinnedNote(url, { kind: 'element', xpath }, text, fallbackX, fallbackY);
+
+      // Inject and setup page to push new notes to content script
+      chrome.tabs.query({ url, currentWindow: true }).then(tabs => {
+        tabs.forEach(tab => {
+          if (tab.id) {
+            actions.setBadgeText(tab.id, notes.length);
+            actions.getSetting().then(setting => {
+              setupPage(tab.id!, url, notes, setting).catch(() => {});
+            });
+          }
+        });
+      });
+
+      return { notes };
     }
   }
 };

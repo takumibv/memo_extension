@@ -10,6 +10,10 @@ import {
   getAllNotes,
 } from '@/shared/storages/noteStorage';
 import {
+  createSelection as _createSelection,
+  deleteSelection as _deleteSelection,
+} from '@/shared/storages/selectionStorage';
+import {
   getIsVisibleNote as _getIsVisibleNote,
   setIsVisibleNote as _setIsVisibleNote,
 } from '@/shared/storages/noteVisibleStorage';
@@ -22,6 +26,7 @@ import {
 } from '@/shared/storages/pageInfoStorage';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
+import type { SelectionTarget } from '@/shared/types/Selection';
 import type { Setting } from '@/shared/types/Setting';
 
 export const fetchAllNotes = async (): Promise<Note[]> => {
@@ -53,6 +58,26 @@ export const createNote = async (page_url: string): Promise<Note[]> => {
   return allNotes;
 };
 
+export const createPinnedNote = async (
+  page_url: string,
+  target: SelectionTarget,
+  text: string,
+  fallbackX: number,
+  fallbackY: number,
+): Promise<Note[]> => {
+  const pageInfo = await getOrCreatePageInfoByUrl(page_url);
+  const selection = await _createSelection(target, text);
+  const { allNotes } = await _createNote(pageInfo.id!, {
+    selection_id: selection.id,
+    is_fixed: false,
+    is_open: true,
+    position_x: fallbackX,
+    position_y: fallbackY,
+  });
+  setUpdatedAtPageInfo(pageInfo.id!);
+  return allNotes;
+};
+
 export const updateNote = async (note: Note): Promise<Note[]> => {
   if (!note.page_info_id) return [];
   const { allNotes } = await _updateNote(note.page_info_id, note);
@@ -62,6 +87,10 @@ export const updateNote = async (note: Note): Promise<Note[]> => {
 
 export const deleteNote = async (note: Note): Promise<Note[]> => {
   if (!note.page_info_id) return [];
+  // Cascade delete selection if note is pinned to an element
+  if (note.selection_id) {
+    await _deleteSelection(note.selection_id);
+  }
   const { allNotes } = await _deleteNote(note.page_info_id, note.id);
   return allNotes;
 };
