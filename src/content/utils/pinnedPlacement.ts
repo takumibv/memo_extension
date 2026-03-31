@@ -21,24 +21,36 @@ export type PlacementInput = {
 
 /**
  * Calculate the Y position for side placements (right/left).
+ * Behaves like CSS `position: sticky`:
  *
- * - Element overlaps viewport (any part visible): clamp note to viewport bounds
- * - Element fully off-screen: note follows element off-screen (no clamping)
- *
- * The placement-change transition (0.2s ease-out) in StickyNote handles
- * the visual smoothing when the note moves between clamped and unclamped states.
+ * 1. Ideal: note top = element top
+ * 2. Sticky bottom: if note would overflow viewport bottom, stick to viewport bottom
+ * 3. Sticky top: if element scrolls up, note sticks to viewport top
+ * 4. Exit: once the note can no longer vertically overlap the element
+ *    (element fully above or below the note's possible viewport position),
+ *    the note follows the element off-screen
  */
 const computeSideY = (
   elementRect: PlacementInput['elementRect'],
   noteHeight: number,
   viewportHeight: number,
 ): number => {
-  const elementOverlapsViewport = elementRect.bottom > 0 && elementRect.top < viewportHeight;
+  // Step 1: ideal position
+  let y = elementRect.top;
 
-  if (!elementOverlapsViewport) return elementRect.top;
+  // Step 2: clamp to viewport bounds (sticky behavior)
+  y = Math.max(0, Math.min(y, viewportHeight - noteHeight));
 
-  // Element is at least partially visible — clamp note within viewport
-  return Math.max(0, Math.min(elementRect.top, viewportHeight - noteHeight));
+  // Step 3: check if note (at clamped position) still overlaps with element vertically
+  // Note occupies [y, y + noteHeight], element occupies [elementRect.top, elementRect.bottom]
+  const noteOverlapsElement = y < elementRect.bottom && y + noteHeight > elementRect.top;
+
+  if (!noteOverlapsElement) {
+    // Element has scrolled too far off-screen — follow it
+    return elementRect.top;
+  }
+
+  return y;
 };
 
 /**
@@ -48,8 +60,8 @@ const computeSideY = (
  *
  * The note should:
  * - Never overlap the target element when possible
- * - Stay within viewport bounds (X axis always clamped, Y follows element visibility)
- * - Move off-screen when the element is fully off-screen
+ * - Behave like sticky positioning on the Y axis for side placements
+ * - Stay within viewport bounds on X axis
  */
 export const computePinnedPlacement = (input: PlacementInput): PlacementResult => {
   const { elementRect, noteWidth, noteHeight, viewportWidth, viewportHeight, gap = 8 } = input;
@@ -65,7 +77,6 @@ export const computePinnedPlacement = (input: PlacementInput): PlacementResult =
   // 2. Below element
   const belowY = elementRect.bottom + gap;
   if (belowY + noteHeight <= viewportHeight) {
-    // Clamp X to viewport
     const x = Math.min(elementRect.left, viewportWidth - noteWidth);
     return { x: Math.max(0, x), y: belowY, placement: 'below' };
   }
