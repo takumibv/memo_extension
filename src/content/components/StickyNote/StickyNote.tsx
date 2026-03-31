@@ -252,6 +252,7 @@ const StickyNote: React.FC<Props> = memo(
       (isOpen: boolean) => {
         if (enableOpenButtonThreshold < 10) {
           onUpdateNote({ ...defaultNote, is_open: isOpen });
+          if (!isOpen) setIsHovered(false);
         }
         setEnableOpenButtonThreshold(0);
       },
@@ -341,7 +342,8 @@ const StickyNote: React.FC<Props> = memo(
           className={`${noteBaseStyle} ${noteFixedStyle} ${noteForwardStyle}`}
           style={{
             transform: `translate(${displayPositionX}px, ${displayPositionY}px)`,
-
+            opacity: isPinnedAndTracking ? (isHovered ? 1 : 0.5) : undefined,
+            transition: isPinnedAndTracking ? 'opacity 0.15s ease' : undefined,
             backgroundColor: bgColor,
             color: textColor,
           }}
