@@ -149,9 +149,12 @@ const StickyNote: React.FC<Props> = memo(
       // For side placements: clamp Y to the visible portion of the element.
       // If the element is taller than the viewport, keep the note on-screen
       // as long as any part of the element is visible.
+      // If element is fully off-screen, return its raw top so note goes off-screen too.
       const sideY = () => {
         const visibleTop = Math.max(0, trackedRect.top);
         const visibleBottom = Math.min(vh, trackedRect.bottom);
+        // Element is fully off-screen (no overlap with viewport)
+        if (visibleTop >= visibleBottom) return trackedRect.top;
         // Prefer aligning to the visible top, but don't let note go below viewport
         return Math.min(visibleTop, visibleBottom - noteH);
       };
