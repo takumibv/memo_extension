@@ -138,29 +138,33 @@ export const updatePageInfo = async (page_info: PageInfo): Promise<PageInfo[]> =
 };
 
 export const scrollTo = async (tabId: number, note: Note) => {
+  // Resolve scroll target: XPath element for pinned notes, stored position for regular notes
+  let xpath: string | null = null;
   if (note.selection_id) {
-    // Pinned note: find element by XPath and scroll to it
     const selection = await getSelection(note.selection_id);
     if (selection?.target.kind === 'element') {
-      await chrome.scripting.executeScript({
-        target: { tabId },
-        func: (xpath: string) => {
-          const result = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-          const el = result.singleNodeValue as Element | null;
-          if (el) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-        },
-        args: [selection.target.xpath],
-      });
-      return;
+      xpath = selection.target.xpath;
     }
   }
+
   await chrome.scripting.executeScript({
     target: { tabId },
-    func: (position_x: number | undefined, position_y: number | undefined) =>
-      window.scrollTo(position_x ?? 0, position_y ?? 0),
-    args: [note.position_x ?? 0, note.position_y ?? 0],
+    func: (xp: string | null, posX: number, posY: number) => {
+      let targetY = posY;
+      if (xp) {
+        const result = document.evaluate(xp, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+        const el = result.singleNodeValue as Element | null;
+        if (el) {
+          targetY = el.getBoundingClientRect().top + window.scrollY;
+        }
+      }
+      window.scrollTo({
+        left: posX,
+        top: Math.max(0, targetY - window.innerHeight / 2),
+        behavior: 'smooth',
+      });
+    },
+    args: [xpath, note.position_x ?? 0, note.position_y ?? 0],
   });
 };
 
