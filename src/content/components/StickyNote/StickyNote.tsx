@@ -149,8 +149,7 @@ const StickyNote: React.FC<Props> = memo(
       // 1. Right side of element (least likely to cover surrounding text)
       const rightX = trackedRect.right + gap;
       if (rightX + noteW <= vw) {
-        const clampedY = Math.max(0, Math.min(trackedRect.top, vh - noteH));
-        return { x: rightX, y: clampedY, placement: 'right' };
+        return { x: rightX, y: trackedRect.top, placement: 'right' };
       }
 
       // 2. Below element
@@ -168,12 +167,11 @@ const StickyNote: React.FC<Props> = memo(
       // 4. Left side of element
       const leftX = trackedRect.left - noteW - gap;
       if (leftX >= 0) {
-        const clampedY = Math.max(0, Math.min(trackedRect.top, vh - noteH));
-        return { x: leftX, y: clampedY, placement: 'left' };
+        return { x: leftX, y: trackedRect.top, placement: 'left' };
       }
 
-      // 5. Fallback: top-right corner of viewport
-      return { x: Math.max(0, vw - noteW - gap), y: gap, placement: 'fallback' };
+      // 5. Fallback: follow element position
+      return { x: trackedRect.right + gap, y: trackedRect.top, placement: 'fallback' };
     }, [isPinned, elementFound, trackedRect, editHeight, editWidth, is_open]);
 
     const displayPositionX = useMemo(() => {
