@@ -146,10 +146,20 @@ const StickyNote: React.FC<Props> = memo(
       const vw = window.innerWidth;
       const vh = window.innerHeight;
 
+      // For side placements: clamp Y to the visible portion of the element.
+      // If the element is taller than the viewport, keep the note on-screen
+      // as long as any part of the element is visible.
+      const sideY = () => {
+        const visibleTop = Math.max(0, trackedRect.top);
+        const visibleBottom = Math.min(vh, trackedRect.bottom);
+        // Prefer aligning to the visible top, but don't let note go below viewport
+        return Math.min(visibleTop, visibleBottom - noteH);
+      };
+
       // 1. Right side of element (least likely to cover surrounding text)
       const rightX = trackedRect.right + gap;
       if (rightX + noteW <= vw) {
-        return { x: rightX, y: trackedRect.top, placement: 'right' };
+        return { x: rightX, y: sideY(), placement: 'right' };
       }
 
       // 2. Below element
@@ -167,11 +177,11 @@ const StickyNote: React.FC<Props> = memo(
       // 4. Left side of element
       const leftX = trackedRect.left - noteW - gap;
       if (leftX >= 0) {
-        return { x: leftX, y: trackedRect.top, placement: 'left' };
+        return { x: leftX, y: sideY(), placement: 'left' };
       }
 
       // 5. Fallback: follow element position
-      return { x: trackedRect.right + gap, y: trackedRect.top, placement: 'fallback' };
+      return { x: trackedRect.right + gap, y: sideY(), placement: 'fallback' };
     }, [isPinned, elementFound, trackedRect, editHeight, editWidth, is_open]);
 
     const displayPositionX = useMemo(() => {
