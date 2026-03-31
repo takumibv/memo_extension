@@ -170,6 +170,27 @@ describe('computePinnedPlacement', () => {
       expect(result.y).toBe(850); // 画面外
     });
 
+    it('インライン要素が画面下ギリギリにある場合: Noteは画面内に収まる', () => {
+      const result = compute({
+        elementRect: rect(770, 790, 50, 200),
+        viewportHeight: 800,
+        noteHeight: 180,
+      });
+      expect(result.placement).toBe('right');
+      expect(result.y).toBeLessThanOrEqual(620); // 800 - 180
+      expect(result.y).toBeGreaterThanOrEqual(0);
+    });
+
+    it('インライン要素が画面上ギリギリにある場合: Noteは画面内に収まる', () => {
+      const result = compute({
+        elementRect: rect(10, 30, 50, 200),
+        viewportHeight: 800,
+        noteHeight: 180,
+      });
+      expect(result.placement).toBe('right');
+      expect(result.y).toBe(10);
+    });
+
     it('インライン要素が上にスクロールされた場合: Noteも画面外に行く', () => {
       const result = compute({
         elementRect: rect(-30, -10, 50, 200),

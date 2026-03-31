@@ -40,15 +40,8 @@ const computeSideY = (
   // Element is fully off-screen (no overlap with viewport)
   if (visibleTop >= visibleBottom) return elementRect.top;
 
-  // Element is fully within viewport — align to element top
-  if (elementRect.top >= 0 && elementRect.bottom <= viewportHeight) {
-    return elementRect.top;
-  }
-
-  // Element is partially visible — clamp note to visible portion
-  // Ensure note stays within viewport bounds
-  const y = Math.max(0, Math.min(visibleTop, visibleBottom - noteHeight));
-  return Math.min(y, viewportHeight - noteHeight);
+  // Start at element top, then clamp within viewport bounds
+  return Math.max(0, Math.min(elementRect.top, viewportHeight - noteHeight));
 };
 
 /**
