@@ -21,10 +21,25 @@ export type PlacementInput = {
 
 /**
  * Calculate the Y position for side placements (right/left).
- * Simply aligns to element top — scrolls off-screen with the element.
+ *
+ * - Normal: aligns to element top, scrolls off-screen with element
+ * - Sticky: when element is large and its top is above viewport,
+ *   the note sticks to viewport top (y=0) as long as element is
+ *   still partially visible. Once element scrolls fully off-screen,
+ *   the note follows it out.
  */
-const computeSideY = (elementRect: PlacementInput['elementRect']): number => {
-  return elementRect.top;
+const computeSideY = (
+  elementRect: PlacementInput['elementRect'],
+  noteHeight: number,
+  viewportHeight: number,
+): number => {
+  // Element is fully off-screen — follow it
+  const elementOverlapsViewport = elementRect.bottom > 0 && elementRect.top < viewportHeight;
+  if (!elementOverlapsViewport) return elementRect.top;
+
+  // Sticky: clamp top to 0 (don't go above viewport)
+  // but don't clamp bottom — if element top is within viewport, note goes with it
+  return Math.max(0, elementRect.top);
 };
 
 /**
@@ -40,7 +55,7 @@ const computeSideY = (elementRect: PlacementInput['elementRect']): number => {
 export const computePinnedPlacement = (input: PlacementInput): PlacementResult => {
   const { elementRect, noteWidth, noteHeight, viewportWidth, viewportHeight, gap = 8 } = input;
 
-  const sideY = () => computeSideY(elementRect);
+  const sideY = () => computeSideY(elementRect, noteHeight, viewportHeight);
 
   // 1. Right side of element
   const rightX = elementRect.right + gap;
