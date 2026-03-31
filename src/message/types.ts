@@ -95,7 +95,7 @@ type ToContentMessage = SetupPage | SetVisibility | ActivateInspector;
 
 // ===== レスポンス型マッピング =====
 type ResponseMap = {
-  'popup:getAllNotes': { notes: Note[]; isVisible: boolean };
+  'popup:getAllNotes': { notes: Note[]; selections: Selection[]; isVisible: boolean };
   'popup:createNote': { notes: Note[] };
   'popup:updateNote': { notes: Note[] };
   'popup:deleteNote': { notes: Note[] };

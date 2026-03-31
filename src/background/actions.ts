@@ -12,6 +12,7 @@ import {
 import {
   createSelection as _createSelection,
   deleteSelection as _deleteSelection,
+  getSelection,
 } from '@/shared/storages/selectionStorage';
 import {
   getIsVisibleNote as _getIsVisibleNote,
@@ -136,12 +137,32 @@ export const updatePageInfo = async (page_info: PageInfo): Promise<PageInfo[]> =
   return allPageInfos;
 };
 
-export const scrollTo = async (tabId: number, note: Note) =>
+export const scrollTo = async (tabId: number, note: Note) => {
+  if (note.selection_id) {
+    // Pinned note: find element by XPath and scroll to it
+    const selection = await getSelection(note.selection_id);
+    if (selection?.target.kind === 'element') {
+      await chrome.scripting.executeScript({
+        target: { tabId },
+        func: (xpath: string) => {
+          const result = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+          const el = result.singleNodeValue as Element | null;
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        },
+        args: [selection.target.xpath],
+      });
+      return;
+    }
+  }
   await chrome.scripting.executeScript({
     target: { tabId },
-    func: (position_x, position_y) => window.scrollTo(position_x ?? 0, position_y ?? 0),
-    args: [note.position_x, note.position_y],
+    func: (position_x: number | undefined, position_y: number | undefined) =>
+      window.scrollTo(position_x ?? 0, position_y ?? 0),
+    args: [note.position_x ?? 0, note.position_y ?? 0],
   });
+};
 
 export const getIsVisibleNote = async () => await _getIsVisibleNote();
 

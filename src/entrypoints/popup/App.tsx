@@ -5,12 +5,14 @@ import { I18N } from '@/shared/i18n/keys';
 import { useEffect, useState } from 'react';
 import { HiPlus, HiBars3, HiTrash, HiArrowPath, HiChevronRight, HiCursorArrowRays } from 'react-icons/hi2';
 import type { Note } from '@/shared/types/Note';
+import type { Selection } from '@/shared/types/Selection';
 
 const Popup = () => {
   const [isEnabled, setIsEnabled] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isVisible, setIsVisible] = useState(true);
   const [notes, setNotes] = useState<Note[]>([]);
+  const [selections, setSelections] = useState<Map<string, Selection>>(new Map());
   const [currentTab, setCurrentTab] = useState<chrome.tabs.Tab>();
 
   const onClickAddNote = () => {
@@ -102,8 +104,9 @@ const Popup = () => {
         sender
           .fetchAllNotes(tab)
           .then(data => {
-            const { notes, isVisible } = data;
+            const { notes, selections: sels, isVisible } = data;
             if (notes) setNotes(notes);
+            if (sels) setSelections(new Map(sels.map(s => [s.id, s])));
             if (isVisible !== undefined) setIsVisible(isVisible);
             setIsEnabled(true);
           })
@@ -115,6 +118,20 @@ const Popup = () => {
       }
     });
   }, []);
+
+  const isPinned = (note: Note) => !!note.selection_id;
+  const isScrollable = (note: Note) => !note.is_fixed || isPinned(note);
+
+  const getNoteLabel = (note: Note) => {
+    const title = note.title || note.description;
+    if (title) return title;
+    // Show selection text for pinned notes without a title
+    if (note.selection_id) {
+      const sel = selections.get(note.selection_id);
+      if (sel?.text) return sel.text;
+    }
+    return t(I18N.NEW_NOTE_TITLE);
+  };
 
   return (
     <div style={{ width: '320px', minHeight: '200px' }}>
@@ -162,20 +179,23 @@ const Popup = () => {
               <li key={note.id} className="flex justify-between border-b border-black/10">
                 <button
                   type="button"
-                  className={`flex flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap border-none bg-transparent p-4 pr-1 text-left ${
-                    note.is_fixed ? 'cursor-default' : 'cursor-pointer hover:bg-black/5'
+                  className={`flex flex-1 items-center gap-1.5 overflow-hidden text-ellipsis whitespace-nowrap border-none bg-transparent p-4 pr-1 text-left ${
+                    isScrollable(note) ? 'cursor-pointer hover:bg-black/5' : 'cursor-default'
                   }`}
-                  onClick={() => !note.is_fixed && onClickNote(note)}>
-                  <span className="flex-1">{note.title || note.description || t(I18N.NEW_NOTE_TITLE)}</span>
-                  {!note.is_fixed && <HiChevronRight className="h-4 w-4 text-black/50" />}
+                  onClick={() => isScrollable(note) && onClickNote(note)}>
+                  {isPinned(note) && <HiCursorArrowRays className="h-3.5 w-3.5 shrink-0 text-emerald-500" />}
+                  <span className="flex-1 truncate">{getNoteLabel(note)}</span>
+                  {isScrollable(note) && <HiChevronRight className="h-4 w-4 shrink-0 text-black/50" />}
                 </button>
                 <div className="flex items-center p-4">
-                  <button
-                    onClick={() => onClickResetPosition(note)}
-                    className="mx-2 rounded p-1 hover:bg-black/10"
-                    title={t(I18N.RESET_POSITION)}>
-                    <HiArrowPath className="h-4 w-4 text-black/50" />
-                  </button>
+                  {!isPinned(note) && (
+                    <button
+                      onClick={() => onClickResetPosition(note)}
+                      className="mx-2 rounded p-1 hover:bg-black/10"
+                      title={t(I18N.RESET_POSITION)}>
+                      <HiArrowPath className="h-4 w-4 text-black/50" />
+                    </button>
+                  )}
                   <button onClick={() => onClickDelete(note)} className="mx-2 rounded p-1 hover:bg-black/10">
                     <HiTrash className="h-4 w-4 text-black/50" />
                   </button>

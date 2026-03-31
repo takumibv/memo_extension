@@ -3,6 +3,7 @@ import { activateInspector, setupIsVisible, setupPage } from '@/message/sender/b
 import { isToBackgroundMessage } from '@/message/types';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
+import { getSelection } from '@/shared/storages/selectionStorage';
 import { isSystemLink } from '@/shared/utils/utils';
 import type { ToBackgroundMessage } from '@/message/types';
 import type { Note } from '@/shared/types/Note';
@@ -97,7 +98,11 @@ const handlePopupMessage = async (
     case 'popup:getAllNotes': {
       const notes = await actions.fetchAllNotesByPageUrl(tabUrl);
       const isVisible = await actions.getIsVisibleNote();
-      return { notes, isVisible };
+      // Fetch selections for pinned notes
+      const selectionIds = notes.flatMap(n => (n.selection_id ? [n.selection_id] : []));
+      const selectionResults = await Promise.all(selectionIds.map(id => getSelection(id)));
+      const selections = selectionResults.filter((s): s is NonNullable<typeof s> => s !== undefined);
+      return { notes, selections, isVisible };
     }
     case 'popup:createNote': {
       const notes = await actions.createNote(tabUrl);
