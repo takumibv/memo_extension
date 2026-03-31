@@ -124,21 +124,43 @@ describe('computePinnedPlacement', () => {
       expect(result.y).toBe(200);
     });
 
-    it('要素が画面上方向に消えた: Noteも画面外に行く', () => {
+    it('要素がNote高さ分以上画面上方向に消えた: Noteも画面外に行く', () => {
       const result = compute({
-        elementRect: rect(-200, -180, 50, 200),
+        elementRect: rect(-400, -380, 50, 200),
+        noteHeight: 180,
       });
       expect(result.placement).toBe('right');
-      expect(result.y).toBe(-200);
+      expect(result.y).toBe(-400);
     });
 
-    it('要素が画面下方向に消えた: Noteも画面外に行く', () => {
+    it('要素がNote高さ分以上画面下方向に消えた: Noteも画面外に行く', () => {
       const result = compute({
-        elementRect: rect(900, 920, 50, 200),
+        elementRect: rect(1000, 1020, 50, 200),
         viewportHeight: 800,
+        noteHeight: 180,
       });
       expect(result.placement).toBe('right');
-      expect(result.y).toBe(900);
+      expect(result.y).toBe(1000);
+    });
+
+    it('要素が画面下にわずかに消えた: Noteは画面下端に留まる（スムーズ遷移）', () => {
+      const result = compute({
+        elementRect: rect(850, 870, 50, 200),
+        viewportHeight: 800,
+        noteHeight: 180,
+      });
+      expect(result.placement).toBe('right');
+      expect(result.y).toBe(620); // 800 - 180, clamped
+    });
+
+    it('要素が画面上にわずかに消えた: Noteは画面上端に留まる（スムーズ遷移）', () => {
+      const result = compute({
+        elementRect: rect(-20, 0, 50, 200),
+        viewportHeight: 800,
+        noteHeight: 180,
+      });
+      expect(result.placement).toBe('right');
+      expect(result.y).toBe(0); // clamped to top
     });
 
     it('要素が画面高さより大きく上が見切れ: Noteは画面上端に留まる', () => {
@@ -160,14 +182,14 @@ describe('computePinnedPlacement', () => {
       expect(result.y).toBeLessThanOrEqual(620); // 800 - 180
     });
 
-    it('インライン要素が下にスクロールされた場合: Noteも画面外に行く', () => {
-      // インライン要素 height=20, 完全に画面下に出た
+    it('インライン要素がNote高さ分以上画面下に出た場合: Noteも画面外に行く', () => {
       const result = compute({
-        elementRect: rect(850, 870, 50, 200),
+        elementRect: rect(1000, 1020, 50, 200),
         viewportHeight: 800,
+        noteHeight: 180,
       });
       expect(result.placement).toBe('right');
-      expect(result.y).toBe(850); // 画面外
+      expect(result.y).toBe(1000); // 画面外
     });
 
     it('インライン要素が画面下ギリギリにある場合: Noteは画面内に収まる', () => {
@@ -191,13 +213,14 @@ describe('computePinnedPlacement', () => {
       expect(result.y).toBe(10);
     });
 
-    it('インライン要素が上にスクロールされた場合: Noteも画面外に行く', () => {
+    it('インライン要素がNote高さ分以上画面上に出た場合: Noteも画面外に行く', () => {
       const result = compute({
-        elementRect: rect(-30, -10, 50, 200),
+        elementRect: rect(-400, -380, 50, 200),
         viewportHeight: 800,
+        noteHeight: 180,
       });
       expect(result.placement).toBe('right');
-      expect(result.y).toBe(-30); // 画面外
+      expect(result.y).toBe(-400); // 画面外
     });
   });
 

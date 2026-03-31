@@ -22,25 +22,25 @@ export type PlacementInput = {
 /**
  * Calculate the Y position for side placements (right/left).
  *
- * - Element fully on-screen: align to element top
- * - Element partially visible (taller than viewport): clamp to visible portion
- * - Element fully off-screen: return raw element top (note goes off-screen too)
+ * The note should smoothly slide in/out as the element approaches the viewport,
+ * rather than popping in suddenly when the element becomes visible.
  *
- * For small elements scrolled partially off-screen, the note follows
- * the element's visible edge rather than staying pinned to a hidden top.
+ * Strategy: always clamp to [0, viewportHeight - noteHeight], but only if
+ * the element is close enough (within noteHeight distance) to the viewport.
+ * This way the note starts appearing before the element itself is visible.
  */
 const computeSideY = (
   elementRect: PlacementInput['elementRect'],
   noteHeight: number,
   viewportHeight: number,
 ): number => {
-  const visibleTop = Math.max(0, elementRect.top);
-  const visibleBottom = Math.min(viewportHeight, elementRect.bottom);
+  // Element is far above viewport — note is off-screen above
+  if (elementRect.bottom < -noteHeight) return elementRect.top;
 
-  // Element is fully off-screen (no overlap with viewport)
-  if (visibleTop >= visibleBottom) return elementRect.top;
+  // Element is far below viewport — note is off-screen below
+  if (elementRect.top > viewportHeight + noteHeight) return elementRect.top;
 
-  // Start at element top, then clamp within viewport bounds
+  // Element is near or within viewport — clamp note to viewport bounds
   return Math.max(0, Math.min(elementRect.top, viewportHeight - noteHeight));
 };
 
