@@ -135,8 +135,8 @@ const StickyNote: React.FC<Props> = memo(
     const [dragStartPositionY, setDragStartPositionY] = useState(0);
 
     // When pinned to an element and element is found, calculate position to avoid overlapping
-    // Priority: below → above → right side → left side → viewport top-right corner
-    type Placement = 'below' | 'above' | 'right' | 'left' | 'fallback';
+    // Priority: right → below → above → left → viewport top-right corner
+    type Placement = 'right' | 'below' | 'above' | 'left' | 'fallback';
     const pinnedResult = useMemo((): { x: number; y: number; placement: Placement } | null => {
       if (!isPinned || !elementFound || !trackedRect) return null;
 
@@ -146,23 +146,23 @@ const StickyNote: React.FC<Props> = memo(
       const vw = window.innerWidth;
       const vh = window.innerHeight;
 
-      // 1. Below element
+      // 1. Right side of element (least likely to cover surrounding text)
+      const rightX = trackedRect.right + gap;
+      if (rightX + noteW <= vw) {
+        const clampedY = Math.max(0, Math.min(trackedRect.top, vh - noteH));
+        return { x: rightX, y: clampedY, placement: 'right' };
+      }
+
+      // 2. Below element
       const belowY = trackedRect.bottom + gap;
       if (belowY + noteH <= vh) {
         return { x: trackedRect.left, y: belowY, placement: 'below' };
       }
 
-      // 2. Above element
+      // 3. Above element
       const aboveY = trackedRect.top - noteH - gap;
       if (aboveY >= 0) {
         return { x: trackedRect.left, y: aboveY, placement: 'above' };
-      }
-
-      // 3. Right side of element (Y clamped to viewport)
-      const rightX = trackedRect.right + gap;
-      if (rightX + noteW <= vw) {
-        const clampedY = Math.max(0, Math.min(trackedRect.top, vh - noteH));
-        return { x: rightX, y: clampedY, placement: 'right' };
       }
 
       // 4. Left side of element
@@ -264,6 +264,18 @@ const StickyNote: React.FC<Props> = memo(
       });
     }, [getFixedPosition, is_fixed, setEditPosition, onUpdateNote, defaultNote]);
 
+    const onDetachFromElement = useCallback(() => {
+      // Detach: save current display position as fixed coords and clear selection
+      setEditPosition(displayPositionX, displayPositionY);
+      onUpdateNote({
+        ...defaultNote,
+        selection_id: undefined,
+        is_fixed: true,
+        position_x: displayPositionX,
+        position_y: displayPositionY,
+      });
+    }, [defaultNote, displayPositionX, displayPositionY, setEditPosition, onUpdateNote]);
+
     const [enableOpenButtonThreshold, setEnableOpenButtonThreshold] = useState(0);
     const onClickOpenButton = useCallback(
       (isOpen: boolean) => {
@@ -312,6 +324,7 @@ const StickyNote: React.FC<Props> = memo(
     const draggableCoreProps = {
       scale: 1,
       enableUserSelectHack: false,
+      disabled: isPinnedAndTracking,
       onStart: (_: unknown, data: { x: number; y: number }) => {
         setEnableOpenButtonThreshold(0);
         setIsDragging(true);
@@ -327,15 +340,8 @@ const StickyNote: React.FC<Props> = memo(
       onStop: () => {
         setIsDragging(false);
         document.body.style.userSelect = '';
-        const positionChanged = position_x !== editPositionX || position_y !== editPositionY;
-        if (positionChanged) {
-          // Detach from element tracking when dragged to a new position
-          onUpdateNote({
-            ...defaultNote,
-            position_x: editPositionX,
-            position_y: editPositionY,
-            ...(isPinnedAndTracking ? { selection_id: undefined, is_fixed: effectiveIsFixed } : {}),
-          });
+        if (position_x !== editPositionX || position_y !== editPositionY) {
+          onUpdateNote({ ...defaultNote, position_x: editPositionX, position_y: editPositionY });
         }
       },
     };
@@ -515,6 +521,7 @@ const StickyNote: React.FC<Props> = memo(
               onDeleteNote={() => onDeleteNote(defaultNote)}
               onCloseNote={() => onClickOpenButton(false)}
               onStartInspector={id !== undefined ? () => onStartInspector(id) : undefined}
+              onDetachFromElement={onDetachFromElement}
               isPinnedAndTracking={isPinnedAndTracking}
               portalContainer={portalContainer}
             />
