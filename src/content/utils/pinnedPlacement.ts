@@ -21,36 +21,14 @@ export type PlacementInput = {
 
 /**
  * Calculate the Y position for side placements (right/left).
- * Behaves like CSS `position: sticky`:
- *
- * 1. Ideal: note top = element top
- * 2. Sticky bottom: if note would overflow viewport bottom, stick to viewport bottom
- * 3. Sticky top: if element scrolls up, note sticks to viewport top
- * 4. Exit: once the note can no longer vertically overlap the element
- *    (element fully above or below the note's possible viewport position),
- *    the note follows the element off-screen
+ * Simply aligns to element top, clamped within viewport bounds.
  */
 const computeSideY = (
   elementRect: PlacementInput['elementRect'],
   noteHeight: number,
   viewportHeight: number,
 ): number => {
-  // Step 1: ideal position
-  let y = elementRect.top;
-
-  // Step 2: clamp to viewport bounds (sticky behavior)
-  y = Math.max(0, Math.min(y, viewportHeight - noteHeight));
-
-  // Step 3: check if note (at clamped position) still overlaps with element vertically
-  // Note occupies [y, y + noteHeight], element occupies [elementRect.top, elementRect.bottom]
-  const noteOverlapsElement = y < elementRect.bottom && y + noteHeight > elementRect.top;
-
-  if (!noteOverlapsElement) {
-    // Element has scrolled too far off-screen — follow it
-    return elementRect.top;
-  }
-
-  return y;
+  return Math.max(0, Math.min(elementRect.top, viewportHeight - noteHeight));
 };
 
 /**
