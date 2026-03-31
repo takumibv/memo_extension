@@ -136,7 +136,8 @@ const StickyNote: React.FC<Props> = memo(
 
     // When pinned to an element and element is found, calculate position to avoid overlapping
     // Priority: below → above → right side → left side → viewport top-right corner
-    const pinnedPosition = useMemo(() => {
+    type Placement = 'below' | 'above' | 'right' | 'left' | 'fallback';
+    const pinnedResult = useMemo((): { x: number; y: number; placement: Placement } | null => {
       if (!isPinned || !elementFound || !trackedRect) return null;
 
       const noteH = is_open ? (editHeight ?? 180) : 32;
@@ -148,42 +149,62 @@ const StickyNote: React.FC<Props> = memo(
       // 1. Below element
       const belowY = trackedRect.bottom + gap;
       if (belowY + noteH <= vh) {
-        return { x: trackedRect.left, y: belowY };
+        return { x: trackedRect.left, y: belowY, placement: 'below' };
       }
 
       // 2. Above element
       const aboveY = trackedRect.top - noteH - gap;
       if (aboveY >= 0) {
-        return { x: trackedRect.left, y: aboveY };
+        return { x: trackedRect.left, y: aboveY, placement: 'above' };
       }
 
       // 3. Right side of element (Y clamped to viewport)
       const rightX = trackedRect.right + gap;
       if (rightX + noteW <= vw) {
         const clampedY = Math.max(0, Math.min(trackedRect.top, vh - noteH));
-        return { x: rightX, y: clampedY };
+        return { x: rightX, y: clampedY, placement: 'right' };
       }
 
       // 4. Left side of element
       const leftX = trackedRect.left - noteW - gap;
       if (leftX >= 0) {
         const clampedY = Math.max(0, Math.min(trackedRect.top, vh - noteH));
-        return { x: leftX, y: clampedY };
+        return { x: leftX, y: clampedY, placement: 'left' };
       }
 
       // 5. Fallback: top-right corner of viewport
-      return { x: Math.max(0, vw - noteW - gap), y: gap };
+      return { x: Math.max(0, vw - noteW - gap), y: gap, placement: 'fallback' };
     }, [isPinned, elementFound, trackedRect, editHeight, editWidth, is_open]);
 
     const displayPositionX = useMemo(() => {
-      if (pinnedPosition) return pinnedPosition.x;
+      if (pinnedResult) return pinnedResult.x;
       return editPositionX ?? initialPositionX();
-    }, [pinnedPosition, editPositionX]);
+    }, [pinnedResult, editPositionX]);
 
     const displayPositionY = useMemo(() => {
-      if (pinnedPosition) return pinnedPosition.y;
+      if (pinnedResult) return pinnedResult.y;
       return editPositionY ?? initialPositionY();
-    }, [pinnedPosition, editPositionY]);
+    }, [pinnedResult, editPositionY]);
+
+    // Animate placement direction changes by temporarily adding CSS transition to the DOM node
+    const prevPlacementRef = useRef<Placement | null>(null);
+    useEffect(() => {
+      const el = noteRef.current;
+      const current = pinnedResult?.placement ?? null;
+      const prev = prevPlacementRef.current;
+      prevPlacementRef.current = current;
+
+      if (!el || prev === null || current === null || prev === current) return;
+
+      el.style.transition = 'transform 0.2s ease-out';
+      const timer = setTimeout(() => {
+        el.style.transition = '';
+      }, 200);
+      return () => {
+        clearTimeout(timer);
+        if (el) el.style.transition = '';
+      };
+    }, [pinnedResult?.placement]);
 
     // Pinned notes use fixed positioning when element is tracked (viewport coords)
     const effectiveIsFixed = isPinned && elementFound ? true : is_fixed;
@@ -343,6 +364,7 @@ const StickyNote: React.FC<Props> = memo(
           className={`${noteBaseStyle} ${noteFixedStyle} ${noteForwardStyle}`}
           style={{
             transform: `translate(${displayPositionX}px, ${displayPositionY}px)`,
+
             backgroundColor: bgColor,
             color: textColor,
           }}
