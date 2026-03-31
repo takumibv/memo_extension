@@ -21,14 +21,10 @@ export type PlacementInput = {
 
 /**
  * Calculate the Y position for side placements (right/left).
- * Simply aligns to element top, clamped within viewport bounds.
+ * Simply aligns to element top — scrolls off-screen with the element.
  */
-const computeSideY = (
-  elementRect: PlacementInput['elementRect'],
-  noteHeight: number,
-  viewportHeight: number,
-): number => {
-  return Math.max(0, Math.min(elementRect.top, viewportHeight - noteHeight));
+const computeSideY = (elementRect: PlacementInput['elementRect']): number => {
+  return elementRect.top;
 };
 
 /**
@@ -44,7 +40,7 @@ const computeSideY = (
 export const computePinnedPlacement = (input: PlacementInput): PlacementResult => {
   const { elementRect, noteWidth, noteHeight, viewportWidth, viewportHeight, gap = 8 } = input;
 
-  const sideY = () => computeSideY(elementRect, noteHeight, viewportHeight);
+  const sideY = () => computeSideY(elementRect);
 
   // 1. Right side of element
   const rightX = elementRect.right + gap;

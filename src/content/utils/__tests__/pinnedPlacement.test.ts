@@ -115,8 +115,8 @@ describe('computePinnedPlacement', () => {
     });
   });
 
-  describe('Y方向: viewport内クランプ', () => {
-    it('要素が完全に画面内: element topに合わせる', () => {
+  describe('Y方向: 要素topに追従（スクロールで一緒に画面外へ）', () => {
+    it('要素が画面内: element topに合わせる', () => {
       const result = compute({
         elementRect: rect(200, 220, 50, 200),
       });
@@ -124,61 +124,39 @@ describe('computePinnedPlacement', () => {
       expect(result.y).toBe(200);
     });
 
-    it('要素が画面上方向に消えた: Noteは画面上端にクランプ', () => {
+    it('要素が画面上に消えた: Noteも一緒に画面外', () => {
       const result = compute({
         elementRect: rect(-30, -10, 50, 200),
       });
       expect(result.placement).toBe('right');
-      expect(result.y).toBe(0);
+      expect(result.y).toBe(-30);
     });
 
-    it('要素が画面下方向に消えた: Noteは画面下端にクランプ', () => {
+    it('要素が画面下に消えた: Noteも一緒に画面外', () => {
       const result = compute({
         elementRect: rect(810, 830, 50, 200),
         viewportHeight: 800,
-        noteHeight: 180,
       });
       expect(result.placement).toBe('right');
-      expect(result.y).toBe(620); // 800 - 180
+      expect(result.y).toBe(810);
     });
 
-    it('要素が画面高さより大きく上が見切れ: Noteは画面上端に留まる', () => {
+    it('大きい要素の上が見切れ: Noteはelement topに追従（負の値）', () => {
       const result = compute({
         elementRect: rect(-200, 600, 50, 200),
         viewportHeight: 800,
       });
       expect(result.placement).toBe('right');
-      expect(result.y).toBe(0);
+      expect(result.y).toBe(-200);
     });
 
-    it('要素が画面高さより大きく下が見切れ: Noteは画面下端に収まる', () => {
+    it('大きい要素が画面内: Noteはelement topに合わせる', () => {
       const result = compute({
         elementRect: rect(100, 1200, 50, 200),
         viewportHeight: 800,
-        noteHeight: 180,
       });
       expect(result.placement).toBe('right');
-      expect(result.y).toBe(100); // element top is within viewport
-    });
-
-    it('インライン要素が画面下ギリギリにある場合: Noteは画面内に収まる', () => {
-      const result = compute({
-        elementRect: rect(770, 790, 50, 200),
-        viewportHeight: 800,
-        noteHeight: 180,
-      });
-      expect(result.placement).toBe('right');
-      expect(result.y).toBe(620); // 800 - 180
-    });
-
-    it('インライン要素が画面上ギリギリにある場合: Noteは画面内に収まる', () => {
-      const result = compute({
-        elementRect: rect(10, 30, 50, 200),
-        viewportHeight: 800,
-        noteHeight: 180,
-      });
-      expect(result.placement).toBe('right');
-      expect(result.y).toBe(10);
+      expect(result.y).toBe(100);
     });
   });
 
