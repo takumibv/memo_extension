@@ -30,7 +30,7 @@ export type PlacementInput = {
  */
 const computeSideY = (
   elementRect: PlacementInput['elementRect'],
-  noteHeight: number,
+  _noteHeight: number,
   viewportHeight: number,
   gap: number,
 ): number => {
