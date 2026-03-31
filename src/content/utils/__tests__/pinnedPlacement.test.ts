@@ -142,13 +142,13 @@ describe('computePinnedPlacement', () => {
       expect(result.y).toBe(810);
     });
 
-    it('大きい要素の上が見切れ: Noteは画面上端にsticky (y=0)', () => {
+    it('大きい要素の上が見切れ: Noteは画面上端にsticky (y=gap)', () => {
       const result = compute({
         elementRect: rect(-200, 600, 50, 200),
         viewportHeight: 800,
       });
       expect(result.placement).toBe('right');
-      expect(result.y).toBe(0);
+      expect(result.y).toBe(8); // gap margin from top
     });
 
     it('大きい要素が画面内: Noteはelement topに合わせる', () => {
@@ -169,13 +169,13 @@ describe('computePinnedPlacement', () => {
       expect(result.y).toBe(-1000);
     });
 
-    it('要素の下部だけ画面内: Noteは画面上端にsticky', () => {
+    it('要素の下部だけ画面内: Noteは画面上端にsticky (y=gap)', () => {
       const result = compute({
         elementRect: rect(-500, 300, 50, 200),
         viewportHeight: 800,
       });
       expect(result.placement).toBe('right');
-      expect(result.y).toBe(0);
+      expect(result.y).toBe(8); // gap margin from top
     });
   });
 

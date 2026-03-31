@@ -32,14 +32,14 @@ const computeSideY = (
   elementRect: PlacementInput['elementRect'],
   noteHeight: number,
   viewportHeight: number,
+  gap: number,
 ): number => {
   // Element is fully off-screen — follow it
   const elementOverlapsViewport = elementRect.bottom > 0 && elementRect.top < viewportHeight;
   if (!elementOverlapsViewport) return elementRect.top;
 
-  // Sticky: clamp top to 0 (don't go above viewport)
-  // but don't clamp bottom — if element top is within viewport, note goes with it
-  return Math.max(0, elementRect.top);
+  // Sticky: clamp top to gap (keep margin from viewport top)
+  return Math.max(gap, elementRect.top);
 };
 
 /**
@@ -55,7 +55,7 @@ const computeSideY = (
 export const computePinnedPlacement = (input: PlacementInput): PlacementResult => {
   const { elementRect, noteWidth, noteHeight, viewportWidth, viewportHeight, gap = 8 } = input;
 
-  const sideY = () => computeSideY(elementRect, noteHeight, viewportHeight);
+  const sideY = () => computeSideY(elementRect, noteHeight, viewportHeight, gap);
 
   // 1. Right side of element
   const rightX = elementRect.right + gap;
@@ -83,7 +83,7 @@ export const computePinnedPlacement = (input: PlacementInput): PlacementResult =
     return { x: leftX, y: sideY(), placement: 'left' };
   }
 
-  // 5. Fallback: right side but clamp X to viewport edge
-  const fallbackX = Math.min(rightX, viewportWidth - noteWidth);
-  return { x: Math.max(0, fallbackX), y: sideY(), placement: 'fallback' };
+  // 5. Fallback: right side but clamp X to viewport edge with margin
+  const fallbackX = Math.min(rightX, viewportWidth - noteWidth - gap);
+  return { x: Math.max(gap, fallbackX), y: sideY(), placement: 'fallback' };
 };
