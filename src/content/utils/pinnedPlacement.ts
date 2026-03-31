@@ -22,25 +22,22 @@ export type PlacementInput = {
 /**
  * Calculate the Y position for side placements (right/left).
  *
- * The note should smoothly slide in/out as the element approaches the viewport,
- * rather than popping in suddenly when the element becomes visible.
+ * - Element overlaps viewport (any part visible): clamp note to viewport bounds
+ * - Element fully off-screen: note follows element off-screen (no clamping)
  *
- * Strategy: always clamp to [0, viewportHeight - noteHeight], but only if
- * the element is close enough (within noteHeight distance) to the viewport.
- * This way the note starts appearing before the element itself is visible.
+ * The placement-change transition (0.2s ease-out) in StickyNote handles
+ * the visual smoothing when the note moves between clamped and unclamped states.
  */
 const computeSideY = (
   elementRect: PlacementInput['elementRect'],
   noteHeight: number,
   viewportHeight: number,
 ): number => {
-  // Element is far above viewport — note is off-screen above
-  if (elementRect.bottom < -noteHeight) return elementRect.top;
+  const elementOverlapsViewport = elementRect.bottom > 0 && elementRect.top < viewportHeight;
 
-  // Element is far below viewport — note is off-screen below
-  if (elementRect.top > viewportHeight + noteHeight) return elementRect.top;
+  if (!elementOverlapsViewport) return elementRect.top;
 
-  // Element is near or within viewport — clamp note to viewport bounds
+  // Element is at least partially visible — clamp note within viewport
   return Math.max(0, Math.min(elementRect.top, viewportHeight - noteHeight));
 };
 
