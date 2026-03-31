@@ -134,28 +134,56 @@ const StickyNote: React.FC<Props> = memo(
     const [dragStartPositionX, setDragStartPositionX] = useState(0);
     const [dragStartPositionY, setDragStartPositionY] = useState(0);
 
-    // When pinned to an element and element is found, use tracked position (fixed/viewport coords)
-    // Otherwise fall back to stored position
-    const displayPositionX = useMemo(() => {
-      if (isPinned && elementFound && trackedRect) {
-        return trackedRect.left;
+    // When pinned to an element and element is found, calculate position to avoid overlapping
+    // Priority: below → above → right side → left side → viewport top-right corner
+    const pinnedPosition = useMemo(() => {
+      if (!isPinned || !elementFound || !trackedRect) return null;
+
+      const noteH = is_open ? (editHeight ?? 180) : 32;
+      const noteW = is_open ? (editWidth ?? 300) : 160;
+      const gap = 8;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      // 1. Below element
+      const belowY = trackedRect.bottom + gap;
+      if (belowY + noteH <= vh) {
+        return { x: trackedRect.left, y: belowY };
       }
+
+      // 2. Above element
+      const aboveY = trackedRect.top - noteH - gap;
+      if (aboveY >= 0) {
+        return { x: trackedRect.left, y: aboveY };
+      }
+
+      // 3. Right side of element (Y clamped to viewport)
+      const rightX = trackedRect.right + gap;
+      if (rightX + noteW <= vw) {
+        const clampedY = Math.max(0, Math.min(trackedRect.top, vh - noteH));
+        return { x: rightX, y: clampedY };
+      }
+
+      // 4. Left side of element
+      const leftX = trackedRect.left - noteW - gap;
+      if (leftX >= 0) {
+        const clampedY = Math.max(0, Math.min(trackedRect.top, vh - noteH));
+        return { x: leftX, y: clampedY };
+      }
+
+      // 5. Fallback: top-right corner of viewport
+      return { x: Math.max(0, vw - noteW - gap), y: gap };
+    }, [isPinned, elementFound, trackedRect, editHeight, editWidth, is_open]);
+
+    const displayPositionX = useMemo(() => {
+      if (pinnedPosition) return pinnedPosition.x;
       return editPositionX ?? initialPositionX();
-    }, [isPinned, elementFound, trackedRect, editPositionX]);
+    }, [pinnedPosition, editPositionX]);
 
     const displayPositionY = useMemo(() => {
-      if (isPinned && elementFound && trackedRect) {
-        const noteHeight = is_open ? (editHeight ?? 180) : 32;
-        const belowElement = trackedRect.bottom + 8;
-        // If note would go off-screen, position it above the element or at the top of the viewport
-        if (belowElement + noteHeight > window.innerHeight) {
-          const aboveElement = trackedRect.top - noteHeight - 8;
-          return aboveElement >= 0 ? aboveElement : Math.max(0, trackedRect.top);
-        }
-        return belowElement;
-      }
+      if (pinnedPosition) return pinnedPosition.y;
       return editPositionY ?? initialPositionY();
-    }, [isPinned, elementFound, trackedRect, editPositionY, editHeight, is_open]);
+    }, [pinnedPosition, editPositionY]);
 
     // Pinned notes use fixed positioning when element is tracked (viewport coords)
     const effectiveIsFixed = isPinned && elementFound ? true : is_fixed;
