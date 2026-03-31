@@ -1,6 +1,8 @@
 import StickyNoteActions from './StickyNoteActions';
 import { useElementTracker } from '@/content/hooks/useElementTracker';
 import { useSelectionHighlight } from '@/content/hooks/useSelectionMarker';
+import { computePinnedPlacement } from '@/content/utils/pinnedPlacement';
+import type { Placement } from '@/content/utils/pinnedPlacement';
 import { LogoIcon } from '@/shared/components/Icon';
 import { initialPositionX, initialPositionY, useNoteEdit } from '@/shared/hooks/useNote';
 import { t } from '@/shared/i18n/i18n';
@@ -134,57 +136,15 @@ const StickyNote: React.FC<Props> = memo(
     const [dragStartPositionX, setDragStartPositionX] = useState(0);
     const [dragStartPositionY, setDragStartPositionY] = useState(0);
 
-    // When pinned to an element and element is found, calculate position to avoid overlapping
-    // Priority: right → below → above → left → viewport top-right corner
-    type Placement = 'right' | 'below' | 'above' | 'left' | 'fallback';
-    const pinnedResult = useMemo((): { x: number; y: number; placement: Placement } | null => {
+    const pinnedResult = useMemo(() => {
       if (!isPinned || !elementFound || !trackedRect) return null;
-
-      const noteH = is_open ? (editHeight ?? 180) : 32;
-      const noteW = is_open ? (editWidth ?? 300) : 160;
-      const gap = 8;
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-
-      // For side placements: clamp Y to the visible portion of the element.
-      // If the element is taller than the viewport, keep the note on-screen
-      // as long as any part of the element is visible.
-      // If element is fully off-screen, return its raw top so note goes off-screen too.
-      const sideY = () => {
-        const visibleTop = Math.max(0, trackedRect.top);
-        const visibleBottom = Math.min(vh, trackedRect.bottom);
-        // Element is fully off-screen (no overlap with viewport)
-        if (visibleTop >= visibleBottom) return trackedRect.top;
-        // Prefer aligning to the visible top, but don't let note go below viewport
-        return Math.min(visibleTop, visibleBottom - noteH);
-      };
-
-      // 1. Right side of element (least likely to cover surrounding text)
-      const rightX = trackedRect.right + gap;
-      if (rightX + noteW <= vw) {
-        return { x: rightX, y: sideY(), placement: 'right' };
-      }
-
-      // 2. Below element
-      const belowY = trackedRect.bottom + gap;
-      if (belowY + noteH <= vh) {
-        return { x: trackedRect.left, y: belowY, placement: 'below' };
-      }
-
-      // 3. Above element
-      const aboveY = trackedRect.top - noteH - gap;
-      if (aboveY >= 0) {
-        return { x: trackedRect.left, y: aboveY, placement: 'above' };
-      }
-
-      // 4. Left side of element
-      const leftX = trackedRect.left - noteW - gap;
-      if (leftX >= 0) {
-        return { x: leftX, y: sideY(), placement: 'left' };
-      }
-
-      // 5. Fallback: follow element position
-      return { x: trackedRect.right + gap, y: sideY(), placement: 'fallback' };
+      return computePinnedPlacement({
+        elementRect: trackedRect,
+        noteWidth: is_open ? (editWidth ?? 300) : 160,
+        noteHeight: is_open ? (editHeight ?? 180) : 32,
+        viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight,
+      });
     }, [isPinned, elementFound, trackedRect, editHeight, editWidth, is_open]);
 
     const displayPositionX = useMemo(() => {
