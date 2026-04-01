@@ -123,14 +123,12 @@ const Popup = () => {
   const isScrollable = (note: Note) => !note.is_fixed || isPinned(note);
 
   const getNoteLabel = (note: Note) => {
-    const title = note.title || note.description;
-    if (title) return title;
-    // Show selection text for pinned notes without a title
-    if (note.selection_id) {
-      const sel = selections.get(note.selection_id);
-      if (sel?.text) return sel.text;
-    }
-    return t(I18N.NEW_NOTE_TITLE);
+    return note.title || note.description || t(I18N.NEW_NOTE_TITLE);
+  };
+
+  const getSelectionText = (note: Note): string | undefined => {
+    if (!note.selection_id) return undefined;
+    return selections.get(note.selection_id)?.text;
   };
 
   return (
@@ -179,12 +177,21 @@ const Popup = () => {
               <li key={note.id} className="flex justify-between border-b border-black/10">
                 <button
                   type="button"
-                  className={`flex flex-1 items-center gap-1.5 overflow-hidden text-ellipsis whitespace-nowrap border-none bg-transparent p-4 pr-1 text-left ${
+                  className={`flex flex-1 items-center gap-1.5 overflow-hidden border-none bg-transparent p-4 pr-1 text-left ${
                     isScrollable(note) ? 'cursor-pointer hover:bg-black/5' : 'cursor-default'
                   }`}
                   onClick={() => isScrollable(note) && onClickNote(note)}>
-                  {isPinned(note) && <HiCursorArrowRays className="h-3.5 w-3.5 shrink-0 text-emerald-500" />}
-                  <span className="flex-1 truncate">{getNoteLabel(note)}</span>
+                  {isPinned(note) && (
+                    <HiCursorArrowRays className="mt-0.5 h-3.5 w-3.5 shrink-0 self-start text-emerald-500" />
+                  )}
+                  <div className="flex-1 overflow-hidden">
+                    <span className="block truncate">{getNoteLabel(note)}</span>
+                    {getSelectionText(note) && (
+                      <span className="mt-1 block truncate border-l-2 border-black/20 pl-2 text-xs text-black/40">
+                        {getSelectionText(note)}
+                      </span>
+                    )}
+                  </div>
                   {isScrollable(note) && <HiChevronRight className="h-4 w-4 shrink-0 text-black/50" />}
                 </button>
                 <div className="flex items-center p-4">
