@@ -13,6 +13,7 @@ import type { PageInfo } from '@/shared/types/PageInfo';
 type Props = {
   note: Note;
   pageInfo?: PageInfo;
+  selectionText?: string;
   defaultColor?: string;
   onEdit: (note: Note, focus?: 'title' | 'description') => void;
   onDelete: (note: Note) => Promise<void>;
@@ -28,7 +29,16 @@ const isDarkColor = (hex: string): boolean => {
   return r * 0.299 + g * 0.587 + b * 0.114 < 128;
 };
 
-const NoteCard = ({ note, pageInfo, defaultColor, onEdit, onDelete, onUpdateNote, onFilterByPage }: Props) => {
+const NoteCard = ({
+  note,
+  pageInfo,
+  selectionText,
+  defaultColor,
+  onEdit,
+  onDelete,
+  onUpdateNote,
+  onFilterByPage,
+}: Props) => {
   const { isSuccessCopy, copyClipboard } = useClipboard();
   const [showColorPicker, setShowColorPicker] = useState(false);
 
@@ -55,6 +65,13 @@ const NoteCard = ({ note, pageInfo, defaultColor, onEdit, onDelete, onUpdateNote
       className="mb-3 rounded-lg p-4"
       style={{ backgroundColor: bgColor, color: textColor, borderWidth: 1, borderColor }}
       onDoubleClick={() => onEdit(note, 'title')}>
+      {/* Selection text */}
+      {selectionText && (
+        <p className="mb-2 truncate border-l-2 pl-2 text-xs" style={{ borderColor, color: subTextColor, opacity: 0.7 }}>
+          {selectionText}
+        </p>
+      )}
+
       {/* Title */}
       {note.title && <h3 className="mb-2 text-sm font-semibold">{note.title}</h3>}
 

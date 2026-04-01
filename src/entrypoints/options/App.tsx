@@ -11,6 +11,7 @@ import SettingsPage from '@/options/components/SettingsPage';
 import { useCallback, useEffect, useState } from 'react';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
+import type { Selection } from '@/shared/types/Selection';
 import type { Setting } from '@/shared/types/Setting';
 
 type Tab = 'memos' | 'settings';
@@ -21,6 +22,7 @@ const Options = () => {
   const [tab, setTab] = useState<Tab>(getInitialTab);
   const [notes, setNotes] = useState<Note[]>([]);
   const [pageInfos, setPageInfos] = useState<PageInfo[]>([]);
+  const [selections, setSelections] = useState<Map<string, Selection>>(new Map());
   const [setting, setSetting] = useState<Setting>({});
   const [isLoading, setIsLoading] = useState(true);
 
@@ -30,6 +32,9 @@ const Options = () => {
       .then(([notesData, settingData]) => {
         setNotes(notesData.notes || []);
         setPageInfos(notesData.pageInfos || []);
+        if (notesData.selections) {
+          setSelections(new Map(notesData.selections.map(s => [s.id, s])));
+        }
         setSetting(settingData.setting || {});
       })
       .finally(() => setIsLoading(false));
@@ -67,6 +72,7 @@ const Options = () => {
         <MemoListPage
           notes={notes}
           pageInfos={pageInfos}
+          selections={selections}
           defaultColor={setting.default_color}
           isLoading={isLoading}
           onUpdateNote={handleUpdateNote}

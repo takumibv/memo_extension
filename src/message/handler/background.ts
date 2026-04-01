@@ -220,7 +220,10 @@ const handleOptionsMessage = async (
   switch (message.type) {
     case 'options:getAllData': {
       const { notes, pageInfos } = await actions.fetchAllNotesAndPageInfo();
-      return { notes, pageInfos };
+      const selIds = notes.flatMap(n => (n.selection_id ? [n.selection_id] : []));
+      const selResults = await Promise.all(selIds.map(id => getSelection(id)));
+      const selections = selResults.filter((s): s is NonNullable<typeof s> => s !== undefined);
+      return { notes, pageInfos, selections };
     }
     case 'options:updateNote': {
       await actions.updateNote(message.payload.note);

@@ -109,7 +109,7 @@ type ResponseMap = {
   'content:getVisibility': { isVisible: boolean };
   'content:createPinnedNote': { notes: Note[] };
   'content:attachSelection': { notes: Note[] };
-  'options:getAllData': { notes: Note[]; pageInfos: PageInfo[] };
+  'options:getAllData': { notes: Note[]; pageInfos: PageInfo[]; selections: Selection[] };
   'options:updateNote': { notes: Note[]; pageInfos: PageInfo[] };
   'options:deleteNote': { notes: Note[]; pageInfos: PageInfo[] };
   'options:updatePageInfo': { pageInfos: PageInfo[] };
