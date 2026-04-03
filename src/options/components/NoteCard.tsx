@@ -7,6 +7,7 @@ import { I18N } from '@/shared/i18n/keys';
 import { formatDate } from '@/shared/utils/utils';
 import { useState } from 'react';
 import { HiPencilSquare, HiTrash, HiClipboard, HiCheck, HiFunnel } from 'react-icons/hi2';
+import { getNoteColors } from '@/shared/utils/color';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
 
@@ -20,13 +21,6 @@ type Props = {
   onUpdateNote: (note: Note) => Promise<void>;
   onFilterByPage: (pageId: number | null) => void;
   onGoToPage: (url: string) => void;
-};
-
-const isDarkColor = (hex: string): boolean => {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return r * 0.299 + g * 0.587 + b * 0.114 < 128;
 };
 
 const NoteCard = ({
@@ -43,11 +37,7 @@ const NoteCard = ({
   const [showColorPicker, setShowColorPicker] = useState(false);
 
   const bgColor = note.color || defaultColor || '#FFFFFF';
-  const dark = isDarkColor(bgColor);
-  const textColor = dark ? '#f3f4f6' : '#1f2937';
-  const subTextColor = dark ? 'rgba(255,255,255,0.6)' : 'rgba(107,114,128,1)';
-  const iconColor = dark ? 'rgba(255,255,255,0.5)' : 'rgba(107,114,128,1)';
-  const borderColor = dark ? 'rgba(255,255,255,0.15)' : 'rgba(229,231,235,1)';
+  const { dark, textColor, subTextColor, iconColor, borderColor } = getNoteColors(bgColor);
 
   const handleDelete = () => {
     if (confirm(`"${note.title || t(I18N.NOTE)}" ${t(I18N.CONFIRM_REMOVE_NEXT_NOTE)}`)) {

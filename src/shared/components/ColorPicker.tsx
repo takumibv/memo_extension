@@ -28,14 +28,7 @@ const COLORS = [
   '#3D2D5C',
 ];
 
-// Determine if a hex color is dark (for check mark contrast)
-const isDarkColor = (hex: string): boolean => {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  // Relative luminance formula
-  return r * 0.299 + g * 0.587 + b * 0.114 < 128;
-};
+import { isDarkColor } from '@/shared/utils/color';
 
 const ColorPicker: React.FC<Props> = memo(({ onChangeColor, color: activeColor = '', hasDefault = false }) => (
   <div className="flex flex-wrap">

@@ -5,6 +5,7 @@ import { I18N } from '@/shared/i18n/keys';
 import { formatDate, isEqualsObject } from '@/shared/utils/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { HiChevronDown } from 'react-icons/hi2';
+import { getNoteColors } from '@/shared/utils/color';
 import type { Note } from '@/shared/types/Note';
 
 type Props = {
@@ -14,13 +15,6 @@ type Props = {
   onSave: (note: Note) => Promise<void>;
   onDelete: (note: Note) => Promise<void>;
   onClose: () => void;
-};
-
-const isDarkColor = (hex: string): boolean => {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return r * 0.299 + g * 0.587 + b * 0.114 < 128;
 };
 
 const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onDelete, onClose }: Props) => {
@@ -38,10 +32,7 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
   const descRef = useRef<HTMLTextAreaElement>(null);
 
   const bgColor = note.color || defaultColor || '#FFFFFF';
-  const dark = isDarkColor(bgColor);
-  const textColor = dark ? '#f3f4f6' : '#1f2937';
-  const subTextColor = dark ? 'rgba(255,255,255,0.5)' : 'rgba(107,114,128,1)';
-  const borderColor = dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)';
+  const { dark, textColor, subTextColor, borderColor } = getNoteColors(bgColor);
   const inputBg = dark ? 'rgba(255,255,255,0.1)' : 'white';
 
   const hasChanges = useCallback(() => {

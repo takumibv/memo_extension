@@ -15,14 +15,9 @@ import type { Selection } from '@/shared/types/Selection';
 import type React from 'react';
 import { cn } from '@/lib/utils';
 
-const ROOT_DOM_ID = 'react-container-for-note-extension';
+import { getNoteColors } from '@/shared/utils/color';
 
-const isDarkColor = (hex: string): boolean => {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return r * 0.299 + g * 0.587 + b * 0.114 < 128;
-};
+const ROOT_DOM_ID = 'react-container-for-note-extension';
 
 type Props = {
   id?: number;
@@ -319,11 +314,7 @@ const StickyNote: React.FC<Props> = memo(
     };
 
     const bgColor = color || defaultColor || '#fff';
-    const dark = isDarkColor(bgColor);
-    const textColor = dark ? '#f3f4f6' : '#1f2937';
-    const placeholderColor = dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.5)';
-    const borderColor = dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)';
-    const iconColor = dark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)';
+    const { dark, textColor, placeholderColor, borderColor, iconColor } = getNoteColors(bgColor);
 
     const noteBaseStyle = 'pointer-events-auto rounded left-0 top-0 transition-shadow duration-300';
     const noteFixedStyle = effectiveIsFixed ? 'fixed shadow-lg' : 'absolute shadow-md';
@@ -487,7 +478,7 @@ const StickyNote: React.FC<Props> = memo(
               is_fixed={is_fixed}
               color={color}
               iconColor={iconColor}
-              activeIconColor={dark ? 'rgba(255,255,255,1)' : 'rgba(0,0,0,1)'}
+              activeIconColor={getNoteColors(bgColor).activeIconColor}
               setIsEditing={setIsEditing}
               onClickFixedButton={onClickFixedButton}
               onChangeColor={onChangeColor}
