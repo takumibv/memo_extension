@@ -30,16 +30,33 @@ export type PlacementInput = {
  */
 const computeSideY = (
   elementRect: PlacementInput['elementRect'],
-  _noteHeight: number,
+  noteHeight: number,
   viewportHeight: number,
   gap: number,
 ): number => {
-  // Element is fully off-screen — follow it
+  // Element is fully off-screen — follow it out
   const elementOverlapsViewport = elementRect.bottom > 0 && elementRect.top < viewportHeight;
   if (!elementOverlapsViewport) return elementRect.top;
 
-  // Sticky: clamp top to gap (keep margin from viewport top)
-  return Math.max(gap, elementRect.top);
+  // Ideal: align to element top
+  let y = elementRect.top;
+
+  // Sticky top: keep gap margin from viewport top
+  y = Math.max(gap, y);
+
+  // Don't overflow below viewport (keep gap margin from bottom)
+  y = Math.min(y, viewportHeight - noteHeight - gap);
+
+  // Anchor to element: note must not float independently of the element.
+  // The note's top must not exceed element's bottom (so it exits with element going up)
+  // and must not go below element's top (so it exits with element going down).
+  // This means: elementTop <= y <= elementBottom
+  // Combined with the viewport clamps above, this naturally resolves:
+  // - Element going up: elementBottom shrinks → y gets pulled up → note exits
+  // - Element going down: elementTop grows → y gets pushed down → note exits
+  y = Math.max(y, elementRect.top);
+
+  return y;
 };
 
 /**
