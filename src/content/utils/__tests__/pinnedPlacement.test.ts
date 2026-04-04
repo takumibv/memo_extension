@@ -118,100 +118,110 @@ describe('computePinnedPlacement', () => {
   });
 
   describe('Y方向: 要素追従 + 大きい要素でsticky', () => {
-    it('要素が画面内: element topに合わせる', () => {
+    it('要素が画面内: element topに合わせる (absolute)', () => {
       const result = compute({
         elementRect: rect(200, 220, 50, 200),
       });
       expect(result.placement).toBe('right');
+      expect(result.sticky).toBe(false);
       expect(result.y).toBe(200);
     });
 
-    it('要素が完全に画面上に消えた: Noteも一緒に画面外', () => {
+    it('要素が完全に画面上に消えた: Noteも一緒に画面外 (absolute)', () => {
       const result = compute({
         elementRect: rect(-30, -10, 50, 200),
         viewportHeight: 800,
       });
       expect(result.placement).toBe('right');
+      expect(result.sticky).toBe(false);
       expect(result.y).toBe(-30);
     });
 
-    it('要素が完全に画面下に消えた: Noteも一緒に画面外', () => {
+    it('要素が完全に画面下に消えた: Noteも一緒に画面外 (absolute)', () => {
       const result = compute({
         elementRect: rect(810, 830, 50, 200),
         viewportHeight: 800,
       });
       expect(result.placement).toBe('right');
+      expect(result.sticky).toBe(false);
       expect(result.y).toBe(810);
     });
 
-    it('大きい要素の上が見切れ: Noteは画面上端にsticky (y=gap)', () => {
+    it('大きい要素の上が見切れ: sticky=true, y=gap (fixed/viewport coords)', () => {
       const result = compute({
         elementRect: rect(-200, 600, 50, 200),
         viewportHeight: 800,
       });
       expect(result.placement).toBe('right');
-      expect(result.y).toBe(8); // gap margin from top
+      expect(result.sticky).toBe(true);
+      expect(result.y).toBe(8); // viewport gap
     });
 
-    it('大きい要素が画面内: Noteはelement topに合わせる', () => {
+    it('大きい要素が画面内: Noteはelement topに合わせる (absolute)', () => {
       const result = compute({
         elementRect: rect(100, 1200, 50, 200),
         viewportHeight: 800,
       });
       expect(result.placement).toBe('right');
+      expect(result.sticky).toBe(false);
       expect(result.y).toBe(100);
     });
 
-    it('Noteが大きくリサイズ + 要素topが画面上にsticky: 画面下にはみ出さない', () => {
+    it('Noteが大きくリサイズ + 要素topが画面上: sticky=true', () => {
       const result = compute({
         elementRect: rect(-100, 600, 50, 200),
         noteHeight: 500,
         viewportHeight: 800,
       });
       expect(result.placement).toBe('right');
-      expect(result.y).toBe(8); // clamped to gap
+      expect(result.sticky).toBe(true);
+      expect(result.y).toBe(8);
     });
 
-    it('Noteが大きくリサイズ + 要素が画面内: 要素topに追従', () => {
+    it('Noteが大きくリサイズ + 要素が画面内: 要素topに追従 (absolute)', () => {
       const result = compute({
         elementRect: rect(400, 420, 50, 200),
         noteHeight: 500,
         viewportHeight: 800,
       });
       expect(result.placement).toBe('right');
-      expect(result.y).toBe(400); // follows element top
+      expect(result.sticky).toBe(false);
+      expect(result.y).toBe(400);
     });
 
-    it('Noteが画面とほぼ同じ高さ + 要素が画面下に消える: Noteも追従', () => {
+    it('Noteが画面とほぼ同じ高さ + 要素が画面下に消える: Noteも追従 (absolute)', () => {
       const result = compute({
         elementRect: rect(460, 480, 50, 200),
         noteHeight: 479,
         viewportHeight: 480,
       });
       expect(result.placement).toBe('right');
-      expect(result.y).toBe(460); // follows element out
+      expect(result.sticky).toBe(false);
+      expect(result.y).toBe(460);
     });
 
-    it('Noteが画面とほぼ同じ高さ + 要素が画面上に消える: Noteも追従', () => {
+    it('Noteが画面とほぼ同じ高さ + 要素が画面上に消える: Noteも追従 (absolute)', () => {
       const result = compute({
         elementRect: rect(-20, -1, 50, 200),
         noteHeight: 479,
         viewportHeight: 480,
       });
       expect(result.placement).toBe('right');
-      expect(result.y).toBe(-20); // off-screen with element
+      expect(result.sticky).toBe(false);
+      expect(result.y).toBe(-20);
     });
 
-    it('大きい要素が完全に画面上に消えた: Noteも一緒に画面外', () => {
+    it('大きい要素が完全に画面上に消えた: Noteも一緒に画面外 (absolute)', () => {
       const result = compute({
         elementRect: rect(-1000, -100, 50, 200),
         viewportHeight: 800,
       });
       expect(result.placement).toBe('right');
+      expect(result.sticky).toBe(false);
       expect(result.y).toBe(-1000);
     });
 
-    it('要素の下部だけ画面内: Noteは画面上端にsticky (y=gap)', () => {
+    it('要素の下部だけ画面内: sticky=true (y=gap)', () => {
       const result = compute({
         elementRect: rect(-500, 300, 50, 200),
         viewportHeight: 800,

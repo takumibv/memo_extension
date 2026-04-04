@@ -176,17 +176,24 @@ const StickyNote: React.FC<Props> = memo(
       return editPositionY ?? initialPositionY();
     }, [pinnedResult, editPositionY]);
 
-    // Animate placement direction changes, but not during scroll
+    // Animate placement direction changes, but only when:
+    // - Not scrolling (user-triggered changes like window resize)
+    // - Sticky mode hasn't changed (coordinate system stays the same)
     const prevPlacementRef = useRef<Placement | null>(null);
+    const prevStickyRef = useRef<boolean | null>(null);
     useEffect(() => {
       const el = noteRef.current;
       const current = pinnedResult?.placement ?? null;
+      const currentSticky = pinnedResult?.sticky ?? null;
       const prev = prevPlacementRef.current;
+      const prevSticky = prevStickyRef.current;
       prevPlacementRef.current = current;
+      prevStickyRef.current = currentSticky;
 
       if (!el || prev === null || current === null || prev === current) return;
-      // Skip animation during scroll — only animate user-triggered placement changes
       if (isScrollingRef.current) return;
+      // Don't animate when switching between absolute/fixed (coordinate systems differ)
+      if (prevSticky !== currentSticky) return;
 
       el.style.transition = 'transform 0.2s ease-out';
       const timer = setTimeout(() => {
@@ -196,10 +203,10 @@ const StickyNote: React.FC<Props> = memo(
         clearTimeout(timer);
         if (el) el.style.transition = '';
       };
-    }, [pinnedResult?.placement]);
+    }, [pinnedResult?.placement, pinnedResult?.sticky]);
 
-    // Pinned notes use absolute positioning (document coords), others use stored is_fixed
-    const effectiveIsFixed = isPinned && elementFound ? false : is_fixed;
+    // Pinned notes: fixed when sticky (viewport coords), absolute when following element (doc coords)
+    const effectiveIsFixed = isPinned && elementFound ? (pinnedResult?.sticky ?? false) : (is_fixed ?? true);
     const isPinnedAndTracking = isPinned && elementFound;
 
     // Highlight the pinned element — convert docRect to viewport rect for the overlay
