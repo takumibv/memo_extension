@@ -120,7 +120,8 @@ const StickyNote: React.FC<Props> = memo(
     } = useNoteEdit(defaultNote);
 
     // Element tracking for pinned notes
-    const { rect: trackedRect, elementFound, resolveFailed } = useElementTracker(selection);
+    const noteHeight = is_open ? (editHeight ?? 180) : 32;
+    const { rect: trackedRect, elementFound, resolveFailed } = useElementTracker(selection, noteHeight);
     const isPinned = !!selection;
     const showElementLostWarning = isPinned && resolveFailed;
 

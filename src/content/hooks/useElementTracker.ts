@@ -25,9 +25,6 @@ const EMPTY_STATE: TrackerState = { rect: null, element: null, elementFound: fal
 const MAX_RETRY_ATTEMPTS = 10;
 const RETRY_INTERVAL_MS = 500;
 
-// Viewport margin for IntersectionObserver — start updating slightly before element enters viewport
-const VIEWPORT_MARGIN = '200px';
-
 // ===== Shared scroll/resize listener =====
 // All tracker instances share a single scroll/resize listener to avoid N listeners for N notes.
 const scrollCallbacks = new Set<() => void>();
@@ -64,12 +61,12 @@ const removeScrollCallback = (cb: () => void) => {
  * - RAF-throttled updates (max 1 getBoundingClientRect per frame per element)
  * - Rect value comparison to avoid unnecessary re-renders
  */
-export const useElementTracker = (selection: Selection | undefined): ElementTrackResult => {
+export const useElementTracker = (selection: Selection | undefined, noteHeight: number = 180): ElementTrackResult => {
   const stateRef = useRef<TrackerState>(EMPTY_STATE);
   const listenersRef = useRef<Set<() => void>>(new Set());
   const elementRef = useRef<Element | null>(null);
   const rafRef = useRef<number>(0);
-  const isNearViewportRef = useRef(false);
+  const isNearViewportRef = useRef(true);
 
   // Stabilize the xpath to avoid effect re-runs when selection object reference changes
   const xpath = selection?.target.kind === 'element' ? selection.target.xpath : undefined;
@@ -98,7 +95,6 @@ export const useElementTracker = (selection: Selection | undefined): ElementTrac
       return;
     }
 
-    // Skip expensive getBoundingClientRect when element is far off-screen
     if (!isNearViewportRef.current) return;
 
     const newRect = elementRef.current.getBoundingClientRect();
@@ -132,26 +128,12 @@ export const useElementTracker = (selection: Selection | undefined): ElementTrac
     let retryTimerId: ReturnType<typeof setTimeout> | null = null;
     let resizeObserver: ResizeObserver | null = null;
     let mutationObserver: MutationObserver | null = null;
-    let intersectionObserver: IntersectionObserver | null = null;
     let cleaned = false;
 
     const startTracking = (element: Element) => {
       elementRef.current = element;
-      isNearViewportRef.current = true; // assume visible initially
       stateRef.current = { rect: element.getBoundingClientRect(), element, elementFound: true, resolveFailed: false };
       notify();
-
-      // IntersectionObserver with margin to detect near-viewport elements
-      intersectionObserver = new IntersectionObserver(
-        entries => {
-          const entry = entries[0];
-          if (!entry) return;
-          isNearViewportRef.current = entry.isIntersecting;
-          if (entry.isIntersecting) scheduleUpdate();
-        },
-        { rootMargin: VIEWPORT_MARGIN },
-      );
-      intersectionObserver.observe(element);
 
       // Observe resize
       resizeObserver = new ResizeObserver(scheduleUpdate);
@@ -204,11 +186,31 @@ export const useElementTracker = (selection: Selection | undefined): ElementTrac
       if (retryTimerId !== null) clearTimeout(retryTimerId);
       resizeObserver?.disconnect();
       mutationObserver?.disconnect();
-      intersectionObserver?.disconnect();
       removeScrollCallback(scheduleUpdate);
       elementRef.current = null;
     };
   }, [xpath, scheduleUpdate, notify]);
+
+  // IntersectionObserver to skip updates when element is far off-screen.
+  // rootMargin uses noteHeight so the note is considered "near" even when
+  // the element itself is outside the viewport but the note would be visible.
+  useEffect(() => {
+    const element = elementRef.current;
+    if (!element) return;
+
+    const margin = `${noteHeight}px`;
+    const observer = new IntersectionObserver(
+      entries => {
+        const entry = entries[0];
+        if (!entry) return;
+        isNearViewportRef.current = entry.isIntersecting;
+        if (entry.isIntersecting) scheduleUpdate();
+      },
+      { rootMargin: `${margin} 0px ${margin} 0px` },
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [xpath, noteHeight, scheduleUpdate]);
 
   const state = useSyncExternalStore(subscribe, getSnapshot);
   return state;
