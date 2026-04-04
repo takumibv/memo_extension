@@ -8,6 +8,8 @@ const defaults: PlacementInput = {
   noteHeight: 180,
   viewportWidth: 1200,
   viewportHeight: 800,
+  scrollX: 0,
+  scrollY: 0,
   gap: 8,
 };
 
@@ -236,6 +238,8 @@ describe('computePinnedPlacement', () => {
         noteHeight: 180,
         viewportWidth: 1200,
         viewportHeight: 800,
+        scrollX: 0,
+        scrollY: 0,
       });
       expect(result.x).toBe(208); // 200 + 8
     });

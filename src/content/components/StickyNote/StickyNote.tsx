@@ -120,8 +120,7 @@ const StickyNote: React.FC<Props> = memo(
     } = useNoteEdit(defaultNote);
 
     // Element tracking for pinned notes
-    const noteHeight = is_open ? (editHeight ?? 180) : 32;
-    const { rect: trackedRect, elementFound, resolveFailed } = useElementTracker(selection, noteHeight);
+    const { docRect, elementFound, resolveFailed } = useElementTracker(selection);
     const isPinned = !!selection;
     const showElementLostWarning = isPinned && resolveFailed;
 
@@ -132,16 +131,28 @@ const StickyNote: React.FC<Props> = memo(
     const [dragStartPositionX, setDragStartPositionX] = useState(0);
     const [dragStartPositionY, setDragStartPositionY] = useState(0);
 
+    // Pinned placement uses document coordinates (position:absolute)
+    // Re-compute on scroll for sticky behavior
+    const [scrollY, setScrollY] = useState(window.scrollY);
+    useEffect(() => {
+      if (!isPinned || !elementFound) return;
+      const onScroll = () => setScrollY(window.scrollY);
+      window.addEventListener('scroll', onScroll, { passive: true });
+      return () => window.removeEventListener('scroll', onScroll);
+    }, [isPinned, elementFound]);
+
     const pinnedResult = useMemo(() => {
-      if (!isPinned || !elementFound || !trackedRect) return null;
+      if (!isPinned || !elementFound || !docRect) return null;
       return computePinnedPlacement({
-        elementRect: trackedRect,
+        elementRect: docRect,
         noteWidth: is_open ? (editWidth ?? 300) : 160,
         noteHeight: is_open ? (editHeight ?? 180) : 32,
         viewportWidth: window.innerWidth,
         viewportHeight: window.innerHeight,
+        scrollX: window.scrollX,
+        scrollY,
       });
-    }, [isPinned, elementFound, trackedRect, editHeight, editWidth, is_open]);
+    }, [isPinned, elementFound, docRect, editHeight, editWidth, is_open, scrollY]);
 
     const displayPositionX = useMemo(() => {
       if (pinnedResult) return pinnedResult.x;
@@ -173,12 +184,17 @@ const StickyNote: React.FC<Props> = memo(
       };
     }, [pinnedResult?.placement]);
 
-    // Pinned notes use fixed positioning when element is tracked (viewport coords)
-    const effectiveIsFixed = isPinned && elementFound ? true : is_fixed;
+    // Pinned notes use absolute positioning (document coords), others use stored is_fixed
+    const effectiveIsFixed = isPinned && elementFound ? false : is_fixed;
     const isPinnedAndTracking = isPinned && elementFound;
 
-    // Highlight the pinned element only on hover or while editing
-    useSelectionHighlight(trackedRect, isPinnedAndTracking && (isHovered || isEditing || isDragging));
+    // Highlight the pinned element — convert docRect to viewport rect for the overlay
+    const highlightRect = useMemo(() => {
+      if (!docRect) return null;
+      return new DOMRect(docRect.left - window.scrollX, docRect.top - window.scrollY, docRect.width, docRect.height);
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- scrollY triggers viewport recalculation
+    }, [docRect, scrollY]);
+    useSelectionHighlight(highlightRect, isPinnedAndTracking && (isHovered || isEditing || isDragging));
 
     const onEditDone = useCallback(async () => {
       // When pinned and tracking element, don't overwrite position (it's managed by the tracker)
@@ -232,14 +248,16 @@ const StickyNote: React.FC<Props> = memo(
     }, [getFixedPosition, is_fixed, setEditPosition, onUpdateNote, defaultNote]);
 
     const onDetachFromElement = useCallback(() => {
-      // Detach: save current display position as fixed coords and clear selection
-      setEditPosition(displayPositionX, displayPositionY);
+      // Detach: convert document coords to viewport coords for fixed positioning
+      const fixedX = displayPositionX - window.scrollX;
+      const fixedY = displayPositionY - window.scrollY;
+      setEditPosition(fixedX, fixedY);
       onUpdateNote({
         ...defaultNote,
         selection_id: undefined,
         is_fixed: true,
-        position_x: displayPositionX,
-        position_y: displayPositionY,
+        position_x: fixedX,
+        position_y: fixedY,
       });
     }, [defaultNote, displayPositionX, displayPositionY, setEditPosition, onUpdateNote]);
 

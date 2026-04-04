@@ -2,11 +2,19 @@ import { resolveElementByXPath } from '@/content/utils/xpath';
 import { useCallback, useEffect, useRef, useSyncExternalStore } from 'react';
 import type { Selection } from '@/shared/types/Selection';
 
+/** Document-coordinate rect of the tracked element */
+export type DocRect = {
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+  width: number;
+  height: number;
+};
+
 type ElementTrackResult = {
-  /** Current bounding rect in viewport coords, null if element not found */
-  rect: DOMRect | null;
-  /** The resolved DOM element, null if not found */
-  element: Element | null;
+  /** Element rect in document coordinates, null if not found */
+  docRect: DocRect | null;
   /** Whether the element was found in the DOM */
   elementFound: boolean;
   /** Whether XPath resolution failed after all retries */
@@ -14,61 +22,47 @@ type ElementTrackResult = {
 };
 
 type TrackerState = {
-  rect: DOMRect | null;
-  element: Element | null;
+  docRect: DocRect | null;
   elementFound: boolean;
   resolveFailed: boolean;
 };
 
-const EMPTY_STATE: TrackerState = { rect: null, element: null, elementFound: false, resolveFailed: false };
+const EMPTY_STATE: TrackerState = { docRect: null, elementFound: false, resolveFailed: false };
 
 const MAX_RETRY_ATTEMPTS = 10;
 const RETRY_INTERVAL_MS = 500;
 
-// ===== Shared scroll/resize listener =====
-// All tracker instances share a single scroll/resize listener to avoid N listeners for N notes.
-const scrollCallbacks = new Set<() => void>();
-let scrollListenerActive = false;
-
-const onScrollOrResize = () => {
-  for (const cb of scrollCallbacks) cb();
+const toDocRect = (el: Element): DocRect => {
+  const r = el.getBoundingClientRect();
+  return {
+    top: r.top + window.scrollY,
+    bottom: r.bottom + window.scrollY,
+    left: r.left + window.scrollX,
+    right: r.right + window.scrollX,
+    width: r.width,
+    height: r.height,
+  };
 };
 
-const addScrollCallback = (cb: () => void) => {
-  scrollCallbacks.add(cb);
-  if (!scrollListenerActive) {
-    window.addEventListener('scroll', onScrollOrResize, { passive: true });
-    window.addEventListener('resize', onScrollOrResize, { passive: true });
-    scrollListenerActive = true;
-  }
-};
-
-const removeScrollCallback = (cb: () => void) => {
-  scrollCallbacks.delete(cb);
-  if (scrollCallbacks.size === 0 && scrollListenerActive) {
-    window.removeEventListener('scroll', onScrollOrResize);
-    window.removeEventListener('resize', onScrollOrResize);
-    scrollListenerActive = false;
-  }
+const docRectEqual = (a: DocRect | null, b: DocRect | null): boolean => {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  return a.top === b.top && a.left === b.left && a.width === b.width && a.height === b.height;
 };
 
 /**
  * Tracks a DOM element's position by resolving its XPath from a Selection.
+ * Returns document coordinates so the note can use position:absolute and
+ * let the browser handle scroll tracking natively.
  *
- * Performance optimizations:
- * - IntersectionObserver skips updates when element is far off-screen
- * - Shared scroll/resize listener (1 listener for all tracker instances)
- * - RAF-throttled updates (max 1 getBoundingClientRect per frame per element)
- * - Rect value comparison to avoid unnecessary re-renders
+ * Updates only on: ResizeObserver, MutationObserver, window resize.
+ * No scroll listener needed — position:absolute handles scrolling.
  */
-export const useElementTracker = (selection: Selection | undefined, noteHeight: number = 180): ElementTrackResult => {
+export const useElementTracker = (selection: Selection | undefined): ElementTrackResult => {
   const stateRef = useRef<TrackerState>(EMPTY_STATE);
   const listenersRef = useRef<Set<() => void>>(new Set());
   const elementRef = useRef<Element | null>(null);
-  const rafRef = useRef<number>(0);
-  const isNearViewportRef = useRef(true);
 
-  // Stabilize the xpath to avoid effect re-runs when selection object reference changes
   const xpath = selection?.target.kind === 'element' ? selection.target.xpath : undefined;
 
   const notify = useCallback(() => {
@@ -86,7 +80,7 @@ export const useElementTracker = (selection: Selection | undefined, noteHeight: 
 
   const getSnapshot = useCallback(() => stateRef.current, []);
 
-  const updateRect = useCallback(() => {
+  const updateDocRect = useCallback(() => {
     if (!elementRef.current) {
       if (stateRef.current !== EMPTY_STATE) {
         stateRef.current = EMPTY_STATE;
@@ -95,26 +89,12 @@ export const useElementTracker = (selection: Selection | undefined, noteHeight: 
       return;
     }
 
-    if (!isNearViewportRef.current) return;
-
-    const newRect = elementRef.current.getBoundingClientRect();
-    const prev = stateRef.current.rect;
-    if (
-      !prev ||
-      prev.top !== newRect.top ||
-      prev.left !== newRect.left ||
-      prev.width !== newRect.width ||
-      prev.height !== newRect.height
-    ) {
-      stateRef.current = { rect: newRect, element: elementRef.current, elementFound: true, resolveFailed: false };
+    const newRect = toDocRect(elementRef.current);
+    if (!docRectEqual(stateRef.current.docRect, newRect)) {
+      stateRef.current = { docRect: newRect, elementFound: true, resolveFailed: false };
       notify();
     }
   }, [notify]);
-
-  const scheduleUpdate = useCallback(() => {
-    cancelAnimationFrame(rafRef.current);
-    rafRef.current = requestAnimationFrame(updateRect);
-  }, [updateRect]);
 
   useEffect(() => {
     if (!xpath) {
@@ -132,15 +112,15 @@ export const useElementTracker = (selection: Selection | undefined, noteHeight: 
 
     const startTracking = (element: Element) => {
       elementRef.current = element;
-      stateRef.current = { rect: element.getBoundingClientRect(), element, elementFound: true, resolveFailed: false };
+      stateRef.current = { docRect: toDocRect(element), elementFound: true, resolveFailed: false };
       notify();
 
-      // Observe resize
-      resizeObserver = new ResizeObserver(scheduleUpdate);
+      // Observe element resize (layout changes)
+      resizeObserver = new ResizeObserver(updateDocRect);
       resizeObserver.observe(element);
 
-      // Shared scroll/resize listener
-      addScrollCallback(scheduleUpdate);
+      // Observe window resize (viewport changes)
+      window.addEventListener('resize', updateDocRect, { passive: true });
 
       // Observe DOM mutations on the element's parent to detect removal
       mutationObserver = new MutationObserver(() => {
@@ -151,7 +131,7 @@ export const useElementTracker = (selection: Selection | undefined, noteHeight: 
             notify();
           }
         } else {
-          scheduleUpdate();
+          updateDocRect();
         }
       });
 
@@ -173,7 +153,7 @@ export const useElementTracker = (selection: Selection | undefined, noteHeight: 
       if (retryCount < MAX_RETRY_ATTEMPTS) {
         retryTimerId = setTimeout(attemptResolve, RETRY_INTERVAL_MS);
       } else {
-        stateRef.current = { rect: null, element: null, elementFound: false, resolveFailed: true };
+        stateRef.current = { docRect: null, elementFound: false, resolveFailed: true };
         notify();
       }
     };
@@ -182,35 +162,13 @@ export const useElementTracker = (selection: Selection | undefined, noteHeight: 
 
     return () => {
       cleaned = true;
-      cancelAnimationFrame(rafRef.current);
       if (retryTimerId !== null) clearTimeout(retryTimerId);
       resizeObserver?.disconnect();
       mutationObserver?.disconnect();
-      removeScrollCallback(scheduleUpdate);
+      window.removeEventListener('resize', updateDocRect);
       elementRef.current = null;
     };
-  }, [xpath, scheduleUpdate, notify]);
-
-  // IntersectionObserver to skip updates when element is far off-screen.
-  // rootMargin uses noteHeight so the note is considered "near" even when
-  // the element itself is outside the viewport but the note would be visible.
-  useEffect(() => {
-    const element = elementRef.current;
-    if (!element) return;
-
-    const margin = `${noteHeight}px`;
-    const observer = new IntersectionObserver(
-      entries => {
-        const entry = entries[0];
-        if (!entry) return;
-        isNearViewportRef.current = entry.isIntersecting;
-        if (entry.isIntersecting) scheduleUpdate();
-      },
-      { rootMargin: `${margin} 0px ${margin} 0px` },
-    );
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, [xpath, noteHeight, scheduleUpdate]);
+  }, [xpath, updateDocRect, notify]);
 
   const state = useSyncExternalStore(subscribe, getSnapshot);
   return state;

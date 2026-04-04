@@ -1,13 +1,15 @@
 export type Placement = 'right' | 'below' | 'above' | 'left' | 'fallback';
 
 export type PlacementResult = {
+  /** X position in document coordinates */
   x: number;
+  /** Y position in document coordinates */
   y: number;
   placement: Placement;
 };
 
 export type PlacementInput = {
-  /** Element's bounding rect (viewport coords) */
+  /** Element's bounding rect in document coordinates */
   elementRect: { top: number; bottom: number; left: number; right: number };
   /** Note dimensions */
   noteWidth: number;
@@ -15,45 +17,51 @@ export type PlacementInput = {
   /** Viewport dimensions */
   viewportWidth: number;
   viewportHeight: number;
+  /** Current scroll position */
+  scrollX: number;
+  scrollY: number;
   /** Gap between element and note */
   gap?: number;
 };
 
 /**
- * Calculate the Y position for side placements (right/left).
+ * Calculate the Y position for side placements (right/left) in document coords.
  *
- * - Normal: aligns to element top, scrolls off-screen with element
- * - Sticky: when element is large and its top is above viewport,
- *   the note sticks to viewport top (y=0) as long as element is
- *   still partially visible. Once element scrolls fully off-screen,
- *   the note follows it out.
+ * Behaves like CSS position:sticky — the note aligns to the element top,
+ * but sticks to the viewport top edge when the element extends above the viewport.
+ * The note exits with the element when it scrolls fully off-screen.
  */
 const computeSideY = (
   elementRect: PlacementInput['elementRect'],
   noteHeight: number,
+  scrollY: number,
   viewportHeight: number,
   gap: number,
 ): number => {
-  // Element is fully off-screen — follow it out
-  const elementOverlapsViewport = elementRect.bottom > 0 && elementRect.top < viewportHeight;
+  // Viewport range in document coordinates
+  const vpDocTop = scrollY;
+  const vpDocBottom = scrollY + viewportHeight;
+
+  // Element is fully off-screen — follow it
+  const elementOverlapsViewport = elementRect.bottom > vpDocTop && elementRect.top < vpDocBottom;
   if (!elementOverlapsViewport) return elementRect.top;
+
+  // Viewport clamp boundaries with gap margin
+  const clampTop = vpDocTop + gap;
+  const clampBottom = vpDocTop + viewportHeight - noteHeight - gap;
 
   // Ideal: align to element top
   let y = elementRect.top;
 
   // Sticky top: keep gap margin from viewport top
-  y = Math.max(gap, y);
+  y = Math.max(clampTop, y);
 
-  // Don't overflow below viewport (keep gap margin from bottom)
-  y = Math.min(y, viewportHeight - noteHeight - gap);
+  // Don't overflow below viewport (if note fits in viewport)
+  if (clampBottom >= clampTop) {
+    y = Math.min(y, clampBottom);
+  }
 
-  // Anchor to element: note must not float independently of the element.
-  // The note's top must not exceed element's bottom (so it exits with element going up)
-  // and must not go below element's top (so it exits with element going down).
-  // This means: elementTop <= y <= elementBottom
-  // Combined with the viewport clamps above, this naturally resolves:
-  // - Element going up: elementBottom shrinks → y gets pulled up → note exits
-  // - Element going down: elementTop grows → y gets pushed down → note exits
+  // Anchor: note must not float independently of element
   y = Math.max(y, elementRect.top);
 
   return y;
@@ -61,46 +69,49 @@ const computeSideY = (
 
 /**
  * Compute the best position for a pinned note relative to its target element.
+ * All coordinates are in document space (for position:absolute).
  *
  * Priority: right → below → above → left → fallback (right with X clamped)
  *
- * The note should:
- * - Never overlap the target element when possible
- * - Behave like sticky positioning on the Y axis for side placements
- * - Stay within viewport bounds on X axis
+ * Placement decisions use viewport-relative positions to determine which
+ * direction has space, but the returned x/y are document coordinates.
  */
 export const computePinnedPlacement = (input: PlacementInput): PlacementResult => {
-  const { elementRect, noteWidth, noteHeight, viewportWidth, viewportHeight, gap = 8 } = input;
+  const { elementRect, noteWidth, noteHeight, viewportWidth, viewportHeight, scrollX, scrollY, gap = 8 } = input;
 
-  const sideY = () => computeSideY(elementRect, noteHeight, viewportHeight, gap);
+  // Convert element rect to viewport coordinates for space checks
+  const vpRect = {
+    top: elementRect.top - scrollY,
+    bottom: elementRect.bottom - scrollY,
+    left: elementRect.left - scrollX,
+    right: elementRect.right - scrollX,
+  };
+
+  const sideY = () => computeSideY(elementRect, noteHeight, scrollY, viewportHeight, gap);
 
   // 1. Right side of element
-  const rightX = elementRect.right + gap;
-  if (rightX + noteWidth <= viewportWidth) {
-    return { x: rightX, y: sideY(), placement: 'right' };
+  if (vpRect.right + gap + noteWidth <= viewportWidth) {
+    return { x: elementRect.right + gap, y: sideY(), placement: 'right' };
   }
 
   // 2. Below element
-  const belowY = elementRect.bottom + gap;
-  if (belowY + noteHeight <= viewportHeight) {
-    const x = Math.min(elementRect.left, viewportWidth - noteWidth);
-    return { x: Math.max(0, x), y: belowY, placement: 'below' };
+  if (vpRect.bottom + gap + noteHeight <= viewportHeight) {
+    const vpX = Math.max(0, Math.min(vpRect.left, viewportWidth - noteWidth));
+    return { x: scrollX + vpX, y: elementRect.bottom + gap, placement: 'below' };
   }
 
   // 3. Above element
-  const aboveY = elementRect.top - noteHeight - gap;
-  if (aboveY >= 0) {
-    const x = Math.min(elementRect.left, viewportWidth - noteWidth);
-    return { x: Math.max(0, x), y: aboveY, placement: 'above' };
+  if (vpRect.top - gap - noteHeight >= 0) {
+    const vpX = Math.max(0, Math.min(vpRect.left, viewportWidth - noteWidth));
+    return { x: scrollX + vpX, y: elementRect.top - noteHeight - gap, placement: 'above' };
   }
 
   // 4. Left side of element
-  const leftX = elementRect.left - noteWidth - gap;
-  if (leftX >= 0) {
-    return { x: leftX, y: sideY(), placement: 'left' };
+  if (vpRect.left - gap - noteWidth >= 0) {
+    return { x: elementRect.left - noteWidth - gap, y: sideY(), placement: 'left' };
   }
 
-  // 5. Fallback: right side but clamp X to viewport edge with margin
-  const fallbackX = Math.min(rightX, viewportWidth - noteWidth - gap);
-  return { x: Math.max(gap, fallbackX), y: sideY(), placement: 'fallback' };
+  // 5. Fallback: right side, clamp X to viewport
+  const vpFallbackX = Math.max(gap, Math.min(vpRect.right + gap, viewportWidth - noteWidth - gap));
+  return { x: scrollX + vpFallbackX, y: sideY(), placement: 'fallback' };
 };
