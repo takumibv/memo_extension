@@ -134,11 +134,23 @@ const StickyNote: React.FC<Props> = memo(
     // Pinned placement uses document coordinates (position:absolute)
     // Re-compute on scroll for sticky behavior
     const [scrollY, setScrollY] = useState(window.scrollY);
+    const isScrollingRef = useRef(false);
+    const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
     useEffect(() => {
       if (!isPinned || !elementFound) return;
-      const onScroll = () => setScrollY(window.scrollY);
+      const onScroll = () => {
+        setScrollY(window.scrollY);
+        isScrollingRef.current = true;
+        clearTimeout(scrollTimerRef.current);
+        scrollTimerRef.current = setTimeout(() => {
+          isScrollingRef.current = false;
+        }, 150);
+      };
       window.addEventListener('scroll', onScroll, { passive: true });
-      return () => window.removeEventListener('scroll', onScroll);
+      return () => {
+        window.removeEventListener('scroll', onScroll);
+        clearTimeout(scrollTimerRef.current);
+      };
     }, [isPinned, elementFound]);
 
     const pinnedResult = useMemo(() => {
@@ -164,7 +176,7 @@ const StickyNote: React.FC<Props> = memo(
       return editPositionY ?? initialPositionY();
     }, [pinnedResult, editPositionY]);
 
-    // Animate placement direction changes by temporarily adding CSS transition to the DOM node
+    // Animate placement direction changes, but not during scroll
     const prevPlacementRef = useRef<Placement | null>(null);
     useEffect(() => {
       const el = noteRef.current;
@@ -173,6 +185,8 @@ const StickyNote: React.FC<Props> = memo(
       prevPlacementRef.current = current;
 
       if (!el || prev === null || current === null || prev === current) return;
+      // Skip animation during scroll — only animate user-triggered placement changes
+      if (isScrollingRef.current) return;
 
       el.style.transition = 'transform 0.2s ease-out';
       const timer = setTimeout(() => {
