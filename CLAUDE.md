@@ -47,11 +47,30 @@ pnpm zip              # Create distributable zip
 
 The use of `any` type is strictly prohibited. Use proper types, `unknown` with type guards, generics, or union types instead.
 
-### Git Commit Workflow
+## Git Rules
+
+### Never commit directly to main
+
+**mainブランチへの直接コミットは禁止。** 必ずfeatureブランチを作成してからコミットすること。
+
+```bash
+# ✅ 正しいワークフロー
+git checkout -b fix/some-bug    # featureブランチを作成
+# ... 変更 ...
+git add <files>
+pnpm dlx lint-staged --allow-empty
+git commit -m "fix: ..."
+
+# ❌ 絶対にやらない
+git checkout main
+git commit -m "..."             # mainに直コミット
+```
+
+### Pre-commit: lint-staged
 
 Before committing, **always** run:
 ```bash
 pnpm dlx lint-staged --allow-empty
 ```
 
-Workflow: make changes → `git add` → `pnpm dlx lint-staged --allow-empty` → fix errors → re-stage → commit.
+Workflow: create branch → make changes → `git add` → `pnpm dlx lint-staged --allow-empty` → fix errors → re-stage → commit.
