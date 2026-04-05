@@ -339,6 +339,7 @@ const MemoListPage = ({
         <NoteEditModal
           note={editingNote}
           defaultColor={defaultColor}
+          selectionText={editingNote.selection_id ? selections.get(editingNote.selection_id)?.text : undefined}
           initialFocus={editFocus}
           onSave={handleSaveNote}
           onDelete={handleDeleteFromModal}

@@ -6,7 +6,7 @@ import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { formatDate } from '@/shared/utils/utils';
 import { useState } from 'react';
-import { HiPencilSquare, HiTrash, HiClipboard, HiCheck, HiFunnel } from 'react-icons/hi2';
+import { HiPencilSquare, HiTrash, HiClipboard, HiCheck, HiFunnel, HiCursorArrowRays } from 'react-icons/hi2';
 import { getNoteColors } from '@/shared/utils/color';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
@@ -55,13 +55,6 @@ const NoteCard = ({
       className="mb-3 rounded-lg p-4"
       style={{ backgroundColor: bgColor, color: textColor, borderWidth: 1, borderColor }}
       onDoubleClick={() => onEdit(note, 'title')}>
-      {/* Selection text */}
-      {selectionText && (
-        <p className="mb-2 truncate border-l-2 pl-2 text-xs" style={{ borderColor, color: subTextColor, opacity: 0.7 }}>
-          {selectionText}
-        </p>
-      )}
-
       {/* Title */}
       {note.title && <h3 className="mb-2 text-sm font-semibold">{note.title}</h3>}
 
@@ -100,6 +93,16 @@ const NoteCard = ({
             title={t(I18N.THIS_PAGE_NOTE_LIST)}>
             <HiFunnel className="h-3 w-3" style={{ color: iconColor }} />
           </button>
+        </div>
+      )}
+
+      {/* Selection text */}
+      {selectionText && (
+        <div className="mb-3 flex items-center gap-1.5 truncate text-xs" style={{ color: subTextColor, opacity: 0.7 }}>
+          <HiCursorArrowRays className="h-3.5 w-3.5 shrink-0" style={{ color: iconColor }} />
+          <span className="truncate border-l-2 pl-2" style={{ borderColor }}>
+            {selectionText}
+          </span>
         </div>
       )}
 
