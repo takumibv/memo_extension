@@ -37,7 +37,22 @@ const hasContentScript = async (tabId: number): Promise<boolean> => {
   }
 };
 
+// タブごとの注入ロック（並行注入を防止）
+const injectingTabs = new Map<number, Promise<boolean>>();
+
 const injectContentScript = async (tabId: number): Promise<boolean> => {
+  // 同じタブで注入中なら、その結果を待つ
+  const existing = injectingTabs.get(tabId);
+  if (existing) return existing;
+
+  const promise = doInjectContentScript(tabId).finally(() => {
+    injectingTabs.delete(tabId);
+  });
+  injectingTabs.set(tabId, promise);
+  return promise;
+};
+
+const doInjectContentScript = async (tabId: number): Promise<boolean> => {
   const hasScript = await hasContentScript(tabId);
   if (hasScript) return false;
 
