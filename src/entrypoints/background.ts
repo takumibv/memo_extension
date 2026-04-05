@@ -97,17 +97,11 @@ export default defineBackground(() => {
     });
   });
 
-  // タブごとのセットアップ状態管理（重複実行防止）
-  const tabSetupState = new Map<number, { url: string; pending: boolean }>();
+  // タブごとに最後に処理したURLを記録
+  const lastSetupUrl = new Map<number, string>();
 
   const setupTabNotes = (tabId: number, url: string) => {
     if (isSystemLink(url)) return;
-
-    // 同じURLで処理中なら何もしない
-    const state = tabSetupState.get(tabId);
-    if (state?.url === url && state.pending) return;
-
-    tabSetupState.set(tabId, { url, pending: true });
 
     isScriptAllowedPage(tabId).then(isAllowed => {
       if (isAllowed) {
@@ -115,12 +109,6 @@ export default defineBackground(() => {
           .fetchAllNotesByPageUrl(url)
           .then(notes => {
             actions.getSetting().then(setting => {
-              // 処理中に別のURLへ遷移していたらセットアップをスキップ
-              const current = tabSetupState.get(tabId);
-              if (current?.url !== url) return;
-
-              tabSetupState.set(tabId, { url, pending: false });
-
               if (notes.length === 0) {
                 hasContentScript(tabId)
                   .then(has => {
@@ -161,13 +149,13 @@ export default defineBackground(() => {
     if (url === undefined) return;
 
     if (status === 'loading') {
-      // ページ遷移開始時: 新しいURLで状態リセットして処理開始
-      tabSetupState.set(tabId, { url, pending: false });
+      // ページ遷移開始時: URLをリセットして処理開始
+      lastSetupUrl.set(tabId, url);
       setupTabNotes(tabId, url);
     } else if (status === 'complete') {
       // ページ読み込み完了時: URLが変わっていた場合（リダイレクト等）のみ再処理
-      const state = tabSetupState.get(tabId);
-      if (state?.url !== url) {
+      if (lastSetupUrl.get(tabId) !== url) {
+        lastSetupUrl.set(tabId, url);
         setupTabNotes(tabId, url);
       }
     }
@@ -185,7 +173,7 @@ export default defineBackground(() => {
   // タブが閉じられた時に呼ばれる
   chrome.tabs.onRemoved.addListener(tabId => {
     delete cache.badge[tabId];
-    tabSetupState.delete(tabId);
+    lastSetupUrl.delete(tabId);
   });
 
   chrome.runtime.onMessage.addListener(handleMessages);
