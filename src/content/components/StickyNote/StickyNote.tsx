@@ -176,34 +176,25 @@ const StickyNote: React.FC<Props> = memo(
       return editPositionY ?? initialPositionY();
     }, [pinnedResult, editPositionY]);
 
-    // Animate placement direction changes, but only when:
-    // - Not scrolling (user-triggered changes like window resize)
-    // - Sticky mode hasn't changed (coordinate system stays the same)
+    // Animate only when placement direction changes (not sticky mode switches)
     const prevPlacementRef = useRef<Placement | null>(null);
-    const prevStickyRef = useRef<boolean | null>(null);
     useEffect(() => {
       const el = noteRef.current;
       const current = pinnedResult?.placement ?? null;
-      const currentSticky = pinnedResult?.sticky ?? null;
       const prev = prevPlacementRef.current;
-      const prevSticky = prevStickyRef.current;
       prevPlacementRef.current = current;
-      prevStickyRef.current = currentSticky;
 
       if (!el || prev === null || current === null || prev === current) return;
-      if (isScrollingRef.current) return;
-      // Don't animate when switching between absolute/fixed (coordinate systems differ)
-      if (prevSticky !== currentSticky) return;
 
-      el.style.transition = 'transform 0.2s ease-out';
+      el.style.transition = 'transform 0.25s ease-out';
       const timer = setTimeout(() => {
         el.style.transition = '';
-      }, 200);
+      }, 250);
       return () => {
         clearTimeout(timer);
         if (el) el.style.transition = '';
       };
-    }, [pinnedResult?.placement, pinnedResult?.sticky]);
+    }, [pinnedResult?.placement]);
 
     // Pinned notes: fixed when sticky (viewport coords), absolute when following element (doc coords)
     const effectiveIsFixed = isPinned && elementFound ? (pinnedResult?.sticky ?? false) : (is_fixed ?? true);

@@ -9,8 +9,6 @@ import type { Selection } from '@/shared/types/Selection';
 
 const Popup = () => {
   const [isEnabled, setIsEnabled] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isVisible, setIsVisible] = useState(true);
   const [notes, setNotes] = useState<Note[]>([]);
   const [selections, setSelections] = useState<Map<string, Selection>>(new Map());
   const [currentTab, setCurrentTab] = useState<chrome.tabs.Tab>();
@@ -78,12 +76,33 @@ const Popup = () => {
   };
 
   const onClickResetPosition = (note: Note) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { position_x, position_y, ..._note } = note;
     if (currentTab) {
       sender
         .sendUpdateNote(currentTab, {
-          ..._note,
+          ...note,
+          position_x: undefined,
+          position_y: undefined,
+          is_fixed: true,
+          is_open: true,
+        })
+        .then(({ notes }) => {
+          if (notes) setNotes(notes);
+          setIsEnabled(true);
+        })
+        .catch(() => {
+          setIsEnabled(false);
+        });
+    }
+  };
+
+  const onClickResetPinnedNote = (note: Note) => {
+    if (currentTab) {
+      sender
+        .sendUpdateNote(currentTab, {
+          ...note,
+          position_x: undefined,
+          position_y: undefined,
+          selection_id: undefined,
           is_fixed: true,
           is_open: true,
         })
@@ -104,10 +123,9 @@ const Popup = () => {
         sender
           .fetchAllNotes(tab)
           .then(data => {
-            const { notes, selections: sels, isVisible } = data;
+            const { notes, selections: sels } = data;
             if (notes) setNotes(notes);
             if (sels) setSelections(new Map(sels.map(s => [s.id, s])));
-            if (isVisible !== undefined) setIsVisible(isVisible);
             setIsEnabled(true);
           })
           .catch(() => {
@@ -195,14 +213,12 @@ const Popup = () => {
                   {isScrollable(note) && <HiChevronRight className="h-4 w-4 shrink-0 text-black/50" />}
                 </button>
                 <div className="flex items-center p-4">
-                  {!isPinned(note) && (
-                    <button
-                      onClick={() => onClickResetPosition(note)}
-                      className="mx-2 rounded p-1 hover:bg-black/10"
-                      title={t(I18N.RESET_POSITION)}>
-                      <HiArrowPath className="h-4 w-4 text-black/50" />
-                    </button>
-                  )}
+                  <button
+                    onClick={() => (isPinned(note) ? onClickResetPinnedNote(note) : onClickResetPosition(note))}
+                    className="mx-2 rounded p-1 hover:bg-black/10"
+                    title={t(I18N.RESET_POSITION)}>
+                    <HiArrowPath className="h-4 w-4 text-black/50" />
+                  </button>
                   <button onClick={() => onClickDelete(note)} className="mx-2 rounded p-1 hover:bg-black/10">
                     <HiTrash className="h-4 w-4 text-black/50" />
                   </button>
