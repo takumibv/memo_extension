@@ -97,18 +97,10 @@ export default defineBackground(() => {
     });
   });
 
-  // 直近に読み込まれたページURL
-  let currentUrl = '';
+  // タブごとに最後に処理したURLを記録
+  const lastSetupUrl = new Map<number, string>();
 
-  // タブが更新された時に呼ばれる
-  chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    const { status } = changeInfo;
-    if (status !== 'loading') return;
-
-    const { url } = tab;
-    if (url === undefined || currentUrl === url) return;
-    currentUrl = url;
-
+  const setupTabNotes = (tabId: number, url: string) => {
     if (isSystemLink(url)) return;
 
     isScriptAllowedPage(tabId).then(isAllowed => {
@@ -117,8 +109,6 @@ export default defineBackground(() => {
           .fetchAllNotesByPageUrl(url)
           .then(notes => {
             actions.getSetting().then(setting => {
-              currentUrl = '';
-
               if (notes.length === 0) {
                 hasContentScript(tabId)
                   .then(has => {
@@ -150,6 +140,25 @@ export default defineBackground(() => {
           });
       }
     });
+  };
+
+  // タブが更新された時に呼ばれる
+  chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    const { status } = changeInfo;
+    const { url } = tab;
+    if (url === undefined) return;
+
+    if (status === 'loading') {
+      // ページ遷移開始時: URLをリセットして処理開始
+      lastSetupUrl.set(tabId, url);
+      setupTabNotes(tabId, url);
+    } else if (status === 'complete') {
+      // ページ読み込み完了時: URLが変わっていた場合（リダイレクト等）のみ再処理
+      if (lastSetupUrl.get(tabId) !== url) {
+        lastSetupUrl.set(tabId, url);
+        setupTabNotes(tabId, url);
+      }
+    }
   });
 
   // タブが切り替わるたびに呼ばれる
@@ -164,6 +173,7 @@ export default defineBackground(() => {
   // タブが閉じられた時に呼ばれる
   chrome.tabs.onRemoved.addListener(tabId => {
     delete cache.badge[tabId];
+    lastSetupUrl.delete(tabId);
   });
 
   chrome.runtime.onMessage.addListener(handleMessages);
