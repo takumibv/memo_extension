@@ -341,5 +341,9 @@
   "element_picker_active_msg": {
     "message": "要素をクリックしてメモをピン留め",
     "description": "Status message shown when element picker is active"
+  },
+  "element_not_found_msg": {
+    "message": "要素が見つかりません",
+    "description": "Warning shown when the pinned element cannot be found in the page"
   }
 }

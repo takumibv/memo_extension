@@ -35,6 +35,7 @@ type Props = {
   color?: string;
   selection_id?: string;
   selection?: Selection;
+  scrollY: number;
   onUpdateNote: (note: Note) => Promise<boolean>;
   onDeleteNote: (note: Note) => Promise<boolean>;
   onStartInspector: (noteId: number) => void;
@@ -62,6 +63,7 @@ const StickyNote: React.FC<Props> = memo(
     color,
     selection_id,
     selection,
+    scrollY,
     defaultColor,
     portalContainer,
   }) => {
@@ -130,28 +132,6 @@ const StickyNote: React.FC<Props> = memo(
     const [isDragging, setIsDragging] = useState(false);
     const [dragStartPositionX, setDragStartPositionX] = useState(0);
     const [dragStartPositionY, setDragStartPositionY] = useState(0);
-
-    // Pinned placement uses document coordinates (position:absolute)
-    // Re-compute on scroll for sticky behavior
-    const [scrollY, setScrollY] = useState(window.scrollY);
-    const isScrollingRef = useRef(false);
-    const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-    useEffect(() => {
-      if (!isPinned || !elementFound) return;
-      const onScroll = () => {
-        setScrollY(window.scrollY);
-        isScrollingRef.current = true;
-        clearTimeout(scrollTimerRef.current);
-        scrollTimerRef.current = setTimeout(() => {
-          isScrollingRef.current = false;
-        }, 150);
-      };
-      window.addEventListener('scroll', onScroll, { passive: true });
-      return () => {
-        window.removeEventListener('scroll', onScroll);
-        clearTimeout(scrollTimerRef.current);
-      };
-    }, [isPinned, elementFound]);
 
     const pinnedResult = useMemo(() => {
       if (!isPinned || !elementFound || !docRect) return null;
@@ -379,7 +359,7 @@ const StickyNote: React.FC<Props> = memo(
                 <LogoIcon className="pointer-events-none h-6 w-6" />
               </button>
               {showElementLostWarning && (
-                <HiExclamationTriangle className="h-4 w-4 shrink-0 text-amber-500" title="Element not found" />
+                <HiExclamationTriangle className="h-4 w-4 shrink-0 text-amber-500" title={t(I18N.ELEMENT_NOT_FOUND)} />
               )}
               {title && (
                 <span className="max-w-32 truncate text-xs" style={{ color: textColor }}>
@@ -431,7 +411,7 @@ const StickyNote: React.FC<Props> = memo(
                 {showElementLostWarning && (
                   <HiExclamationTriangle
                     className="mr-1 mt-0.5 h-4 w-4 shrink-0 text-amber-500"
-                    title="Element not found"
+                    title={t(I18N.ELEMENT_NOT_FOUND)}
                   />
                 )}
                 <h2
@@ -455,7 +435,7 @@ const StickyNote: React.FC<Props> = memo(
             {showElementLostWarning && !title && (
               <div className="flex items-center gap-1 px-2 pt-1.5 text-xs text-amber-600">
                 <HiExclamationTriangle className="h-3.5 w-3.5 shrink-0" />
-                <span>Element not found</span>
+                <span>{t(I18N.ELEMENT_NOT_FOUND)}</span>
               </div>
             )}
             {/* Content */}

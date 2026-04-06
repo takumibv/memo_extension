@@ -68,15 +68,20 @@ export const createPinnedNote = async (
 ): Promise<Note[]> => {
   const pageInfo = await getOrCreatePageInfoByUrl(page_url);
   const selection = await _createSelection(target, text);
-  const { allNotes } = await _createNote(pageInfo.id!, {
-    selection_id: selection.id,
-    is_fixed: false,
-    is_open: true,
-    position_x: fallbackX,
-    position_y: fallbackY,
-  });
-  setUpdatedAtPageInfo(pageInfo.id!);
-  return allNotes;
+  try {
+    const { allNotes } = await _createNote(pageInfo.id!, {
+      selection_id: selection.id,
+      is_fixed: false,
+      is_open: true,
+      position_x: fallbackX,
+      position_y: fallbackY,
+    });
+    setUpdatedAtPageInfo(pageInfo.id!);
+    return allNotes;
+  } catch (e) {
+    await _deleteSelection(selection.id).catch(() => {});
+    throw e;
+  }
 };
 
 export const attachSelectionToNote = async (
@@ -88,29 +93,45 @@ export const attachSelectionToNote = async (
   const pageInfo = await getPageInfoByUrl(page_url);
   if (!pageInfo?.id) return [];
 
-  // Delete old selection if the note was already pinned
   const existingNotes = await getAllNotesByPageId(pageInfo.id);
   const existingNote = existingNotes.find(n => n.id === noteId);
   if (!existingNote) return existingNotes;
-  if (existingNote.selection_id) {
-    await _deleteSelection(existingNote.selection_id);
-  }
 
+  const oldSelectionId = existingNote.selection_id;
   const selection = await _createSelection(target, text);
-  const { allNotes } = await _updateNote(pageInfo.id, {
-    ...existingNote,
-    selection_id: selection.id,
-    is_fixed: false,
-    // Clear position so the tracker takes over immediately
-    position_x: undefined,
-    position_y: undefined,
-  });
-  setUpdatedAtPageInfo(pageInfo.id);
-  return allNotes;
+  try {
+    const { allNotes } = await _updateNote(pageInfo.id, {
+      ...existingNote,
+      selection_id: selection.id,
+      is_fixed: false,
+      // Clear position so the tracker takes over immediately
+      position_x: undefined,
+      position_y: undefined,
+    });
+    // Delete old selection only after note update succeeds
+    if (oldSelectionId) {
+      await _deleteSelection(oldSelectionId).catch(() => {});
+    }
+    setUpdatedAtPageInfo(pageInfo.id);
+    return allNotes;
+  } catch (e) {
+    await _deleteSelection(selection.id).catch(() => {});
+    throw e;
+  }
 };
 
 export const updateNote = async (note: Note): Promise<Note[]> => {
   if (!note.page_info_id) return [];
+
+  // Cascade delete selection if selection_id is being cleared (detach from element)
+  if (!note.selection_id) {
+    const existingNotes = await getAllNotesByPageId(note.page_info_id);
+    const existingNote = existingNotes.find(n => n.id === note.id);
+    if (existingNote?.selection_id) {
+      await _deleteSelection(existingNote.selection_id).catch(() => {});
+    }
+  }
+
   const { allNotes } = await _updateNote(note.page_info_id, note);
   setUpdatedAtPageInfo(note.page_info_id);
   return allNotes;

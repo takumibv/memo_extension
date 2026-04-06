@@ -440,6 +440,10 @@ export const I18N = {
    * "要素をクリックしてメモをピン留め"
    */
   ELEMENT_PICKER_ACTIVE: 'element_picker_active_msg' as const,
+  /**
+   * "要素が見つかりません"
+   */
+  ELEMENT_NOT_FOUND: 'element_not_found_msg' as const,
 } as const;
 
 /**

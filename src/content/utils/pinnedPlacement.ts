@@ -38,7 +38,6 @@ type SideYResult = { y: number; sticky: boolean };
 const computeSideY = (
   elementRect: PlacementInput['elementRect'],
   noteHeight: number,
-  scrollX: number,
   scrollY: number,
   viewportHeight: number,
   gap: number,
@@ -81,7 +80,7 @@ export const computePinnedPlacement = (input: PlacementInput): PlacementResult =
     right: elementRect.right - scrollX,
   };
 
-  const side = () => computeSideY(elementRect, noteHeight, scrollX, scrollY, viewportHeight, gap);
+  const side = () => computeSideY(elementRect, noteHeight, scrollY, viewportHeight, gap);
 
   // Helper: build result with sideY, converting X to match sticky mode
   const sideResult = (docX: number, placement: Placement): PlacementResult => {

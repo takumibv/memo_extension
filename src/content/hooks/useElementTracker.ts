@@ -81,7 +81,8 @@ export const useElementTracker = (selection: Selection | undefined): ElementTrac
   const getSnapshot = useCallback(() => stateRef.current, []);
 
   const updateDocRect = useCallback(() => {
-    if (!elementRef.current) {
+    if (!elementRef.current || !document.contains(elementRef.current)) {
+      elementRef.current = null;
       if (stateRef.current !== EMPTY_STATE) {
         stateRef.current = EMPTY_STATE;
         notify();

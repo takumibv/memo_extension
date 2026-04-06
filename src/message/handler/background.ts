@@ -196,15 +196,21 @@ const handleContentMessage = async (
       const { url, noteId, xpath, text } = message.payload;
       const notes = await actions.attachSelectionToNote(url, noteId, { kind: 'element', xpath }, text);
 
-      chrome.tabs.query({ url, currentWindow: true }).then(tabs => {
-        tabs.forEach(tab => {
-          if (tab.id) {
-            actions.getSetting().then(setting => {
-              setupPage(tab.id!, url, notes, setting).catch(() => {});
-            });
-          }
-        });
-      });
+      chrome.tabs
+        .query({ url, currentWindow: true })
+        .then(tabs => {
+          tabs.forEach(tab => {
+            if (tab.id) {
+              actions
+                .getSetting()
+                .then(setting => {
+                  setupPage(tab.id!, url, notes, setting).catch(() => {});
+                })
+                .catch(() => {});
+            }
+          });
+        })
+        .catch(() => {});
 
       return { notes };
     }
@@ -213,16 +219,22 @@ const handleContentMessage = async (
       const notes = await actions.createPinnedNote(url, { kind: 'element', xpath }, text, fallbackX, fallbackY);
 
       // Inject and setup page to push new notes to content script
-      chrome.tabs.query({ url, currentWindow: true }).then(tabs => {
-        tabs.forEach(tab => {
-          if (tab.id) {
-            actions.setBadgeText(tab.id, notes.length);
-            actions.getSetting().then(setting => {
-              setupPage(tab.id!, url, notes, setting).catch(() => {});
-            });
-          }
-        });
-      });
+      chrome.tabs
+        .query({ url, currentWindow: true })
+        .then(tabs => {
+          tabs.forEach(tab => {
+            if (tab.id) {
+              actions.setBadgeText(tab.id, notes.length);
+              actions
+                .getSetting()
+                .then(setting => {
+                  setupPage(tab.id!, url, notes, setting).catch(() => {});
+                })
+                .catch(() => {});
+            }
+          });
+        })
+        .catch(() => {});
 
       return { notes };
     }

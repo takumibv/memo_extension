@@ -10,7 +10,7 @@ import {
 } from '@/message/sender/contentScript';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ToContentMessage } from '@/message/types';
 import type { Note } from '@/shared/types/Note';
 import type { Selection } from '@/shared/types/Selection';
@@ -118,6 +118,16 @@ const ContentApp: React.FC<Props> = ({ portalContainer }) => {
 
   useElementPicker(isPickerActive, handleElementPicked, handlePickerCancel);
 
+  // Shared scroll state — single listener for all pinned notes
+  const hasPinnedNotes = useMemo(() => notes.some(n => !!n.selection_id), [notes]);
+  const [scrollY, setScrollY] = useState(window.scrollY);
+  useEffect(() => {
+    if (!hasPinnedNotes) return;
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [hasPinnedNotes]);
+
   const updateNote = useCallback(async (note: Note) => {
     try {
       const { notes } = await sendUpdateNote(note);
@@ -160,6 +170,7 @@ const ContentApp: React.FC<Props> = ({ portalContainer }) => {
           color={note.color}
           selection_id={note.selection_id}
           selection={note.selection_id ? selections.get(note.selection_id) : undefined}
+          scrollY={scrollY}
           onUpdateNote={updateNote}
           onDeleteNote={deleteNote}
           onStartInspector={startPickerForNote}
