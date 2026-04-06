@@ -10,6 +10,11 @@ import {
   getAllNotes,
 } from '@/shared/storages/noteStorage';
 import {
+  createSelection as _createSelection,
+  deleteSelection as _deleteSelection,
+  getSelection,
+} from '@/shared/storages/selectionStorage';
+import {
   getIsVisibleNote as _getIsVisibleNote,
   setIsVisibleNote as _setIsVisibleNote,
 } from '@/shared/storages/noteVisibleStorage';
@@ -22,6 +27,7 @@ import {
 } from '@/shared/storages/pageInfoStorage';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
+import type { SelectionTarget } from '@/shared/types/Selection';
 import type { Setting } from '@/shared/types/Setting';
 
 export const fetchAllNotes = async (): Promise<Note[]> => {
@@ -53,8 +59,79 @@ export const createNote = async (page_url: string): Promise<Note[]> => {
   return allNotes;
 };
 
+export const createPinnedNote = async (
+  page_url: string,
+  target: SelectionTarget,
+  text: string,
+  fallbackX: number,
+  fallbackY: number,
+): Promise<Note[]> => {
+  const pageInfo = await getOrCreatePageInfoByUrl(page_url);
+  const selection = await _createSelection(target, text);
+  try {
+    const { allNotes } = await _createNote(pageInfo.id!, {
+      selection_id: selection.id,
+      is_fixed: false,
+      is_open: true,
+      position_x: fallbackX,
+      position_y: fallbackY,
+    });
+    setUpdatedAtPageInfo(pageInfo.id!);
+    return allNotes;
+  } catch (e) {
+    await _deleteSelection(selection.id).catch(() => {});
+    throw e;
+  }
+};
+
+export const attachSelectionToNote = async (
+  page_url: string,
+  noteId: number,
+  target: SelectionTarget,
+  text: string,
+): Promise<Note[]> => {
+  const pageInfo = await getPageInfoByUrl(page_url);
+  if (!pageInfo?.id) return [];
+
+  const existingNotes = await getAllNotesByPageId(pageInfo.id);
+  const existingNote = existingNotes.find(n => n.id === noteId);
+  if (!existingNote) return existingNotes;
+
+  const oldSelectionId = existingNote.selection_id;
+  const selection = await _createSelection(target, text);
+  try {
+    const { allNotes } = await _updateNote(pageInfo.id, {
+      ...existingNote,
+      selection_id: selection.id,
+      is_fixed: false,
+      // Clear position so the tracker takes over immediately
+      position_x: undefined,
+      position_y: undefined,
+    });
+    // Delete old selection only after note update succeeds
+    if (oldSelectionId) {
+      await _deleteSelection(oldSelectionId).catch(() => {});
+    }
+    setUpdatedAtPageInfo(pageInfo.id);
+    return allNotes;
+  } catch (e) {
+    await _deleteSelection(selection.id).catch(() => {});
+    throw e;
+  }
+};
+
 export const updateNote = async (note: Note): Promise<Note[]> => {
   if (!note.page_info_id) return [];
+
+  // Cascade delete selection if selection_id is being cleared (detach from element)
+  if (!note.selection_id) {
+    const existingNotes = await getAllNotesByPageId(note.page_info_id);
+    const existingNote = existingNotes.find(n => n.id === note.id);
+    if (existingNote?.selection_id) {
+      await _deleteSelection(existingNote.selection_id).catch(() => {});
+    }
+  }
+
   const { allNotes } = await _updateNote(note.page_info_id, note);
   setUpdatedAtPageInfo(note.page_info_id);
   return allNotes;
@@ -62,6 +139,10 @@ export const updateNote = async (note: Note): Promise<Note[]> => {
 
 export const deleteNote = async (note: Note): Promise<Note[]> => {
   if (!note.page_info_id) return [];
+  // Cascade delete selection if note is pinned to an element
+  if (note.selection_id) {
+    await _deleteSelection(note.selection_id);
+  }
   const { allNotes } = await _deleteNote(note.page_info_id, note.id);
   return allNotes;
 };
@@ -77,12 +158,36 @@ export const updatePageInfo = async (page_info: PageInfo): Promise<PageInfo[]> =
   return allPageInfos;
 };
 
-export const scrollTo = async (tabId: number, note: Note) =>
+export const scrollTo = async (tabId: number, note: Note) => {
+  // Resolve scroll target: XPath element for pinned notes, stored position for regular notes
+  let xpath: string | null = null;
+  if (note.selection_id) {
+    const selection = await getSelection(note.selection_id);
+    if (selection?.target.kind === 'element') {
+      xpath = selection.target.xpath;
+    }
+  }
+
   await chrome.scripting.executeScript({
     target: { tabId },
-    func: (position_x, position_y) => window.scrollTo(position_x ?? 0, position_y ?? 0),
-    args: [note.position_x, note.position_y],
+    func: (xp: string | null, posX: number, posY: number) => {
+      let targetY = posY;
+      if (xp) {
+        const result = document.evaluate(xp, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+        const el = result.singleNodeValue as Element | null;
+        if (el) {
+          targetY = el.getBoundingClientRect().top + window.scrollY;
+        }
+      }
+      window.scrollTo({
+        left: posX,
+        top: Math.max(0, targetY - window.innerHeight / 2),
+        behavior: 'smooth',
+      });
+    },
+    args: [xpath, note.position_x ?? 0, note.position_y ?? 0],
   });
+};
 
 export const getIsVisibleNote = async () => await _getIsVisibleNote();
 

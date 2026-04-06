@@ -1,31 +1,36 @@
+import { ColorPicker } from '@/shared/components/ColorPicker';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/shared/components/ui/Dialog';
 import { Textarea } from '@/shared/components/ui/Textarea';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { formatDate, isEqualsObject } from '@/shared/utils/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { HiChevronDown } from 'react-icons/hi2';
+import { HiChevronDown, HiCursorArrowRays } from 'react-icons/hi2';
+import { getNoteColors } from '@/shared/utils/color';
 import type { Note } from '@/shared/types/Note';
 
 type Props = {
   note: Note;
   defaultColor?: string;
+  selectionText?: string;
   initialFocus?: 'title' | 'description';
   onSave: (note: Note) => Promise<void>;
   onDelete: (note: Note) => Promise<void>;
   onClose: () => void;
 };
 
-const isDarkColor = (hex: string): boolean => {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return r * 0.299 + g * 0.587 + b * 0.114 < 128;
-};
-
-const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onDelete, onClose }: Props) => {
+const NoteEditModal = ({
+  note,
+  defaultColor,
+  selectionText,
+  initialFocus = 'title',
+  onSave,
+  onDelete,
+  onClose,
+}: Props) => {
   const [editTitle, setEditTitle] = useState(note.title || '');
   const [editDescription, setEditDescription] = useState(note.description || '');
+  const [editColor, setEditColor] = useState(note.color || '');
   const [editIsFixed, setEditIsFixed] = useState(note.is_fixed ?? true);
   const [editIsOpen, setEditIsOpen] = useState(note.is_open ?? true);
   const [editPositionX, setEditPositionX] = useState(note.position_x ?? 0);
@@ -37,17 +42,15 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
   const titleRef = useRef<HTMLInputElement>(null);
   const descRef = useRef<HTMLTextAreaElement>(null);
 
-  const bgColor = note.color || defaultColor || '#FFFFFF';
-  const dark = isDarkColor(bgColor);
-  const textColor = dark ? '#f3f4f6' : '#1f2937';
-  const subTextColor = dark ? 'rgba(255,255,255,0.5)' : 'rgba(107,114,128,1)';
-  const borderColor = dark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)';
+  const bgColor = editColor || defaultColor || '#FFFFFF';
+  const { dark, textColor, subTextColor, borderColor } = getNoteColors(bgColor);
   const inputBg = dark ? 'rgba(255,255,255,0.1)' : 'white';
 
   const hasChanges = useCallback(() => {
     const edited: Partial<Note> = {
       title: editTitle,
       description: editDescription,
+      color: editColor,
       is_fixed: editIsFixed,
       is_open: editIsOpen,
       position_x: editPositionX,
@@ -58,6 +61,7 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
     const original: Partial<Note> = {
       title: note.title || '',
       description: note.description || '',
+      color: note.color || '',
       is_fixed: note.is_fixed ?? true,
       is_open: note.is_open ?? true,
       position_x: note.position_x ?? 0,
@@ -66,7 +70,18 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
       height: note.height ?? 180,
     };
     return !isEqualsObject(edited, original);
-  }, [editTitle, editDescription, editIsFixed, editIsOpen, editPositionX, editPositionY, editWidth, editHeight, note]);
+  }, [
+    editTitle,
+    editDescription,
+    editColor,
+    editIsFixed,
+    editIsOpen,
+    editPositionX,
+    editPositionY,
+    editWidth,
+    editHeight,
+    note,
+  ]);
 
   const handleOpenAutoFocus = useCallback(
     (e: Event) => {
@@ -85,6 +100,7 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
       ...note,
       title: editTitle,
       description: editDescription,
+      color: editColor || undefined,
       is_fixed: editIsFixed,
       is_open: editIsOpen,
       position_x: editPositionX,
@@ -97,6 +113,7 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
     note,
     editTitle,
     editDescription,
+    editColor,
     editIsFixed,
     editIsOpen,
     editPositionX,
@@ -261,6 +278,23 @@ const NoteEditModal = ({ note, defaultColor, initialFocus = 'title', onSave, onD
                   <span style={{ color: subTextColor }}>{t(I18N.UPDATED_AT)}</span>
                   <span>{note.updated_at ? formatDate(new Date(note.updated_at)) : '-'}</span>
                 </div>
+
+                {/* Color */}
+                <div className="col-span-2 flex flex-col gap-1">
+                  <span style={{ color: subTextColor }}>{t(I18N.COLOR)}</span>
+                  <ColorPicker hasDefault color={editColor || undefined} onChangeColor={c => setEditColor(c)} />
+                </div>
+
+                {/* Selection (tracking) */}
+                {selectionText && (
+                  <div className="col-span-2 flex flex-col gap-1">
+                    <span style={{ color: subTextColor }}>{t(I18N.ADD_NOTE_FROM_ELEMENT)}</span>
+                    <div className="flex items-center gap-1.5" style={{ color: subTextColor, opacity: 0.7 }}>
+                      <HiCursorArrowRays className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
+                      <span className="truncate">{selectionText}</span>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

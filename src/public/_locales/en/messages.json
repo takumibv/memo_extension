@@ -333,5 +333,17 @@
   },
   "displayErrorReset": {
     "message": "Run Again"
+  },
+  "add_note_from_element_msg": {
+    "message": "Add note from element",
+    "description": "Button label to start element picker for pinned note creation"
+  },
+  "element_picker_active_msg": {
+    "message": "Click an element to pin a note",
+    "description": "Status message shown when element picker is active"
+  },
+  "element_not_found_msg": {
+    "message": "Element not found",
+    "description": "Warning shown when the pinned element cannot be found in the page"
   }
 }

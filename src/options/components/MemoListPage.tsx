@@ -9,12 +9,14 @@ import { useMemo, useRef, useState } from 'react';
 import { HiMagnifyingGlass, HiPencilSquare, HiXMark } from 'react-icons/hi2';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
+import type { Selection } from '@/shared/types/Selection';
 
 type SortKey = 'updated_at' | 'created_at' | 'title';
 
 type Props = {
   notes: Note[];
   pageInfos: PageInfo[];
+  selections: Map<string, Selection>;
   defaultColor?: string;
   isLoading: boolean;
   onUpdateNote: (note: Note) => Promise<void>;
@@ -25,6 +27,7 @@ type Props = {
 const MemoListPage = ({
   notes,
   pageInfos,
+  selections,
   defaultColor,
   isLoading,
   onUpdateNote,
@@ -315,6 +318,7 @@ const MemoListPage = ({
                     <NoteCard
                       note={note}
                       pageInfo={!filterPageId ? pageInfo : undefined}
+                      selectionText={note.selection_id ? selections.get(note.selection_id)?.text : undefined}
                       defaultColor={defaultColor}
                       onEdit={handleEditNote}
                       onDelete={onDeleteNote}
@@ -335,6 +339,7 @@ const MemoListPage = ({
         <NoteEditModal
           note={editingNote}
           defaultColor={defaultColor}
+          selectionText={editingNote.selection_id ? selections.get(editingNote.selection_id)?.text : undefined}
           initialFocus={editFocus}
           onSave={handleSaveNote}
           onDelete={handleDeleteFromModal}

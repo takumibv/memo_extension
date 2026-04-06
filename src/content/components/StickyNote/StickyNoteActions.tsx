@@ -5,7 +5,7 @@ import { useClipboard } from '@/shared/hooks/useClipboard';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { memo, useState } from 'react';
-import { HiMinus, HiPencilSquare, HiTrash } from 'react-icons/hi2';
+import { HiCursorArrowRays, HiMinus, HiPencilSquare, HiTrash } from 'react-icons/hi2';
 
 type Props = {
   title?: string;
@@ -19,6 +19,9 @@ type Props = {
   onChangeColor: (color: string) => void;
   onDeleteNote: () => void;
   onCloseNote: () => void;
+  onStartInspector?: () => void;
+  onDetachFromElement?: () => void;
+  isPinnedAndTracking?: boolean;
   portalContainer?: HTMLElement;
 };
 
@@ -35,6 +38,9 @@ const StickyNoteActions: React.FC<Props> = memo(
     onChangeColor,
     onDeleteNote,
     onCloseNote,
+    onStartInspector,
+    onDetachFromElement,
+    isPinnedAndTracking,
     portalContainer,
   }) => {
     const { isSuccessCopy, copyClipboard } = useClipboard();
@@ -51,13 +57,32 @@ const StickyNoteActions: React.FC<Props> = memo(
 
     return (
       <>
-        <div className="flex items-center justify-center" title={t(I18N.SWITCH_PIN)}>
-          <button
-            onClick={onClickFixedButton}
-            className={`${iconBtnClass} ${!is_fixed ? 'bg-black/10 shadow-[0_0_0_4px_rgba(0,0,0,0.1)]' : ''}`}>
-            <PinIcon className={iconClass} fill={is_fixed ? iconColor : activeIconColor} />
-          </button>
-        </div>
+        {isPinnedAndTracking ? (
+          <div className="flex items-center justify-center" title={t(I18N.ADD_NOTE_FROM_ELEMENT)}>
+            <button
+              onClick={onDetachFromElement}
+              className={`${iconBtnClass} bg-emerald-500/20 shadow-[0_0_0_4px_rgba(16,185,129,0.2)]`}>
+              <HiCursorArrowRays className={iconClass} style={{ color: '#10b981' }} />
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center justify-center" title={t(I18N.SWITCH_PIN)}>
+              <button
+                onClick={onClickFixedButton}
+                className={`${iconBtnClass} ${!is_fixed ? 'bg-black/10 shadow-[0_0_0_4px_rgba(0,0,0,0.1)]' : ''}`}>
+                <PinIcon className={iconClass} fill={is_fixed ? iconColor : activeIconColor} />
+              </button>
+            </div>
+            {onStartInspector && (
+              <div className="ml-3 flex items-center justify-center" title={t(I18N.ADD_NOTE_FROM_ELEMENT)}>
+                <button onClick={onStartInspector} className={iconBtnClass}>
+                  <HiCursorArrowRays className={iconClass} style={{ color: iconColor }} />
+                </button>
+              </div>
+            )}
+          </>
+        )}
         <div className="ml-3 flex items-center justify-center" title={t(I18N.EDIT)}>
           <button onClick={() => setIsEditing(true)} className={iconBtnClass}>
             <HiPencilSquare className={iconClass} style={{ color: iconColor }} />

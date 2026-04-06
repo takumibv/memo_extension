@@ -431,6 +431,19 @@ export const I18N = {
    * "再実行"
    */
   DISPLAY_ERROR_RESET: 'displayErrorReset' as const,
+  // Element Picker
+  /**
+   * "要素からメモを追加"
+   */
+  ADD_NOTE_FROM_ELEMENT: 'add_note_from_element_msg' as const,
+  /**
+   * "要素をクリックしてメモをピン留め"
+   */
+  ELEMENT_PICKER_ACTIVE: 'element_picker_active_msg' as const,
+  /**
+   * "要素が見つかりません"
+   */
+  ELEMENT_NOT_FOUND: 'element_not_found_msg' as const,
 } as const;
 
 /**
