@@ -72,6 +72,10 @@ const MemoListPage = ({
       result = result.filter(n => {
         const noteMatch = (n.title || '').toLowerCase().includes(q) || (n.description || '').toLowerCase().includes(q);
         if (noteMatch) return true;
+        if (n.selection_id) {
+          const sel = selections.get(n.selection_id);
+          if (sel && sel.text.toLowerCase().includes(q)) return true;
+        }
         const pi = pageInfos.find(p => p.id === n.page_info_id);
         return (pi?.page_title || '').toLowerCase().includes(q) || (pi?.page_url || '').toLowerCase().includes(q);
       });
@@ -88,7 +92,7 @@ const MemoListPage = ({
     });
 
     return result;
-  }, [notes, filterPageId, searchQuery, sortKey, pageInfos]);
+  }, [notes, filterPageId, searchQuery, sortKey, pageInfos, selections]);
 
   // Pages that have notes (for sidebar), filtered by search and sorted
   const activePageInfos = useMemo(() => {

@@ -87,7 +87,7 @@ const ContentApp: React.FC<Props> = ({ portalContainer }) => {
     setIsPickerActive(false);
 
     const xpath = getXPathForElement(element);
-    const text = (element as HTMLElement).innerText?.slice(0, 100) ?? element.tagName;
+    const text = (element as HTMLElement).innerText?.slice(0, 500) ?? element.tagName;
     const targetNoteId = pickerTargetNoteIdRef.current;
     pickerTargetNoteIdRef.current = null;
 
