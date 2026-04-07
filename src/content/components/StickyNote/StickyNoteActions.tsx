@@ -60,7 +60,7 @@ const StickyNoteActions: React.FC<Props> = memo(
       <>
         <div className="flex items-center justify-center" title={t(I18N.SWITCH_PIN)}>
           <button
-            onClick={isPinnedAndTracking ? undefined : onClickFixedButton}
+            onClick={onClickFixedButton}
             className={`${iconBtnClass} ${isPinnedAndTracking ? 'cursor-not-allowed opacity-30' : !is_fixed ? 'bg-black/10 shadow-[0_0_0_4px_rgba(0,0,0,0.1)]' : ''}`}
             disabled={isPinnedAndTracking}>
             <PinIcon className={iconClass} fill={is_fixed ? iconColor : activeIconColor} />
