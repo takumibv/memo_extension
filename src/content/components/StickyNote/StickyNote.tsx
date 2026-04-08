@@ -256,7 +256,7 @@ const StickyNote: React.FC<Props> = memo(
     const [enableOpenButtonThreshold, setEnableOpenButtonThreshold] = useState(0);
     const onClickOpenButton = useCallback(
       (isOpen: boolean) => {
-        if (enableOpenButtonThreshold < 10) {
+        if (enableOpenButtonThreshold < 5) {
           onUpdateNote({ ...defaultNote, is_open: isOpen });
           if (!isOpen) setIsHovered(false);
         }
@@ -351,13 +351,14 @@ const StickyNote: React.FC<Props> = memo(
           }}
           {...hoverHandlers}>
           <DraggableCore {...draggableCoreProps} nodeRef={noteRef}>
-            <div className="flex cursor-default items-center gap-1 p-1">
-              <button
-                onClick={() => onClickOpenButton(true)}
-                title={title}
-                className="pointer-events-auto flex h-6 w-6 shrink-0 items-center justify-center rounded hover:bg-black/10">
+            <button
+              type="button"
+              draggable={false}
+              onClick={() => onClickOpenButton(true)}
+              className="pointer-events-auto flex cursor-default cursor-pointer items-center gap-1 rounded p-1 hover:bg-black/5">
+              <span title={title} className="flex h-6 w-6 shrink-0 items-center justify-center">
                 <LogoIcon className="pointer-events-none h-6 w-6" />
-              </button>
+              </span>
               {showElementLostWarning && (
                 <HiExclamationTriangle className="h-4 w-4 shrink-0 text-amber-500" title={t(I18N.ELEMENT_NOT_FOUND)} />
               )}
@@ -366,7 +367,7 @@ const StickyNote: React.FC<Props> = memo(
                   {title}
                 </span>
               )}
-            </div>
+            </button>
           </DraggableCore>
         </div>
       );

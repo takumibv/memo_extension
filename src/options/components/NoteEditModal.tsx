@@ -291,7 +291,7 @@ const NoteEditModal = ({
                     <span style={{ color: subTextColor }}>{t(I18N.ADD_NOTE_FROM_ELEMENT)}</span>
                     <div className="flex items-center gap-1.5" style={{ color: subTextColor, opacity: 0.7 }}>
                       <HiCursorArrowRays className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
-                      <span className="truncate">{selectionText}</span>
+                      <span className="break-all">{selectionText}</span>
                     </div>
                   </div>
                 )}
