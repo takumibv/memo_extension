@@ -10,6 +10,15 @@ const ROOT_DOM_ID = 'react-container-for-note-extension';
 const pendingMessages: ToContentMessage[] = [];
 let onMessageCallback: ((msg: ToContentMessage) => void) | null = null;
 
+// Track the last right-click position for context menu note creation
+let lastContextMenuPosition: { x: number; y: number } | null = null;
+
+export const getLastContextMenuPosition = (): { x: number; y: number } | null => {
+  const pos = lastContextMenuPosition;
+  lastContextMenuPosition = null; // consume once
+  return pos;
+};
+
 const handleMessages = (
   message: unknown,
   _sender: chrome.runtime.MessageSender,
@@ -54,6 +63,11 @@ export default defineContentScript({
 
   main() {
     if (window.top !== window) return;
+
+    // 0. Track right-click position for context menu note creation
+    document.addEventListener('contextmenu', (e: MouseEvent) => {
+      lastContextMenuPosition = { x: e.clientX, y: e.clientY };
+    });
 
     // 1. Register message listener FIRST
     chrome.runtime.onMessage.addListener(handleMessages);

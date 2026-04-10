@@ -284,6 +284,14 @@
   "new_note_description_msg": {
     "message": "두 번 클릭해 편집"
   },
+  "page_not_available_msg": {
+    "message": "이 페이지에서는 사용할 수 없습니다.",
+    "description": "Error message when the page does not support the extension"
+  },
+  "content_script_timeout_msg": {
+    "message": "콘텐츠 스크립트 로딩 시간 초과",
+    "description": "Error message when content script injection times out"
+  },
   "displayErrorInfo": {
     "message": "오류 발생"
   },

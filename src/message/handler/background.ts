@@ -1,6 +1,9 @@
 import * as actions from '@/background/actions';
-import { setupIsVisible, setupPage } from '@/message/sender/background';
+import { activateInspector, setupIsVisible, setupPage } from '@/message/sender/background';
 import { isToBackgroundMessage } from '@/message/types';
+import { t } from '@/shared/i18n/i18n';
+import { I18N } from '@/shared/i18n/keys';
+import { getSelection } from '@/shared/storages/selectionStorage';
 import { isSystemLink } from '@/shared/utils/utils';
 import type { ToBackgroundMessage } from '@/message/types';
 import type { Note } from '@/shared/types/Note';
@@ -34,14 +37,29 @@ const hasContentScript = async (tabId: number): Promise<boolean> => {
   }
 };
 
+// タブごとの注入ロック（並行注入を防止）
+const injectingTabs = new Map<number, Promise<boolean>>();
+
 const injectContentScript = async (tabId: number): Promise<boolean> => {
+  // 同じタブで注入中なら、その結果を待つ
+  const existing = injectingTabs.get(tabId);
+  if (existing) return existing;
+
+  const promise = doInjectContentScript(tabId).finally(() => {
+    injectingTabs.delete(tabId);
+  });
+  injectingTabs.set(tabId, promise);
+  return promise;
+};
+
+const doInjectContentScript = async (tabId: number): Promise<boolean> => {
   const hasScript = await hasContentScript(tabId);
   if (hasScript) return false;
 
   return new Promise((resolve, reject) => {
     const timeoutId = setTimeout(() => {
       cleanup();
-      reject(new Error('Content script ready timeout'));
+      reject(new Error(t(I18N.CONTENT_SCRIPT_TIMEOUT)));
     }, 3000);
 
     const messageListener = (message: { type?: string }, sender: chrome.runtime.MessageSender) => {
@@ -79,11 +97,11 @@ const handlePopupMessage = async (
   const tabId = tab?.id;
   const tabUrl = tab?.url;
 
-  if (!tabId || !tabUrl) throw new Error('このページでは使用できません');
-  if (isSystemLink(tabUrl)) throw new Error('このページでは使用できません');
+  if (!tabId || !tabUrl) throw new Error(t(I18N.PAGE_NOT_AVAILABLE));
+  if (isSystemLink(tabUrl)) throw new Error(t(I18N.PAGE_NOT_AVAILABLE));
 
   const isAllowed = await isScriptAllowedPage(tabId);
-  if (!isAllowed) throw new Error('このページでは使用できません');
+  if (!isAllowed) throw new Error(t(I18N.PAGE_NOT_AVAILABLE));
 
   const injectAndSetup = async (notes: Note[]) => {
     const setting = await actions.getSetting();
@@ -95,7 +113,11 @@ const handlePopupMessage = async (
     case 'popup:getAllNotes': {
       const notes = await actions.fetchAllNotesByPageUrl(tabUrl);
       const isVisible = await actions.getIsVisibleNote();
-      return { notes, isVisible };
+      // Fetch selections for pinned notes
+      const selectionIds = notes.flatMap(n => (n.selection_id ? [n.selection_id] : []));
+      const selectionResults = await Promise.all(selectionIds.map(id => getSelection(id)));
+      const selections = selectionResults.filter((s): s is NonNullable<typeof s> => s !== undefined);
+      return { notes, selections, isVisible };
     }
     case 'popup:createNote': {
       const notes = await actions.createNote(tabUrl);
@@ -129,6 +151,11 @@ const handlePopupMessage = async (
       await injectContentScript(tabId).catch(() => {});
       await setupIsVisible(tabId, tabUrl, isVisible);
       return { isVisible };
+    }
+    case 'popup:activateInspector': {
+      await injectContentScript(tabId);
+      await activateInspector(tabId);
+      return {};
     }
   }
 };
@@ -165,6 +192,52 @@ const handleContentMessage = async (
       const isVisible = await actions.getIsVisibleNote();
       return { isVisible };
     }
+    case 'content:attachSelection': {
+      const { url, noteId, xpath, text } = message.payload;
+      const notes = await actions.attachSelectionToNote(url, noteId, { kind: 'element', xpath }, text);
+
+      chrome.tabs
+        .query({ url, currentWindow: true })
+        .then(tabs => {
+          tabs.forEach(tab => {
+            if (tab.id) {
+              actions
+                .getSetting()
+                .then(setting => {
+                  setupPage(tab.id!, url, notes, setting).catch(() => {});
+                })
+                .catch(() => {});
+            }
+          });
+        })
+        .catch(() => {});
+
+      return { notes };
+    }
+    case 'content:createPinnedNote': {
+      const { url, xpath, text, fallbackX, fallbackY } = message.payload;
+      const notes = await actions.createPinnedNote(url, { kind: 'element', xpath }, text, fallbackX, fallbackY);
+
+      // Inject and setup page to push new notes to content script
+      chrome.tabs
+        .query({ url, currentWindow: true })
+        .then(tabs => {
+          tabs.forEach(tab => {
+            if (tab.id) {
+              actions.setBadgeText(tab.id, notes.length);
+              actions
+                .getSetting()
+                .then(setting => {
+                  setupPage(tab.id!, url, notes, setting).catch(() => {});
+                })
+                .catch(() => {});
+            }
+          });
+        })
+        .catch(() => {});
+
+      return { notes };
+    }
   }
 };
 
@@ -174,7 +247,10 @@ const handleOptionsMessage = async (
   switch (message.type) {
     case 'options:getAllData': {
       const { notes, pageInfos } = await actions.fetchAllNotesAndPageInfo();
-      return { notes, pageInfos };
+      const selIds = notes.flatMap(n => (n.selection_id ? [n.selection_id] : []));
+      const selResults = await Promise.all(selIds.map(id => getSelection(id)));
+      const selections = selResults.filter((s): s is NonNullable<typeof s> => s !== undefined);
+      return { notes, pageInfos, selections };
     }
     case 'options:updateNote': {
       await actions.updateNote(message.payload.note);
@@ -233,8 +309,8 @@ const handleMessages = (
     .then(data => sendResponse({ data }))
     .catch((err: unknown) => {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      // 「このページでは使用できません」は正常系なのでログ不要
-      if (errorMessage !== 'このページでは使用できません') {
+      // PAGE_NOT_AVAILABLE は正常系なのでログ不要
+      if (errorMessage !== t(I18N.PAGE_NOT_AVAILABLE)) {
         console.error('[handleMessages] Error:', errorMessage);
       }
       sendResponse({ error: errorMessage });

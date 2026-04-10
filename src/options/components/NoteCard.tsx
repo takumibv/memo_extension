@@ -6,13 +6,15 @@ import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { formatDate } from '@/shared/utils/utils';
 import { useState } from 'react';
-import { HiPencilSquare, HiTrash, HiClipboard, HiCheck, HiFunnel } from 'react-icons/hi2';
+import { HiPencilSquare, HiTrash, HiClipboard, HiCheck, HiFunnel, HiCursorArrowRays } from 'react-icons/hi2';
+import { getNoteColors } from '@/shared/utils/color';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
 
 type Props = {
   note: Note;
   pageInfo?: PageInfo;
+  selectionText?: string;
   defaultColor?: string;
   onEdit: (note: Note, focus?: 'title' | 'description') => void;
   onDelete: (note: Note) => Promise<void>;
@@ -21,23 +23,21 @@ type Props = {
   onGoToPage: (url: string) => void;
 };
 
-const isDarkColor = (hex: string): boolean => {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return r * 0.299 + g * 0.587 + b * 0.114 < 128;
-};
-
-const NoteCard = ({ note, pageInfo, defaultColor, onEdit, onDelete, onUpdateNote, onFilterByPage }: Props) => {
+const NoteCard = ({
+  note,
+  pageInfo,
+  selectionText,
+  defaultColor,
+  onEdit,
+  onDelete,
+  onUpdateNote,
+  onFilterByPage,
+}: Props) => {
   const { isSuccessCopy, copyClipboard } = useClipboard();
   const [showColorPicker, setShowColorPicker] = useState(false);
 
   const bgColor = note.color || defaultColor || '#FFFFFF';
-  const dark = isDarkColor(bgColor);
-  const textColor = dark ? '#f3f4f6' : '#1f2937';
-  const subTextColor = dark ? 'rgba(255,255,255,0.6)' : 'rgba(107,114,128,1)';
-  const iconColor = dark ? 'rgba(255,255,255,0.5)' : 'rgba(107,114,128,1)';
-  const borderColor = dark ? 'rgba(255,255,255,0.15)' : 'rgba(229,231,235,1)';
+  const { dark, textColor, subTextColor, iconColor, borderColor } = getNoteColors(bgColor);
 
   const handleDelete = () => {
     if (confirm(`"${note.title || t(I18N.NOTE)}" ${t(I18N.CONFIRM_REMOVE_NEXT_NOTE)}`)) {
@@ -56,7 +56,7 @@ const NoteCard = ({ note, pageInfo, defaultColor, onEdit, onDelete, onUpdateNote
       style={{ backgroundColor: bgColor, color: textColor, borderWidth: 1, borderColor }}
       onDoubleClick={() => onEdit(note, 'title')}>
       {/* Title */}
-      {note.title && <h3 className="mb-1 text-sm font-semibold">{note.title}</h3>}
+      {note.title && <h3 className="mb-2 text-sm font-semibold">{note.title}</h3>}
 
       {/* Description */}
       {note.description && (
@@ -68,30 +68,41 @@ const NoteCard = ({ note, pageInfo, defaultColor, onEdit, onDelete, onUpdateNote
       {/* Page info (shown when not filtered) */}
       {pageInfo && (
         <div
-          className="mb-3 inline-flex items-center gap-2 rounded px-2 py-1 text-xs"
+          className="mb-3 inline-flex items-center rounded text-xs"
           style={{
             backgroundColor: dark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.5)',
             borderWidth: 1,
             borderColor,
           }}>
-          {pageInfo.fav_icon_url && <img src={pageInfo.fav_icon_url} alt="" className="h-3 w-3" />}
-          <span className="min-w-0 flex-1 truncate" style={{ color: subTextColor }}>
-            <a
-              href={pageInfo.page_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:underline"
-              title={pageInfo.page_url}>
+          <a
+            href={pageInfo.page_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 border-r px-2 py-1 hover:underline"
+            style={{ borderRightColor: borderColor }}
+            title={pageInfo.page_url}>
+            {pageInfo.fav_icon_url && <img src={pageInfo.fav_icon_url} alt="" className="h-3 w-3" />}
+            <span className="min-w-0 flex-1 truncate" style={{ color: subTextColor }}>
               {pageInfo.page_title || pageInfo.page_url}
-            </a>
-          </span>
+            </span>
+          </a>
           <button
             type="button"
             onClick={() => onFilterByPage(pageInfo.id ?? null)}
-            className="shrink-0 rounded px-1 py-0.5 hover:opacity-70"
+            className="shrink-0 rounded p-1.5 hover:opacity-70"
             title={t(I18N.THIS_PAGE_NOTE_LIST)}>
             <HiFunnel className="h-3 w-3" style={{ color: iconColor }} />
           </button>
+        </div>
+      )}
+
+      {/* Selection text */}
+      {selectionText && (
+        <div className="mb-3 flex items-center gap-1.5 truncate text-xs" style={{ color: subTextColor, opacity: 0.7 }}>
+          <HiCursorArrowRays className="h-3.5 w-3.5 shrink-0" style={{ color: iconColor }} />
+          <span className="truncate border-l-2 pl-2" style={{ borderColor }}>
+            {selectionText}
+          </span>
         </div>
       )}
 

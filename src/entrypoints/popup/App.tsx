@@ -3,14 +3,14 @@ import { SubdirectoryArrowLeftIcon } from '@/shared/components/Icon';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { useEffect, useState } from 'react';
-import { HiPlus, HiBars3, HiTrash, HiArrowPath, HiChevronRight } from 'react-icons/hi2';
+import { HiPlus, HiBars3, HiTrash, HiArrowPath, HiChevronRight, HiCursorArrowRays } from 'react-icons/hi2';
 import type { Note } from '@/shared/types/Note';
+import type { Selection } from '@/shared/types/Selection';
 
 const Popup = () => {
   const [isEnabled, setIsEnabled] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isVisible, setIsVisible] = useState(true);
   const [notes, setNotes] = useState<Note[]>([]);
+  const [selections, setSelections] = useState<Map<string, Selection>>(new Map());
   const [currentTab, setCurrentTab] = useState<chrome.tabs.Tab>();
 
   const onClickAddNote = () => {
@@ -26,6 +26,19 @@ const Popup = () => {
         })
         .finally(() => {
           window.close();
+        });
+    }
+  };
+
+  const onClickAddPinnedNote = () => {
+    if (currentTab) {
+      sender
+        .sendActivateInspector(currentTab)
+        .then(() => {
+          window.close();
+        })
+        .catch(() => {
+          setIsEnabled(false);
         });
     }
   };
@@ -63,12 +76,33 @@ const Popup = () => {
   };
 
   const onClickResetPosition = (note: Note) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { position_x, position_y, ..._note } = note;
     if (currentTab) {
       sender
         .sendUpdateNote(currentTab, {
-          ..._note,
+          ...note,
+          position_x: undefined,
+          position_y: undefined,
+          is_fixed: true,
+          is_open: true,
+        })
+        .then(({ notes }) => {
+          if (notes) setNotes(notes);
+          setIsEnabled(true);
+        })
+        .catch(() => {
+          setIsEnabled(false);
+        });
+    }
+  };
+
+  const onClickResetPinnedNote = (note: Note) => {
+    if (currentTab) {
+      sender
+        .sendUpdateNote(currentTab, {
+          ...note,
+          position_x: undefined,
+          position_y: undefined,
+          selection_id: undefined,
           is_fixed: true,
           is_open: true,
         })
@@ -89,9 +123,9 @@ const Popup = () => {
         sender
           .fetchAllNotes(tab)
           .then(data => {
-            const { notes, isVisible } = data;
+            const { notes, selections: sels } = data;
             if (notes) setNotes(notes);
-            if (isVisible !== undefined) setIsVisible(isVisible);
+            if (sels) setSelections(new Map(sels.map(s => [s.id, s])));
             setIsEnabled(true);
           })
           .catch(() => {
@@ -103,16 +137,35 @@ const Popup = () => {
     });
   }, []);
 
+  const isPinned = (note: Note) => !!note.selection_id;
+  const isScrollable = (note: Note) => !note.is_fixed || isPinned(note);
+
+  const getNoteLabel = (note: Note) => {
+    return note.title || note.description || t(I18N.NEW_NOTE_TITLE);
+  };
+
+  const getSelectionText = (note: Note): string | undefined => {
+    if (!note.selection_id) return undefined;
+    return selections.get(note.selection_id)?.text;
+  };
+
   return (
     <div style={{ width: '320px', minHeight: '200px' }}>
       {/* Header */}
       <header className="sticky top-0 flex items-center border-b border-black/10 bg-white p-4">
-        <div className="flex-1">
+        <div className="flex flex-1 gap-2">
           <button
             onClick={onClickAddNote}
             disabled={!isEnabled}
             className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500 text-white shadow-md hover:bg-blue-600 disabled:opacity-50">
             <HiPlus className="h-5 w-5" />
+          </button>
+          <button
+            onClick={onClickAddPinnedNote}
+            disabled={!isEnabled}
+            title={t(I18N.ADD_NOTE_FROM_ELEMENT)}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white shadow-md hover:bg-emerald-600 disabled:opacity-50">
+            <HiCursorArrowRays className="h-5 w-5" />
           </button>
         </div>
         <div>
@@ -142,16 +195,26 @@ const Popup = () => {
               <li key={note.id} className="flex justify-between border-b border-black/10">
                 <button
                   type="button"
-                  className={`flex flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap border-none bg-transparent p-4 pr-1 text-left ${
-                    note.is_fixed ? 'cursor-default' : 'cursor-pointer hover:bg-black/5'
+                  className={`flex flex-1 items-center gap-1.5 overflow-hidden border-none bg-transparent p-4 pr-1 text-left ${
+                    isScrollable(note) ? 'cursor-pointer hover:bg-black/5' : 'cursor-default'
                   }`}
-                  onClick={() => !note.is_fixed && onClickNote(note)}>
-                  <span className="flex-1">{note.title || note.description || t(I18N.NEW_NOTE_TITLE)}</span>
-                  {!note.is_fixed && <HiChevronRight className="h-4 w-4 text-black/50" />}
+                  onClick={() => isScrollable(note) && onClickNote(note)}>
+                  {isPinned(note) && (
+                    <HiCursorArrowRays className="mt-0.5 h-3.5 w-3.5 shrink-0 self-start text-emerald-500" />
+                  )}
+                  <div className="flex-1 overflow-hidden">
+                    <span className="block truncate">{getNoteLabel(note)}</span>
+                    {getSelectionText(note) && (
+                      <span className="mt-1 block truncate border-l-2 border-black/20 pl-2 text-xs text-black/40">
+                        {getSelectionText(note)}
+                      </span>
+                    )}
+                  </div>
+                  {isScrollable(note) && <HiChevronRight className="h-4 w-4 shrink-0 text-black/50" />}
                 </button>
                 <div className="flex items-center p-4">
                   <button
-                    onClick={() => onClickResetPosition(note)}
+                    onClick={() => (isPinned(note) ? onClickResetPinnedNote(note) : onClickResetPosition(note))}
                     className="mx-2 rounded p-1 hover:bg-black/10"
                     title={t(I18N.RESET_POSITION)}>
                     <HiArrowPath className="h-4 w-4 text-black/50" />

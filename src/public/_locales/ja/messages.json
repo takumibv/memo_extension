@@ -317,6 +317,14 @@
   "new_note_description_msg": {
     "message": "ダブルクリックで編集"
   },
+  "page_not_available_msg": {
+    "message": "このページでは使用できません",
+    "description": "Error message when the page does not support the extension"
+  },
+  "content_script_timeout_msg": {
+    "message": "コンテンツスクリプトの読み込みがタイムアウトしました",
+    "description": "Error message when content script injection times out"
+  },
   "displayErrorInfo": {
     "message": "エラーが発生しました"
   },
@@ -331,5 +339,17 @@
   },
   "displayErrorReset": {
     "message": "再実行"
+  },
+  "add_note_from_element_msg": {
+    "message": "要素からメモを追加",
+    "description": "Button label to start element picker for pinned note creation"
+  },
+  "element_picker_active_msg": {
+    "message": "要素をクリックしてメモをピン留め",
+    "description": "Status message shown when element picker is active"
+  },
+  "element_not_found_msg": {
+    "message": "要素が見つかりません",
+    "description": "Warning shown when the pinned element cannot be found in the page"
   }
 }

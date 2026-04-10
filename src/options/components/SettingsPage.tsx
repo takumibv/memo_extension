@@ -300,7 +300,12 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
           <BiCoffeeTogo className="h-5 w-5" />
           <span>Buy me a coffee</span>
         </a>
-        <p className="mt-6 text-sm text-gray-600">
+      </section>
+
+      {/* Maker */}
+      <section className="mb-8">
+        <h2 className="mb-2 text-lg font-semibold text-gray-800">{t(I18N.SETTING_ABOUT_THIS_APP)}</h2>
+        <p className="text-sm text-gray-600">
           {t(I18N.SETTING_ABOUT_THIS_APP_CREATED_BY)}:{' '}
           <a
             href="https://x.com/takumi_bv"

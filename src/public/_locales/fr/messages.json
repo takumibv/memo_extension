@@ -284,6 +284,14 @@
   "new_note_description_msg": {
     "message": "Double-cliquer pour modifier"
   },
+  "page_not_available_msg": {
+    "message": "Impossible d'utiliser sur cette page.",
+    "description": "Error message when the page does not support the extension"
+  },
+  "content_script_timeout_msg": {
+    "message": "Délai d'attente du script de contenu dépassé",
+    "description": "Error message when content script injection times out"
+  },
   "displayErrorInfo": {
     "message": "Error occur"
   },

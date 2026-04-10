@@ -10,7 +10,7 @@ export default defineConfig({
     name: '__MSG_extensionName__',
     description: '__MSG_extensionDescription__',
     default_locale: 'en',
-    permissions: ['storage', 'unlimitedStorage', 'scripting', 'tabs', 'notifications', 'contextMenus'],
+    permissions: ['storage', 'unlimitedStorage', 'scripting', 'tabs', 'contextMenus'],
     host_permissions: ['<all_urls>'],
     action: {
       default_popup: 'popup.html',

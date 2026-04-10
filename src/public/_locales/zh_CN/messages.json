@@ -284,6 +284,14 @@
   "new_note_description_msg": {
     "message": "双击来编辑"
   },
+  "page_not_available_msg": {
+    "message": "无法在此页面上使用。",
+    "description": "Error message when the page does not support the extension"
+  },
+  "content_script_timeout_msg": {
+    "message": "内容脚本加载超时",
+    "description": "Error message when content script injection times out"
+  },
   "displayErrorInfo": {
     "message": "Error occur"
   },

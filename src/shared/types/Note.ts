@@ -15,4 +15,5 @@ export type Note = {
   created_at?: string;
   updated_at?: string;
   color?: string;
+  selection_id?: string;
 };

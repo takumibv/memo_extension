@@ -13,9 +13,9 @@ export const removeStorage = async (storage_name: string) => {
 };
 
 export const getNewId = (storage_data: { id?: number }[]) => {
-  let new_id = Math.floor(Math.random() * 1000000);
+  let new_id = Math.floor(Math.random() * 999999) + 1;
   while (storage_data.some(a => a.id === new_id)) {
-    new_id = Math.floor(Math.random() * 1000000);
+    new_id = Math.floor(Math.random() * 999999) + 1;
   }
 
   return new_id;
