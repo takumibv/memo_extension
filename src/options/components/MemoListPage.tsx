@@ -35,6 +35,7 @@ const MemoListPage = ({
   onPageInfosChange,
 }: Props) => {
   const [filterPageId, setFilterPageId] = useState<number | null>(null);
+  const [scrollToActive, setScrollToActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortKey, setSortKey] = useState<SortKey>(() => {
     const saved = localStorage.getItem('memo_ext_sort_key');
@@ -207,8 +208,10 @@ const MemoListPage = ({
           {} as Record<number, number>,
         )}
         totalNoteCount={notes.length}
+        scrollToActive={scrollToActive}
         onFilter={(pageId: number | null) => {
           setFilterPageId(pageId);
+          setScrollToActive(false);
           setSearchQuery('');
           setLinkEditMode(false);
         }}
@@ -327,7 +330,10 @@ const MemoListPage = ({
                       onEdit={handleEditNote}
                       onDelete={onDeleteNote}
                       onUpdateNote={onUpdateNote}
-                      onFilterByPage={setFilterPageId}
+                      onFilterByPage={pageId => {
+                        setFilterPageId(pageId);
+                        setScrollToActive(true);
+                      }}
                       onGoToPage={handleGoToPage}
                     />
                   </div>
