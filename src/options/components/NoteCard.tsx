@@ -6,7 +6,7 @@ import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { formatDate } from '@/shared/utils/utils';
 import { useState } from 'react';
-import { HiPencilSquare, HiTrash, HiClipboard, HiCheck, HiFunnel, HiCursorArrowRays } from 'react-icons/hi2';
+import { SquarePen, Trash2, Clipboard, Check, Filter, SquareDashedMousePointer } from 'lucide-react';
 import { getNoteColors } from '@/shared/utils/color';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
@@ -91,7 +91,7 @@ const NoteCard = ({
             onClick={() => onFilterByPage(pageInfo.id ?? null)}
             className="shrink-0 rounded p-1.5 hover:opacity-70"
             title={t(I18N.THIS_PAGE_NOTE_LIST)}>
-            <HiFunnel className="h-3 w-3" style={{ color: iconColor }} />
+            <Filter className="h-3 w-3" style={{ color: iconColor }} />
           </button>
         </div>
       )}
@@ -99,7 +99,7 @@ const NoteCard = ({
       {/* Selection text */}
       {selectionText && (
         <div className="mb-3 flex items-center gap-1.5 truncate text-xs" style={{ color: subTextColor, opacity: 0.7 }}>
-          <HiCursorArrowRays className="h-3.5 w-3.5 shrink-0" style={{ color: iconColor }} />
+          <SquareDashedMousePointer className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
           <span className="truncate border-l-2 pl-2" style={{ borderColor }}>
             {selectionText}
           </span>
@@ -114,7 +114,7 @@ const NoteCard = ({
             onClick={() => onEdit(note, 'title')}
             className="rounded p-1 hover:opacity-70"
             title={t(I18N.EDIT)}>
-            <HiPencilSquare className="h-4 w-4" style={{ color: iconColor }} />
+            <SquarePen className="h-4 w-4" style={{ color: iconColor }} />
           </button>
           <button
             type="button"
@@ -122,9 +122,9 @@ const NoteCard = ({
             className="rounded p-1 hover:opacity-70"
             title={isSuccessCopy ? t(I18N.COPIED) : t(I18N.COPY)}>
             {isSuccessCopy ? (
-              <HiCheck className="h-4 w-4 text-green-500" />
+              <Check className="h-4 w-4 text-green-500" />
             ) : (
-              <HiClipboard className="h-4 w-4" style={{ color: iconColor }} />
+              <Clipboard className="h-4 w-4" style={{ color: iconColor }} />
             )}
           </button>
           <Popover open={showColorPicker} onOpenChange={setShowColorPicker}>
@@ -138,7 +138,7 @@ const NoteCard = ({
             </PopoverContent>
           </Popover>
           <button type="button" onClick={handleDelete} className="rounded p-1 hover:opacity-70" title={t(I18N.DELETE)}>
-            <HiTrash className="h-4 w-4" style={{ color: iconColor }} />
+            <Trash2 className="h-4 w-4" style={{ color: iconColor }} />
           </button>
         </div>
         <div className="flex gap-3 text-xs" style={{ color: subTextColor }}>

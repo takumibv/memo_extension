@@ -300,5 +300,31 @@
   },
   "displayErrorReset": {
     "message": "Run Again"
+  },
+  "element_picker_active_msg": {
+    "message": "Fai clic su un elemento per fissare una nota",
+    "description": "Status message shown when element picker is active"
+  },
+  "element_not_found_msg": {
+    "message": "Elemento non trovato",
+    "description": "Warning shown when the pinned element cannot be found in the page"
+  },
+  "feature_pin_to_element_title": {
+    "message": "Fissa le note agli elementi della pagina"
+  },
+  "feature_pin_to_element_intro": {
+    "message": "Ora puoi selezionare un elemento specifico della pagina — come un titolo, un'immagine o un paragrafo — e allegare una nota direttamente ad esso. La nota è collegata all'elemento, quindi rimane sempre nelle vicinanze."
+  },
+  "feature_pin_to_element_note1": {
+    "message": "Questa funzione funziona con lo scorrimento normale della pagina. Su alcune pagine con aree di scorrimento personalizzate, le note potrebbero non seguire correttamente."
+  },
+  "feature_pin_to_element_note2": {
+    "message": "Se il contenuto della pagina viene aggiornato e il layout cambia, l'elemento fissato potrebbe non essere più trovato e la nota smetterà di seguirlo."
+  },
+  "feature_pin_to_element_benefit1": {
+    "message": "Le note rimangono nella posizione corretta anche quando ridimensioni la finestra."
+  },
+  "feature_pin_to_element_benefit2": {
+    "message": "Fissa le note direttamente a contenuti specifici, rendendole facili da ritrovare in seguito."
   }
 }

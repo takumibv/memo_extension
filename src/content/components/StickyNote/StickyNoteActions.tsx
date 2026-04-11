@@ -5,7 +5,7 @@ import { useClipboard } from '@/shared/hooks/useClipboard';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { memo, useState } from 'react';
-import { HiCursorArrowRays, HiMinus, HiPencilSquare, HiTrash } from 'react-icons/hi2';
+import { SquareDashedMousePointer, Minus, SquarePen, Trash2 } from 'lucide-react';
 
 type Props = {
   title?: string;
@@ -71,21 +71,21 @@ const StickyNoteActions: React.FC<Props> = memo(
             <button
               onClick={onDetachFromElement}
               className={`${iconBtnClass} bg-emerald-500/20 shadow-[0_0_0_4px_rgba(16,185,129,0.2)]`}>
-              <HiCursorArrowRays className={iconClass} style={{ color: '#10b981' }} />
+              <SquareDashedMousePointer className={iconClass} style={{ color: '#10b981' }} />
             </button>
           </div>
         ) : (
           onStartInspector && (
             <div className="ml-3 flex items-center justify-center" title={t(I18N.ADD_NOTE_FROM_ELEMENT)}>
               <button onClick={onStartInspector} className={iconBtnClass}>
-                <HiCursorArrowRays className={iconClass} style={{ color: iconColor }} />
+                <SquareDashedMousePointer className={iconClass} style={{ color: iconColor }} />
               </button>
             </div>
           )
         )}
         <div className="ml-3 flex items-center justify-center" title={t(I18N.EDIT)}>
           <button onClick={() => setIsEditing(true)} className={iconBtnClass}>
-            <HiPencilSquare className={iconClass} style={{ color: iconColor }} />
+            <SquarePen className={iconClass} style={{ color: iconColor }} />
           </button>
         </div>
         <div className="ml-3 flex items-center justify-center" title={isSuccessCopy ? t(I18N.COPIED) : t(I18N.COPY)}>
@@ -118,13 +118,13 @@ const StickyNoteActions: React.FC<Props> = memo(
         </div>
         <div className="ml-3 flex items-center justify-center" title={t(I18N.DELETE)}>
           <button onClick={onClickDeleteButton} className={iconBtnClass}>
-            <HiTrash className={iconClass} style={{ color: iconColor }} />
+            <Trash2 className={iconClass} style={{ color: iconColor }} />
           </button>
         </div>
         {!title && (
           <div className="ml-3 flex items-center justify-center" title={t(I18N.MINIMIZE)}>
             <button onClick={onCloseNote} className={iconBtnClass}>
-              <HiMinus className={iconClass} style={{ color: iconColor }} />
+              <Minus className={iconClass} style={{ color: iconColor }} />
             </button>
           </div>
         )}

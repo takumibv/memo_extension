@@ -345,5 +345,23 @@
   "element_not_found_msg": {
     "message": "Element not found",
     "description": "Warning shown when the pinned element cannot be found in the page"
+  },
+  "feature_pin_to_element_title": {
+    "message": "Pin notes to page elements"
+  },
+  "feature_pin_to_element_intro": {
+    "message": "You can now select a specific element on the page — such as a heading, image, or paragraph — and attach a note directly to it. The note is linked to the element, so it always stays nearby."
+  },
+  "feature_pin_to_element_note1": {
+    "message": "This feature works with normal page scrolling. On some pages with custom scroll areas, notes may not follow correctly."
+  },
+  "feature_pin_to_element_note2": {
+    "message": "If the page content is updated and its layout changes, the pinned element may no longer be found, and the note will stop following it."
+  },
+  "feature_pin_to_element_benefit1": {
+    "message": "Notes stay in the right place even when you resize the window."
+  },
+  "feature_pin_to_element_benefit2": {
+    "message": "Pin notes directly to specific content, making them easy to find later."
   }
 }

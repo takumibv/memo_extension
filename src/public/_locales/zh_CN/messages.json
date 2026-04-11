@@ -300,5 +300,31 @@
   },
   "displayErrorReset": {
     "message": "Run Again"
+  },
+  "element_picker_active_msg": {
+    "message": "点击一个元素来固定笔记",
+    "description": "Status message shown when element picker is active"
+  },
+  "element_not_found_msg": {
+    "message": "未找到元素",
+    "description": "Warning shown when the pinned element cannot be found in the page"
+  },
+  "feature_pin_to_element_title": {
+    "message": "将笔记固定到页面元素"
+  },
+  "feature_pin_to_element_intro": {
+    "message": "现在你可以选择页面上的特定元素——例如标题、图片或段落——并将笔记直接附加到该元素上。笔记与元素相关联，因此始终显示在其附近。"
+  },
+  "feature_pin_to_element_note1": {
+    "message": "此功能适用于正常的页面滚动。在某些具有自定义滚动区域的页面上，笔记可能无法正确跟随。"
+  },
+  "feature_pin_to_element_note2": {
+    "message": "如果页面内容更新且布局发生变化，被固定的元素可能无法找到，笔记将不再跟随它。"
+  },
+  "feature_pin_to_element_benefit1": {
+    "message": "即使调整窗口大小，笔记也会保持在正确的位置。"
+  },
+  "feature_pin_to_element_benefit2": {
+    "message": "将笔记直接固定到特定内容上，方便日后查找。"
   }
 }

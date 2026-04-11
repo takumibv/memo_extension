@@ -300,5 +300,31 @@
   },
   "displayErrorReset": {
     "message": "Run Again"
+  },
+  "element_picker_active_msg": {
+    "message": "Cliquez sur un élément pour y épingler une note",
+    "description": "Status message shown when element picker is active"
+  },
+  "element_not_found_msg": {
+    "message": "Élément introuvable",
+    "description": "Warning shown when the pinned element cannot be found in the page"
+  },
+  "feature_pin_to_element_title": {
+    "message": "Épingler des notes aux éléments de la page"
+  },
+  "feature_pin_to_element_intro": {
+    "message": "Vous pouvez désormais sélectionner un élément spécifique de la page — comme un titre, une image ou un paragraphe — et y attacher directement une note. La note est liée à l'élément et reste donc toujours à proximité."
+  },
+  "feature_pin_to_element_note1": {
+    "message": "Cette fonctionnalité fonctionne avec le défilement normal de la page. Sur certaines pages avec des zones de défilement personnalisées, les notes peuvent ne pas suivre correctement."
+  },
+  "feature_pin_to_element_note2": {
+    "message": "Si le contenu de la page est mis à jour et que sa disposition change, l'élément épinglé peut ne plus être trouvé et la note cessera de le suivre."
+  },
+  "feature_pin_to_element_benefit1": {
+    "message": "Les notes restent au bon endroit même lorsque vous redimensionnez la fenêtre."
+  },
+  "feature_pin_to_element_benefit2": {
+    "message": "Épinglez des notes directement sur un contenu spécifique pour les retrouver facilement plus tard."
   }
 }
