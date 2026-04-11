@@ -6,7 +6,7 @@ import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useMemo, useRef, useState } from 'react';
-import { HiMagnifyingGlass, HiPencilSquare, HiXMark } from 'react-icons/hi2';
+import { Search, SquarePen, X } from 'lucide-react';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
 import type { Selection } from '@/shared/types/Selection';
@@ -222,7 +222,7 @@ const MemoListPage = ({
         {/* Search + Sort bar */}
         <div className="mb-4 flex items-center gap-4 px-6 pt-6">
           <div className="relative flex-1">
-            <HiMagnifyingGlass className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               placeholder={t(I18N.SEARCH_QUERY)}
@@ -255,7 +255,7 @@ const MemoListPage = ({
                   setLinkEditMode(false);
                 }}
                 className="rounded p-1 hover:bg-gray-300">
-                <HiXMark className="h-4 w-4 text-gray-500" />
+                <X className="h-4 w-4 text-gray-500" />
               </button>
             </div>
             <div className="mt-1 flex items-center gap-2">
@@ -291,7 +291,7 @@ const MemoListPage = ({
                     {filterPageInfo.page_url}
                   </a>
                   <button type="button" onClick={handleEditLink} className="rounded p-0.5 hover:bg-gray-300">
-                    <HiPencilSquare className="h-3.5 w-3.5 text-gray-400" />
+                    <SquarePen className="h-3.5 w-3.5 text-gray-400" />
                   </button>
                 </>
               )}

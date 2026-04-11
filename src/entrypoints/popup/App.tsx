@@ -3,7 +3,7 @@ import { SubdirectoryArrowLeftIcon } from '@/shared/components/Icon';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { useEffect, useState } from 'react';
-import { HiPlus, HiBars3, HiTrash, HiArrowPath, HiChevronRight, HiCursorArrowRays } from 'react-icons/hi2';
+import { Plus, Menu, Trash2, RefreshCw, ChevronRight, SquareDashedMousePointer } from 'lucide-react';
 import type { Note } from '@/shared/types/Note';
 import type { Selection } from '@/shared/types/Selection';
 
@@ -158,21 +158,21 @@ const Popup = () => {
             onClick={onClickAddNote}
             disabled={!isEnabled}
             className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500 text-white shadow-md hover:bg-blue-600 disabled:opacity-50">
-            <HiPlus className="h-5 w-5" />
+            <Plus className="h-5 w-5" />
           </button>
           <button
             onClick={onClickAddPinnedNote}
             disabled={!isEnabled}
             title={t(I18N.ADD_NOTE_FROM_ELEMENT)}
             className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white shadow-md hover:bg-emerald-600 disabled:opacity-50">
-            <HiCursorArrowRays className="h-5 w-5" />
+            <SquareDashedMousePointer className="h-5 w-5" />
           </button>
         </div>
         <div>
           <button
             onClick={onClickNotesButton}
             className="flex h-8 w-8 items-center justify-center rounded p-1 hover:bg-black/5">
-            <HiBars3 className="h-5 w-5 text-black/40" />
+            <Menu className="h-5 w-5 text-black/40" />
           </button>
         </div>
       </header>
@@ -200,7 +200,7 @@ const Popup = () => {
                   }`}
                   onClick={() => isScrollable(note) && onClickNote(note)}>
                   {isPinned(note) && (
-                    <HiCursorArrowRays className="mt-0.5 h-3.5 w-3.5 shrink-0 self-start text-emerald-500" />
+                    <SquareDashedMousePointer className="mt-0.5 h-3.5 w-3.5 shrink-0 self-start text-emerald-500" />
                   )}
                   <div className="flex-1 overflow-hidden">
                     <span className="block truncate">{getNoteLabel(note)}</span>
@@ -210,17 +210,17 @@ const Popup = () => {
                       </span>
                     )}
                   </div>
-                  {isScrollable(note) && <HiChevronRight className="h-4 w-4 shrink-0 text-black/50" />}
+                  {isScrollable(note) && <ChevronRight className="h-4 w-4 shrink-0 text-black/50" />}
                 </button>
                 <div className="flex items-center p-4">
                   <button
                     onClick={() => (isPinned(note) ? onClickResetPinnedNote(note) : onClickResetPosition(note))}
                     className="mx-2 rounded p-1 hover:bg-black/10"
                     title={t(I18N.RESET_POSITION)}>
-                    <HiArrowPath className="h-4 w-4 text-black/50" />
+                    <RefreshCw className="h-4 w-4 text-black/50" />
                   </button>
                   <button onClick={() => onClickDelete(note)} className="mx-2 rounded p-1 hover:bg-black/10">
-                    <HiTrash className="h-4 w-4 text-black/50" />
+                    <Trash2 className="h-4 w-4 text-black/50" />
                   </button>
                 </div>
               </li>

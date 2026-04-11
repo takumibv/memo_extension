@@ -4,7 +4,7 @@ import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { getAllStorage, setStorage, removeStorage } from '@/shared/storages/common';
 import { useRef, useState } from 'react';
-import { HiArrowDownTray, HiArrowUpTray } from 'react-icons/hi2';
+import { Download, Upload } from 'lucide-react';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
 import type { Setting } from '@/shared/types/Setting';
@@ -214,7 +214,7 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
             onClick={handleCsvDownload}
             disabled={notes.length === 0}
             className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50">
-            <HiArrowDownTray className="h-4 w-4" />
+            <Download className="h-4 w-4" />
             {t(I18N.CSV_DOWNLOAD)}
           </button>
           <button
@@ -222,7 +222,7 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
             onClick={handleTextDownload}
             disabled={notes.length === 0}
             className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50">
-            <HiArrowDownTray className="h-4 w-4" />
+            <Download className="h-4 w-4" />
             {t(I18N.TEXT_DOWNLOAD)}
           </button>
         </div>
@@ -238,14 +238,14 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
             onClick={handleDataExport}
             disabled={notes.length === 0}
             className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50">
-            <HiArrowDownTray className="h-4 w-4" />
+            <Download className="h-4 w-4" />
             {t('data_export_msg')}
           </button>
           <button
             type="button"
             onClick={handleImportClick}
             className="flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-            <HiArrowUpTray className="h-4 w-4" />
+            <Upload className="h-4 w-4" />
             {t('data_import_msg')}
           </button>
           <input ref={fileInputRef} type="file" accept=".json" onChange={handleFileSelect} className="hidden" />

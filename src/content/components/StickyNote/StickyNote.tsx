@@ -9,7 +9,7 @@ import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { useCallback, useEffect, useMemo, useRef, useState, memo } from 'react';
 import { DraggableCore } from 'react-draggable';
-import { HiArrowDownRight, HiExclamationTriangle, HiMinus } from 'react-icons/hi2';
+import { ArrowDownRight, TriangleAlert, Minus } from 'lucide-react';
 import type { Note } from '@/shared/types/Note';
 import type { Selection } from '@/shared/types/Selection';
 import type React from 'react';
@@ -360,7 +360,9 @@ const StickyNote: React.FC<Props> = memo(
                 <LogoIcon className="pointer-events-none h-6 w-6" />
               </span>
               {showElementLostWarning && (
-                <HiExclamationTriangle className="h-4 w-4 shrink-0 text-amber-500" title={t(I18N.ELEMENT_NOT_FOUND)} />
+                <span title={t(I18N.ELEMENT_NOT_FOUND)}>
+                  <TriangleAlert className="h-4 w-4 shrink-0 text-amber-500" />
+                </span>
               )}
               {title && (
                 <span className="max-w-32 truncate text-xs" style={{ color: textColor }}>
@@ -410,10 +412,9 @@ const StickyNote: React.FC<Props> = memo(
                 className="flex justify-between overflow-y-auto p-2"
                 style={{ borderBottom: `1px solid ${borderColor}` }}>
                 {showElementLostWarning && (
-                  <HiExclamationTriangle
-                    className="mr-1 mt-0.5 h-4 w-4 shrink-0 text-amber-500"
-                    title={t(I18N.ELEMENT_NOT_FOUND)}
-                  />
+                  <span title={t(I18N.ELEMENT_NOT_FOUND)}>
+                    <TriangleAlert className="mr-1 mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
+                  </span>
                 )}
                 <h2
                   className="flex-1 whitespace-pre-line break-all text-base leading-tight"
@@ -427,7 +428,7 @@ const StickyNote: React.FC<Props> = memo(
                     onClick={() => onClickOpenButton(false)}
                     title={t(I18N.MINIMIZE)}
                     className="flex h-5 w-5 items-center justify-center rounded hover:bg-black/10">
-                    <HiMinus className="h-4 w-4" style={{ color: iconColor }} />
+                    <Minus className="h-4 w-4" style={{ color: iconColor }} />
                   </button>
                 </div>
               </div>
@@ -435,7 +436,7 @@ const StickyNote: React.FC<Props> = memo(
             {/* Element lost warning banner */}
             {showElementLostWarning && !title && (
               <div className="flex items-center gap-1 px-2 pt-1.5 text-xs text-amber-600">
-                <HiExclamationTriangle className="h-3.5 w-3.5 shrink-0" />
+                <TriangleAlert className="h-3.5 w-3.5 shrink-0" />
                 <span>{t(I18N.ELEMENT_NOT_FOUND)}</span>
               </div>
             )}
@@ -521,7 +522,7 @@ const StickyNote: React.FC<Props> = memo(
           }}
           nodeRef={noteRef}>
           <div ref={resizeHandlerRef} className="absolute bottom-0 right-0 z-10 h-4 w-4 cursor-nwse-resize">
-            <HiArrowDownRight
+            <ArrowDownRight
               className="h-4 w-4"
               style={{ color: dark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)' }}
             />

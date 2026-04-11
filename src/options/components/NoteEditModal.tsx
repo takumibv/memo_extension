@@ -5,7 +5,7 @@ import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { formatDate, isEqualsObject } from '@/shared/utils/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { HiChevronDown, HiCursorArrowRays } from 'react-icons/hi2';
+import { ChevronDown, SquareDashedMousePointer } from 'lucide-react';
 import { getNoteColors } from '@/shared/utils/color';
 import type { Note } from '@/shared/types/Note';
 
@@ -203,7 +203,7 @@ const NoteEditModal = ({
               className="flex w-full items-center justify-between px-5 py-2.5 text-xs hover:bg-black/5"
               style={{ color: subTextColor }}>
               <span>{t(I18N.DETAIL)}</span>
-              <HiChevronDown className={`h-4 w-4 transition-transform ${showDetails ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`h-4 w-4 transition-transform ${showDetails ? 'rotate-180' : ''}`} />
             </button>
 
             {showDetails && (
@@ -290,7 +290,7 @@ const NoteEditModal = ({
                   <div className="col-span-2 flex flex-col gap-1">
                     <span style={{ color: subTextColor }}>{t(I18N.ADD_NOTE_FROM_ELEMENT)}</span>
                     <div className="flex items-center gap-1.5" style={{ color: subTextColor, opacity: 0.7 }}>
-                      <HiCursorArrowRays className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
+                      <SquareDashedMousePointer className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
                       <span className="break-all">{selectionText}</span>
                     </div>
                   </div>

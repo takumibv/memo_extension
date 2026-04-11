@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { HiCheck } from 'react-icons/hi2';
+import { Check } from 'lucide-react';
 
 type Props = {
   onChangeColor?: (color: string) => void;
@@ -41,7 +41,7 @@ const ColorPicker: React.FC<Props> = memo(({ onChangeColor, color: activeColor =
           e.stopPropagation();
           onChangeColor?.('');
         }}>
-        {hasDefault && activeColor === '' && <HiCheck className="relative z-10 mx-auto h-5 w-5" />}
+        {hasDefault && activeColor === '' && <Check className="relative z-10 mx-auto h-5 w-5" />}
         <span className="absolute left-0 top-1/2 h-0.5 w-full -translate-y-1/2 rotate-45 bg-gray-400" />
       </button>
     )}
@@ -59,7 +59,7 @@ const ColorPicker: React.FC<Props> = memo(({ onChangeColor, color: activeColor =
             e.stopPropagation();
             onChangeColor?.(color);
           }}>
-          {isActive && <HiCheck className={`mx-auto h-5 w-5 ${dark ? 'text-white' : 'text-black'}`} />}
+          {isActive && <Check className={`mx-auto h-5 w-5 ${dark ? 'text-white' : 'text-black'}`} />}
         </button>
       );
     })}
