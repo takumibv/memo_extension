@@ -350,7 +350,7 @@
     "message": "Pin notes to page elements"
   },
   "feature_pin_to_element_intro": {
-    "message": "You can now pin notes to specific parts of a page, such as text or images. The note stays near the element it's pinned to."
+    "message": "You can now select a specific element on the page — such as a heading, image, or paragraph — and attach a note directly to it. The note is linked to the element, so it always stays nearby."
   },
   "feature_pin_to_element_note1": {
     "message": "This feature works with normal page scrolling. On some pages with custom scroll areas, notes may not follow correctly."

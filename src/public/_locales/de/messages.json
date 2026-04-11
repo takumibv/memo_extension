@@ -313,7 +313,7 @@
     "message": "Notizen an Seitenelemente anheften"
   },
   "feature_pin_to_element_intro": {
-    "message": "Sie können Notizen jetzt an bestimmte Teile einer Seite anheften, z. B. an Text oder Bilder. Die Notiz bleibt in der Nähe des Elements, an das sie angeheftet wurde."
+    "message": "Sie können jetzt ein bestimmtes Element auf der Seite auswählen — z. B. eine Überschrift, ein Bild oder einen Absatz — und eine Notiz direkt daran anheften. Die Notiz ist mit dem Element verknüpft und bleibt daher immer in dessen Nähe."
   },
   "feature_pin_to_element_note1": {
     "message": "Diese Funktion funktioniert mit dem normalen Scrollen der Seite. Auf einigen Seiten mit benutzerdefinierten Scrollbereichen folgen die Notizen möglicherweise nicht korrekt."

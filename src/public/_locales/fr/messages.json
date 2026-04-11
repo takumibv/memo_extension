@@ -313,7 +313,7 @@
     "message": "Épingler des notes aux éléments de la page"
   },
   "feature_pin_to_element_intro": {
-    "message": "Vous pouvez désormais épingler des notes à des parties spécifiques d'une page, comme du texte ou des images. La note reste à proximité de l'élément auquel elle est épinglée."
+    "message": "Vous pouvez désormais sélectionner un élément spécifique de la page — comme un titre, une image ou un paragraphe — et y attacher directement une note. La note est liée à l'élément et reste donc toujours à proximité."
   },
   "feature_pin_to_element_note1": {
     "message": "Cette fonctionnalité fonctionne avec le défilement normal de la page. Sur certaines pages avec des zones de défilement personnalisées, les notes peuvent ne pas suivre correctement."

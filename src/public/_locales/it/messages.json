@@ -313,7 +313,7 @@
     "message": "Fissa le note agli elementi della pagina"
   },
   "feature_pin_to_element_intro": {
-    "message": "Ora puoi fissare le note a parti specifiche di una pagina, come testo o immagini. La nota rimane vicina all'elemento a cui è fissata."
+    "message": "Ora puoi selezionare un elemento specifico della pagina — come un titolo, un'immagine o un paragrafo — e allegare una nota direttamente ad esso. La nota è collegata all'elemento, quindi rimane sempre nelle vicinanze."
   },
   "feature_pin_to_element_note1": {
     "message": "Questa funzione funziona con lo scorrimento normale della pagina. Su alcune pagine con aree di scorrimento personalizzate, le note potrebbero non seguire correttamente."
