@@ -300,5 +300,31 @@
   },
   "displayErrorReset": {
     "message": "Run Again"
+  },
+  "element_picker_active_msg": {
+    "message": "Klicken Sie auf ein Element, um eine Notiz anzuheften",
+    "description": "Status message shown when element picker is active"
+  },
+  "element_not_found_msg": {
+    "message": "Element nicht gefunden",
+    "description": "Warning shown when the pinned element cannot be found in the page"
+  },
+  "feature_pin_to_element_title": {
+    "message": "Notizen an Seitenelemente anheften"
+  },
+  "feature_pin_to_element_intro": {
+    "message": "Sie können Notizen jetzt an bestimmte Teile einer Seite anheften, z. B. an Text oder Bilder. Die Notiz bleibt in der Nähe des Elements, an das sie angeheftet wurde."
+  },
+  "feature_pin_to_element_note1": {
+    "message": "Diese Funktion funktioniert mit dem normalen Scrollen der Seite. Auf einigen Seiten mit benutzerdefinierten Scrollbereichen folgen die Notizen möglicherweise nicht korrekt."
+  },
+  "feature_pin_to_element_note2": {
+    "message": "Wenn der Seiteninhalt aktualisiert wird und sich das Layout ändert, wird das angeheftete Element möglicherweise nicht mehr gefunden und die Notiz folgt ihm nicht mehr."
+  },
+  "feature_pin_to_element_benefit1": {
+    "message": "Notizen bleiben an der richtigen Stelle, auch wenn Sie die Fenstergröße ändern."
+  },
+  "feature_pin_to_element_benefit2": {
+    "message": "Heften Sie Notizen direkt an bestimmte Inhalte an, damit Sie sie später leicht wiederfinden."
   }
 }

@@ -300,5 +300,31 @@
   },
   "displayErrorReset": {
     "message": "다시 실행"
+  },
+  "element_picker_active_msg": {
+    "message": "요소를 클릭하여 노트를 고정하세요",
+    "description": "Status message shown when element picker is active"
+  },
+  "element_not_found_msg": {
+    "message": "요소를 찾을 수 없습니다",
+    "description": "Warning shown when the pinned element cannot be found in the page"
+  },
+  "feature_pin_to_element_title": {
+    "message": "페이지 요소에 노트 고정하기"
+  },
+  "feature_pin_to_element_intro": {
+    "message": "이제 텍스트나 이미지 등 페이지의 특정 부분에 노트를 고정할 수 있습니다. 노트는 고정된 요소 근처에 계속 표시됩니다."
+  },
+  "feature_pin_to_element_note1": {
+    "message": "이 기능은 일반적인 페이지 스크롤에서 작동합니다. 사용자 지정 스크롤 영역이 있는 일부 페이지에서는 노트가 올바르게 따라가지 않을 수 있습니다."
+  },
+  "feature_pin_to_element_note2": {
+    "message": "페이지 내용이 업데이트되어 레이아웃이 변경되면 고정된 요소를 찾을 수 없게 되어 노트가 더 이상 따라가지 않을 수 있습니다."
+  },
+  "feature_pin_to_element_benefit1": {
+    "message": "창 크기를 변경해도 노트가 올바른 위치에 유지됩니다."
+  },
+  "feature_pin_to_element_benefit2": {
+    "message": "특정 콘텐츠에 직접 노트를 고정하여 나중에 쉽게 찾을 수 있습니다."
   }
 }
