@@ -157,6 +157,11 @@ export const deleteNote = async (pageId: number, noteId?: number): Promise<NoteC
 
 // ===== マイグレーション =====
 
+const MIGRATION_MAX_RETRIES = 3;
+const MIGRATION_BASE_DELAY_MS = 1000;
+
+const sleep = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
+
 /**
  * 移行結果を返す型（アナリティクス連携用）
  */
@@ -164,18 +169,13 @@ export type MigrationResult =
   | { status: 'already_done' }
   | { status: 'no_legacy_data' }
   | { status: 'success'; noteCount: number; pageCount: number }
-  | { status: 'error'; error: string };
+  | { status: 'retry_success'; attempt: number; noteCount: number; pageCount: number }
+  | { status: 'error'; error: string; attempts: number };
 
 /**
- * 旧形式 (notes_{pageId}: Note[]) → 新形式 (note_{id}: Note + note_page_index) へマイグレーション
- * background script の起動時に1回だけ呼ぶ
- *
- * Phase 1 安全戦略:
- * - 旧データは削除しない（Copy, not Move）
- * - 新形式への書き込みのみ行う
- * - 万が一バグがあれば旧バージョンに戻せばデータは無傷
+ * マイグレーション本体（リトライなし）
  */
-export const migrateStorageIfNeeded = async (): Promise<MigrationResult> => {
+const executeMigration = async (): Promise<MigrationResult> => {
   const migrationCheck = await getStorage(MIGRATION_KEY);
   if (migrationCheck[MIGRATION_KEY]) return { status: 'already_done' };
 
@@ -229,4 +229,48 @@ export const migrateStorageIfNeeded = async (): Promise<MigrationResult> => {
   console.log(`[Storage Migration] Complete. Migrated ${totalNotes} notes across ${pageCount} pages.`);
 
   return { status: 'success', noteCount: totalNotes, pageCount };
+};
+
+/**
+ * 旧形式 (notes_{pageId}: Note[]) → 新形式 (note_{id}: Note + note_page_index) へマイグレーション
+ * background script の起動時に1回だけ呼ぶ
+ *
+ * Phase 1 安全戦略:
+ * - 旧データは削除しない（Copy, not Move）
+ * - 新形式への書き込みのみ行う
+ * - 万が一バグがあれば旧バージョンに戻せばデータは無傷
+ *
+ * LevelDB ロック競合（LOCK: File currently in use）対策として
+ * 指数バックオフによるリトライを行う（最大3回）
+ */
+export const migrateStorageIfNeeded = async (): Promise<MigrationResult> => {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= MIGRATION_MAX_RETRIES; attempt++) {
+    try {
+      const result = await executeMigration();
+
+      if (attempt > 1 && (result.status === 'success' || result.status === 'already_done')) {
+        const noteCount = result.status === 'success' ? result.noteCount : 0;
+        const pageCount = result.status === 'success' ? result.pageCount : 0;
+        console.log(`[Storage Migration] Succeeded on retry attempt ${attempt}`);
+        return { status: 'retry_success', attempt, noteCount, pageCount };
+      }
+
+      return result;
+    } catch (err) {
+      lastError = err;
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn(`[Storage Migration] Attempt ${attempt}/${MIGRATION_MAX_RETRIES} failed: ${message}`);
+
+      if (attempt < MIGRATION_MAX_RETRIES) {
+        const delay = MIGRATION_BASE_DELAY_MS * 2 ** (attempt - 1);
+        console.log(`[Storage Migration] Retrying in ${delay}ms...`);
+        await sleep(delay);
+      }
+    }
+  }
+
+  const message = lastError instanceof Error ? lastError.message : String(lastError);
+  return { status: 'error', error: message, attempts: MIGRATION_MAX_RETRIES };
 };

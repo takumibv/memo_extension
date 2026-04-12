@@ -6,7 +6,7 @@ import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useMemo, useRef, useState } from 'react';
-import { HiMagnifyingGlass, HiPencilSquare, HiXMark } from 'react-icons/hi2';
+import { Search, SquarePen, X } from 'lucide-react';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
 import type { Selection } from '@/shared/types/Selection';
@@ -35,6 +35,7 @@ const MemoListPage = ({
   onPageInfosChange,
 }: Props) => {
   const [filterPageId, setFilterPageId] = useState<number | null>(null);
+  const [scrollToActive, setScrollToActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortKey, setSortKey] = useState<SortKey>(() => {
     const saved = localStorage.getItem('memo_ext_sort_key');
@@ -72,6 +73,10 @@ const MemoListPage = ({
       result = result.filter(n => {
         const noteMatch = (n.title || '').toLowerCase().includes(q) || (n.description || '').toLowerCase().includes(q);
         if (noteMatch) return true;
+        if (n.selection_id) {
+          const sel = selections.get(n.selection_id);
+          if (sel && sel.text.toLowerCase().includes(q)) return true;
+        }
         const pi = pageInfos.find(p => p.id === n.page_info_id);
         return (pi?.page_title || '').toLowerCase().includes(q) || (pi?.page_url || '').toLowerCase().includes(q);
       });
@@ -88,7 +93,7 @@ const MemoListPage = ({
     });
 
     return result;
-  }, [notes, filterPageId, searchQuery, sortKey, pageInfos]);
+  }, [notes, filterPageId, searchQuery, sortKey, pageInfos, selections]);
 
   // Pages that have notes (for sidebar), filtered by search and sorted
   const activePageInfos = useMemo(() => {
@@ -203,8 +208,10 @@ const MemoListPage = ({
           {} as Record<number, number>,
         )}
         totalNoteCount={notes.length}
+        scrollToActive={scrollToActive}
         onFilter={(pageId: number | null) => {
           setFilterPageId(pageId);
+          setScrollToActive(false);
           setSearchQuery('');
           setLinkEditMode(false);
         }}
@@ -215,7 +222,7 @@ const MemoListPage = ({
         {/* Search + Sort bar */}
         <div className="mb-4 flex items-center gap-4 px-6 pt-6">
           <div className="relative flex-1">
-            <HiMagnifyingGlass className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               placeholder={t(I18N.SEARCH_QUERY)}
@@ -248,7 +255,7 @@ const MemoListPage = ({
                   setLinkEditMode(false);
                 }}
                 className="rounded p-1 hover:bg-gray-300">
-                <HiXMark className="h-4 w-4 text-gray-500" />
+                <X className="h-4 w-4 text-gray-500" />
               </button>
             </div>
             <div className="mt-1 flex items-center gap-2">
@@ -284,7 +291,7 @@ const MemoListPage = ({
                     {filterPageInfo.page_url}
                   </a>
                   <button type="button" onClick={handleEditLink} className="rounded p-0.5 hover:bg-gray-300">
-                    <HiPencilSquare className="h-3.5 w-3.5 text-gray-400" />
+                    <SquarePen className="h-3.5 w-3.5 text-gray-400" />
                   </button>
                 </>
               )}
@@ -323,7 +330,10 @@ const MemoListPage = ({
                       onEdit={handleEditNote}
                       onDelete={onDeleteNote}
                       onUpdateNote={onUpdateNote}
-                      onFilterByPage={setFilterPageId}
+                      onFilterByPage={pageId => {
+                        setFilterPageId(pageId);
+                        setScrollToActive(true);
+                      }}
                       onGoToPage={handleGoToPage}
                     />
                   </div>

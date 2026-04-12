@@ -1,7 +1,7 @@
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
-import { HiChevronDown, HiChevronRight } from 'react-icons/hi2';
 
 type Props = {
   isInit?: boolean;
@@ -26,9 +26,9 @@ const Usage = ({ isInit = false, onNavigateToMemos }: Props) => {
         className="flex w-full items-center justify-between p-6 text-left">
         <h2 className="text-lg font-semibold text-gray-800">{t(I18N.HOW_TO_USE_HEADER)}</h2>
         {isOpen ? (
-          <HiChevronDown className="h-5 w-5 text-gray-500" />
+          <ChevronDown className="h-5 w-5 text-gray-500" />
         ) : (
-          <HiChevronRight className="h-5 w-5 text-gray-500" />
+          <ChevronRight className="h-5 w-5 text-gray-500" />
         )}
       </button>
 

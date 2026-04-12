@@ -103,11 +103,18 @@ export const trackMigrationSkip = (reason: 'already_done' | 'no_legacy_data') =>
     params: { reason },
   });
 
-/** ストレージ移行のエラー */
-export const trackMigrationError = (error: string) =>
+/** ストレージ移行のリトライ成功 */
+export const trackMigrationRetrySuccess = (attempt: number, noteCount: number, pageCount: number) =>
+  sendEvent({
+    name: 'storage_migration_retry_success',
+    params: { attempt, note_count: noteCount, page_count: pageCount },
+  });
+
+/** ストレージ移行のエラー（全リトライ失敗） */
+export const trackMigrationError = (error: string, attempts: number) =>
   sendEvent({
     name: 'storage_migration_error',
-    params: { error_message: error.slice(0, 100) },
+    params: { error_message: error.slice(0, 100), attempts },
   });
 
 /** 汎用エラー */
@@ -125,6 +132,7 @@ export const analytics = {
   trackInstall,
   trackMigrationSuccess,
   trackMigrationSkip,
+  trackMigrationRetrySuccess,
   trackMigrationError,
   trackError,
 };

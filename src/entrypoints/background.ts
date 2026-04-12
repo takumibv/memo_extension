@@ -18,25 +18,26 @@ export const ROOT_DOM_ID = 'react-container-for-note-extension';
 
 export default defineBackground(() => {
   // ストレージマイグレーション（旧形式→インデックス方式）
-  migrateStorageIfNeeded()
-    .then(result => {
-      switch (result.status) {
-        case 'already_done':
-          analytics.trackMigrationSkip('already_done');
-          break;
-        case 'no_legacy_data':
-          analytics.trackMigrationSkip('no_legacy_data');
-          break;
-        case 'success':
-          analytics.trackMigrationSuccess(result.noteCount, result.pageCount);
-          break;
-      }
-    })
-    .catch(err => {
-      const message = err instanceof Error ? err.message : String(err);
-      console.error('[Background] Storage migration failed:', message);
-      analytics.trackMigrationError(message);
-    });
+  migrateStorageIfNeeded().then(result => {
+    switch (result.status) {
+      case 'already_done':
+        analytics.trackMigrationSkip('already_done');
+        break;
+      case 'no_legacy_data':
+        analytics.trackMigrationSkip('no_legacy_data');
+        break;
+      case 'success':
+        analytics.trackMigrationSuccess(result.noteCount, result.pageCount);
+        break;
+      case 'retry_success':
+        analytics.trackMigrationRetrySuccess(result.attempt, result.noteCount, result.pageCount);
+        break;
+      case 'error':
+        console.error('[Background] Storage migration failed after retries:', result.error);
+        analytics.trackMigrationError(result.error, result.attempts);
+        break;
+    }
+  });
 
   // install or Updateして初めて開いた時に呼ばれる
   chrome.runtime.onInstalled.addListener(details => {

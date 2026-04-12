@@ -1,6 +1,10 @@
 import { getAllStorage, getStorage, setStorage, removeStorage, getNewId } from '../common';
-import { describe, it, expect } from 'vitest';
-import type { vi } from 'vitest';
+import { trackError } from '@/shared/analytics/ga4';
+import { describe, it, expect, vi } from 'vitest';
+
+vi.mock('@/shared/analytics/ga4', () => ({
+  trackError: vi.fn(),
+}));
 
 describe('common storage functions', () => {
   describe('getAllStorage', () => {
@@ -54,7 +58,7 @@ describe('common storage functions', () => {
       expect(chrome.storage.local.set).toHaveBeenCalledWith({ key: { data: 'value' } });
     });
 
-    it('lastErrorがある場合falseを返す', async () => {
+    it('lastErrorがある場合falseを返しtrackErrorを呼ぶ', async () => {
       (chrome.storage.local.set as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
       (chrome.runtime as { lastError?: chrome.runtime.LastError }).lastError = {
         message: 'Quota exceeded',
@@ -63,6 +67,15 @@ describe('common storage functions', () => {
       const result = await setStorage('key', 'value');
 
       expect(result).toBe(false);
+      expect(trackError).toHaveBeenCalledWith('storage_set', 'key: Quota exceeded');
+    });
+
+    it('例外発生時にtrackErrorを呼んで再スローする', async () => {
+      (chrome.storage.local.set as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('Write failed'));
+      delete (chrome.runtime as { lastError?: chrome.runtime.LastError }).lastError;
+
+      await expect(setStorage('test_key', 'value')).rejects.toThrow('Write failed');
+      expect(trackError).toHaveBeenCalledWith('storage_set', 'test_key: Write failed');
     });
 
     it('様々なデータ型を保存できる', async () => {
@@ -94,7 +107,7 @@ describe('common storage functions', () => {
       expect(chrome.storage.local.remove).toHaveBeenCalledWith('key');
     });
 
-    it('lastErrorがある場合falseを返す', async () => {
+    it('lastErrorがある場合falseを返しtrackErrorを呼ぶ', async () => {
       (chrome.storage.local.remove as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
       (chrome.runtime as { lastError?: chrome.runtime.LastError }).lastError = {
         message: 'Remove failed',
@@ -103,6 +116,15 @@ describe('common storage functions', () => {
       const result = await removeStorage('key');
 
       expect(result).toBe(false);
+      expect(trackError).toHaveBeenCalledWith('storage_remove', 'key: Remove failed');
+    });
+
+    it('例外発生時にtrackErrorを呼んで再スローする', async () => {
+      (chrome.storage.local.remove as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('Delete failed'));
+      delete (chrome.runtime as { lastError?: chrome.runtime.LastError }).lastError;
+
+      await expect(removeStorage('key')).rejects.toThrow('Delete failed');
+      expect(trackError).toHaveBeenCalledWith('storage_remove', 'key: Delete failed');
     });
   });
 

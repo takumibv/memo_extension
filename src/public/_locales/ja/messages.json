@@ -351,5 +351,23 @@
   "element_not_found_msg": {
     "message": "要素が見つかりません",
     "description": "Warning shown when the pinned element cannot be found in the page"
+  },
+  "feature_pin_to_element_title": {
+    "message": "ページの要素にメモを貼り付ける"
+  },
+  "feature_pin_to_element_intro": {
+    "message": "ページ上の特定の要素（見出し・画像・段落など）を選んで、メモを直接貼り付けられるようになりました。選んだ要素にメモが紐づくため、常に近くに表示され続けます。"
+  },
+  "feature_pin_to_element_note1": {
+    "message": "この機能はページの通常スクロールにのみ対応しています。ページの作りによっては、メモがうまく追従しない場合があります。"
+  },
+  "feature_pin_to_element_note2": {
+    "message": "ページの内容が更新されて構成が変わると、貼り付け先の要素が見つからなくなり、追従が解除されることがあります。"
+  },
+  "feature_pin_to_element_benefit1": {
+    "message": "画面の幅を変えてもメモが正しい位置に表示されます。"
+  },
+  "feature_pin_to_element_benefit2": {
+    "message": "ページの特定の内容に直接メモを残せるので、あとから見返すときにすぐ見つかります。"
   }
 }
