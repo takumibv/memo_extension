@@ -86,6 +86,12 @@
   "setting_about_this_app_created_by": {
     "message": "만든 사람"
   },
+  "support_this_extension": {
+    "message": "이 확장 프로그램 지원하기"
+  },
+  "support_description": {
+    "message": "이 확장 프로그램이 유용하다면 커피 한 잔 사주세요!"
+  },
   "usage01": {
     "message": "팝업 수정을 권장합니다."
   },

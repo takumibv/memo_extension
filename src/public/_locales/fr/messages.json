@@ -86,6 +86,12 @@
   "setting_about_this_app_created_by": {
     "message": "Créé par"
   },
+  "support_this_extension": {
+    "message": "Soutenir cette extension"
+  },
+  "support_description": {
+    "message": "Si cette extension vous est utile, offrez-moi un café !"
+  },
   "usage01": {
     "message": "Il est recommandé de corriger les fenêtres pop-up."
   },
