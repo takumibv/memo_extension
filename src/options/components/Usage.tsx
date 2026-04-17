@@ -55,7 +55,6 @@ const Usage = ({ isInit = false, onNavigateToMemos }: Props) => {
                 </button>
                 {t(I18N.USAGE06_2)}
               </p>
-              <img src="/images/usage/usage06.png" width="300px" alt="" className="mx-auto mt-1 max-w-md" />
             </div>
 
             {/* Feature list */}
