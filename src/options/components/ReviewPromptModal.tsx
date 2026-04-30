@@ -60,7 +60,10 @@ export const ReviewPromptModal = ({ open, onOpenChange }: Props) => {
           onOpenChange(true);
         }
       }}>
-      <DialogContent className="max-w-sm bg-white p-6">
+      <DialogContent
+        className="max-w-sm bg-white p-6"
+        onPointerDownOutside={e => e.preventDefault()}
+        onInteractOutside={e => e.preventDefault()}>
         <button
           type="button"
           onClick={() => void handleClose()}
