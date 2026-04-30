@@ -332,5 +332,29 @@
   },
   "feature_pin_to_element_benefit2": {
     "message": "Heften Sie Notizen direkt an bestimmte Inhalte an, damit Sie sie später leicht wiederfinden."
+  },
+  "review_prompt_title": {
+    "message": "How are you enjoying the extension?"
+  },
+  "review_prompt_description": {
+    "message": "Thanks for using the extension! A review or a small donation would mean a lot. 🙏"
+  },
+  "review_prompt_button_review": {
+    "message": "⭐ Leave a review"
+  },
+  "review_prompt_button_coffee": {
+    "message": "☕ Buy me a coffee"
+  },
+  "review_prompt_button_later": {
+    "message": "Maybe later"
+  },
+  "review_prompt_dont_show_again": {
+    "message": "Don't show again"
+  },
+  "review_prompt_thanks_review": {
+    "message": "Thanks for the review! 🙏"
+  },
+  "review_prompt_thanks_coffee": {
+    "message": "Thanks for the coffee! ☕💛"
   }
 }
