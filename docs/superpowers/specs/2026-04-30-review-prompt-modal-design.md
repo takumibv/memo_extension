@@ -101,6 +101,8 @@ type ReviewPromptState = {
 `src/shared/constants/links.ts`：
 
 ```ts
+export const CHROME_WEB_STORE_EXTENSION_ID = 'fjfoncfdjhdefjhknbaphionnognbnpl';
+
 export const EXTERNAL_LINKS = {
   buyMeACoffee: 'https://buymeacoffee.com/takumibv',
   twitter: 'https://x.com/takumi_bv',
@@ -110,11 +112,13 @@ export const EXTERNAL_LINKS = {
 `src/shared/utils/chromeWebStore.ts`：
 
 ```ts
+import { CHROME_WEB_STORE_EXTENSION_ID } from '@/shared/constants/links';
+
 export const getChromeWebStoreReviewUrl = (): string =>
-  `https://chrome.google.com/webstore/detail/${chrome.runtime.id}/reviews`;
+  `https://chrome.google.com/webstore/detail/${CHROME_WEB_STORE_EXTENSION_ID}/reviews`;
 ```
 
-理由：拡張機能 ID は dev / production 環境で異なる可能性があるため、`chrome.runtime.id` から動的に生成する。一方 Buy Me a Coffee と Twitter は固定値なので constants で管理。
+理由：開発時の拡張機能 ID は本番（Chrome Web Store にパブリッシュ済み）の ID と異なるため、`chrome.runtime.id` を使うと dev では存在しない／無効な URL になってしまう。本番 ID を定数として一元管理する。Buy Me a Coffee / Twitter も固定値として同じ constants に置く。
 
 `SettingsPage.tsx` の既存ハードコードもこの `EXTERNAL_LINKS` を参照する形に書き換える（小さなリファクタ）。
 
