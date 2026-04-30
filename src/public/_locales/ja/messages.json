@@ -369,5 +369,29 @@
   },
   "feature_pin_to_element_benefit2": {
     "message": "ページの特定の内容に直接メモを残せるので、あとから見返すときにすぐ見つかります。"
+  },
+  "review_prompt_title": {
+    "message": "拡張機能はいかがですか？"
+  },
+  "review_prompt_description": {
+    "message": "いつもご利用いただきありがとうございます。よろしければストアでのレビューや、開発者へのご支援をいただけると励みになります 🙏"
+  },
+  "review_prompt_button_review": {
+    "message": "⭐ ストアでレビューする"
+  },
+  "review_prompt_button_coffee": {
+    "message": "☕ コーヒーを奢る"
+  },
+  "review_prompt_button_later": {
+    "message": "あとでにする"
+  },
+  "review_prompt_dont_show_again": {
+    "message": "次回から表示しない"
+  },
+  "review_prompt_thanks_review": {
+    "message": "レビューありがとうございます！🙏"
+  },
+  "review_prompt_thanks_coffee": {
+    "message": "コーヒーをありがとうございます！☕💛"
   }
 }
