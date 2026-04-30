@@ -4,7 +4,7 @@ import { t } from '@/shared/i18n/i18n';
 import { markDismissed, markSnoozed, SNOOZE_DURATION_DAYS } from '@/shared/storages/reviewPromptStorage';
 import { getChromeWebStoreReviewUrl } from '@/shared/utils/chromeWebStore';
 import { Star, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type Props = {
   open: boolean;
@@ -15,6 +15,15 @@ export const ReviewPromptModal = ({ open, onOpenChange }: Props) => {
   const [dontShowAgain, setDontShowAgain] = useState(false);
   const [reviewedThisSession, setReviewedThisSession] = useState(false);
   const [donatedThisSession, setDonatedThisSession] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional reset when modal reopens
+      setDontShowAgain(false);
+      setReviewedThisSession(false);
+      setDonatedThisSession(false);
+    }
+  }, [open]);
 
   const handleReview = () => {
     window.open(getChromeWebStoreReviewUrl(), '_blank', 'noopener,noreferrer');
