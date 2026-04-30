@@ -7,7 +7,9 @@ import {
 } from '@/message/sender/options';
 import MemoListPage from '@/options/components/MemoListPage';
 import OptionsHeader from '@/options/components/OptionsHeader';
+import ReviewPromptModal from '@/options/components/ReviewPromptModal';
 import SettingsPage from '@/options/components/SettingsPage';
+import { shouldShowReviewPrompt } from '@/shared/storages/reviewPromptStorage';
 import { useCallback, useEffect, useState } from 'react';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
@@ -25,6 +27,7 @@ const Options = () => {
   const [selections, setSelections] = useState<Map<string, Selection>>(new Map());
   const [setting, setSetting] = useState<Setting>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [showReviewPrompt, setShowReviewPrompt] = useState(false);
 
   // Load all data
   useEffect(() => {
@@ -39,6 +42,19 @@ const Options = () => {
       })
       .finally(() => setIsLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (isLoading) return;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    shouldShowReviewPrompt(notes.length).then(should => {
+      if (should) {
+        timeoutId = setTimeout(() => setShowReviewPrompt(true), 1500);
+      }
+    });
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [isLoading, notes.length]);
 
   const handleUpdateNote = useCallback(async (note: Note) => {
     const result = await sendUpdateNote(note);
@@ -90,6 +106,7 @@ const Options = () => {
           }}
         />
       )}
+      <ReviewPromptModal open={showReviewPrompt} onOpenChange={setShowReviewPrompt} />
     </div>
   );
 };
