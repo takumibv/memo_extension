@@ -10,7 +10,7 @@ import OptionsHeader from '@/options/components/OptionsHeader';
 import ReviewPromptModal from '@/options/components/ReviewPromptModal';
 import SettingsPage from '@/options/components/SettingsPage';
 import { shouldShowReviewPrompt } from '@/shared/storages/reviewPromptStorage';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
 import type { Selection } from '@/shared/types/Selection';
@@ -28,6 +28,7 @@ const Options = () => {
   const [setting, setSetting] = useState<Setting>({});
   const [isLoading, setIsLoading] = useState(true);
   const [showReviewPrompt, setShowReviewPrompt] = useState(false);
+  const reviewCheckedRef = useRef(false);
 
   // Load all data
   useEffect(() => {
@@ -44,7 +45,8 @@ const Options = () => {
   }, []);
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || reviewCheckedRef.current) return;
+    reviewCheckedRef.current = true;
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
     shouldShowReviewPrompt(notes.length).then(should => {
       if (should) {
