@@ -115,7 +115,7 @@ export const EXTERNAL_LINKS = {
 import { CHROME_WEB_STORE_EXTENSION_ID } from '@/shared/constants/links';
 
 export const getChromeWebStoreReviewUrl = (): string =>
-  `https://chrome.google.com/webstore/detail/${CHROME_WEB_STORE_EXTENSION_ID}/reviews`;
+  `https://chrome.google.com/webstore/detail/${CHROME_WEB_STORE_EXTENSION_ID}`;
 ```
 
 理由：開発時の拡張機能 ID は本番（Chrome Web Store にパブリッシュ済み）の ID と異なるため、`chrome.runtime.id` を使うと dev では存在しない／無効な URL になってしまう。本番 ID を定数として一元管理する。Buy Me a Coffee / Twitter も固定値として同じ constants に置く。
