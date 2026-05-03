@@ -61,13 +61,13 @@ export const ReviewPromptModal = ({ open, onOpenChange }: Props) => {
         }
       }}>
       <DialogContent
-        className="max-w-sm bg-white p-6"
+        className="relative max-w-sm bg-white p-6"
         onPointerDownOutside={e => e.preventDefault()}
         onInteractOutside={e => e.preventDefault()}>
         <button
           type="button"
           onClick={() => void handleClose()}
-          className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+          className="absolute right-2 top-2 rounded-md p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
           aria-label="Close">
           <X className="h-4 w-4" />
         </button>
