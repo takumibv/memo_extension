@@ -1,9 +1,9 @@
+import { BuyMeCoffeeButton } from '@/shared/components/BuyMeCoffeeButton';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/shared/components/ui/Dialog';
-import { EXTERNAL_LINKS } from '@/shared/constants/links';
+import { EXTERNAL_LINKS, openExternalLink } from '@/shared/constants/links';
 import { t } from '@/shared/i18n/i18n';
 import { markDismissed, markSnoozed, SNOOZE_DURATION_DAYS } from '@/shared/storages/reviewPromptStorage';
-import { getChromeWebStoreReviewUrl } from '@/shared/utils/chromeWebStore';
-import { Coffee, Star, X } from 'lucide-react';
+import { Star, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 type Props = {
@@ -26,13 +26,12 @@ export const ReviewPromptModal = ({ open, onOpenChange }: Props) => {
   }, [open]);
 
   const handleReview = () => {
-    window.open(getChromeWebStoreReviewUrl(), '_blank', 'noopener,noreferrer');
+    openExternalLink(EXTERNAL_LINKS.chromeWebStoreReview);
     setReviewedThisSession(true);
     setDontShowAgain(true);
   };
 
-  const handleCoffee = () => {
-    window.open(EXTERNAL_LINKS.buyMeACoffee, '_blank', 'noopener,noreferrer');
+  const handleCoffeeClick = () => {
     setDonatedThisSession(true);
     setDontShowAgain(true);
   };
@@ -54,11 +53,7 @@ export const ReviewPromptModal = ({ open, onOpenChange }: Props) => {
     <Dialog
       open={open}
       onOpenChange={next => {
-        if (!next) {
-          void handleClose();
-        } else {
-          onOpenChange(true);
-        }
+        if (!next) void handleClose();
       }}>
       <DialogContent
         className="relative max-w-sm bg-white p-6"
@@ -90,13 +85,13 @@ export const ReviewPromptModal = ({ open, onOpenChange }: Props) => {
           </button>
           {reviewedThisSession && <p className="text-xs text-gray-500">{t('review_prompt_thanks_review')}</p>}
 
-          <button
-            type="button"
-            onClick={handleCoffee}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#FFDD00] px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-[#FFCA00]">
-            <Coffee className="h-4 w-4" />
-            <span>{t('review_prompt_button_coffee')}</span>
-          </button>
+          <BuyMeCoffeeButton
+            label={t('review_prompt_button_coffee')}
+            size="sm"
+            fullWidth
+            asButton
+            onClick={handleCoffeeClick}
+          />
           {donatedThisSession && <p className="text-xs text-gray-500">{t('review_prompt_thanks_coffee')}</p>}
         </div>
 
