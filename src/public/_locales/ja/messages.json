@@ -374,24 +374,24 @@
     "message": "拡張機能はいかがですか？"
   },
   "review_prompt_description": {
-    "message": "いつもご利用いただきありがとうございます。よろしければストアでのレビューや、開発者へのご支援をいただけると励みになります 🙏"
+    "message": "いつもご利用いただきありがとうございます。よろしければストアでのレビューや、開発者へのご支援をいただけると励みになります。"
   },
   "review_prompt_button_review": {
-    "message": "⭐ ストアでレビューする"
+    "message": "ストアでレビューする"
   },
   "review_prompt_button_coffee": {
-    "message": "☕ コーヒーを奢る"
+    "message": "コーヒーを奢る"
   },
   "review_prompt_button_later": {
-    "message": "あとでにする"
+    "message": "あとで見る"
   },
   "review_prompt_dont_show_again": {
     "message": "次回から表示しない"
   },
   "review_prompt_thanks_review": {
-    "message": "レビューありがとうございます！🙏"
+    "message": "ありがとうございます！"
   },
   "review_prompt_thanks_coffee": {
-    "message": "コーヒーをありがとうございます！☕💛"
+    "message": "ありがとうございます！"
   }
 }

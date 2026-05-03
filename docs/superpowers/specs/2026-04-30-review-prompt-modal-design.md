@@ -129,13 +129,13 @@ export const getChromeWebStoreReviewUrl = (): string =>
 | キー                                  | ja                                                                                  | en                                                                                                |
 | ------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | `review_prompt_title`                 | 拡張機能はいかがですか？                                                            | How are you enjoying the extension?                                                              |
-| `review_prompt_description`           | いつもご利用いただきありがとうございます。よろしければストアでのレビューや、開発者へのご支援をいただけると励みになります 🙏 | Thanks for using the extension! A review or a small donation would mean a lot. 🙏                |
-| `review_prompt_button_review`         | ⭐ ストアでレビューする                                                              | ⭐ Leave a review                                                                                  |
-| `review_prompt_button_coffee`         | ☕ コーヒーを奢る                                                                    | ☕ Buy me a coffee                                                                                 |
-| `review_prompt_button_later`          | あとでにする                                                                         | Maybe later                                                                                      |
+| `review_prompt_description`           | いつもご利用いただきありがとうございます。よろしければストアでのレビューや、開発者へのご支援をいただけると励みになります。 | Thanks for using the extension! A review or a small donation would mean a lot.                  |
+| `review_prompt_button_review`         | ストアでレビューする                                                                | Leave a review                                                                                    |
+| `review_prompt_button_coffee`         | コーヒーを奢る                                                                       | Buy me a coffee                                                                                  |
+| `review_prompt_button_later`          | あとで見る                                                                           | Show me later                                                                                    |
 | `review_prompt_dont_show_again`       | 次回から表示しない                                                                   | Don't show again                                                                                 |
-| `review_prompt_thanks_review`         | レビューありがとうございます！🙏                                                     | Thanks for the review! 🙏                                                                         |
-| `review_prompt_thanks_coffee`         | コーヒーをありがとうございます！☕💛                                                  | Thanks for the coffee! ☕💛                                                                       |
+| `review_prompt_thanks_review`         | ありがとうございます！                                                              | Thank you!                                                                                       |
+| `review_prompt_thanks_coffee`         | ありがとうございます！                                                              | Thank you!                                                                                       |
 
 ## UI 仕様
 

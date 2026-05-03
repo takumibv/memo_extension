@@ -3,7 +3,7 @@ import { EXTERNAL_LINKS } from '@/shared/constants/links';
 import { t } from '@/shared/i18n/i18n';
 import { markDismissed, markSnoozed, SNOOZE_DURATION_DAYS } from '@/shared/storages/reviewPromptStorage';
 import { getChromeWebStoreReviewUrl } from '@/shared/utils/chromeWebStore';
-import { Star, X } from 'lucide-react';
+import { Coffee, Star, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 type Props = {
@@ -93,8 +93,9 @@ export const ReviewPromptModal = ({ open, onOpenChange }: Props) => {
           <button
             type="button"
             onClick={handleCoffee}
-            className="w-full rounded-md bg-[#FFDD00] px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-[#FFCA00]">
-            {t('review_prompt_button_coffee')}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-[#FFDD00] px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-[#FFCA00]">
+            <Coffee className="h-4 w-4" />
+            <span>{t('review_prompt_button_coffee')}</span>
           </button>
           {donatedThisSession && <p className="text-xs text-gray-500">{t('review_prompt_thanks_coffee')}</p>}
         </div>
