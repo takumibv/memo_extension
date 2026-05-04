@@ -379,6 +379,12 @@
   "shortcut_open_chrome_settings_msg": {
     "message": "Open Chrome shortcut settings"
   },
+  "shortcut_current_assignment_msg": {
+    "message": "Current assignment"
+  },
+  "shortcut_not_set_msg": {
+    "message": "Not set"
+  },
   "shortcut_reserved_keys_notice_msg": {
     "message": "The shortcut does not work on Chrome internal pages (chrome://, New Tab, Web Store). Some key combinations are reserved by Chrome or your OS and cannot be used."
   },

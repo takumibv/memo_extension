@@ -342,6 +342,12 @@
   "shortcut_open_chrome_settings_msg": {
     "message": "打开 Chrome 快捷键设置"
   },
+  "shortcut_current_assignment_msg": {
+    "message": "当前分配"
+  },
+  "shortcut_not_set_msg": {
+    "message": "未设置"
+  },
   "shortcut_reserved_keys_notice_msg": {
     "message": "快捷键在 Chrome 的内部页面（chrome://、新标签页、Web Store）上无效。某些组合被 Chrome 或操作系统保留，无法使用。"
   },

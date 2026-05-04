@@ -379,6 +379,12 @@
   "shortcut_open_chrome_settings_msg": {
     "message": "Chromeのショートカット設定を開く"
   },
+  "shortcut_current_assignment_msg": {
+    "message": "現在の割り当て"
+  },
+  "shortcut_not_set_msg": {
+    "message": "未設定"
+  },
   "shortcut_reserved_keys_notice_msg": {
     "message": "Chromeの内部ページ（chrome://、新しいタブ、Web Store）ではショートカットは動作しません。ChromeやOSによって予約されているキーの組み合わせは使用できません。"
   },

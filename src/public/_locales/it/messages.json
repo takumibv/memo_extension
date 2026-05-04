@@ -342,6 +342,12 @@
   "shortcut_open_chrome_settings_msg": {
     "message": "Apri le impostazioni delle scorciatoie di Chrome"
   },
+  "shortcut_current_assignment_msg": {
+    "message": "Assegnazione corrente"
+  },
+  "shortcut_not_set_msg": {
+    "message": "Non impostata"
+  },
   "shortcut_reserved_keys_notice_msg": {
     "message": "La scorciatoia non funziona sulle pagine interne di Chrome (chrome://, Nuova scheda, Web Store). Alcune combinazioni sono riservate da Chrome o dal sistema operativo e non possono essere utilizzate."
   },

@@ -342,6 +342,12 @@
   "shortcut_open_chrome_settings_msg": {
     "message": "Ouvrir les paramètres de raccourcis de Chrome"
   },
+  "shortcut_current_assignment_msg": {
+    "message": "Affectation actuelle"
+  },
+  "shortcut_not_set_msg": {
+    "message": "Non défini"
+  },
   "shortcut_reserved_keys_notice_msg": {
     "message": "Le raccourci ne fonctionne pas sur les pages internes de Chrome (chrome://, Nouvel onglet, Web Store). Certaines combinaisons sont réservées par Chrome ou le système d'exploitation et ne peuvent pas être utilisées."
   },

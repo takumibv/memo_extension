@@ -3,7 +3,7 @@ import { ColorPicker } from '@/shared/components/ColorPicker';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { getAllStorage, setStorage, removeStorage } from '@/shared/storages/common';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Coffee,
   Download,
@@ -31,8 +31,23 @@ type ImportMode = 'overwrite' | 'merge';
 
 const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavigateToMemos }: Props) => {
   const [showImportDialog, setShowImportDialog] = useState(false);
+  const [createNoteShortcut, setCreateNoteShortcut] = useState<string>('');
   const pendingFileRef = useRef<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // chrome://extensions/shortcuts から戻ったときに最新の割り当てを反映するため、
+  // マウント時 + ウィンドウフォーカス時に再取得する
+  useEffect(() => {
+    const refresh = () => {
+      chrome.commands.getAll(commands => {
+        const cmd = commands.find(c => c.name === 'create-note');
+        setCreateNoteShortcut(cmd?.shortcut ?? '');
+      });
+    };
+    refresh();
+    window.addEventListener('focus', refresh);
+    return () => window.removeEventListener('focus', refresh);
+  }, []);
 
   const handleDownload = (content: string, contentType: string, fileType: string) => {
     const date = new Date();
@@ -214,6 +229,16 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
       <section className="mb-8">
         <h2 className="mb-2 text-lg font-semibold text-gray-800">{t('shortcut_create_note_title_msg')}</h2>
         <p className="mb-4 text-sm text-gray-500">{t('shortcut_create_note_description_msg')}</p>
+        <div className="mb-3 flex items-center gap-2 text-sm">
+          <span className="text-gray-500">{t('shortcut_current_assignment_msg')}:</span>
+          {createNoteShortcut ? (
+            <kbd className="rounded border border-gray-300 bg-gray-50 px-2 py-0.5 font-mono text-xs text-gray-800">
+              {createNoteShortcut}
+            </kbd>
+          ) : (
+            <span className="text-gray-400">{t('shortcut_not_set_msg')}</span>
+          )}
+        </div>
         <button
           type="button"
           onClick={() => chrome.tabs.create({ url: 'chrome://extensions/shortcuts' })}

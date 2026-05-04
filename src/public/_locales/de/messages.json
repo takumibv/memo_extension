@@ -342,6 +342,12 @@
   "shortcut_open_chrome_settings_msg": {
     "message": "Chrome-Kürzeleinstellungen öffnen"
   },
+  "shortcut_current_assignment_msg": {
+    "message": "Aktuelle Zuweisung"
+  },
+  "shortcut_not_set_msg": {
+    "message": "Nicht festgelegt"
+  },
   "shortcut_reserved_keys_notice_msg": {
     "message": "Das Kürzel funktioniert nicht auf internen Chrome-Seiten (chrome://, Neuer Tab, Web Store). Einige Tastenkombinationen sind von Chrome oder dem Betriebssystem reserviert und können nicht verwendet werden."
   },

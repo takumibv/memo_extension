@@ -342,6 +342,12 @@
   "shortcut_open_chrome_settings_msg": {
     "message": "Chrome 단축키 설정 열기"
   },
+  "shortcut_current_assignment_msg": {
+    "message": "현재 할당"
+  },
+  "shortcut_not_set_msg": {
+    "message": "설정되지 않음"
+  },
   "shortcut_reserved_keys_notice_msg": {
     "message": "Chrome 내부 페이지(chrome://, 새 탭, 웹 스토어)에서는 단축키가 작동하지 않습니다. Chrome 또는 운영 체제에서 예약된 일부 키 조합은 사용할 수 없습니다."
   },
