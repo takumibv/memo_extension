@@ -333,11 +333,11 @@
   "feature_pin_to_element_benefit2": {
     "message": "특정 콘텐츠에 직접 노트를 고정하여 나중에 쉽게 찾을 수 있습니다."
   },
-  "shortcut_create_note_title_msg": {
-    "message": "메모 생성 단축키"
+  "shortcut_section_title_msg": {
+    "message": "키보드 단축키"
   },
-  "shortcut_create_note_description_msg": {
-    "message": "Chrome의 키보드 단축키 설정 페이지를 열고 현재 페이지에 메모를 생성하는 키 조합을 할당합니다. 기본값은 설정되어 있지 않습니다."
+  "shortcut_section_description_msg": {
+    "message": "Chrome의 키보드 단축키 설정 페이지를 열고 확장 프로그램 명령에 키를 할당합니다. 기본값은 어느 것도 설정되어 있지 않습니다."
   },
   "shortcut_open_chrome_settings_msg": {
     "message": "Chrome 단축키 설정 열기"
@@ -347,6 +347,9 @@
   },
   "shortcut_not_set_msg": {
     "message": "설정되지 않음"
+  },
+  "shortcut_command_create_note_msg": {
+    "message": "메모 생성"
   },
   "shortcut_reserved_keys_notice_msg": {
     "message": "Chrome 내부 페이지(chrome://, 새 탭, 웹 스토어)에서는 단축키가 작동하지 않습니다. Chrome 또는 운영 체제에서 예약된 일부 키 조합은 사용할 수 없습니다."

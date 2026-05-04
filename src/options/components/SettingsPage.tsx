@@ -60,9 +60,18 @@ const splitShortcut = (shortcut: string): string[] => {
   return tokens;
 };
 
+/**
+ * Options 画面に表示するコマンドラベルの i18n キーマップ。
+ * 新しいコマンドを manifest に追加したらここに追記する。
+ * 一覧に無いコマンド (例: wxt 開発時の reload-extension) は表示しない。
+ */
+const COMMAND_LABEL_KEYS: Record<string, string> = {
+  'create-note': 'shortcut_command_create_note_msg',
+};
+
 const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavigateToMemos }: Props) => {
   const [showImportDialog, setShowImportDialog] = useState(false);
-  const [createNoteShortcut, setCreateNoteShortcut] = useState<string>('');
+  const [shortcutCommands, setShortcutCommands] = useState<chrome.commands.Command[]>([]);
   const pendingFileRef = useRef<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -71,8 +80,7 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
   useEffect(() => {
     const refresh = () => {
       chrome.commands.getAll(commands => {
-        const cmd = commands.find(c => c.name === 'create-note');
-        setCreateNoteShortcut(cmd?.shortcut ?? '');
+        setShortcutCommands(commands.filter(c => c.name !== undefined && c.name in COMMAND_LABEL_KEYS));
       });
     };
     refresh();
@@ -256,30 +264,40 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
         <ColorPicker color={setting.default_color} onChangeColor={onUpdateDefaultColor} />
       </section>
 
-      {/* Shortcut to create memo */}
+      {/* Keyboard shortcuts */}
       <section className="mb-8">
-        <h2 className="mb-2 text-lg font-semibold text-gray-800">{t('shortcut_create_note_title_msg')}</h2>
-        <p className="mb-4 text-sm text-gray-500">{t('shortcut_create_note_description_msg')}</p>
-        <div className="mb-3 flex items-center gap-2 text-sm">
-          <span className="text-gray-500">{t('shortcut_current_assignment_msg')}:</span>
-          {createNoteShortcut ? (
-            <kbd className="inline-flex items-center gap-2 rounded border border-gray-300 bg-gray-50 px-2 py-0.5 font-sans text-xs text-gray-800">
-              {splitShortcut(createNoteShortcut).map((token, i) => (
-                <span key={i}>{token}</span>
-              ))}
-            </kbd>
-          ) : (
-            <span className="text-gray-400">{t('shortcut_not_set_msg')}</span>
-          )}
-        </div>
+        <h2 className="mb-2 text-lg font-semibold text-gray-800">{t('shortcut_section_title_msg')}</h2>
+        <p className="mb-4 text-sm text-gray-500">{t('shortcut_section_description_msg')}</p>
         <button
           type="button"
           onClick={() => chrome.tabs.create({ url: 'chrome://extensions/shortcuts' })}
-          className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+          className="mb-4 inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
           <Keyboard className="h-4 w-4" />
           {t('shortcut_open_chrome_settings_msg')}
           <ExternalLink className="h-3.5 w-3.5 text-gray-400" />
         </button>
+
+        <h3 className="mb-2 text-sm font-medium text-gray-700">{t('shortcut_current_assignment_msg')}</h3>
+        <ul className="divide-y divide-gray-200 rounded-lg border border-gray-200 bg-white">
+          {shortcutCommands.map(cmd => {
+            const labelKey = cmd.name ? COMMAND_LABEL_KEYS[cmd.name] : undefined;
+            return (
+              <li key={cmd.name} className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm">
+                <span className="text-gray-700">{labelKey ? t(labelKey) : cmd.name}</span>
+                {cmd.shortcut ? (
+                  <kbd className="inline-flex items-center gap-2 rounded border border-gray-300 bg-gray-50 px-2 py-0.5 font-sans text-xs text-gray-800">
+                    {splitShortcut(cmd.shortcut).map((token, i) => (
+                      <span key={i}>{token}</span>
+                    ))}
+                  </kbd>
+                ) : (
+                  <span className="text-xs text-gray-400">{t('shortcut_not_set_msg')}</span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+
         <p className="mt-3 flex items-start gap-1.5 text-xs text-gray-400">
           <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-400" />
           {t('shortcut_reserved_keys_notice_msg')}

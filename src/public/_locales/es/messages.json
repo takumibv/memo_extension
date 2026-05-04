@@ -333,20 +333,23 @@
   "feature_pin_to_element_benefit2": {
     "message": "Fija notas directamente a contenido específico, facilitando encontrarlas después."
   },
-  "shortcut_create_note_title_msg": {
-    "message": "Atajo para crear memo"
+  "shortcut_section_title_msg": {
+    "message": "Atajos de teclado"
   },
-  "shortcut_create_note_description_msg": {
-    "message": "Abre la página de atajos de teclado de Chrome para asignar una combinación que cree una nueva nota en la página actual. No hay atajo asignado por defecto."
+  "shortcut_section_description_msg": {
+    "message": "Abre la página de atajos de teclado de Chrome para asignar teclas a los comandos de la extensión. Por defecto no hay atajos asignados."
   },
   "shortcut_open_chrome_settings_msg": {
     "message": "Abrir la configuración de atajos de Chrome"
   },
   "shortcut_current_assignment_msg": {
-    "message": "Asignación actual"
+    "message": "Asignaciones actuales"
   },
   "shortcut_not_set_msg": {
     "message": "No asignado"
+  },
+  "shortcut_command_create_note_msg": {
+    "message": "Crear nota"
   },
   "shortcut_reserved_keys_notice_msg": {
     "message": "El atajo no funciona en las páginas internas de Chrome (chrome://, nueva pestaña, Web Store). Algunas combinaciones están reservadas por Chrome o el sistema operativo y no pueden usarse."

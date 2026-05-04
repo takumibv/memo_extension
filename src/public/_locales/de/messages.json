@@ -333,20 +333,23 @@
   "feature_pin_to_element_benefit2": {
     "message": "Heften Sie Notizen direkt an bestimmte Inhalte an, damit Sie sie später leicht wiederfinden."
   },
-  "shortcut_create_note_title_msg": {
-    "message": "Tastenkürzel zum Erstellen einer Notiz"
+  "shortcut_section_title_msg": {
+    "message": "Tastenkürzel"
   },
-  "shortcut_create_note_description_msg": {
-    "message": "Öffnen Sie die Tastenkürzel-Seite von Chrome, um eine Tastenkombination zuzuweisen, die eine neue Notiz auf der aktuellen Seite erstellt. Standardmäßig ist kein Kürzel festgelegt."
+  "shortcut_section_description_msg": {
+    "message": "Öffnen Sie die Tastenkürzel-Seite von Chrome, um den Erweiterungsbefehlen Tasten zuzuweisen. Standardmäßig sind keine Kürzel festgelegt."
   },
   "shortcut_open_chrome_settings_msg": {
     "message": "Chrome-Kürzeleinstellungen öffnen"
   },
   "shortcut_current_assignment_msg": {
-    "message": "Aktuelle Zuweisung"
+    "message": "Aktuelle Zuweisungen"
   },
   "shortcut_not_set_msg": {
     "message": "Nicht festgelegt"
+  },
+  "shortcut_command_create_note_msg": {
+    "message": "Notiz erstellen"
   },
   "shortcut_reserved_keys_notice_msg": {
     "message": "Das Kürzel funktioniert nicht auf internen Chrome-Seiten (chrome://, Neuer Tab, Web Store). Einige Tastenkombinationen sind von Chrome oder dem Betriebssystem reserviert und können nicht verwendet werden."

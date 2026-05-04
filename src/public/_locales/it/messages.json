@@ -333,20 +333,23 @@
   "feature_pin_to_element_benefit2": {
     "message": "Fissa le note direttamente a contenuti specifici, rendendole facili da ritrovare in seguito."
   },
-  "shortcut_create_note_title_msg": {
-    "message": "Scorciatoia per creare una nota"
+  "shortcut_section_title_msg": {
+    "message": "Scorciatoie da tastiera"
   },
-  "shortcut_create_note_description_msg": {
-    "message": "Apri la pagina delle scorciatoie da tastiera di Chrome per assegnare una combinazione di tasti che crei una nuova nota sulla pagina corrente. Nessuna scorciatoia è impostata per impostazione predefinita."
+  "shortcut_section_description_msg": {
+    "message": "Apri la pagina delle scorciatoie da tastiera di Chrome per assegnare i tasti ai comandi dell'estensione. Per impostazione predefinita non è impostata alcuna scorciatoia."
   },
   "shortcut_open_chrome_settings_msg": {
     "message": "Apri le impostazioni delle scorciatoie di Chrome"
   },
   "shortcut_current_assignment_msg": {
-    "message": "Assegnazione corrente"
+    "message": "Assegnazioni correnti"
   },
   "shortcut_not_set_msg": {
     "message": "Non impostata"
+  },
+  "shortcut_command_create_note_msg": {
+    "message": "Crea nota"
   },
   "shortcut_reserved_keys_notice_msg": {
     "message": "La scorciatoia non funziona sulle pagine interne di Chrome (chrome://, Nuova scheda, Web Store). Alcune combinazioni sono riservate da Chrome o dal sistema operativo e non possono essere utilizzate."
