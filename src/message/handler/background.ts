@@ -1,5 +1,5 @@
 import * as actions from '@/background/actions';
-import { activateInspector, setupIsVisible, setupPage } from '@/message/sender/background';
+import { activateInspector, broadcastSetting, setupIsVisible, setupPage } from '@/message/sender/background';
 import { isToBackgroundMessage } from '@/message/types';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
@@ -238,6 +238,30 @@ const handleContentMessage = async (
 
       return { notes };
     }
+    case 'content:createNote': {
+      const { url } = message.payload;
+      const notes = await actions.createNote(url);
+
+      // 同URLを開いている全タブのバッジ・ノートを更新 (content:updateNote と同じパターン)
+      chrome.tabs
+        .query({ url, currentWindow: true })
+        .then(tabs => {
+          tabs.forEach(tab => {
+            if (tab.id) {
+              actions.setBadgeText(tab.id, notes.length);
+              actions
+                .getSetting()
+                .then(setting => {
+                  setupPage(tab.id!, url, notes, setting).catch(() => {});
+                })
+                .catch(() => {});
+            }
+          });
+        })
+        .catch(() => {});
+
+      return { notes };
+    }
   }
 };
 
@@ -272,6 +296,12 @@ const handleOptionsMessage = async (
     }
     case 'options:updateDefaultColor': {
       const setting = await actions.setDefaultColor(message.payload.color);
+      return { setting };
+    }
+    case 'options:updateShortcutCreateNote': {
+      const setting = await actions.setShortcutCreateNote(message.payload.shortcut);
+      // 開いている全タブに即時反映 (fire-and-forget)
+      broadcastSetting(setting);
       return { setting };
     }
   }

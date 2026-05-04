@@ -15,3 +15,6 @@ export const sendFetchSetting = () => sendToBackground({ type: 'options:getSetti
 
 export const sendUpdateDefaultColor = (color: string) =>
   sendToBackground({ type: 'options:updateDefaultColor', payload: { color } });
+
+export const sendUpdateShortcutCreateNote = (shortcut: string) =>
+  sendToBackground({ type: 'options:updateShortcutCreateNote', payload: { shortcut } });
