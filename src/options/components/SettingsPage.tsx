@@ -1,3 +1,4 @@
+import ShortcutInput from '@/options/components/ShortcutInput';
 import Usage from '@/options/components/Usage';
 import { ColorPicker } from '@/shared/components/ColorPicker';
 import { t } from '@/shared/i18n/i18n';
@@ -14,12 +15,20 @@ type Props = {
   pageInfos: PageInfo[];
   setting: Setting;
   onUpdateDefaultColor: (color: string) => Promise<void>;
+  onUpdateShortcutCreateNote: (shortcut: string) => Promise<void>;
   onNavigateToMemos?: () => void;
 };
 
 type ImportMode = 'overwrite' | 'merge';
 
-const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavigateToMemos }: Props) => {
+const SettingsPage = ({
+  notes,
+  pageInfos,
+  setting,
+  onUpdateDefaultColor,
+  onUpdateShortcutCreateNote,
+  onNavigateToMemos,
+}: Props) => {
   const [showImportDialog, setShowImportDialog] = useState(false);
   const pendingFileRef = useRef<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -198,6 +207,17 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
         <h2 className="mb-2 text-lg font-semibold text-gray-800">{t(I18N.DEFAULT_COLOR)}</h2>
         <p className="mb-4 text-sm text-gray-500">{t(I18N.DEFAULT_COLOR_DESCRIPTION)}</p>
         <ColorPicker color={setting.default_color} onChangeColor={onUpdateDefaultColor} />
+      </section>
+
+      {/* Shortcut to create memo */}
+      <section className="mb-8">
+        <h2 className="mb-2 text-lg font-semibold text-gray-800">{t('shortcut_create_note_title_msg')}</h2>
+        <p className="mb-4 text-sm text-gray-500">{t('shortcut_create_note_description_msg')}</p>
+        <ShortcutInput value={setting.shortcut_create_note ?? ''} onChange={onUpdateShortcutCreateNote} />
+        <p className="mt-3 flex items-start gap-1.5 text-xs text-gray-400">
+          <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-400" />
+          {t('shortcut_reserved_keys_notice_msg')}
+        </p>
       </section>
 
       {/* Usage */}
