@@ -369,5 +369,23 @@
   },
   "feature_pin_to_element_benefit2": {
     "message": "ページの特定の内容に直接メモを残せるので、あとから見返すときにすぐ見つかります。"
+  },
+  "shortcut_create_note_title_msg": {
+    "message": "メモ作成のショートカットキー"
+  },
+  "shortcut_create_note_description_msg": {
+    "message": "任意のページで素早くメモを作成するキーボードショートカットを設定します。デフォルトはOFFです。"
+  },
+  "shortcut_placeholder_msg": {
+    "message": "クリックしてキーを記録"
+  },
+  "shortcut_recording_msg": {
+    "message": "キーを押してください..."
+  },
+  "shortcut_clear_msg": {
+    "message": "クリア"
+  },
+  "shortcut_reserved_keys_notice_msg": {
+    "message": "ChromeやOSで予約されているキーの組み合わせ（例：Ctrl+T、Ctrl+W）はそちらが優先されます。動作しない場合は別の組み合わせをお試しください。"
   }
 }

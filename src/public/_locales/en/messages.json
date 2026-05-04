@@ -369,5 +369,23 @@
   },
   "feature_pin_to_element_benefit2": {
     "message": "Pin notes directly to specific content, making them easy to find later."
+  },
+  "shortcut_create_note_title_msg": {
+    "message": "Shortcut to Create Memo"
+  },
+  "shortcut_create_note_description_msg": {
+    "message": "Set a keyboard shortcut to quickly create a new note on any page. Default is OFF."
+  },
+  "shortcut_placeholder_msg": {
+    "message": "Click to record shortcut"
+  },
+  "shortcut_recording_msg": {
+    "message": "Press keys..."
+  },
+  "shortcut_clear_msg": {
+    "message": "Clear"
+  },
+  "shortcut_reserved_keys_notice_msg": {
+    "message": "Some key combinations are reserved by Chrome or your OS (e.g. Ctrl+T, Ctrl+W) and will take precedence. If your shortcut doesn't work, try a different combination."
   }
 }

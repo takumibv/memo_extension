@@ -332,5 +332,23 @@
   },
   "feature_pin_to_element_benefit2": {
     "message": "Épinglez des notes directement sur un contenu spécifique pour les retrouver facilement plus tard."
+  },
+  "shortcut_create_note_title_msg": {
+    "message": "Raccourci pour créer une note"
+  },
+  "shortcut_create_note_description_msg": {
+    "message": "Définissez un raccourci clavier pour créer rapidement une nouvelle note sur n'importe quelle page. Désactivé par défaut."
+  },
+  "shortcut_placeholder_msg": {
+    "message": "Cliquez pour enregistrer le raccourci"
+  },
+  "shortcut_recording_msg": {
+    "message": "Appuyez sur les touches..."
+  },
+  "shortcut_clear_msg": {
+    "message": "Effacer"
+  },
+  "shortcut_reserved_keys_notice_msg": {
+    "message": "Certaines combinaisons sont réservées par Chrome ou le système d'exploitation (par exemple Ctrl+T, Ctrl+W) et auront la priorité. Si votre raccourci ne fonctionne pas, essayez une autre combinaison."
   }
 }

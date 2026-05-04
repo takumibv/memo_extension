@@ -332,5 +332,23 @@
   },
   "feature_pin_to_element_benefit2": {
     "message": "Fija notas directamente a contenido específico, facilitando encontrarlas después."
+  },
+  "shortcut_create_note_title_msg": {
+    "message": "Atajo para crear memo"
+  },
+  "shortcut_create_note_description_msg": {
+    "message": "Establece un atajo de teclado para crear rápidamente una nueva nota en cualquier página. Desactivado por defecto."
+  },
+  "shortcut_placeholder_msg": {
+    "message": "Haz clic para registrar el atajo"
+  },
+  "shortcut_recording_msg": {
+    "message": "Presiona las teclas..."
+  },
+  "shortcut_clear_msg": {
+    "message": "Borrar"
+  },
+  "shortcut_reserved_keys_notice_msg": {
+    "message": "Algunas combinaciones están reservadas por Chrome o el sistema operativo (p. ej., Ctrl+T, Ctrl+W) y tendrán prioridad. Si tu atajo no funciona, prueba con otra combinación."
   }
 }

@@ -332,5 +332,23 @@
   },
   "feature_pin_to_element_benefit2": {
     "message": "Fissa le note direttamente a contenuti specifici, rendendole facili da ritrovare in seguito."
+  },
+  "shortcut_create_note_title_msg": {
+    "message": "Scorciatoia per creare una nota"
+  },
+  "shortcut_create_note_description_msg": {
+    "message": "Imposta una scorciatoia da tastiera per creare rapidamente una nuova nota su qualsiasi pagina. Disattivata per impostazione predefinita."
+  },
+  "shortcut_placeholder_msg": {
+    "message": "Fai clic per registrare la scorciatoia"
+  },
+  "shortcut_recording_msg": {
+    "message": "Premi i tasti..."
+  },
+  "shortcut_clear_msg": {
+    "message": "Cancella"
+  },
+  "shortcut_reserved_keys_notice_msg": {
+    "message": "Alcune combinazioni sono riservate da Chrome o dal sistema operativo (ad es. Ctrl+T, Ctrl+W) e avranno la precedenza. Se la tua scorciatoia non funziona, prova un'altra combinazione."
   }
 }

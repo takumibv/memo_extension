@@ -332,5 +332,23 @@
   },
   "feature_pin_to_element_benefit2": {
     "message": "Heften Sie Notizen direkt an bestimmte Inhalte an, damit Sie sie später leicht wiederfinden."
+  },
+  "shortcut_create_note_title_msg": {
+    "message": "Tastenkürzel zum Erstellen einer Notiz"
+  },
+  "shortcut_create_note_description_msg": {
+    "message": "Legen Sie ein Tastenkürzel fest, um auf jeder Seite schnell eine neue Notiz zu erstellen. Standardmäßig deaktiviert."
+  },
+  "shortcut_placeholder_msg": {
+    "message": "Klicken, um Tastenkürzel aufzuzeichnen"
+  },
+  "shortcut_recording_msg": {
+    "message": "Tasten drücken..."
+  },
+  "shortcut_clear_msg": {
+    "message": "Löschen"
+  },
+  "shortcut_reserved_keys_notice_msg": {
+    "message": "Einige Tastenkombinationen sind von Chrome oder dem Betriebssystem reserviert (z. B. Ctrl+T, Ctrl+W) und haben Vorrang. Falls Ihr Kürzel nicht funktioniert, versuchen Sie eine andere Kombination."
   }
 }

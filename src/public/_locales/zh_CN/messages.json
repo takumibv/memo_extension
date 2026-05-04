@@ -332,5 +332,23 @@
   },
   "feature_pin_to_element_benefit2": {
     "message": "将笔记直接固定到特定内容上，方便日后查找。"
+  },
+  "shortcut_create_note_title_msg": {
+    "message": "创建备忘录的快捷键"
+  },
+  "shortcut_create_note_description_msg": {
+    "message": "设置一个按键组合，以便在任意页面快速创建新备注。默认关闭。"
+  },
+  "shortcut_placeholder_msg": {
+    "message": "点击以录制快捷键"
+  },
+  "shortcut_recording_msg": {
+    "message": "请按下按键..."
+  },
+  "shortcut_clear_msg": {
+    "message": "清除"
+  },
+  "shortcut_reserved_keys_notice_msg": {
+    "message": "某些组合被 Chrome 或操作系统保留（例如 Ctrl+T、Ctrl+W），将优先生效。如果快捷键无法触发，请尝试其他组合。"
   }
 }
