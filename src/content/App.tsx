@@ -1,5 +1,6 @@
 import StickyNote from '@/content/components/StickyNote/StickyNote';
 import { useElementPicker } from '@/content/hooks/useElementPicker';
+import { useShortcutCreateNote } from '@/content/hooks/useShortcutCreateNote';
 import { getXPathForElement } from '@/content/utils/xpath';
 import { registerContentHandler, unregisterContentHandler, getLastContextMenuPosition } from '@/entrypoints/content';
 import {
@@ -7,6 +8,7 @@ import {
   sendDeleteNote,
   sendCreatePinnedNote,
   sendAttachSelection,
+  sendCreateNote,
 } from '@/message/sender/contentScript';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
@@ -17,11 +19,13 @@ import type { Selection } from '@/shared/types/Selection';
 
 type Props = {
   portalContainer?: HTMLElement;
+  rootElement?: HTMLElement | null;
 };
 
-const ContentApp: React.FC<Props> = ({ portalContainer }) => {
+const ContentApp: React.FC<Props> = ({ portalContainer, rootElement = null }) => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [defaultColor, setDefaultColor] = useState<string>();
+  const [shortcutCreateNote, setShortcutCreateNote] = useState<string>('');
   const [selections, setSelections] = useState<Map<string, Selection>>(new Map());
   const [isPickerActive, setIsPickerActive] = useState(false);
   // null = create new note, number = attach to existing note
@@ -63,9 +67,14 @@ const ContentApp: React.FC<Props> = ({ portalContainer }) => {
             setSelections(new Map(msg.payload.selections.map(s => [s.id, s])));
           }
           if (msg.payload.defaultColor) setDefaultColor(msg.payload.defaultColor);
+          if (msg.payload.shortcutCreateNote !== undefined) setShortcutCreateNote(msg.payload.shortcutCreateNote);
           break;
         case 'bg:setVisibility':
           // TODO: handle visibility toggle
+          break;
+        case 'bg:updateSetting':
+          if (msg.payload.defaultColor !== undefined) setDefaultColor(msg.payload.defaultColor);
+          if (msg.payload.shortcutCreateNote !== undefined) setShortcutCreateNote(msg.payload.shortcutCreateNote);
           break;
         case 'bg:activateInspector':
           pickerTargetNoteIdRef.current = null;
@@ -118,6 +127,13 @@ const ContentApp: React.FC<Props> = ({ portalContainer }) => {
   }, []);
 
   useElementPicker(isPickerActive, handleElementPicked, handlePickerCancel);
+
+  const handleCreateNoteByShortcut = useCallback(() => {
+    sendCreateNote().catch(err => {
+      console.error('[ContentApp] Failed to create note via shortcut:', err);
+    });
+  }, []);
+  useShortcutCreateNote(shortcutCreateNote, handleCreateNoteByShortcut, rootElement);
 
   // Shared scroll state — single listener for all pinned notes
   const hasPinnedNotes = useMemo(() => notes.some(n => !!n.selection_id), [notes]);
