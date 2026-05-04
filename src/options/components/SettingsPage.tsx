@@ -263,15 +263,11 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
         <div className="mb-3 flex items-center gap-2 text-sm">
           <span className="text-gray-500">{t('shortcut_current_assignment_msg')}:</span>
           {createNoteShortcut ? (
-            <span className="inline-flex items-center gap-1">
+            <kbd className="inline-flex items-center gap-2 rounded border border-gray-300 bg-gray-50 px-2 py-0.5 font-sans text-xs text-gray-800">
               {splitShortcut(createNoteShortcut).map((token, i) => (
-                <kbd
-                  key={i}
-                  className="inline-flex min-w-[1.5rem] items-center justify-center rounded border border-gray-300 bg-gray-50 px-1.5 py-0.5 font-sans text-xs text-gray-800">
-                  {token}
-                </kbd>
+                <span key={i}>{token}</span>
               ))}
-            </span>
+            </kbd>
           ) : (
             <span className="text-gray-400">{t('shortcut_not_set_msg')}</span>
           )}
