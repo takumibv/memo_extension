@@ -98,6 +98,32 @@ export default defineBackground(() => {
     });
   });
 
+  // キーボードショートカット (chrome.commands)
+  // ユーザーが chrome://extensions/shortcuts で割り当て可能。デフォルトは未割り当て (OFF)
+  chrome.commands.onCommand.addListener((command, tab) => {
+    if (command !== 'create-note') return;
+
+    const tabId = tab?.id;
+    const tabUrl = tab?.url;
+    if (!tabId || !tabUrl) return;
+    if (isSystemLink(tabUrl)) return;
+
+    isScriptAllowedPage(tabId)
+      .then(isAllowed => {
+        if (!isAllowed) return;
+        return actions.createNote(tabUrl).then(notes =>
+          actions.getSetting().then(setting =>
+            injectContentScript(tabId)
+              .then(() => setupPage(tabId, tabUrl, notes, setting))
+              .catch(() => {
+                /* error */
+              }),
+          ),
+        );
+      })
+      .catch(() => {});
+  });
+
   // タブごとに最後に処理したURLを記録
   const lastSetupUrl = new Map<number, string>();
 

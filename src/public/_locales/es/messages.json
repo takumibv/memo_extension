@@ -337,18 +337,15 @@
     "message": "Atajo para crear memo"
   },
   "shortcut_create_note_description_msg": {
-    "message": "Establece un atajo de teclado para crear rápidamente una nueva nota en cualquier página. Desactivado por defecto."
+    "message": "Abre la página de atajos de teclado de Chrome para asignar una combinación que cree una nueva nota en la página actual. No hay atajo asignado por defecto."
   },
-  "shortcut_placeholder_msg": {
-    "message": "Haz clic para registrar el atajo"
-  },
-  "shortcut_recording_msg": {
-    "message": "Presiona las teclas..."
-  },
-  "shortcut_clear_msg": {
-    "message": "Borrar"
+  "shortcut_open_chrome_settings_msg": {
+    "message": "Abrir la configuración de atajos de Chrome"
   },
   "shortcut_reserved_keys_notice_msg": {
-    "message": "Algunas combinaciones están reservadas por Chrome o el sistema operativo (p. ej., Ctrl+T, Ctrl+W) y tendrán prioridad. Si tu atajo no funciona, prueba con otra combinación."
+    "message": "El atajo no funciona en las páginas internas de Chrome (chrome://, nueva pestaña, Web Store). Algunas combinaciones están reservadas por Chrome o el sistema operativo y no pueden usarse."
+  },
+  "command_create_note_description": {
+    "message": "Crear una nueva nota en la página actual"
   }
 }

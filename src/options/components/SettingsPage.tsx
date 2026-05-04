@@ -1,11 +1,20 @@
-import ShortcutInput from '@/options/components/ShortcutInput';
 import Usage from '@/options/components/Usage';
 import { ColorPicker } from '@/shared/components/ColorPicker';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { getAllStorage, setStorage, removeStorage } from '@/shared/storages/common';
 import { useRef, useState } from 'react';
-import { Coffee, Download, Upload, SquareDashedMousePointer, TriangleAlert, Monitor, Search } from 'lucide-react';
+import {
+  Coffee,
+  Download,
+  Upload,
+  SquareDashedMousePointer,
+  TriangleAlert,
+  Monitor,
+  Search,
+  Keyboard,
+  ExternalLink,
+} from 'lucide-react';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
 import type { Setting } from '@/shared/types/Setting';
@@ -15,20 +24,12 @@ type Props = {
   pageInfos: PageInfo[];
   setting: Setting;
   onUpdateDefaultColor: (color: string) => Promise<void>;
-  onUpdateShortcutCreateNote: (shortcut: string) => Promise<void>;
   onNavigateToMemos?: () => void;
 };
 
 type ImportMode = 'overwrite' | 'merge';
 
-const SettingsPage = ({
-  notes,
-  pageInfos,
-  setting,
-  onUpdateDefaultColor,
-  onUpdateShortcutCreateNote,
-  onNavigateToMemos,
-}: Props) => {
+const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavigateToMemos }: Props) => {
   const [showImportDialog, setShowImportDialog] = useState(false);
   const pendingFileRef = useRef<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -213,7 +214,14 @@ const SettingsPage = ({
       <section className="mb-8">
         <h2 className="mb-2 text-lg font-semibold text-gray-800">{t('shortcut_create_note_title_msg')}</h2>
         <p className="mb-4 text-sm text-gray-500">{t('shortcut_create_note_description_msg')}</p>
-        <ShortcutInput value={setting.shortcut_create_note ?? ''} onChange={onUpdateShortcutCreateNote} />
+        <button
+          type="button"
+          onClick={() => chrome.tabs.create({ url: 'chrome://extensions/shortcuts' })}
+          className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+          <Keyboard className="h-4 w-4" />
+          {t('shortcut_open_chrome_settings_msg')}
+          <ExternalLink className="h-3.5 w-3.5 text-gray-400" />
+        </button>
         <p className="mt-3 flex items-start gap-1.5 text-xs text-gray-400">
           <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-400" />
           {t('shortcut_reserved_keys_notice_msg')}

@@ -19,10 +19,6 @@ import {
   setIsVisibleNote as _setIsVisibleNote,
 } from '@/shared/storages/noteVisibleStorage';
 import {
-  getShortcutCreateNote as _getShortcutCreateNote,
-  setShortcutCreateNote as _setShortcutCreateNote,
-} from '@/shared/storages/shortcutCreateNoteStorage';
-import {
   getAllPageInfos,
   updatePageInfo as _updatePageInfo,
   setUpdatedAtPageInfo,
@@ -207,16 +203,10 @@ export const setDefaultColor = async (color: string) => {
   return await getSetting();
 };
 
-export const setShortcutCreateNote = async (shortcut: string) => {
-  await _setShortcutCreateNote(shortcut);
-  return await getSetting();
-};
-
 export const getSetting = async (): Promise<Setting> => {
   const setting = {
     is_visible: await _getIsVisibleNote(),
     default_color: await _getDefaultColor(),
-    shortcut_create_note: await _getShortcutCreateNote(),
   };
   return setting;
 };

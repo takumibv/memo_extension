@@ -96,7 +96,7 @@ export default defineContentScript({
 
     // 3. Render React (pass shadowWrapper as portal container for Radix Popover)
     const root = createRoot(shadowWrapper);
-    root.render(<ContentApp portalContainer={shadowWrapper} rootElement={rootElement} />);
+    root.render(<ContentApp portalContainer={shadowWrapper} />);
 
     // 4. Notify background AFTER listener is registered
     chrome.runtime.sendMessage({ type: 'content:ready' }).catch(() => {});

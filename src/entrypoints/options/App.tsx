@@ -4,7 +4,6 @@ import {
   sendUpdateNote,
   sendDeleteNote,
   sendUpdateDefaultColor,
-  sendUpdateShortcutCreateNote,
 } from '@/message/sender/options';
 import MemoListPage from '@/options/components/MemoListPage';
 import OptionsHeader from '@/options/components/OptionsHeader';
@@ -58,11 +57,6 @@ const Options = () => {
     setSetting(result.setting || {});
   }, []);
 
-  const handleUpdateShortcutCreateNote = useCallback(async (shortcut: string) => {
-    const result = await sendUpdateShortcutCreateNote(shortcut);
-    setSetting(result.setting || {});
-  }, []);
-
   return (
     <div className="min-h-screen bg-gray-50">
       <OptionsHeader
@@ -91,7 +85,6 @@ const Options = () => {
           pageInfos={pageInfos}
           setting={setting}
           onUpdateDefaultColor={handleUpdateDefaultColor}
-          onUpdateShortcutCreateNote={handleUpdateShortcutCreateNote}
           onNavigateToMemos={() => {
             setTab('memos');
           }}

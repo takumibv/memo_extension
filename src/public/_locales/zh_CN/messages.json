@@ -337,18 +337,15 @@
     "message": "创建备忘录的快捷键"
   },
   "shortcut_create_note_description_msg": {
-    "message": "设置一个按键组合，以便在任意页面快速创建新备注。默认关闭。"
+    "message": "打开 Chrome 的键盘快捷键设置页面，分配一个用于在当前页面创建新备忘录的组合键。默认未设置任何快捷键。"
   },
-  "shortcut_placeholder_msg": {
-    "message": "点击以录制快捷键"
-  },
-  "shortcut_recording_msg": {
-    "message": "请按下按键..."
-  },
-  "shortcut_clear_msg": {
-    "message": "清除"
+  "shortcut_open_chrome_settings_msg": {
+    "message": "打开 Chrome 快捷键设置"
   },
   "shortcut_reserved_keys_notice_msg": {
-    "message": "某些组合被 Chrome 或操作系统保留（例如 Ctrl+T、Ctrl+W），将优先生效。如果快捷键无法触发，请尝试其他组合。"
+    "message": "快捷键在 Chrome 的内部页面（chrome://、新标签页、Web Store）上无效。某些组合被 Chrome 或操作系统保留，无法使用。"
+  },
+  "command_create_note_description": {
+    "message": "在当前页面创建新备忘录"
   }
 }

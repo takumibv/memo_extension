@@ -48,7 +48,6 @@ type ContentAttachSelection = {
   type: 'content:attachSelection';
   payload: { url: string; noteId: number; xpath: string; text: string };
 };
-type ContentCreateNote = { type: 'content:createNote'; payload: { url: string } };
 
 // content:ready はライフサイクル信号。通常のメッセージフローとは別扱い（injectContentScript内で処理）
 type ContentMessage =
@@ -57,8 +56,7 @@ type ContentMessage =
   | ContentDeleteNote
   | ContentGetVisibility
   | ContentCreatePinnedNote
-  | ContentAttachSelection
-  | ContentCreateNote;
+  | ContentAttachSelection;
 
 // ===== Background 向けメッセージ (Options → Background) =====
 type OptionsGetAllData = { type: 'options:getAllData' };
@@ -67,10 +65,6 @@ type OptionsDeleteNote = { type: 'options:deleteNote'; payload: { note: Note } }
 type OptionsUpdatePageInfo = { type: 'options:updatePageInfo'; payload: { pageInfo: PageInfo } };
 type OptionsGetSetting = { type: 'options:getSetting' };
 type OptionsUpdateDefaultColor = { type: 'options:updateDefaultColor'; payload: { color: string } };
-type OptionsUpdateShortcutCreateNote = {
-  type: 'options:updateShortcutCreateNote';
-  payload: { shortcut: string };
-};
 
 type OptionsMessage =
   | OptionsGetAllData
@@ -78,8 +72,7 @@ type OptionsMessage =
   | OptionsDeleteNote
   | OptionsUpdatePageInfo
   | OptionsGetSetting
-  | OptionsUpdateDefaultColor
-  | OptionsUpdateShortcutCreateNote;
+  | OptionsUpdateDefaultColor;
 
 // ===== 全 Background 向けメッセージの統合型 =====
 type ToBackgroundMessage = PopupMessage | ContentMessage | OptionsMessage;
@@ -93,17 +86,12 @@ type SetupPage = {
     selections?: Selection[];
     isVisible?: boolean;
     defaultColor?: string;
-    shortcutCreateNote?: string;
   };
 };
 type SetVisibility = { type: 'bg:setVisibility'; payload: { url: string; isVisible: boolean } };
 type ActivateInspector = { type: 'bg:activateInspector' };
-type UpdateSetting = {
-  type: 'bg:updateSetting';
-  payload: { defaultColor?: string; shortcutCreateNote?: string };
-};
 
-type ToContentMessage = SetupPage | SetVisibility | ActivateInspector | UpdateSetting;
+type ToContentMessage = SetupPage | SetVisibility | ActivateInspector;
 
 // ===== レスポンス型マッピング =====
 type ResponseMap = {
@@ -121,14 +109,12 @@ type ResponseMap = {
   'content:getVisibility': { isVisible: boolean };
   'content:createPinnedNote': { notes: Note[] };
   'content:attachSelection': { notes: Note[] };
-  'content:createNote': { notes: Note[] };
   'options:getAllData': { notes: Note[]; pageInfos: PageInfo[]; selections: Selection[] };
   'options:updateNote': { notes: Note[]; pageInfos: PageInfo[] };
   'options:deleteNote': { notes: Note[]; pageInfos: PageInfo[] };
   'options:updatePageInfo': { pageInfos: PageInfo[] };
   'options:getSetting': { setting: Setting };
   'options:updateDefaultColor': { setting: Setting };
-  'options:updateShortcutCreateNote': { setting: Setting };
 };
 
 // ===== ユーティリティ型 =====

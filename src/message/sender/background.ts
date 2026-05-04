@@ -29,32 +29,8 @@ export const setupPage = async (tabId: number, url: string, notes: Note[], setti
       selections,
       isVisible: setting?.is_visible,
       defaultColor: setting?.default_color,
-      shortcutCreateNote: setting?.shortcut_create_note,
     },
   });
-};
-
-/**
- * 設定変更を全タブのコンテンツスクリプトに即時反映する。
- * notes は再送せず、設定値のみ軽量に push する (`bg:updateSetting`)。
- * コンテンツスクリプトが注入されていないタブは静かに失敗する。
- */
-export const broadcastSetting = (setting: Setting): void => {
-  chrome.tabs
-    .query({})
-    .then(tabs => {
-      tabs.forEach(tab => {
-        if (tab.id === undefined) return;
-        sendToTab(tab.id, {
-          type: 'bg:updateSetting',
-          payload: {
-            defaultColor: setting.default_color,
-            shortcutCreateNote: setting.shortcut_create_note,
-          },
-        }).catch(() => {});
-      });
-    })
-    .catch(() => {});
 };
 
 /**

@@ -337,18 +337,15 @@
     "message": "Scorciatoia per creare una nota"
   },
   "shortcut_create_note_description_msg": {
-    "message": "Imposta una scorciatoia da tastiera per creare rapidamente una nuova nota su qualsiasi pagina. Disattivata per impostazione predefinita."
+    "message": "Apri la pagina delle scorciatoie da tastiera di Chrome per assegnare una combinazione di tasti che crei una nuova nota sulla pagina corrente. Nessuna scorciatoia è impostata per impostazione predefinita."
   },
-  "shortcut_placeholder_msg": {
-    "message": "Fai clic per registrare la scorciatoia"
-  },
-  "shortcut_recording_msg": {
-    "message": "Premi i tasti..."
-  },
-  "shortcut_clear_msg": {
-    "message": "Cancella"
+  "shortcut_open_chrome_settings_msg": {
+    "message": "Apri le impostazioni delle scorciatoie di Chrome"
   },
   "shortcut_reserved_keys_notice_msg": {
-    "message": "Alcune combinazioni sono riservate da Chrome o dal sistema operativo (ad es. Ctrl+T, Ctrl+W) e avranno la precedenza. Se la tua scorciatoia non funziona, prova un'altra combinazione."
+    "message": "La scorciatoia non funziona sulle pagine interne di Chrome (chrome://, Nuova scheda, Web Store). Alcune combinazioni sono riservate da Chrome o dal sistema operativo e non possono essere utilizzate."
+  },
+  "command_create_note_description": {
+    "message": "Crea una nuova nota nella pagina corrente"
   }
 }

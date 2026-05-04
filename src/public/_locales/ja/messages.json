@@ -374,18 +374,15 @@
     "message": "メモ作成のショートカットキー"
   },
   "shortcut_create_note_description_msg": {
-    "message": "任意のページで素早くメモを作成するキーボードショートカットを設定します。デフォルトはOFFです。"
+    "message": "Chromeのキーボードショートカット設定画面を開き、現在のページにメモを作成するキーを割り当てます。デフォルトでは未設定です。"
   },
-  "shortcut_placeholder_msg": {
-    "message": "クリックしてキーを記録"
-  },
-  "shortcut_recording_msg": {
-    "message": "キーを押してください..."
-  },
-  "shortcut_clear_msg": {
-    "message": "クリア"
+  "shortcut_open_chrome_settings_msg": {
+    "message": "Chromeのショートカット設定を開く"
   },
   "shortcut_reserved_keys_notice_msg": {
-    "message": "ChromeやOSで予約されているキーの組み合わせ（例：Ctrl+T、Ctrl+W）はそちらが優先されます。動作しない場合は別の組み合わせをお試しください。"
+    "message": "Chromeの内部ページ（chrome://、新しいタブ、Web Store）ではショートカットは動作しません。ChromeやOSによって予約されているキーの組み合わせは使用できません。"
+  },
+  "command_create_note_description": {
+    "message": "現在のページに新しいメモを作成"
   }
 }

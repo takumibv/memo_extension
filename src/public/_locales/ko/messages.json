@@ -337,18 +337,15 @@
     "message": "메모 생성 단축키"
   },
   "shortcut_create_note_description_msg": {
-    "message": "어느 페이지에서나 빠르게 메모를 만들 수 있는 키 조합을 설정합니다. 기본값은 OFF입니다."
+    "message": "Chrome의 키보드 단축키 설정 페이지를 열고 현재 페이지에 메모를 생성하는 키 조합을 할당합니다. 기본값은 설정되어 있지 않습니다."
   },
-  "shortcut_placeholder_msg": {
-    "message": "클릭하여 단축키 기록"
-  },
-  "shortcut_recording_msg": {
-    "message": "키를 누르세요..."
-  },
-  "shortcut_clear_msg": {
-    "message": "지우기"
+  "shortcut_open_chrome_settings_msg": {
+    "message": "Chrome 단축키 설정 열기"
   },
   "shortcut_reserved_keys_notice_msg": {
-    "message": "Chrome 또는 운영 체제에서 예약된 일부 키 조합(예: Ctrl+T, Ctrl+W)은 우선 적용됩니다. 동작하지 않을 경우 다른 조합을 시도해 주세요."
+    "message": "Chrome 내부 페이지(chrome://, 새 탭, 웹 스토어)에서는 단축키가 작동하지 않습니다. Chrome 또는 운영 체제에서 예약된 일부 키 조합은 사용할 수 없습니다."
+  },
+  "command_create_note_description": {
+    "message": "현재 페이지에 새 메모 만들기"
   }
 }

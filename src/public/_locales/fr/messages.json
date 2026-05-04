@@ -337,18 +337,15 @@
     "message": "Raccourci pour créer une note"
   },
   "shortcut_create_note_description_msg": {
-    "message": "Définissez un raccourci clavier pour créer rapidement une nouvelle note sur n'importe quelle page. Désactivé par défaut."
+    "message": "Ouvrez la page des raccourcis clavier de Chrome pour attribuer une combinaison de touches qui crée une nouvelle note sur la page actuelle. Aucun raccourci n'est défini par défaut."
   },
-  "shortcut_placeholder_msg": {
-    "message": "Cliquez pour enregistrer le raccourci"
-  },
-  "shortcut_recording_msg": {
-    "message": "Appuyez sur les touches..."
-  },
-  "shortcut_clear_msg": {
-    "message": "Effacer"
+  "shortcut_open_chrome_settings_msg": {
+    "message": "Ouvrir les paramètres de raccourcis de Chrome"
   },
   "shortcut_reserved_keys_notice_msg": {
-    "message": "Certaines combinaisons sont réservées par Chrome ou le système d'exploitation (par exemple Ctrl+T, Ctrl+W) et auront la priorité. Si votre raccourci ne fonctionne pas, essayez une autre combinaison."
+    "message": "Le raccourci ne fonctionne pas sur les pages internes de Chrome (chrome://, Nouvel onglet, Web Store). Certaines combinaisons sont réservées par Chrome ou le système d'exploitation et ne peuvent pas être utilisées."
+  },
+  "command_create_note_description": {
+    "message": "Créer une nouvelle note sur la page actuelle"
   }
 }

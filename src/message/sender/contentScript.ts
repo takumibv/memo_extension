@@ -23,6 +23,3 @@ export const sendAttachSelection = (noteId: number, xpath: string, text: string)
     type: 'content:attachSelection',
     payload: { url: window.location.href, noteId, xpath, text },
   });
-
-export const sendCreateNote = () =>
-  sendToBackground({ type: 'content:createNote', payload: { url: window.location.href } });

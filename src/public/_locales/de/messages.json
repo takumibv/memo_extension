@@ -337,18 +337,15 @@
     "message": "Tastenkürzel zum Erstellen einer Notiz"
   },
   "shortcut_create_note_description_msg": {
-    "message": "Legen Sie ein Tastenkürzel fest, um auf jeder Seite schnell eine neue Notiz zu erstellen. Standardmäßig deaktiviert."
+    "message": "Öffnen Sie die Tastenkürzel-Seite von Chrome, um eine Tastenkombination zuzuweisen, die eine neue Notiz auf der aktuellen Seite erstellt. Standardmäßig ist kein Kürzel festgelegt."
   },
-  "shortcut_placeholder_msg": {
-    "message": "Klicken, um Tastenkürzel aufzuzeichnen"
-  },
-  "shortcut_recording_msg": {
-    "message": "Tasten drücken..."
-  },
-  "shortcut_clear_msg": {
-    "message": "Löschen"
+  "shortcut_open_chrome_settings_msg": {
+    "message": "Chrome-Kürzeleinstellungen öffnen"
   },
   "shortcut_reserved_keys_notice_msg": {
-    "message": "Einige Tastenkombinationen sind von Chrome oder dem Betriebssystem reserviert (z. B. Ctrl+T, Ctrl+W) und haben Vorrang. Falls Ihr Kürzel nicht funktioniert, versuchen Sie eine andere Kombination."
+    "message": "Das Kürzel funktioniert nicht auf internen Chrome-Seiten (chrome://, Neuer Tab, Web Store). Einige Tastenkombinationen sind von Chrome oder dem Betriebssystem reserviert und können nicht verwendet werden."
+  },
+  "command_create_note_description": {
+    "message": "Neue Notiz auf der aktuellen Seite erstellen"
   }
 }
