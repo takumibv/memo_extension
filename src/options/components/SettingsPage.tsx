@@ -29,6 +29,37 @@ type Props = {
 
 type ImportMode = 'overwrite' | 'merge';
 
+/**
+ * `chrome.commands` が返すショートカット文字列をキーごとに分解する。
+ * Mac: "⌃⇧N" (区切りなし、Unicode 修飾キー記号 + 末尾の通常キー)
+ * Win/Linux: "Ctrl+Shift+N" ("+" 区切り)
+ */
+const MAC_MODIFIER_SYMBOLS = new Set(['⌃', '⌥', '⇧', '⌘']);
+
+const splitShortcut = (shortcut: string): string[] => {
+  if (shortcut.includes('+'))
+    return shortcut
+      .split('+')
+      .map(s => s.trim())
+      .filter(Boolean);
+  // Mac: 各文字を走査、修飾キー記号は単独トークン、それ以外は連結して末尾キー扱い
+  const tokens: string[] = [];
+  let buffer = '';
+  for (const ch of shortcut) {
+    if (MAC_MODIFIER_SYMBOLS.has(ch)) {
+      if (buffer) {
+        tokens.push(buffer);
+        buffer = '';
+      }
+      tokens.push(ch);
+    } else {
+      buffer += ch;
+    }
+  }
+  if (buffer) tokens.push(buffer);
+  return tokens;
+};
+
 const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavigateToMemos }: Props) => {
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [createNoteShortcut, setCreateNoteShortcut] = useState<string>('');
@@ -232,9 +263,15 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
         <div className="mb-3 flex items-center gap-2 text-sm">
           <span className="text-gray-500">{t('shortcut_current_assignment_msg')}:</span>
           {createNoteShortcut ? (
-            <kbd className="rounded border border-gray-300 bg-gray-50 px-2 py-0.5 font-mono text-xs text-gray-800">
-              {createNoteShortcut}
-            </kbd>
+            <span className="inline-flex items-center gap-1">
+              {splitShortcut(createNoteShortcut).map((token, i) => (
+                <kbd
+                  key={i}
+                  className="inline-flex min-w-[1.5rem] items-center justify-center rounded border border-gray-300 bg-gray-50 px-1.5 py-0.5 font-sans text-xs text-gray-800">
+                  {token}
+                </kbd>
+              ))}
+            </span>
           ) : (
             <span className="text-gray-400">{t('shortcut_not_set_msg')}</span>
           )}
