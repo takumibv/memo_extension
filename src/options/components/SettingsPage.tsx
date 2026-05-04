@@ -80,7 +80,13 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
   useEffect(() => {
     const refresh = () => {
       chrome.commands.getAll(commands => {
-        setShortcutCommands(commands.filter(c => c.name !== undefined && c.name in COMMAND_LABEL_KEYS));
+        const next = commands.filter(c => c.name !== undefined && c.name in COMMAND_LABEL_KEYS);
+        setShortcutCommands(prev => {
+          const unchanged =
+            prev.length === next.length &&
+            prev.every((p, i) => p.name === next[i]?.name && p.shortcut === next[i]?.shortcut);
+          return unchanged ? prev : next;
+        });
       });
     };
     refresh();
@@ -282,23 +288,20 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
             </button>
           </div>
           <ul className="divide-y divide-gray-200">
-            {shortcutCommands.map(cmd => {
-              const labelKey = cmd.name ? COMMAND_LABEL_KEYS[cmd.name] : undefined;
-              return (
-                <li key={cmd.name} className="flex items-center justify-between gap-4 px-5 py-4 text-sm">
-                  <span className="text-gray-700">{labelKey ? t(labelKey) : cmd.name}</span>
-                  {cmd.shortcut ? (
-                    <kbd className="inline-flex items-center gap-2 rounded border border-gray-300 bg-gray-50 px-2 py-0.5 font-sans text-xs text-gray-800">
-                      {splitShortcut(cmd.shortcut).map((token, i) => (
-                        <span key={i}>{token}</span>
-                      ))}
-                    </kbd>
-                  ) : (
-                    <span className="text-xs text-gray-400">{t('shortcut_not_set_msg')}</span>
-                  )}
-                </li>
-              );
-            })}
+            {shortcutCommands.map(cmd => (
+              <li key={cmd.name} className="flex items-center justify-between gap-4 px-5 py-4 text-sm">
+                <span className="text-gray-700">{t(COMMAND_LABEL_KEYS[cmd.name!] ?? '')}</span>
+                {cmd.shortcut ? (
+                  <kbd className="inline-flex items-center gap-2 rounded border border-gray-300 bg-gray-50 px-2 py-0.5 font-sans text-xs text-gray-800">
+                    {splitShortcut(cmd.shortcut).map((token, i) => (
+                      <span key={i}>{token}</span>
+                    ))}
+                  </kbd>
+                ) : (
+                  <span className="text-xs text-gray-400">{t('shortcut_not_set_msg')}</span>
+                )}
+              </li>
+            ))}
           </ul>
         </div>
 

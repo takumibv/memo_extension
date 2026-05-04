@@ -204,11 +204,8 @@ export const setDefaultColor = async (color: string) => {
 };
 
 export const getSetting = async (): Promise<Setting> => {
-  const setting = {
-    is_visible: await _getIsVisibleNote(),
-    default_color: await _getDefaultColor(),
-  };
-  return setting;
+  const [is_visible, default_color] = await Promise.all([_getIsVisibleNote(), _getDefaultColor()]);
+  return { is_visible, default_color };
 };
 
 export const setBadgeText = (tabId: number, noteLength?: number | string) => {
