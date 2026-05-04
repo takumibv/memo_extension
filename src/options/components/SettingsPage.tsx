@@ -268,35 +268,39 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
       <section className="mb-8">
         <h2 className="mb-2 text-lg font-semibold text-gray-800">{t('shortcut_section_title_msg')}</h2>
         <p className="mb-4 text-sm text-gray-500">{t('shortcut_section_description_msg')}</p>
-        <button
-          type="button"
-          onClick={() => chrome.tabs.create({ url: 'chrome://extensions/shortcuts' })}
-          className="mb-4 inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-          <Keyboard className="h-4 w-4" />
-          {t('shortcut_open_chrome_settings_msg')}
-          <ExternalLink className="h-3.5 w-3.5 text-gray-400" />
-        </button>
 
-        <h3 className="mb-2 text-sm font-medium text-gray-700">{t('shortcut_current_assignment_msg')}</h3>
-        <ul className="divide-y divide-gray-200 rounded-lg border border-gray-200 bg-white">
-          {shortcutCommands.map(cmd => {
-            const labelKey = cmd.name ? COMMAND_LABEL_KEYS[cmd.name] : undefined;
-            return (
-              <li key={cmd.name} className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm">
-                <span className="text-gray-700">{labelKey ? t(labelKey) : cmd.name}</span>
-                {cmd.shortcut ? (
-                  <kbd className="inline-flex items-center gap-2 rounded border border-gray-300 bg-gray-50 px-2 py-0.5 font-sans text-xs text-gray-800">
-                    {splitShortcut(cmd.shortcut).map((token, i) => (
-                      <span key={i}>{token}</span>
-                    ))}
-                  </kbd>
-                ) : (
-                  <span className="text-xs text-gray-400">{t('shortcut_not_set_msg')}</span>
-                )}
-              </li>
-            );
-          })}
-        </ul>
+        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+          <div className="flex items-center justify-between gap-4 border-b border-gray-200 bg-gray-50 px-5 py-3">
+            <h3 className="text-sm font-medium text-gray-700">{t('shortcut_current_assignment_msg')}</h3>
+            <button
+              type="button"
+              onClick={() => chrome.tabs.create({ url: 'chrome://extensions/shortcuts' })}
+              className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50">
+              <Keyboard className="h-3.5 w-3.5" />
+              {t('shortcut_open_chrome_settings_msg')}
+              <ExternalLink className="h-3 w-3 text-gray-400" />
+            </button>
+          </div>
+          <ul className="divide-y divide-gray-200">
+            {shortcutCommands.map(cmd => {
+              const labelKey = cmd.name ? COMMAND_LABEL_KEYS[cmd.name] : undefined;
+              return (
+                <li key={cmd.name} className="flex items-center justify-between gap-4 px-5 py-4 text-sm">
+                  <span className="text-gray-700">{labelKey ? t(labelKey) : cmd.name}</span>
+                  {cmd.shortcut ? (
+                    <kbd className="inline-flex items-center gap-2 rounded border border-gray-300 bg-gray-50 px-2 py-0.5 font-sans text-xs text-gray-800">
+                      {splitShortcut(cmd.shortcut).map((token, i) => (
+                        <span key={i}>{token}</span>
+                      ))}
+                    </kbd>
+                  ) : (
+                    <span className="text-xs text-gray-400">{t('shortcut_not_set_msg')}</span>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
 
         <p className="mt-3 flex items-start gap-1.5 text-xs text-gray-400">
           <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-400" />
