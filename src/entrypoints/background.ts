@@ -100,6 +100,9 @@ export default defineBackground(() => {
 
   // キーボードショートカット (chrome.commands)
   // ユーザーが chrome://extensions/shortcuts で割り当て可能。デフォルトは未割り当て (OFF)
+  // 連打時の重複作成を防ぐため、タブ単位の処理中フラグを保持する
+  const createNoteInProgress = new Set<number>();
+
   chrome.commands.onCommand.addListener(async (command, tab) => {
     if (command !== 'create-note') return;
 
@@ -107,7 +110,9 @@ export default defineBackground(() => {
     const tabUrl = tab?.url;
     if (!tabId || !tabUrl) return;
     if (isSystemLink(tabUrl)) return;
+    if (createNoteInProgress.has(tabId)) return;
 
+    createNoteInProgress.add(tabId);
     try {
       const isAllowed = await isScriptAllowedPage(tabId);
       if (!isAllowed) return;
@@ -120,6 +125,8 @@ export default defineBackground(() => {
       await setupPage(tabId, tabUrl, notes, setting);
     } catch {
       /* error */
+    } finally {
+      createNoteInProgress.delete(tabId);
     }
   });
 

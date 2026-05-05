@@ -280,7 +280,9 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
             <h3 className="text-sm font-medium text-gray-700">{t('shortcut_current_assignment_msg')}</h3>
             <button
               type="button"
-              onClick={() => chrome.tabs.create({ url: 'chrome://extensions/shortcuts' })}
+              onClick={() => {
+                chrome.tabs.create({ url: 'chrome://extensions/shortcuts' }).catch(() => {});
+              }}
               className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50">
               <Keyboard className="h-3.5 w-3.5" />
               {t('shortcut_open_chrome_settings_msg')}
@@ -290,7 +292,7 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
           <ul className="divide-y divide-gray-200">
             {shortcutCommands.map(cmd => (
               <li key={cmd.name} className="flex items-center justify-between gap-4 px-5 py-4 text-sm">
-                <span className="text-gray-700">{t(COMMAND_LABEL_KEYS[cmd.name!] ?? '')}</span>
+                <span className="text-gray-700">{t(COMMAND_LABEL_KEYS[cmd.name!]!)}</span>
                 {cmd.shortcut ? (
                   <kbd className="inline-flex items-center gap-2 rounded border border-gray-300 bg-gray-50 px-2 py-0.5 font-sans text-xs text-gray-800">
                     {splitShortcut(cmd.shortcut).map((token, i) => (
