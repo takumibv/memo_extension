@@ -254,9 +254,9 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
                 chrome.tabs.create({ url: 'chrome://extensions/shortcuts' }).catch(() => {});
               }}
               className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50">
-              <Keyboard className="h-3.5 w-3.5" />
+              <Keyboard className="h-3.5 w-3.5" aria-hidden="true" />
               {t('shortcut_open_chrome_settings_msg')}
-              <ExternalLink className="h-3 w-3 text-gray-400" />
+              <ExternalLink className="h-3 w-3 text-gray-400" aria-hidden="true" />
             </button>
           </div>
           <ul className="divide-y divide-gray-200">
