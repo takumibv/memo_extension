@@ -129,8 +129,8 @@ export default defineBackground(() => {
 
       await injectContentScript(tabId);
       await setupPage(tabId, tabUrl, notes, setting);
-    } catch {
-      /* error */
+    } catch (e) {
+      console.error('[Background] Failed to create note via shortcut:', e);
     } finally {
       createNoteInProgress.delete(tabId);
     }

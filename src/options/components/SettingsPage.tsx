@@ -3,6 +3,7 @@ import { ColorPicker } from '@/shared/components/ColorPicker';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { getAllStorage, setStorage, removeStorage } from '@/shared/storages/common';
+import { splitShortcut } from '@/shared/utils/shortcut';
 import { useEffect, useRef, useState } from 'react';
 import {
   Coffee,
@@ -28,37 +29,6 @@ type Props = {
 };
 
 type ImportMode = 'overwrite' | 'merge';
-
-/**
- * `chrome.commands` が返すショートカット文字列をキーごとに分解する。
- * Mac: "⌃⇧N" (区切りなし、Unicode 修飾キー記号 + 末尾の通常キー)
- * Win/Linux: "Ctrl+Shift+N" ("+" 区切り)
- */
-const MAC_MODIFIER_SYMBOLS = new Set(['⌃', '⌥', '⇧', '⌘']);
-
-const splitShortcut = (shortcut: string): string[] => {
-  if (shortcut.includes('+'))
-    return shortcut
-      .split('+')
-      .map(s => s.trim())
-      .filter(Boolean);
-  // Mac: 各文字を走査、修飾キー記号は単独トークン、それ以外は連結して末尾キー扱い
-  const tokens: string[] = [];
-  let buffer = '';
-  for (const ch of shortcut) {
-    if (MAC_MODIFIER_SYMBOLS.has(ch)) {
-      if (buffer) {
-        tokens.push(buffer);
-        buffer = '';
-      }
-      tokens.push(ch);
-    } else {
-      buffer += ch;
-    }
-  }
-  if (buffer) tokens.push(buffer);
-  return tokens;
-};
 
 /**
  * Options 画面に表示するコマンドラベルの i18n キーマップ。
