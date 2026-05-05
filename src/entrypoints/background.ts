@@ -106,8 +106,14 @@ export default defineBackground(() => {
   chrome.commands.onCommand.addListener(async (command, tab) => {
     if (command !== 'create-note') return;
 
-    const tabId = tab?.id;
-    const tabUrl = tab?.url;
+    // Chrome は通常 tab を渡してくれるが、SW 起動直後など稀に undefined になるためフォールバック
+    let activeTab: chrome.tabs.Tab | undefined = tab;
+    if (!activeTab?.id || !activeTab?.url) {
+      const [queried] = await chrome.tabs.query({ active: true, currentWindow: true }).catch(() => []);
+      activeTab = queried;
+    }
+    const tabId = activeTab?.id;
+    const tabUrl = activeTab?.url;
     if (!tabId || !tabUrl) return;
     if (isSystemLink(tabUrl)) return;
     if (createNoteInProgress.has(tabId)) return;
