@@ -369,5 +369,29 @@
   },
   "feature_pin_to_element_benefit2": {
     "message": "ページの特定の内容に直接メモを残せるので、あとから見返すときにすぐ見つかります。"
+  },
+  "shortcut_section_title_msg": {
+    "message": "キーボードショートカット"
+  },
+  "shortcut_section_description_msg": {
+    "message": "Chromeのキーボードショートカット設定画面を開いて、拡張機能のコマンドにキーを割り当てます。デフォルトではいずれも未設定です。"
+  },
+  "shortcut_open_chrome_settings_msg": {
+    "message": "Chromeのショートカット設定を開く"
+  },
+  "shortcut_current_assignment_msg": {
+    "message": "現在の割り当て"
+  },
+  "shortcut_not_set_msg": {
+    "message": "未設定"
+  },
+  "shortcut_command_create_note_msg": {
+    "message": "メモ作成"
+  },
+  "shortcut_reserved_keys_notice_msg": {
+    "message": "Chromeの内部ページ（chrome://、新しいタブ、Web Store）ではショートカットは動作しません。ChromeやOSによって予約されているキーの組み合わせは使用できません。"
+  },
+  "command_create_note_description": {
+    "message": "現在のページに新しいメモを作成"
   }
 }

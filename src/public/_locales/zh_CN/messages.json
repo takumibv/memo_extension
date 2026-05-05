@@ -332,5 +332,29 @@
   },
   "feature_pin_to_element_benefit2": {
     "message": "将笔记直接固定到特定内容上，方便日后查找。"
+  },
+  "shortcut_section_title_msg": {
+    "message": "键盘快捷键"
+  },
+  "shortcut_section_description_msg": {
+    "message": "打开 Chrome 的键盘快捷键设置页面，为扩展命令分配按键。默认未设置任何快捷键。"
+  },
+  "shortcut_open_chrome_settings_msg": {
+    "message": "打开 Chrome 快捷键设置"
+  },
+  "shortcut_current_assignment_msg": {
+    "message": "当前分配"
+  },
+  "shortcut_not_set_msg": {
+    "message": "未设置"
+  },
+  "shortcut_command_create_note_msg": {
+    "message": "创建备忘录"
+  },
+  "shortcut_reserved_keys_notice_msg": {
+    "message": "快捷键在 Chrome 的内部页面（chrome://、新标签页、Web Store）上无效。某些组合被 Chrome 或操作系统保留，无法使用。"
+  },
+  "command_create_note_description": {
+    "message": "在当前页面创建新备忘录"
   }
 }

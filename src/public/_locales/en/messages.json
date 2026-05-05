@@ -369,5 +369,29 @@
   },
   "feature_pin_to_element_benefit2": {
     "message": "Pin notes directly to specific content, making them easy to find later."
+  },
+  "shortcut_section_title_msg": {
+    "message": "Keyboard Shortcuts"
+  },
+  "shortcut_section_description_msg": {
+    "message": "Open Chrome's keyboard shortcuts page to assign keys to extension commands. No shortcuts are set by default."
+  },
+  "shortcut_open_chrome_settings_msg": {
+    "message": "Open Chrome shortcut settings"
+  },
+  "shortcut_current_assignment_msg": {
+    "message": "Current assignments"
+  },
+  "shortcut_not_set_msg": {
+    "message": "Not set"
+  },
+  "shortcut_command_create_note_msg": {
+    "message": "Create memo"
+  },
+  "shortcut_reserved_keys_notice_msg": {
+    "message": "The shortcut does not work on Chrome internal pages (chrome://, New Tab, Web Store). Some key combinations are reserved by Chrome or your OS and cannot be used."
+  },
+  "command_create_note_description": {
+    "message": "Create a new memo on the current page"
   }
 }

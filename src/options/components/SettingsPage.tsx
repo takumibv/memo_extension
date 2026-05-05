@@ -3,8 +3,19 @@ import { ColorPicker } from '@/shared/components/ColorPicker';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { getAllStorage, setStorage, removeStorage } from '@/shared/storages/common';
-import { useRef, useState } from 'react';
-import { Coffee, Download, Upload, SquareDashedMousePointer, TriangleAlert, Monitor, Search } from 'lucide-react';
+import { splitShortcut } from '@/shared/utils/shortcut';
+import { useEffect, useRef, useState } from 'react';
+import {
+  Coffee,
+  Download,
+  Upload,
+  SquareDashedMousePointer,
+  TriangleAlert,
+  Monitor,
+  Search,
+  Keyboard,
+  ExternalLink,
+} from 'lucide-react';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
 import type { Setting } from '@/shared/types/Setting';
@@ -19,10 +30,39 @@ type Props = {
 
 type ImportMode = 'overwrite' | 'merge';
 
+/**
+ * Options 画面に表示するコマンドラベルの i18n キーマップ。
+ * 新しいコマンドを manifest に追加したらここに追記する。
+ * 一覧に無いコマンド (例: wxt 開発時の reload-extension) は表示しない。
+ */
+const COMMAND_LABEL_KEYS: Record<string, string> = {
+  'create-note': 'shortcut_command_create_note_msg',
+};
+
 const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavigateToMemos }: Props) => {
   const [showImportDialog, setShowImportDialog] = useState(false);
+  const [shortcutCommands, setShortcutCommands] = useState<chrome.commands.Command[]>([]);
   const pendingFileRef = useRef<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // chrome://extensions/shortcuts から戻ったときに最新の割り当てを反映するため、
+  // マウント時 + ウィンドウフォーカス時に再取得する
+  useEffect(() => {
+    const refresh = () => {
+      chrome.commands.getAll(commands => {
+        const next = commands.filter(c => c.name !== undefined && c.name in COMMAND_LABEL_KEYS);
+        setShortcutCommands(prev => {
+          const unchanged =
+            prev.length === next.length &&
+            prev.every((p, i) => p.name === next[i]?.name && p.shortcut === next[i]?.shortcut);
+          return unchanged ? prev : next;
+        });
+      });
+    };
+    refresh();
+    window.addEventListener('focus', refresh);
+    return () => window.removeEventListener('focus', refresh);
+  }, []);
 
   const handleDownload = (content: string, contentType: string, fileType: string) => {
     const date = new Date();
@@ -198,6 +238,49 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
         <h2 className="mb-2 text-lg font-semibold text-gray-800">{t(I18N.DEFAULT_COLOR)}</h2>
         <p className="mb-4 text-sm text-gray-500">{t(I18N.DEFAULT_COLOR_DESCRIPTION)}</p>
         <ColorPicker color={setting.default_color} onChangeColor={onUpdateDefaultColor} />
+      </section>
+
+      {/* Keyboard shortcuts */}
+      <section className="mb-8">
+        <h2 className="mb-2 text-lg font-semibold text-gray-800">{t('shortcut_section_title_msg')}</h2>
+        <p className="mb-4 text-sm text-gray-500">{t('shortcut_section_description_msg')}</p>
+
+        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+          <div className="flex items-center justify-between gap-4 border-b border-gray-200 bg-gray-50 px-5 py-3">
+            <h3 className="text-sm font-medium text-gray-700">{t('shortcut_current_assignment_msg')}</h3>
+            <button
+              type="button"
+              onClick={() => {
+                chrome.tabs.create({ url: 'chrome://extensions/shortcuts' }).catch(() => {});
+              }}
+              className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50">
+              <Keyboard className="h-3.5 w-3.5" aria-hidden="true" />
+              {t('shortcut_open_chrome_settings_msg')}
+              <ExternalLink className="h-3 w-3 text-gray-400" aria-hidden="true" />
+            </button>
+          </div>
+          <ul className="divide-y divide-gray-200">
+            {shortcutCommands.map(cmd => (
+              <li key={cmd.name} className="flex items-center justify-between gap-4 px-5 py-4 text-sm">
+                <span className="text-gray-700">{t(COMMAND_LABEL_KEYS[cmd.name!]!)}</span>
+                {cmd.shortcut ? (
+                  <kbd className="inline-flex items-center gap-2 rounded border border-gray-300 bg-gray-50 px-2 py-0.5 font-sans text-xs text-gray-800">
+                    {splitShortcut(cmd.shortcut).map((token, i) => (
+                      <span key={i}>{token}</span>
+                    ))}
+                  </kbd>
+                ) : (
+                  <span className="text-xs text-gray-400">{t('shortcut_not_set_msg')}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <p className="mt-3 flex items-start gap-1.5 text-xs text-gray-400">
+          <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-400" />
+          {t('shortcut_reserved_keys_notice_msg')}
+        </p>
       </section>
 
       {/* Usage */}

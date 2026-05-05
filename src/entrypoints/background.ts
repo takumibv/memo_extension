@@ -98,6 +98,44 @@ export default defineBackground(() => {
     });
   });
 
+  // キーボードショートカット (chrome.commands)
+  // ユーザーが chrome://extensions/shortcuts で割り当て可能。デフォルトは未割り当て (OFF)
+  // 連打時の重複作成を防ぐため、タブ単位の処理中フラグを保持する
+  const createNoteInProgress = new Set<number>();
+
+  chrome.commands.onCommand.addListener(async (command, tab) => {
+    if (command !== 'create-note') return;
+
+    // Chrome は通常 tab を渡してくれるが、SW 起動直後など稀に undefined になるためフォールバック
+    let activeTab: chrome.tabs.Tab | undefined = tab;
+    if (!activeTab?.id || !activeTab?.url) {
+      const [queried] = await chrome.tabs.query({ active: true, currentWindow: true }).catch(() => []);
+      activeTab = queried;
+    }
+    const tabId = activeTab?.id;
+    const tabUrl = activeTab?.url;
+    if (!tabId || !tabUrl) return;
+    if (isSystemLink(tabUrl)) return;
+    if (createNoteInProgress.has(tabId)) return;
+
+    createNoteInProgress.add(tabId);
+    try {
+      const isAllowed = await isScriptAllowedPage(tabId);
+      if (!isAllowed) return;
+
+      const [notes, setting] = await Promise.all([actions.createNote(tabUrl), actions.getSetting()]);
+      cache.badge[tabId] = notes.length;
+      actions.setBadgeText(tabId, notes.length);
+
+      await injectContentScript(tabId);
+      await setupPage(tabId, tabUrl, notes, setting);
+    } catch (e) {
+      console.error('[Background] Failed to create note via shortcut:', e);
+    } finally {
+      createNoteInProgress.delete(tabId);
+    }
+  });
+
   // タブごとに最後に処理したURLを記録
   const lastSetupUrl = new Map<number, string>();
 
