@@ -1,6 +1,6 @@
 {
   "name": "memo-extension",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "Chrome Extension for creating sticky notes on web pages",
   "private": true,
   "type": "module",
