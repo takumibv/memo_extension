@@ -16,6 +16,11 @@ export default defineConfig({
       default_popup: 'popup.html',
       default_icon: { '34': 'icon-34.png' },
     },
+    commands: {
+      'create-note': {
+        description: '__MSG_command_create_note_description__',
+      },
+    },
     options_ui: {
       page: 'options.html',
       open_in_tab: true,

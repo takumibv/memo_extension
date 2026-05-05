@@ -356,5 +356,29 @@
   },
   "review_prompt_thanks_coffee": {
     "message": "Thank you!"
+  },
+  "shortcut_section_title_msg": {
+    "message": "Raccourcis clavier"
+  },
+  "shortcut_section_description_msg": {
+    "message": "Ouvrez la page des raccourcis clavier de Chrome pour attribuer des touches aux commandes de l'extension. Aucun raccourci n'est défini par défaut."
+  },
+  "shortcut_open_chrome_settings_msg": {
+    "message": "Ouvrir les paramètres de raccourcis de Chrome"
+  },
+  "shortcut_current_assignment_msg": {
+    "message": "Affectations actuelles"
+  },
+  "shortcut_not_set_msg": {
+    "message": "Non défini"
+  },
+  "shortcut_command_create_note_msg": {
+    "message": "Créer une note"
+  },
+  "shortcut_reserved_keys_notice_msg": {
+    "message": "Le raccourci ne fonctionne pas sur les pages internes de Chrome (chrome://, Nouvel onglet, Web Store). Certaines combinaisons sont réservées par Chrome ou le système d'exploitation et ne peuvent pas être utilisées."
+  },
+  "command_create_note_description": {
+    "message": "Créer une nouvelle note sur la page actuelle"
   }
 }
