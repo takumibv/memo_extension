@@ -46,21 +46,14 @@ const Options = () => {
 
   useEffect(() => {
     if (isLoading || reviewCheckedRef.current) return;
-    let timeoutId: ReturnType<typeof setTimeout> | undefined;
-    const noteCountSnapshot = notes.length;
-    shouldShowReviewPrompt(noteCountSnapshot)
+    reviewCheckedRef.current = true;
+    shouldShowReviewPrompt(notes.length)
       .then(should => {
-        reviewCheckedRef.current = true;
-        if (should) {
-          timeoutId = setTimeout(() => setShowReviewPrompt(true), 1500);
-        }
+        if (should) setShowReviewPrompt(true);
       })
       .catch(err => {
         console.error('[Options] shouldShowReviewPrompt failed:', err);
       });
-    return () => {
-      if (timeoutId) clearTimeout(timeoutId);
-    };
   }, [isLoading, notes.length]);
 
   const handleUpdateNote = useCallback(async (note: Note) => {
