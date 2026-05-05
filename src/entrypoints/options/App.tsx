@@ -7,8 +7,10 @@ import {
 } from '@/message/sender/options';
 import MemoListPage from '@/options/components/MemoListPage';
 import OptionsHeader from '@/options/components/OptionsHeader';
+import ReviewPromptModal from '@/options/components/ReviewPromptModal';
 import SettingsPage from '@/options/components/SettingsPage';
-import { useCallback, useEffect, useState } from 'react';
+import { shouldShowReviewPrompt } from '@/shared/storages/reviewPromptStorage';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
 import type { Selection } from '@/shared/types/Selection';
@@ -25,6 +27,8 @@ const Options = () => {
   const [selections, setSelections] = useState<Map<string, Selection>>(new Map());
   const [setting, setSetting] = useState<Setting>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [showReviewPrompt, setShowReviewPrompt] = useState(false);
+  const reviewCheckedRef = useRef(false);
 
   // Load all data
   useEffect(() => {
@@ -39,6 +43,18 @@ const Options = () => {
       })
       .finally(() => setIsLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (isLoading || reviewCheckedRef.current) return;
+    reviewCheckedRef.current = true;
+    shouldShowReviewPrompt(notes.length)
+      .then(should => {
+        if (should) setShowReviewPrompt(true);
+      })
+      .catch(err => {
+        console.error('[Options] shouldShowReviewPrompt failed:', err);
+      });
+  }, [isLoading, notes.length]);
 
   const handleUpdateNote = useCallback(async (note: Note) => {
     const result = await sendUpdateNote(note);
@@ -90,6 +106,7 @@ const Options = () => {
           }}
         />
       )}
+      <ReviewPromptModal open={showReviewPrompt} onOpenChange={setShowReviewPrompt} />
     </div>
   );
 };

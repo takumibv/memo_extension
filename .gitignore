@@ -27,6 +27,9 @@ tsconfig.tsbuildinfo
 # compiled
 **/tailwind-output.css
 
+# superpowers brainstorm session files
+.superpowers/
+
 # old implementation reference
 old/
 

@@ -1,12 +1,13 @@
 import Usage from '@/options/components/Usage';
+import { BuyMeCoffeeButton } from '@/shared/components/BuyMeCoffeeButton';
 import { ColorPicker } from '@/shared/components/ColorPicker';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { getAllStorage, setStorage, removeStorage } from '@/shared/storages/common';
+import { EXTERNAL_LINKS } from '@/shared/constants/links';
 import { splitShortcut } from '@/shared/utils/shortcut';
 import { useEffect, useRef, useState } from 'react';
 import {
-  Coffee,
   Download,
   Upload,
   SquareDashedMousePointer,
@@ -420,14 +421,7 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
       <section className="mb-8">
         <h2 className="mb-2 text-lg font-semibold text-gray-800">{t('support_this_extension')}</h2>
         <p className="mb-3 text-sm text-gray-500">{t('support_description')}</p>
-        <a
-          href="https://buymeacoffee.com/takumibv"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-lg bg-[#FFDD00] px-5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm transition-colors hover:bg-[#FFCA00]">
-          <Coffee className="h-5 w-5" />
-          <span>Buy me a coffee</span>
-        </a>
+        <BuyMeCoffeeButton label="Buy me a coffee" />
       </section>
 
       {/* Maker */}
@@ -436,7 +430,7 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
         <p className="text-sm text-gray-600">
           {t(I18N.SETTING_ABOUT_THIS_APP_CREATED_BY)}:{' '}
           <a
-            href="https://x.com/takumi_bv"
+            href={EXTERNAL_LINKS.twitter}
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-500 hover:underline">
