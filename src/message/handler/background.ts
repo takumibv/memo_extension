@@ -4,6 +4,7 @@ import { isToBackgroundMessage } from '@/message/types';
 import { t } from '@/shared/i18n/i18n';
 import { I18N } from '@/shared/i18n/keys';
 import { getSelection } from '@/shared/storages/selectionStorage';
+import { EntitlementBlockedError } from '@/shared/utils/entitlement';
 import { isSystemLink } from '@/shared/utils/utils';
 import type { ToBackgroundMessage } from '@/message/types';
 import type { Note } from '@/shared/types/Note';
@@ -194,7 +195,14 @@ const handleContentMessage = async (
     }
     case 'content:attachSelection': {
       const { url, noteId, xpath, text } = message.payload;
-      const notes = await actions.attachSelectionToNote(url, noteId, { kind: 'element', xpath }, text);
+      let notes: Note[];
+      try {
+        notes = await actions.attachSelectionToNote(url, noteId, { kind: 'element', xpath }, text);
+      } catch (e) {
+        if (!(e instanceof EntitlementBlockedError)) throw e;
+        const currentNotes = await actions.fetchAllNotesByPageUrl(url);
+        return { notes: currentNotes, entitlement: { blocked: true, trialRemaining: e.trialRemaining } as const };
+      }
 
       chrome.tabs
         .query({ url, currentWindow: true })
@@ -216,7 +224,14 @@ const handleContentMessage = async (
     }
     case 'content:createPinnedNote': {
       const { url, xpath, text, fallbackX, fallbackY } = message.payload;
-      const notes = await actions.createPinnedNote(url, { kind: 'element', xpath }, text, fallbackX, fallbackY);
+      let notes: Note[];
+      try {
+        notes = await actions.createPinnedNote(url, { kind: 'element', xpath }, text, fallbackX, fallbackY);
+      } catch (e) {
+        if (!(e instanceof EntitlementBlockedError)) throw e;
+        const currentNotes = await actions.fetchAllNotesByPageUrl(url);
+        return { notes: currentNotes, entitlement: { blocked: true, trialRemaining: e.trialRemaining } as const };
+      }
 
       // Inject and setup page to push new notes to content script
       chrome.tabs
@@ -273,6 +288,15 @@ const handleOptionsMessage = async (
     case 'options:updateDefaultColor': {
       const setting = await actions.setDefaultColor(message.payload.color);
       return { setting };
+    }
+    case 'options:activateLicense': {
+      const result = await actions.activateLicenseCode(message.payload.code);
+      const status = await actions.fetchLicenseStatusView();
+      return { ok: result.ok, error: result.error, status };
+    }
+    case 'options:getLicenseStatus': {
+      const status = await actions.fetchLicenseStatusView();
+      return { status };
     }
   }
 };

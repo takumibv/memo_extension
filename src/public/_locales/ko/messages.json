@@ -357,6 +357,45 @@
   "review_prompt_thanks_coffee": {
     "message": "Thank you!"
   },
+  "upsell_trial_limit_title_msg": {
+    "message": "무료 체험 한도에 도달했습니다"
+  },
+  "upsell_trial_limit_body_msg": {
+    "message": "요소 고정 메모의 무료 체험(10개)을 모두 사용했습니다. 라이선스를 구매하면 계속 사용할 수 있습니다."
+  },
+  "upsell_buy_button_msg": {
+    "message": "라이선스 구매"
+  },
+  "upsell_activate_hint_msg": {
+    "message": "구매 후 설정 화면에서 라이선스 키를 입력하면 기능이 활성화됩니다."
+  },
+  "upsell_close_button_msg": {
+    "message": "닫기"
+  },
+  "license_section_title_msg": {
+    "message": "라이선스"
+  },
+  "license_status_licensed_msg": {
+    "message": "활성화됨 (평생 이용)"
+  },
+  "license_status_unlicensed_msg": {
+    "message": "구매하지 않음"
+  },
+  "license_trial_remaining_label_msg": {
+    "message": "남은 무료 체험"
+  },
+  "license_input_placeholder_msg": {
+    "message": "라이선스 키 입력"
+  },
+  "license_activate_button_msg": {
+    "message": "활성화"
+  },
+  "license_activate_success_msg": {
+    "message": "라이선스가 활성화되었습니다"
+  },
+  "license_activate_error_msg": {
+    "message": "유효하지 않은 라이선스 키입니다"
+  },
   "shortcut_section_title_msg": {
     "message": "키보드 단축키"
   },

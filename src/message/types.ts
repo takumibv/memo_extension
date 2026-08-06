@@ -4,6 +4,7 @@
  * 旧: { method: 'GET_ALL_NOTES', senderType: 'POPUP', payload: { tab, ... } }
  * 新: { type: 'popup:getAllNotes', payload: { tab } }
  */
+import type { LicenseStatusView } from '@/shared/types/License';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
 import type { Selection } from '@/shared/types/Selection';
@@ -65,6 +66,8 @@ type OptionsDeleteNote = { type: 'options:deleteNote'; payload: { note: Note } }
 type OptionsUpdatePageInfo = { type: 'options:updatePageInfo'; payload: { pageInfo: PageInfo } };
 type OptionsGetSetting = { type: 'options:getSetting' };
 type OptionsUpdateDefaultColor = { type: 'options:updateDefaultColor'; payload: { color: string } };
+type OptionsActivateLicense = { type: 'options:activateLicense'; payload: { code: string } };
+type OptionsGetLicenseStatus = { type: 'options:getLicenseStatus' };
 
 type OptionsMessage =
   | OptionsGetAllData
@@ -72,7 +75,9 @@ type OptionsMessage =
   | OptionsDeleteNote
   | OptionsUpdatePageInfo
   | OptionsGetSetting
-  | OptionsUpdateDefaultColor;
+  | OptionsUpdateDefaultColor
+  | OptionsActivateLicense
+  | OptionsGetLicenseStatus;
 
 // ===== 全 Background 向けメッセージの統合型 =====
 type ToBackgroundMessage = PopupMessage | ContentMessage | OptionsMessage;
@@ -107,14 +112,16 @@ type ResponseMap = {
   'content:updateNote': { notes: Note[] };
   'content:deleteNote': { notes: Note[] };
   'content:getVisibility': { isVisible: boolean };
-  'content:createPinnedNote': { notes: Note[] };
-  'content:attachSelection': { notes: Note[] };
+  'content:createPinnedNote': { notes: Note[]; entitlement?: { blocked: true; trialRemaining: number } };
+  'content:attachSelection': { notes: Note[]; entitlement?: { blocked: true; trialRemaining: number } };
   'options:getAllData': { notes: Note[]; pageInfos: PageInfo[]; selections: Selection[] };
   'options:updateNote': { notes: Note[]; pageInfos: PageInfo[] };
   'options:deleteNote': { notes: Note[]; pageInfos: PageInfo[] };
   'options:updatePageInfo': { pageInfos: PageInfo[] };
   'options:getSetting': { setting: Setting };
   'options:updateDefaultColor': { setting: Setting };
+  'options:activateLicense': { ok: boolean; error?: string; status: LicenseStatusView };
+  'options:getLicenseStatus': { status: LicenseStatusView };
 };
 
 // ===== ユーティリティ型 =====

@@ -357,6 +357,45 @@
   "review_prompt_thanks_coffee": {
     "message": "Thank you!"
   },
+  "upsell_trial_limit_title_msg": {
+    "message": "Limite de l'essai gratuit atteinte"
+  },
+  "upsell_trial_limit_body_msg": {
+    "message": "Vous avez utilisé les 10 notes épinglées gratuites. Achetez une licence pour continuer à épingler des notes aux éléments."
+  },
+  "upsell_buy_button_msg": {
+    "message": "Acheter une licence"
+  },
+  "upsell_activate_hint_msg": {
+    "message": "Après l'achat, saisissez votre clé de licence dans la page des paramètres pour débloquer la fonctionnalité."
+  },
+  "upsell_close_button_msg": {
+    "message": "Fermer"
+  },
+  "license_section_title_msg": {
+    "message": "Licence"
+  },
+  "license_status_licensed_msg": {
+    "message": "Activée (à vie)"
+  },
+  "license_status_unlicensed_msg": {
+    "message": "Non achetée"
+  },
+  "license_trial_remaining_label_msg": {
+    "message": "Essais gratuits restants"
+  },
+  "license_input_placeholder_msg": {
+    "message": "Saisir la clé de licence"
+  },
+  "license_activate_button_msg": {
+    "message": "Activer"
+  },
+  "license_activate_success_msg": {
+    "message": "Licence activée"
+  },
+  "license_activate_error_msg": {
+    "message": "Clé de licence invalide"
+  },
   "shortcut_section_title_msg": {
     "message": "Raccourcis clavier"
   },

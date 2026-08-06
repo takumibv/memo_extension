@@ -357,6 +357,45 @@
   "review_prompt_thanks_coffee": {
     "message": "Thank you!"
   },
+  "upsell_trial_limit_title_msg": {
+    "message": "Limite della prova gratuita raggiunto"
+  },
+  "upsell_trial_limit_body_msg": {
+    "message": "Hai utilizzato tutte le 10 note appuntate gratuite. Acquista una licenza per continuare ad appuntare note agli elementi."
+  },
+  "upsell_buy_button_msg": {
+    "message": "Acquista licenza"
+  },
+  "upsell_activate_hint_msg": {
+    "message": "Dopo l'acquisto, inserisci la tua chiave di licenza nella pagina delle impostazioni per sbloccare la funzione."
+  },
+  "upsell_close_button_msg": {
+    "message": "Chiudi"
+  },
+  "license_section_title_msg": {
+    "message": "Licenza"
+  },
+  "license_status_licensed_msg": {
+    "message": "Attivata (a vita)"
+  },
+  "license_status_unlicensed_msg": {
+    "message": "Non acquistata"
+  },
+  "license_trial_remaining_label_msg": {
+    "message": "Prove gratuite rimanenti"
+  },
+  "license_input_placeholder_msg": {
+    "message": "Inserisci la chiave di licenza"
+  },
+  "license_activate_button_msg": {
+    "message": "Attiva"
+  },
+  "license_activate_success_msg": {
+    "message": "Licenza attivata"
+  },
+  "license_activate_error_msg": {
+    "message": "Chiave di licenza non valida"
+  },
   "shortcut_section_title_msg": {
     "message": "Scorciatoie da tastiera"
   },

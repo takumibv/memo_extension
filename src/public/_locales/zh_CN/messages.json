@@ -357,6 +357,45 @@
   "review_prompt_thanks_coffee": {
     "message": "Thank you!"
   },
+  "upsell_trial_limit_title_msg": {
+    "message": "已达到免费试用上限"
+  },
+  "upsell_trial_limit_body_msg": {
+    "message": "您已用完全部10次免费的元素固定笔记。购买许可证即可继续将笔记固定到页面元素上。"
+  },
+  "upsell_buy_button_msg": {
+    "message": "购买许可证"
+  },
+  "upsell_activate_hint_msg": {
+    "message": "购买后，请在设置页面输入许可证密钥以解锁此功能。"
+  },
+  "upsell_close_button_msg": {
+    "message": "关闭"
+  },
+  "license_section_title_msg": {
+    "message": "许可证"
+  },
+  "license_status_licensed_msg": {
+    "message": "已激活(买断版)"
+  },
+  "license_status_unlicensed_msg": {
+    "message": "未购买"
+  },
+  "license_trial_remaining_label_msg": {
+    "message": "剩余免费试用次数"
+  },
+  "license_input_placeholder_msg": {
+    "message": "输入许可证密钥"
+  },
+  "license_activate_button_msg": {
+    "message": "激活"
+  },
+  "license_activate_success_msg": {
+    "message": "许可证已激活"
+  },
+  "license_activate_error_msg": {
+    "message": "许可证密钥无效"
+  },
   "shortcut_section_title_msg": {
     "message": "键盘快捷键"
   },
