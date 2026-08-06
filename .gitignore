@@ -34,9 +34,9 @@ tsconfig.tsbuildinfo
 old/
 
 # legacy monorepo (removed, may have untracked residual files)
-chrome-extension/
-pages/
-packages/
-scripts/
-bash-scripts/
-tests/
+/chrome-extension/
+/pages/
+/packages/
+/scripts/
+/bash-scripts/
+/tests/

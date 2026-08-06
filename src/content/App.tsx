@@ -1,4 +1,5 @@
 import StickyNote from '@/content/components/StickyNote/StickyNote';
+import UpsellModal from '@/content/components/UpsellModal';
 import { useElementPicker } from '@/content/hooks/useElementPicker';
 import { getXPathForElement } from '@/content/utils/xpath';
 import { registerContentHandler, unregisterContentHandler, getLastContextMenuPosition } from '@/entrypoints/content';
@@ -24,6 +25,7 @@ const ContentApp: React.FC<Props> = ({ portalContainer }) => {
   const [defaultColor, setDefaultColor] = useState<string>();
   const [selections, setSelections] = useState<Map<string, Selection>>(new Map());
   const [isPickerActive, setIsPickerActive] = useState(false);
+  const [showUpsellModal, setShowUpsellModal] = useState(false);
   // null = create new note, number = attach to existing note
   const pickerTargetNoteIdRef = useRef<number | null>(null);
   const prevNoteIdsRef = useRef<Set<number>>(new Set());
@@ -94,16 +96,24 @@ const ContentApp: React.FC<Props> = ({ portalContainer }) => {
 
     if (targetNoteId !== null) {
       // Attach selection to existing note
-      sendAttachSelection(targetNoteId, xpath, text).catch(err => {
-        console.error('[ContentApp] Failed to attach selection:', err);
-      });
+      sendAttachSelection(targetNoteId, xpath, text)
+        .then(result => {
+          if (result.entitlement?.blocked) setShowUpsellModal(true);
+        })
+        .catch(err => {
+          console.error('[ContentApp] Failed to attach selection:', err);
+        });
     } else {
       // Create new pinned note
       const fallbackX = rect.left + window.scrollX;
       const fallbackY = rect.bottom + window.scrollY + 8;
-      sendCreatePinnedNote(xpath, text, fallbackX, fallbackY).catch(err => {
-        console.error('[ContentApp] Failed to create pinned note:', err);
-      });
+      sendCreatePinnedNote(xpath, text, fallbackX, fallbackY)
+        .then(result => {
+          if (result.entitlement?.blocked) setShowUpsellModal(true);
+        })
+        .catch(err => {
+          console.error('[ContentApp] Failed to create pinned note:', err);
+        });
     }
   }, []);
 
@@ -179,6 +189,7 @@ const ContentApp: React.FC<Props> = ({ portalContainer }) => {
           portalContainer={portalContainer}
         />
       ))}
+      <UpsellModal open={showUpsellModal} onClose={() => setShowUpsellModal(false)} />
     </div>
   );
 };

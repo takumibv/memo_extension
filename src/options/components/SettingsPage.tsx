@@ -1,3 +1,4 @@
+import LicenseSection from '@/options/components/LicenseSection';
 import Usage from '@/options/components/Usage';
 import { BuyMeCoffeeButton } from '@/shared/components/BuyMeCoffeeButton';
 import { ColorPicker } from '@/shared/components/ColorPicker';
@@ -332,6 +333,8 @@ const SettingsPage = ({ notes, pageInfos, setting, onUpdateDefaultColor, onNavig
               <span>{t('feature_pin_to_element_note2')}</span>
             </div>
           </div>
+
+          <LicenseSection />
         </div>
       </section>
 

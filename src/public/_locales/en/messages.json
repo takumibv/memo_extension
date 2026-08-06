@@ -394,6 +394,45 @@
   "review_prompt_thanks_coffee": {
     "message": "Thank you!"
   },
+  "upsell_trial_limit_title_msg": {
+    "message": "Free trial limit reached"
+  },
+  "upsell_trial_limit_body_msg": {
+    "message": "You've used all 10 free element-pinned notes. Purchase a license to keep pinning notes to page elements."
+  },
+  "upsell_buy_button_msg": {
+    "message": "Buy license"
+  },
+  "upsell_activate_hint_msg": {
+    "message": "After purchasing, enter your license key on the Settings page to unlock this feature."
+  },
+  "upsell_close_button_msg": {
+    "message": "Close"
+  },
+  "license_section_title_msg": {
+    "message": "License"
+  },
+  "license_status_licensed_msg": {
+    "message": "Activated (Lifetime)"
+  },
+  "license_status_unlicensed_msg": {
+    "message": "Not purchased"
+  },
+  "license_trial_remaining_label_msg": {
+    "message": "Free trial remaining"
+  },
+  "license_input_placeholder_msg": {
+    "message": "Enter license key"
+  },
+  "license_activate_button_msg": {
+    "message": "Activate"
+  },
+  "license_activate_success_msg": {
+    "message": "License activated"
+  },
+  "license_activate_error_msg": {
+    "message": "Invalid license key"
+  },
   "shortcut_section_title_msg": {
     "message": "Keyboard Shortcuts"
   },

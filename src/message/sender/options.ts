@@ -15,3 +15,8 @@ export const sendFetchSetting = () => sendToBackground({ type: 'options:getSetti
 
 export const sendUpdateDefaultColor = (color: string) =>
   sendToBackground({ type: 'options:updateDefaultColor', payload: { color } });
+
+export const sendActivateLicense = (code: string) =>
+  sendToBackground({ type: 'options:activateLicense', payload: { code } });
+
+export const sendFetchLicenseStatus = () => sendToBackground({ type: 'options:getLicenseStatus' });

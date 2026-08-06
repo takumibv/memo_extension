@@ -357,6 +357,45 @@
   "review_prompt_thanks_coffee": {
     "message": "Thank you!"
   },
+  "upsell_trial_limit_title_msg": {
+    "message": "Kostenlose Testphase aufgebraucht"
+  },
+  "upsell_trial_limit_body_msg": {
+    "message": "Du hast alle 10 kostenlosen angepinnten Notizen verwendet. Kaufe eine Lizenz, um Notizen weiterhin an Elemente anzupinnen."
+  },
+  "upsell_buy_button_msg": {
+    "message": "Lizenz kaufen"
+  },
+  "upsell_activate_hint_msg": {
+    "message": "Gib nach dem Kauf deinen Lizenzschlüssel auf der Einstellungsseite ein, um die Funktion freizuschalten."
+  },
+  "upsell_close_button_msg": {
+    "message": "Schließen"
+  },
+  "license_section_title_msg": {
+    "message": "Lizenz"
+  },
+  "license_status_licensed_msg": {
+    "message": "Aktiviert (lebenslang)"
+  },
+  "license_status_unlicensed_msg": {
+    "message": "Nicht gekauft"
+  },
+  "license_trial_remaining_label_msg": {
+    "message": "Verbleibende kostenlose Nutzungen"
+  },
+  "license_input_placeholder_msg": {
+    "message": "Lizenzschlüssel eingeben"
+  },
+  "license_activate_button_msg": {
+    "message": "Aktivieren"
+  },
+  "license_activate_success_msg": {
+    "message": "Lizenz aktiviert"
+  },
+  "license_activate_error_msg": {
+    "message": "Ungültiger Lizenzschlüssel"
+  },
   "shortcut_section_title_msg": {
     "message": "Tastenkürzel"
   },

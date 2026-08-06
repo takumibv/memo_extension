@@ -25,6 +25,18 @@ import {
   getOrCreatePageInfoByUrl,
   getPageInfoByUrl,
 } from '@/shared/storages/pageInfoStorage';
+import {
+  activateLicense as _activateLicense,
+  getLicenseStatus as _getLicenseStatus,
+} from '@/shared/storages/licenseStorage';
+import { getTrialUsed } from '@/shared/storages/trialStorage';
+import {
+  canCreateTrackingNote,
+  recordTrackingNoteCreated,
+  EntitlementBlockedError,
+  TRIAL_LIMIT,
+} from '@/shared/utils/entitlement';
+import type { LicenseStatusView } from '@/shared/types/License';
 import type { Note } from '@/shared/types/Note';
 import type { PageInfo } from '@/shared/types/PageInfo';
 import type { SelectionTarget } from '@/shared/types/Selection';
@@ -66,6 +78,9 @@ export const createPinnedNote = async (
   fallbackX: number,
   fallbackY: number,
 ): Promise<Note[]> => {
+  const entitlement = await canCreateTrackingNote();
+  if (!entitlement.allowed) throw new EntitlementBlockedError(entitlement.trialRemaining);
+
   const pageInfo = await getOrCreatePageInfoByUrl(page_url);
   const selection = await _createSelection(target, text);
   try {
@@ -77,6 +92,7 @@ export const createPinnedNote = async (
       position_y: fallbackY,
     });
     setUpdatedAtPageInfo(pageInfo.id!);
+    await recordTrackingNoteCreated();
     return allNotes;
   } catch (e) {
     await _deleteSelection(selection.id).catch(() => {});
@@ -97,6 +113,13 @@ export const attachSelectionToNote = async (
   const existingNote = existingNotes.find(n => n.id === noteId);
   if (!existingNote) return existingNotes;
 
+  // 既に追従化済みのメモの対象要素を変更するだけの場合は課金対象にしない
+  const isNewlyTracking = !existingNote.selection_id;
+  if (isNewlyTracking) {
+    const entitlement = await canCreateTrackingNote();
+    if (!entitlement.allowed) throw new EntitlementBlockedError(entitlement.trialRemaining);
+  }
+
   const oldSelectionId = existingNote.selection_id;
   const selection = await _createSelection(target, text);
   try {
@@ -113,6 +136,7 @@ export const attachSelectionToNote = async (
       await _deleteSelection(oldSelectionId).catch(() => {});
     }
     setUpdatedAtPageInfo(pageInfo.id);
+    if (isNewlyTracking) await recordTrackingNoteCreated();
     return allNotes;
   } catch (e) {
     await _deleteSelection(selection.id).catch(() => {});
@@ -216,4 +240,19 @@ export const setBadgeText = (tabId: number, noteLength?: number | string) => {
 export const setBadgeUnavailable = (tabId: number) => {
   chrome.action.setBadgeText({ tabId, text: 'x' });
   chrome.action.setBadgeBackgroundColor({ tabId, color: 'red' });
+};
+
+export const activateLicenseCode = async (code: string): Promise<{ ok: boolean; error?: string }> => {
+  const result = await _activateLicense(code);
+  return result.ok ? { ok: true } : { ok: false, error: result.error };
+};
+
+export const fetchLicenseStatusView = async (): Promise<LicenseStatusView> => {
+  const [status, trialUsed] = await Promise.all([_getLicenseStatus(), getTrialUsed()]);
+  const trialRemaining = Math.max(0, TRIAL_LIMIT - trialUsed);
+
+  if (status.state === 'licensed') {
+    return { licensed: true, plan: status.payload.plan, trialUsed, trialLimit: TRIAL_LIMIT, trialRemaining };
+  }
+  return { licensed: false, trialUsed, trialLimit: TRIAL_LIMIT, trialRemaining };
 };

@@ -357,6 +357,45 @@
   "review_prompt_thanks_coffee": {
     "message": "Thank you!"
   },
+  "upsell_trial_limit_title_msg": {
+    "message": "Límite de prueba gratuita alcanzado"
+  },
+  "upsell_trial_limit_body_msg": {
+    "message": "Has usado las 10 notas ancladas gratuitas. Compra una licencia para seguir anclando notas a elementos."
+  },
+  "upsell_buy_button_msg": {
+    "message": "Comprar licencia"
+  },
+  "upsell_activate_hint_msg": {
+    "message": "Después de comprar, introduce tu clave de licencia en la página de configuración para desbloquear la función."
+  },
+  "upsell_close_button_msg": {
+    "message": "Cerrar"
+  },
+  "license_section_title_msg": {
+    "message": "Licencia"
+  },
+  "license_status_licensed_msg": {
+    "message": "Activada (de por vida)"
+  },
+  "license_status_unlicensed_msg": {
+    "message": "No comprada"
+  },
+  "license_trial_remaining_label_msg": {
+    "message": "Pruebas gratuitas restantes"
+  },
+  "license_input_placeholder_msg": {
+    "message": "Introducir clave de licencia"
+  },
+  "license_activate_button_msg": {
+    "message": "Activar"
+  },
+  "license_activate_success_msg": {
+    "message": "Licencia activada"
+  },
+  "license_activate_error_msg": {
+    "message": "Clave de licencia no válida"
+  },
   "shortcut_section_title_msg": {
     "message": "Atajos de teclado"
   },
