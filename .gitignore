@@ -40,3 +40,5 @@ packages/
 scripts/
 bash-scripts/
 tests/
+
+.claude/worktrees/
