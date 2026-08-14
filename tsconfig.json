@@ -10,5 +10,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "exclude": ["old", "packages", "chrome-extension", "pages", "node_modules", ".output", "dist", "server"]
+  "exclude": ["old", "packages", "chrome-extension", "pages", "node_modules", ".output", "dist"]
 }

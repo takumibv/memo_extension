@@ -1,3 +1,0 @@
-STRIPE_SECRET_KEY=sk_test_xxx
-STRIPE_WEBHOOK_SECRET=whsec_xxx
-LICENSE_PRIVATE_KEY_JWK={"kty":"EC","crv":"P-256","d":"...","x":"...","y":"..."}
